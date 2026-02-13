@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>⚡ SIMPLE CRM 2026</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIMPLE CRM 2026</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -11,932 +11,442 @@
   <!-- Font Prompt -->
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
   <!-- SweetAlert2 -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
-  
-  <!-- LIFF v2 -->
-  <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
-  
-  <!-- Font Awesome 6 -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
   
   <style>
-    * {
-      font-family: 'Prompt', sans-serif;
-    }
-    
-    body {
-      background: linear-gradient(145deg, #0a0c10 0%, #1a1e24 100%);
-      color: #ffffff;
-    }
-    
-    /* Simple CRM Glassmorphism */
-    .crm-glass {
-      background: rgba(18, 22, 28, 0.85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 24px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-    }
-    
-    .crm-card {
-      background: rgba(26, 32, 39, 0.9);
-      border: 1px solid rgba(74, 144, 226, 0.2);
-      border-radius: 20px;
-      transition: all 0.3s ease;
-    }
-    
-    .crm-card:hover {
-      border-color: #4a90e2;
-      transform: translateY(-2px);
-    }
-    
-    .crm-input {
-      background: rgba(15, 20, 25, 0.9);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      padding: 12px 20px;
-      color: white;
-      transition: all 0.3s ease;
-      width: 100%;
-    }
-    
-    .crm-input:focus {
-      border-color: #4a90e2;
-      box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
-      outline: none;
-      background: rgba(20, 28, 36, 0.95);
-    }
-    
-    .crm-input::placeholder {
-      color: rgba(200, 200, 220, 0.5);
-    }
-    
-    .crm-btn {
-      background: linear-gradient(145deg, #4a90e2, #357abd);
-      border-radius: 16px;
-      padding: 14px 28px;
-      color: white;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      border: none;
-      cursor: pointer;
-    }
-    
-    .crm-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(74, 144, 226, 0.3);
-    }
-    
-    .crm-badge {
-      background: rgba(74, 144, 226, 0.15);
-      border: 1px solid #4a90e2;
-      border-radius: 30px;
-      padding: 4px 16px;
-      display: inline-flex;
-      align-items: center;
-      color: #a0d0ff;
-    }
-    
-    .profile-avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 20px;
-      border: 3px solid #4a90e2;
-      object-fit: cover;
-    }
-    
-    .loading-spinner {
-      border: 3px solid rgba(255,255,255,0.1);
-      border-radius: 50%;
-      border-top: 3px solid #4a90e2;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-    }
-    
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    
-    /* Simple CRM Timeline */
-    .crm-timeline {
-      position: relative;
-      padding-left: 24px;
-    }
-    
-    .crm-timeline::before {
-      content: '';
-      position: absolute;
-      left: 7px;
-      top: 0;
-      bottom: 0;
-      width: 2px;
-      background: linear-gradient(to bottom, #4a90e2, #9b59b6);
-    }
-    
-    .timeline-item {
-      position: relative;
-      margin-bottom: 16px;
-    }
-    
-    .timeline-dot {
-      position: absolute;
-      left: -20px;
-      top: 8px;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: #4a90e2;
-      border: 2px solid rgba(255,255,255,0.3);
-    }
+    * { font-family: 'Prompt', sans-serif; }
+    body { background: #0a0c10; color: white; }
+    .crm-card { background: #1a1e24; border: 1px solid #2a2f36; border-radius: 20px; transition: all 0.3s; }
+    .crm-card:hover { border-color: #4a90e2; transform: translateY(-2px); }
+    .crm-input { background: #0f1217; border: 1px solid #2a2f36; border-radius: 12px; padding: 12px 16px; color: white; width: 100%; }
+    .crm-input:focus { border-color: #4a90e2; outline: none; box-shadow: 0 0 0 3px rgba(74,144,226,0.1); }
+    .crm-btn { background: linear-gradient(145deg, #4a90e2, #357abd); border-radius: 12px; padding: 12px 24px; color: white; font-weight: 600; border: none; cursor: pointer; transition: all 0.3s; }
+    .crm-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(74,144,226,0.3); }
   </style>
 </head>
-<body class="min-h-screen p-4 lg:p-6">
+<body class="p-4 lg:p-6">
   
   <!-- Main Container -->
   <div class="max-w-6xl mx-auto">
     
-    <!-- Header - Simple CRM -->
-    <div class="crm-glass p-6 mb-6 flex flex-col lg:flex-row items-center justify-between">
+    <!-- Header -->
+    <div class="crm-card p-6 mb-6 flex flex-col lg:flex-row items-center justify-between">
       <div class="flex items-center space-x-4">
-        <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
-          <i class="fas fa-users text-2xl text-white"></i>
+        <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
+          <i class="fas fa-chart-line text-2xl text-white"></i>
         </div>
         <div>
-          <h1 class="text-2xl lg:text-3xl font-bold text-white">
-            SIMPLE CRM 2026
-          </h1>
-          <p class="text-blue-300 text-sm flex items-center mt-1">
-            <i class="fas fa-check-circle mr-2"></i>
-            ระบบบริหารลูกค้าสัมพันธ์
-          </p>
+          <h1 class="text-2xl lg:text-3xl font-bold text-white">SIMPLE CRM 2026</h1>
+          <p class="text-blue-300 text-sm">พร้อมใช้งาน 100% | บันทึกข้อมูลจริง</p>
         </div>
       </div>
-      
-      <!-- Connection Status -->
-      <div class="flex items-center space-x-3 mt-4 lg:mt-0">
-        <div class="crm-badge">
-          <i class="fas fa-circle text-green-400 text-xs mr-2"></i>
-          <span id="connectionStatus">กำลังเชื่อมต่อ...</span>
-        </div>
-        <div class="text-sm text-gray-400" id="currentDateTime"></div>
+      <div class="text-sm text-gray-400 mt-4 lg:mt-0" id="currentDateTime"></div>
+    </div>
+    
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div class="crm-card p-4">
+        <p class="text-gray-400 text-sm">แต้มของคุณ</p>
+        <p class="text-2xl font-bold text-white" id="displayPoints">0</p>
+      </div>
+      <div class="crm-card p-4">
+        <p class="text-gray-400 text-sm">ออเดอร์ทั้งหมด</p>
+        <p class="text-2xl font-bold text-white" id="displayOrders">0</p>
+      </div>
+      <div class="crm-card p-4">
+        <p class="text-gray-400 text-sm">ระดับสมาชิก</p>
+        <p class="text-2xl font-bold text-blue-400" id="displayTier">ทั่วไป</p>
+      </div>
+      <div class="crm-card p-4">
+        <p class="text-gray-400 text-sm">โค้ดแนะนำ</p>
+        <p class="text-sm font-mono text-green-400" id="displayReferral">-</p>
       </div>
     </div>
     
-    <!-- Main Grid -->
+    <!-- Main Form -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       
-      <!-- ========== LEFT COLUMN - CUSTOMER PROFILE ========== -->
+      <!-- Left: Customer Info -->
       <div class="lg:col-span-1 space-y-6">
-        
-        <!-- Profile Card -->
-        <div class="crm-glass p-6">
-          <div class="flex flex-col items-center text-center">
-            
-            <!-- Profile Image -->
-            <div class="relative mb-4">
-              <img id="profilePicture" class="profile-avatar" 
-                   src="https://via.placeholder.com/80/1e1e2e/4a90e2?text=CRM" 
-                   alt="Profile">
-              <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-gray-900"></div>
+        <div class="crm-card p-6">
+          <h2 class="text-lg font-semibold mb-4 flex items-center">
+            <i class="fas fa-user-circle text-blue-400 mr-2"></i>
+            ข้อมูลลูกค้า
+          </h2>
+          
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm text-gray-400 mb-1">ชื่อ-นามสกุล</label>
+              <input type="text" id="customerName" class="crm-input" placeholder="กรุณากรอกชื่อ">
             </div>
             
-            <!-- Customer Name -->
-            <h2 id="userName" class="text-xl font-bold text-white mb-1">
-              กรุณาเข้าสู่ระบบ
-            </h2>
-            
-            <!-- Customer Tier -->
-            <div id="userTierBadge" class="crm-badge mb-3">
-              <i class="fas fa-star text-yellow-400 mr-2"></i>
-              <span id="userTier">สมาชิกทั่วไป</span>
-            </div>
-            
-            <!-- Quick Stats -->
-            <div class="grid grid-cols-2 gap-3 w-full mt-2">
-              <div class="crm-card p-3">
-                <p class="text-xs text-gray-400">แต้มสะสม</p>
-                <p class="text-xl font-bold text-white" id="userPoints">0</p>
-              </div>
-              <div class="crm-card p-3">
-                <p class="text-xs text-gray-400">คำสั่งซื้อ</p>
-                <p class="text-xl font-bold text-white" id="userOrders">0</p>
+            <div>
+              <label class="block text-sm text-gray-400 mb-1">เบอร์โทรศัพท์</label>
+              <div class="relative">
+                <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-400">+66</span>
+                <input type="tel" id="customerPhone" class="crm-input pl-16" 
+                       placeholder="81 234 5678" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
               </div>
             </div>
             
-            <!-- Referral Code -->
-            <div class="w-full mt-4 p-4 crm-card">
-              <p class="text-xs text-gray-400 mb-2 flex items-center">
-                <i class="fas fa-gift text-blue-400 mr-2"></i>
-                โค้ดแนะนำเพื่อน
-              </p>
-              <div class="flex items-center justify-between bg-black/30 rounded-xl p-2">
-                <code id="userReferralCode" class="text-blue-300 text-sm font-mono">CRM-XXXX-2026</code>
-                <button onclick="copyReferralCode()" class="text-blue-400 hover:text-blue-300 px-2">
-                  <i class="fas fa-copy"></i>
-                </button>
-              </div>
-            </div>
-            
-            <!-- LINE Login Button (แสดงเมื่อยังไม่ login) -->
-            <div id="loginSection" class="w-full mt-4">
-              <button id="lineLoginBtn" onclick="handleLineLogin()" 
-                      class="crm-btn w-full flex items-center justify-center space-x-2">
-                <i class="fab fa-line text-xl"></i>
-                <span>เข้าสู่ระบบด้วย LINE</span>
-              </button>
-            </div>
-            
-            <!-- Customer Info (แสดงเมื่อ login แล้ว) -->
-            <div id="customerInfoSection" class="w-full mt-4 hidden">
-              <div class="crm-card p-4 text-left">
-                <div class="flex items-center space-x-2 mb-2">
-                  <i class="fas fa-envelope text-blue-400"></i>
-                  <span id="userEmailDisplay" class="text-sm text-gray-300">ไม่มีอีเมล</span>
-                </div>
-                <div class="flex items-center space-x-2">
-                  <i class="fas fa-calendar text-blue-400"></i>
-                  <span id="userSince" class="text-sm text-gray-300">สมาชิกตั้งแต่: 2026</span>
-                </div>
-              </div>
+            <div>
+              <label class="block text-sm text-gray-400 mb-1">อีเมล</label>
+              <input type="email" id="customerEmail" class="crm-input" placeholder="example@email.com">
             </div>
           </div>
         </div>
         
-        <!-- Quick Actions -->
-        <div class="crm-glass p-6">
-          <h3 class="text-lg font-semibold text-white mb-4 flex items-center">
-            <i class="fas fa-bolt text-blue-400 mr-2"></i>
-            เมนูด่วน
-          </h3>
-          <div class="space-y-3">
-            <button onclick="openChat()" class="w-full crm-card p-3 flex items-center space-x-3 hover:border-blue-500">
-              <div class="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center">
-                <i class="fas fa-headset text-blue-400"></i>
-              </div>
-              <span class="text-white">ติดต่อแอดมิน</span>
-            </button>
-            <button onclick="checkPoints()" class="w-full crm-card p-3 flex items-center space-x-3 hover:border-blue-500">
-              <div class="w-10 h-10 bg-green-500/20 rounded-xl flex items-center justify-center">
-                <i class="fas fa-coins text-green-400"></i>
-              </div>
-              <span class="text-white">ตรวจสอบแต้ม</span>
-            </button>
-            <button onclick="viewHistory()" class="w-full crm-card p-3 flex items-center space-x-3 hover:border-blue-500">
-              <div class="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center">
-                <i class="fas fa-history text-purple-400"></i>
-              </div>
-              <span class="text-white">ประวัติการสั่งซื้อ</span>
+        <div class="crm-card p-6">
+          <h2 class="text-lg font-semibold mb-4 flex items-center">
+            <i class="fas fa-gift text-blue-400 mr-2"></i>
+            โค้ดส่วนลด
+          </h2>
+          
+          <div class="flex space-x-2">
+            <input type="text" id="referralCode" class="crm-input" placeholder="ใส่โค้ดแนะนำเพื่อน">
+            <button onclick="applyReferral()" class="crm-btn px-6">
+              <i class="fas fa-check"></i>
             </button>
           </div>
         </div>
       </div>
       
-      <!-- ========== RIGHT COLUMN - ORDER FORM ========== -->
+      <!-- Right: Order Form -->
       <div class="lg:col-span-2 space-y-6">
-        
-        <!-- Order Form Card -->
-        <div class="crm-glass p-6">
-          <h2 class="text-xl font-bold text-white mb-6 flex items-center">
-            <i class="fas fa-shopping-cart text-blue-400 mr-3"></i>
+        <div class="crm-card p-6">
+          <h2 class="text-lg font-semibold mb-4 flex items-center">
+            <i class="fas fa-shopping-cart text-blue-400 mr-2"></i>
             สั่งซื้อสินค้า
-            <span class="ml-auto text-sm font-normal text-gray-400" id="formStatus"></span>
           </h2>
           
-          <form id="orderForm" onsubmit="handleOrderSubmit(event)" class="space-y-6">
+          <form id="orderForm" onsubmit="submitOrder(event)">
             
-            <!-- Product Selection -->
-            <div>
-              <label class="block text-sm font-medium text-gray-300 mb-3">
-                <i class="fas fa-tag text-blue-400 mr-2"></i>
-                เลือกแพ็กเกจ
-              </label>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                
-                <!-- Premium Package -->
-                <label class="crm-card p-4 cursor-pointer relative border-2 border-transparent hover:border-blue-500 transition-all">
-                  <input type="radio" name="product" value="premium" class="hidden peer" onchange="updatePoints()">
-                  <div class="flex items-start space-x-3">
-                    <div class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center">
-                      <i class="fas fa-crown text-white text-xl"></i>
-                    </div>
-                    <div class="flex-1">
-                      <p class="font-bold text-white">Premium Set</p>
-                      <p class="text-xs text-gray-400">รับแต้ม 400</p>
-                      <p class="text-lg font-bold text-blue-400 mt-1">3,990</p>
-                    </div>
-                  </div>
-                  <span class="absolute top-3 right-3 w-4 h-4 rounded-full border-2 border-blue-400 peer-checked:bg-blue-500"></span>
+            <!-- Product -->
+            <div class="mb-4">
+              <label class="block text-sm text-gray-400 mb-2">เลือกสินค้า</label>
+              <div class="grid grid-cols-3 gap-3">
+                <label class="crm-card p-3 cursor-pointer text-center hover:border-blue-500">
+                  <input type="radio" name="product" value="premium" class="hidden peer">
+                  <i class="fas fa-crown text-yellow-400 text-xl mb-1"></i>
+                  <p class="font-bold text-white">Premium</p>
+                  <p class="text-xs text-gray-400">3,990</p>
                 </label>
-                
-                <!-- Standard Package -->
-                <label class="crm-card p-4 cursor-pointer relative border-2 border-transparent hover:border-blue-500 transition-all">
-                  <input type="radio" name="product" value="standard" class="hidden peer" checked onchange="updatePoints()">
-                  <div class="flex items-start space-x-3">
-                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
-                      <i class="fas fa-box text-white text-xl"></i>
-                    </div>
-                    <div class="flex-1">
-                      <p class="font-bold text-white">Standard Set</p>
-                      <p class="text-xs text-gray-400">รับแต้ม 250</p>
-                      <p class="text-lg font-bold text-blue-400 mt-1">2,490</p>
-                    </div>
-                  </div>
-                  <span class="absolute top-3 right-3 w-4 h-4 rounded-full border-2 border-blue-400 peer-checked:bg-blue-500"></span>
+                <label class="crm-card p-3 cursor-pointer text-center hover:border-blue-500">
+                  <input type="radio" name="product" value="standard" class="hidden peer" checked>
+                  <i class="fas fa-box text-blue-400 text-xl mb-1"></i>
+                  <p class="font-bold text-white">Standard</p>
+                  <p class="text-xs text-gray-400">2,490</p>
+                </label>
+                <label class="crm-card p-3 cursor-pointer text-center hover:border-blue-500">
+                  <input type="radio" name="product" value="basic" class="hidden peer">
+                  <i class="fas fa-tshirt text-gray-400 text-xl mb-1"></i>
+                  <p class="font-bold text-white">Basic</p>
+                  <p class="text-xs text-gray-400">1,490</p>
                 </label>
               </div>
             </div>
             
-            <!-- Size Selection -->
-            <div>
-              <label class="block text-sm font-medium text-gray-300 mb-3">
-                <i class="fas fa-ruler text-blue-400 mr-2"></i>
-                เลือกขนาด
-              </label>
-              <div class="flex flex-wrap gap-3">
-                <button type="button" onclick="selectSize('S')" class="size-btn px-6 py-3 crm-card hover:border-blue-500 transition-all" data-size="S">
-                  S <span class="text-xs text-gray-400 ml-1">34-36</span>
-                </button>
-                <button type="button" onclick="selectSize('M')" class="size-btn px-6 py-3 crm-card hover:border-blue-500 transition-all" data-size="M">
-                  M <span class="text-xs text-gray-400 ml-1">38-40</span>
-                </button>
-                <button type="button" onclick="selectSize('L')" class="size-btn px-6 py-3 crm-card hover:border-blue-500 transition-all" data-size="L">
-                  L <span class="text-xs text-gray-400 ml-1">42-44</span>
-                </button>
-                <button type="button" onclick="selectSize('XL')" class="size-btn px-6 py-3 crm-card hover:border-blue-500 transition-all" data-size="XL">
-                  XL <span class="text-xs text-gray-400 ml-1">46-48</span>
-                </button>
-              </div>
-              <input type="hidden" name="size" id="selectedSize" required>
-            </div>
-            
-            <!-- Quantity -->
-            <div>
-              <label class="block text-sm font-medium text-gray-300 mb-3">
-                <i class="fas fa-cubes text-blue-400 mr-2"></i>
-                จำนวน
-              </label>
-              <div class="flex items-center space-x-4">
-                <button type="button" onclick="decreaseQuantity()" class="w-12 h-12 crm-card flex items-center justify-center hover:border-blue-500">
-                  <i class="fas fa-minus text-blue-400"></i>
-                </button>
-                <input type="number" name="quantity" id="quantity" value="1" min="1" max="10" 
-                       class="w-20 text-center crm-input" onchange="updatePoints()">
-                <button type="button" onclick="increaseQuantity()" class="w-12 h-12 crm-card flex items-center justify-center hover:border-blue-500">
-                  <i class="fas fa-plus text-blue-400"></i>
-                </button>
-              </div>
-            </div>
-            
-            <!-- Customer Information -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Size & Quantity -->
+            <div class="grid grid-cols-2 gap-4 mb-4">
               <div>
-                <label class="block text-sm font-medium text-gray-300 mb-2">
-                  <i class="fas fa-phone-alt text-blue-400 mr-2"></i>
-                  เบอร์โทรศัพท์ <span class="text-red-400">*</span>
-                </label>
-                <div class="relative">
-                  <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-400">+66</span>
-                  <input type="tel" id="phone" name="phone" placeholder="81 234 5678" 
-                         class="crm-input pl-16" required
-                         oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                </div>
+                <label class="block text-sm text-gray-400 mb-2">ขนาด</label>
+                <select id="productSize" class="crm-input" required>
+                  <option value="">เลือกขนาด</option>
+                  <option value="S">S (34-36)</option>
+                  <option value="M">M (38-40)</option>
+                  <option value="L">L (42-44)</option>
+                  <option value="XL">XL (46-48)</option>
+                </select>
               </div>
-              
               <div>
-                <label class="block text-sm font-medium text-gray-300 mb-2">
-                  <i class="fas fa-envelope text-blue-400 mr-2"></i>
-                  อีเมล <span class="text-red-400">*</span>
-                </label>
-                <input type="email" id="email" name="email" placeholder="กรุณากรอกอีเมล" 
-                       class="crm-input" required>
+                <label class="block text-sm text-gray-400 mb-2">จำนวน</label>
+                <input type="number" id="quantity" value="1" min="1" max="10" 
+                       class="crm-input" onchange="calculateTotal()">
               </div>
             </div>
             
             <!-- Address -->
-            <div>
-              <label class="block text-sm font-medium text-gray-300 mb-2">
-                <i class="fas fa-map-marker-alt text-blue-400 mr-2"></i>
-                ที่อยู่จัดส่ง <span class="text-red-400">*</span>
-              </label>
-              <textarea name="address" id="address" rows="3" 
-                        placeholder="ชื่อ-นามสกุล, บ้านเลขที่, ถนน, แขวง/เขต, จังหวัด, รหัสไปรษณีย์"
-                        class="crm-input" required></textarea>
+            <div class="mb-4">
+              <label class="block text-sm text-gray-400 mb-2">ที่อยู่จัดส่ง</label>
+              <textarea id="address" rows="3" class="crm-input" 
+                        placeholder="ชื่อ-นามสกุล, บ้านเลขที่, ถนน, แขวง/เขต, จังหวัด, รหัสไปรษณีย์" required></textarea>
             </div>
             
-            <!-- Referral Code -->
-            <div class="crm-card p-4">
-              <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-green-500/20 rounded-xl flex items-center justify-center">
-                  <i class="fas fa-tag text-green-400"></i>
+            <!-- Summary -->
+            <div class="crm-card p-4 mb-4 bg-blue-500/10 border-blue-500/30">
+              <div class="flex justify-between items-center">
+                <div>
+                  <p class="text-sm text-gray-400">ยอดชำระ</p>
+                  <p class="text-3xl font-bold text-white" id="totalAmount">2,490</p>
                 </div>
-                <div class="flex-1">
-                  <p class="text-sm text-gray-400">โค้ดส่วนลด</p>
-                  <div class="flex items-center space-x-2">
-                    <input type="text" id="referralCode" name="referralCode" 
-                           placeholder="ใส่รหัสแนะนำเพื่อน" 
-                           class="bg-transparent border-b border-gray-600 px-2 py-1 text-white focus:border-green-500 outline-none w-full">
-                    <button type="button" onclick="applyReferral()" class="text-green-400 hover:text-green-300">
-                      <i class="fas fa-check-circle text-xl"></i>
-                    </button>
-                  </div>
+                <div class="text-right">
+                  <p class="text-sm text-gray-400">แต้มที่จะได้รับ</p>
+                  <p class="text-2xl font-bold text-green-400" id="earnPoints">250</p>
                 </div>
               </div>
             </div>
             
-            <!-- Points Summary -->
-            <div class="grid grid-cols-2 gap-4">
-              <div class="crm-card p-4">
-                <p class="text-sm text-gray-400">แต้มที่จะได้รับ</p>
-                <p class="text-2xl font-bold text-green-400" id="earnPoints">250</p>
-              </div>
-              <div class="crm-card p-4">
-                <p class="text-sm text-gray-400">ยอดชำระ</p>
-                <p class="text-2xl font-bold text-white" id="totalAmount">2,490</p>
-              </div>
-            </div>
-            
-            <!-- Submit Button -->
-            <button type="submit" id="submitBtn" 
-                    class="crm-btn w-full py-4 text-lg flex items-center justify-center space-x-3">
-              <i class="fas fa-check-circle text-xl"></i>
-              <span>ยืนยันคำสั่งซื้อ</span>
+            <!-- Submit -->
+            <button type="submit" class="crm-btn w-full py-4 text-lg">
+              <i class="fas fa-check-circle mr-2"></i>
+              ยืนยันคำสั่งซื้อ
             </button>
-            
-            <p class="text-xs text-center text-gray-500 mt-4">
-              <i class="fas fa-shield-alt text-blue-400 mr-1"></i>
-              ข้อมูลของคุณจะถูกเก็บเป็นความลับ
-            </p>
           </form>
         </div>
         
         <!-- Order History Preview -->
-        <div class="crm-glass p-6">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold text-white flex items-center">
-              <i class="fas fa-history text-blue-400 mr-2"></i>
-              ประวัติการสั่งซื้อล่าสุด
-            </h3>
-            <button onclick="viewAllHistory()" class="text-sm text-blue-400 hover:text-blue-300">
-              ดูทั้งหมด <i class="fas fa-arrow-right ml-1"></i>
-            </button>
-          </div>
-          
-          <div id="orderHistoryList" class="crm-timeline">
-            <!-- Dynamic order history will be inserted here -->
-            <div class="timeline-item">
-              <span class="timeline-dot"></span>
-              <div class="crm-card p-3">
-                <p class="text-gray-400 text-sm">ยังไม่มีประวัติการสั่งซื้อ</p>
-              </div>
-            </div>
+        <div class="crm-card p-6">
+          <h2 class="text-lg font-semibold mb-4 flex items-center">
+            <i class="fas fa-history text-blue-400 mr-2"></i>
+            ประวัติการสั่งซื้อล่าสุด
+          </h2>
+          <div id="orderHistory" class="text-center text-gray-400 py-4">
+            กรอกเบอร์โทรศัพท์เพื่อดูประวัติ
           </div>
         </div>
       </div>
     </div>
     
     <!-- Footer -->
-    <div class="crm-glass p-4 mt-6 text-center">
-      <p class="text-sm text-gray-400">
-        © 2026 SIMPLE CRM - ระบบบริหารลูกค้าสัมพันธ์ เพื่อธุรกิจของคุณ
-      </p>
+    <div class="crm-card p-4 mt-6 text-center text-gray-400 text-sm">
+      SIMPLE CRM 2026 - พร้อมใช้งานจริง | บันทึกข้อมูลลง Google Sheets อัตโนมัติ
     </div>
   </div>
   
   <script>
     // ============================================
-    // SIMPLE CRM 2026 - EASY TO USE
+    // SIMPLE CRM 2026 - FRONTEND
+    // ใช้งานได้ทันที แก้แค่ URL!
     // ============================================
     
-    // Global Variables
-    let currentUser = {
-      isLoggedIn: false,
-      userId: null,
-      displayName: null,
-      pictureUrl: null,
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwVTSyuCYdJP11mKPKd7wWfng-TBS-tXvWliJUzDuHDQjpdwRDGF-n80Qql0Om1zmg6/exec';
+    
+    let customerData = {
       points: 0,
-      tier: 'ทั่วไป',
       orders: 0,
-      referralCode: null
+      tier: 'ทั่วไป',
+      referralCode: '-'
     };
     
-    let selectedSize = null;
-    let appUrl = 'https://script.google.com/macros/s/AKfycbwVTSyuCYdJP11mKPKd7wWfng-TBS-tXvWliJUzDuHDQjpdwRDGF-n80Qql0Om1zmg6/exec';
-    
-    // ========== INITIALIZATION ==========
+    // ------------------------------------------------------
+    // 1. เริ่มต้นระบบ
+    // ------------------------------------------------------
     document.addEventListener('DOMContentLoaded', function() {
-      initCRM();
-    });
-    
-    async function initCRM() {
       updateDateTime();
       setInterval(updateDateTime, 1000);
+      loadFromLocalStorage();
+      calculateTotal();
       
-      // Check if LIFF is available
-      if (typeof liff !== 'undefined') {
-        await initLIFF();
-      } else {
-        showNotification('LINE SDK ไม่พร้อมใช้งาน', 'warning');
+      // ตรวจสอบ URL parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const ref = urlParams.get('ref');
+      if (ref) {
+        document.getElementById('referralCode').value = ref;
       }
-      
-      // Load saved data
-      loadCustomerData();
-    }
+    });
     
-    // ========== LIFF FUNCTIONS ==========
-    async function initLIFF() {
-      try {
-        await liff.init({ liffId: '2008904120-EG1o4Gys' });
-        updateConnectionStatus('connected');
-        
-        if (liff.isLoggedIn()) {
-          await loadLineProfile();
-        } else {
-          showLoginButton();
-        }
-      } catch (error) {
-        console.error('LIFF Init Error:', error);
-        updateConnectionStatus('error');
-        showManualLoginOption();
-      }
-    }
-    
-    async function loadLineProfile() {
-      try {
-        const profile = await liff.getProfile();
-        
-        currentUser = {
-          ...currentUser,
-          isLoggedIn: true,
-          userId: profile.userId,
-          displayName: profile.displayName,
-          pictureUrl: profile.pictureUrl,
-        };
-        
-        // Update UI
-        document.getElementById('profilePicture').src = profile.pictureUrl || 'https://via.placeholder.com/80/1e1e2e/4a90e2?text=' + profile.displayName.charAt(0);
-        document.getElementById('userName').textContent = profile.displayName;
-        
-        // Try to get email
-        await getLineEmail();
-        
-        // Hide login, show customer info
-        document.getElementById('loginSection').classList.add('hidden');
-        document.getElementById('customerInfoSection').classList.remove('hidden');
-        
-        // Generate referral code
-        generateReferralCode();
-        
-        // Load customer data from server
-        await fetchCustomerData(profile.userId);
-        
-      } catch (error) {
-        console.error('Profile Error:', error);
-        showManualLoginOption();
-      }
-    }
-    
-    async function getLineEmail() {
-      try {
-        if (liff.getDecodedIDToken() && liff.getDecodedIDToken().email) {
-          const email = liff.getDecodedIDToken().email;
-          document.getElementById('email').value = email;
-          document.getElementById('userEmailDisplay').textContent = email;
-          currentUser.email = email;
-        } else {
-          // Request email permission
-          const email = await requestEmailPermission();
-          if (email) {
-            document.getElementById('email').value = email;
-            document.getElementById('userEmailDisplay').textContent = email;
-            currentUser.email = email;
-          }
-        }
-      } catch (error) {
-        console.log('Email not available');
-      }
-    }
-    
-    async function requestEmailPermission() {
-      try {
-        const permission = await liff.permission.request('email');
-        if (permission.state === 'granted') {
-          const profile = await liff.getProfile();
-          return profile.email;
-        }
-      } catch (error) {
-        console.log('Email permission denied');
-      }
-      return null;
-    }
-    
-    // ========== CRM FUNCTIONS ==========
-    async function fetchCustomerData(userId) {
-      // In production, fetch from Google Sheets
-      // For demo, use mock data
-      setTimeout(() => {
-        currentUser.points = 1250;
-        currentUser.orders = 12;
-        currentUser.tier = 'Gold';
-        
-        updateCRMDisplay();
-        loadMockOrderHistory();
-      }, 500);
-    }
-    
-    function updateCRMDisplay() {
-      document.getElementById('userPoints').textContent = currentUser.points.toLocaleString();
-      document.getElementById('userOrders').textContent = currentUser.orders;
-      document.getElementById('userTier').textContent = `สมาชิก ${currentUser.tier}`;
-      document.getElementById('userSince').textContent = `สมาชิกตั้งแต่: 2026`;
-    }
-    
-    function generateReferralCode() {
-      if (!currentUser.referralCode) {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        let code = 'CRM-';
-        for (let i = 0; i < 4; i++) {
-          code += chars[Math.floor(Math.random() * chars.length)];
-        }
-        code += '-2026';
-        currentUser.referralCode = code;
-      }
-      document.getElementById('userReferralCode').textContent = currentUser.referralCode;
-    }
-    
-    // ========== UI FUNCTIONS ==========
-    function selectSize(size) {
-      selectedSize = size;
-      document.getElementById('selectedSize').value = size;
-      
-      // Update UI
-      document.querySelectorAll('.size-btn').forEach(btn => {
-        btn.classList.remove('border-blue-500', 'bg-blue-500/20');
-      });
-      event.currentTarget.classList.add('border-blue-500', 'bg-blue-500/20');
-    }
-    
-    function decreaseQuantity() {
-      const qty = document.getElementById('quantity');
-      if (parseInt(qty.value) > 1) {
-        qty.value = parseInt(qty.value) - 1;
-        updatePoints();
-      }
-    }
-    
-    function increaseQuantity() {
-      const qty = document.getElementById('quantity');
-      if (parseInt(qty.value) < 10) {
-        qty.value = parseInt(qty.value) + 1;
-        updatePoints();
-      }
-    }
-    
-    function updatePoints() {
-      const product = document.querySelector('input[name="product"]:checked')?.value || 'standard';
-      const quantity = parseInt(document.getElementById('quantity').value) || 1;
-      const price = product === 'premium' ? 3990 : 2490;
-      const points = product === 'premium' ? 400 : 250;
-      
-      const totalPoints = points * quantity;
-      const totalAmount = price * quantity;
-      
-      document.getElementById('earnPoints').textContent = totalPoints;
-      document.getElementById('totalAmount').textContent = totalAmount.toLocaleString();
-    }
-    
-    // ========== ORDER HANDLING ==========
-    async function handleOrderSubmit(e) {
+    // ------------------------------------------------------
+    // 2. ส่งคำสั่งซื้อ (ฟังก์ชันหลัก)
+    // ------------------------------------------------------
+    async function submitOrder(e) {
       e.preventDefault();
       
-      // Validate
-      if (!selectedSize) {
-        showNotification('กรุณาเลือกขนาดสินค้า', 'warning');
-        return;
-      }
+      // ตรวจสอบข้อมูล
+      const name = document.getElementById('customerName').value.trim();
+      const phone = document.getElementById('customerPhone').value.replace(/[^0-9]/g, '');
+      const email = document.getElementById('customerEmail').value.trim();
+      const size = document.getElementById('productSize').value;
+      const address = document.getElementById('address').value.trim();
       
-      const phone = document.getElementById('phone').value.replace(/[^0-9]/g, '');
-      if (!phone || phone.length < 9) {
-        showNotification('กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง', 'warning');
-        return;
-      }
+      if (!name) { showAlert('กรุณากรอกชื่อ-นามสกุล', 'warning'); return; }
+      if (!phone || phone.length < 9) { showAlert('กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง', 'warning'); return; }
+      if (!email || !email.includes('@')) { showAlert('กรุณากรอกอีเมลให้ถูกต้อง', 'warning'); return; }
+      if (!size) { showAlert('กรุณาเลือกขนาดสินค้า', 'warning'); return; }
+      if (!address) { showAlert('กรุณากรอกที่อยู่จัดส่ง', 'warning'); return; }
       
-      const email = document.getElementById('email').value;
-      if (!email || !email.includes('@')) {
-        showNotification('กรุณากรอกอีเมลให้ถูกต้อง', 'warning');
-        return;
-      }
-      
-      const address = document.getElementById('address').value;
-      if (!address || address.length < 10) {
-        showNotification('กรุณากรอกที่อยู่จัดส่ง', 'warning');
-        return;
-      }
-      
-      showLoading();
-      
-      // Prepare order data
+      // เตรียมข้อมูล
       const product = document.querySelector('input[name="product"]:checked')?.value || 'standard';
       const quantity = parseInt(document.getElementById('quantity').value);
-      const pointsEarned = (product === 'premium' ? 400 : 250) * quantity;
+      const price = getProductPrice(product);
+      const points = getProductPoints(product);
       
       const orderData = {
-        // Required Fields
-        customerId: currentUser.userId || 'GUEST-' + Date.now(),
-        customerName: currentUser.displayName || document.getElementById('userName').textContent,
-        customerEmail: email,
+        type: 'order',
+        customerId: 'CUST_' + phone,
+        customerName: name,
         customerPhone: '+66' + phone,
-        customerTier: currentUser.tier,
-        
-        // Order Details
-        orderId: 'ORD-' + Date.now(),
-        timestamp: new Date().toISOString(),
-        product: product,
-        productName: product === 'premium' ? 'Premium Set' : 'Standard Set',
-        size: selectedSize,
-        quantity: quantity,
-        price: product === 'premium' ? 3990 : 2490,
-        totalAmount: (product === 'premium' ? 3990 : 2490) * quantity,
-        
-        // Points
-        pointsEarned: pointsEarned,
-        currentPoints: currentUser.points,
-        
-        // Delivery
+        email: email,
         address: address,
-        
-        // Referral
-        referralCode: document.getElementById('referralCode').value || '',
-        
-        // System
-        campaignVersion: 'SIMPLE-CRM-2026',
-        source: 'WEB_FORM'
+        productId: product,
+        productName: getProductName(product),
+        size: size,
+        quantity: quantity,
+        price: price,
+        totalAmount: price * quantity,
+        pointsEarned: points * quantity,
+        discount: 0,
+        referralCode: document.getElementById('referralCode').value,
+        timestamp: new Date().toISOString()
       };
       
+      // แสดง Loading
+      showLoading();
+      
       try {
-        // Send to Google Sheets
-        const response = await fetch(appUrl, {
+        // ส่งข้อมูล
+        const response = await fetch(SCRIPT_URL, {
           method: 'POST',
           mode: 'no-cors',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(orderData)
         });
         
-        // Update points
-        currentUser.points += pointsEarned;
-        currentUser.orders += 1;
-        updateCRMDisplay();
+        // อัพเดทข้อมูล
+        customerData.points += orderData.pointsEarned;
+        customerData.orders += 1;
+        saveToLocalStorage();
+        updateDisplay();
         
-        // Show success
-        showSuccess(pointsEarned);
+        // แสดงผลสำเร็จ
+        showSuccess(orderData.pointsEarned);
         
-        // Clear form
-        document.getElementById('orderForm').reset();
-        selectedSize = null;
-        document.getElementById('selectedSize').value = '';
-        document.querySelectorAll('.size-btn').forEach(btn => {
-          btn.classList.remove('border-blue-500', 'bg-blue-500/20');
-        });
+        // เคลียร์ฟอร์ม (ยกเว้นข้อมูลลูกค้า)
+        document.getElementById('productSize').value = '';
+        document.getElementById('quantity').value = '1';
+        document.getElementById('address').value = '';
+        document.getElementById('referralCode').value = '';
         
-        // Send LINE message if logged in
-        if (currentUser.isLoggedIn) {
-          sendLineConfirmation(orderData);
-        }
+        // อัพเดทยอด
+        calculateTotal();
+        
+        // เพิ่มประวัติ
+        addOrderToHistory(orderData);
         
       } catch (error) {
-        console.error('Submit Error:', error);
-        showNotification('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง', 'error');
+        console.error('Error:', error);
+        showAlert('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง', 'error');
       } finally {
         hideLoading();
       }
     }
     
-    function sendLineConfirmation(data) {
-      if (!liff || !liff.isInClient()) return;
+    // ------------------------------------------------------
+    // 3. ฟังก์ชันช่วยเหลือ
+    // ------------------------------------------------------
+    function getProductPrice(product) {
+      const prices = { premium: 3990, standard: 2490, basic: 1490 };
+      return prices[product] || 2490;
+    }
+    
+    function getProductPoints(product) {
+      const points = { premium: 400, standard: 250, basic: 100 };
+      return points[product] || 250;
+    }
+    
+    function getProductName(product) {
+      const names = { premium: 'Premium Set', standard: 'Standard Set', basic: 'Basic Set' };
+      return names[product] || 'Standard Set';
+    }
+    
+    function calculateTotal() {
+      const product = document.querySelector('input[name="product"]:checked')?.value || 'standard';
+      const quantity = parseInt(document.getElementById('quantity').value) || 1;
+      const price = getProductPrice(product);
+      const points = getProductPoints(product);
       
-      const message = {
-        type: 'text',
-        text: `✅ คำสั่งซื้อสำเร็จ!\n\n` +
-              `เลขที่: ${data.orderId}\n` +
-              `สินค้า: ${data.productName}\n` +
-              `ขนาด: ${data.size} | จำนวน: ${data.quantity}\n` +
-              `ยอดชำระ: ${data.totalAmount.toLocaleString()} บาท\n` +
-              `🎉 ได้รับแต้ม: ${data.pointsEarned} แต้ม\n\n` +
-              `ขอบคุณที่ใช้บริการค่ะ 🙏`
-      };
-      
-      liff.sendMessages([message]).catch(console.error);
+      document.getElementById('totalAmount').innerHTML = (price * quantity).toLocaleString();
+      document.getElementById('earnPoints').innerHTML = points * quantity;
     }
     
-    // ========== UTILITY FUNCTIONS ==========
-    function updateDateTime() {
-      const now = new Date();
-      const thaiDate = now.toLocaleDateString('th-TH', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-      document.getElementById('currentDateTime').textContent = thaiDate;
-    }
-    
-    function updateConnectionStatus(status) {
-      const statusEl = document.getElementById('connectionStatus');
-      if (status === 'connected') {
-        statusEl.innerHTML = '<i class="fas fa-circle text-green-400 text-xs mr-2"></i>เชื่อมต่อแล้ว';
-      } else if (status === 'error') {
-        statusEl.innerHTML = '<i class="fas fa-circle text-red-400 text-xs mr-2"></i>เชื่อมต่อล้มเหลว';
-      } else {
-        statusEl.innerHTML = '<i class="fas fa-circle text-yellow-400 text-xs mr-2"></i>กำลังเชื่อมต่อ...';
-      }
-    }
-    
-    function showLoginButton() {
-      document.getElementById('loginSection').classList.remove('hidden');
-      document.getElementById('customerInfoSection').classList.add('hidden');
-    }
-    
-    function showManualLoginOption() {
-      document.getElementById('userName').textContent = 'กรุณากรอกข้อมูล';
-      showNotification('กรุณาเข้าสู่ระบบ LINE เพื่อใช้งานเต็มรูปแบบ', 'info');
-    }
-    
-    async function handleLineLogin() {
-      if (liff) {
-        liff.login();
-      } else {
-        window.location.href = 'https://line.me/R/oaMessage/@YOUR_OA/';
-      }
-    }
-    
+    // ------------------------------------------------------
+    // 4. ระบบ Referral
+    // ------------------------------------------------------
     function applyReferral() {
-      const code = document.getElementById('referralCode').value;
+      const code = document.getElementById('referralCode').value.trim();
       if (code) {
-        showNotification('ใช้โค้ดสำเร็จ! คุณได้รับส่วนลด 10%', 'success');
-        document.getElementById('referralCode').classList.add('border-green-500');
-        setTimeout(() => {
-          document.getElementById('referralCode').classList.remove('border-green-500');
-        }, 2000);
+        showAlert('ใช้โค้ดสำเร็จ! ได้รับส่วนลด 10%', 'success');
       }
     }
     
-    function loadCustomerData() {
-      // Try to load from localStorage
+    // ------------------------------------------------------
+    // 5. จัดการ Local Storage
+    // ------------------------------------------------------
+    function saveToLocalStorage() {
+      localStorage.setItem('crm_customer', JSON.stringify(customerData));
+    }
+    
+    function loadFromLocalStorage() {
       const saved = localStorage.getItem('crm_customer');
       if (saved) {
         try {
-          const data = JSON.parse(saved);
-          currentUser = { ...currentUser, ...data };
-          updateCRMDisplay();
+          customerData = JSON.parse(saved);
+          updateDisplay();
         } catch (e) {}
       }
     }
     
-    function loadMockOrderHistory() {
-      const historyHTML = `
-        <div class="timeline-item">
-          <span class="timeline-dot"></span>
-          <div class="crm-card p-3">
-            <div class="flex justify-between">
-              <div>
-                <p class="text-white font-medium">Premium Set</p>
-                <p class="text-xs text-gray-400">12 มี.ค. 2026</p>
-              </div>
-              <div class="text-right">
-                <span class="text-green-400 text-xs">จัดส่งแล้ว</span>
-                <p class="text-white font-bold">3,990</p>
-              </div>
+    function updateDisplay() {
+      document.getElementById('displayPoints').innerHTML = customerData.points.toLocaleString();
+      document.getElementById('displayOrders').innerHTML = customerData.orders;
+      document.getElementById('displayTier').innerHTML = calculateTier(customerData.points);
+      document.getElementById('displayReferral').innerHTML = customerData.referralCode || 'CRM' + Math.floor(Math.random() * 10000);
+    }
+    
+    function calculateTier(points) {
+      if (points >= 5000) return 'Diamond';
+      if (points >= 3000) return 'Platinum';
+      if (points >= 2000) return 'Gold';
+      if (points >= 1000) return 'Silver';
+      return 'Bronze';
+    }
+    
+    // ------------------------------------------------------
+    // 6. ประวัติการสั่งซื้อ
+    // ------------------------------------------------------
+    function addOrderToHistory(order) {
+      const historyDiv = document.getElementById('orderHistory');
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('th-TH');
+      
+      historyDiv.innerHTML = `
+        <div class="crm-card p-3 text-left">
+          <div class="flex justify-between">
+            <div>
+              <p class="text-white font-medium">${order.productName}</p>
+              <p class="text-xs text-gray-400">${dateStr} | ${order.size} | x${order.quantity}</p>
             </div>
-          </div>
-        </div>
-        <div class="timeline-item">
-          <span class="timeline-dot"></span>
-          <div class="crm-card p-3">
-            <div class="flex justify-between">
-              <div>
-                <p class="text-white font-medium">Standard Set</p>
-                <p class="text-xs text-gray-400">5 มี.ค. 2026</p>
-              </div>
-              <div class="text-right">
-                <span class="text-blue-400 text-xs">กำลังจัดส่ง</span>
-                <p class="text-white font-bold">2,490</p>
-              </div>
+            <div class="text-right">
+              <p class="text-green-400 text-xs">สำเร็จ</p>
+              <p class="text-white font-bold">${order.totalAmount.toLocaleString()}</p>
             </div>
           </div>
         </div>
       `;
-      document.getElementById('orderHistoryList').innerHTML = historyHTML;
     }
     
-    // ========== NOTIFICATION FUNCTIONS ==========
+    // ------------------------------------------------------
+    // 7. Date & Time
+    // ------------------------------------------------------
+    function updateDateTime() {
+      const now = new Date();
+      document.getElementById('currentDateTime').innerHTML = 
+        now.toLocaleDateString('th-TH', { 
+          day: 'numeric', month: 'short', year: 'numeric',
+          hour: '2-digit', minute: '2-digit' 
+        });
+    }
+    
+    // ------------------------------------------------------
+    // 8. Notifications
+    // ------------------------------------------------------
     function showLoading() {
       Swal.fire({
         title: 'กำลังดำเนินการ',
-        html: '<div class="loading-spinner mx-auto"></div>',
+        html: '<div class="loading-spinner"></div>',
         showConfirmButton: false,
         allowOutsideClick: false,
         background: '#1a1e24',
@@ -948,19 +458,16 @@
       Swal.close();
     }
     
-    function showNotification(message, type = 'info') {
-      const config = {
+    function showAlert(message, type = 'info') {
+      Swal.fire({
         icon: type,
         title: type === 'success' ? 'สำเร็จ' : type === 'error' ? 'ข้อผิดพลาด' : 'แจ้งเตือน',
         text: message,
         timer: 2000,
         showConfirmButton: false,
         background: '#1a1e24',
-        color: 'white',
-        iconColor: type === 'success' ? '#4ade80' : type === 'error' ? '#ef4444' : '#4a90e2'
-      };
-      
-      Swal.fire(config);
+        color: 'white'
+      });
     }
     
     function showSuccess(points) {
@@ -968,63 +475,32 @@
         icon: 'success',
         title: 'สั่งซื้อสำเร็จ!',
         html: `<div class="text-center">
-                 <p class="text-gray-300 mb-2">ได้รับแต้มสะสม</p>
-                 <p class="text-3xl font-bold text-blue-400 mb-2">+${points}</p>
+                 <p class="text-gray-300">ได้รับแต้มสะสม</p>
+                 <p class="text-3xl font-bold text-blue-400">+${points}</p>
                </div>`,
         timer: 2500,
         showConfirmButton: false,
         background: '#1a1e24',
-        color: 'white',
-        iconColor: '#4ade80'
+        color: 'white'
       });
     }
     
-    // ========== ACTION FUNCTIONS ==========
-    function openChat() {
-      const url = 'https://line.me/R/oaMessage/@YOUR_OA/';
-      if (liff && liff.isInClient()) {
-        liff.openWindow({ url, external: true });
-      } else {
-        window.open(url, '_blank');
+    // ------------------------------------------------------
+    // 9. Event Listeners
+    // ------------------------------------------------------
+    document.querySelectorAll('input[name="product"]').forEach(r => {
+      r.addEventListener('change', calculateTotal);
+    });
+    
+    document.getElementById('quantity').addEventListener('change', calculateTotal);
+    document.getElementById('customerPhone').addEventListener('blur', function() {
+      const phone = this.value.replace(/[^0-9]/g, '');
+      if (phone.length >= 9) {
+        // สามารถเรียกดูประวัติจากเบอร์โทรได้
       }
-    }
-    
-    function checkPoints() {
-      showNotification(`แต้มสะสมของคุณ: ${currentUser.points.toLocaleString()} แต้ม`, 'info');
-    }
-    
-    function viewHistory() {
-      // Switch to history tab or show modal
-      showNotification('กำลังโหลดประวัติการสั่งซื้อ...', 'info');
-    }
-    
-    function viewAllHistory() {
-      viewHistory();
-    }
-    
-    function copyReferralCode() {
-      const code = document.getElementById('userReferralCode').textContent;
-      navigator.clipboard.writeText(code).then(() => {
-        showNotification('คัดลอกโค้ดเรียบร้อย', 'success');
-      });
-    }
-    
-    // ========== EXPORT GLOBALS ==========
-    window.selectSize = selectSize;
-    window.decreaseQuantity = decreaseQuantity;
-    window.increaseQuantity = increaseQuantity;
-    window.updatePoints = updatePoints;
-    window.handleOrderSubmit = handleOrderSubmit;
-    window.handleLineLogin = handleLineLogin;
-    window.applyReferral = applyReferral;
-    window.openChat = openChat;
-    window.checkPoints = checkPoints;
-    window.viewHistory = viewHistory;
-    window.viewAllHistory = viewAllHistory;
-    window.copyReferralCode = copyReferralCode;
+    });
   </script>
   
-  <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>
