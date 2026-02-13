@@ -1,506 +1,1172 @@
 <!DOCTYPE html>
 <html lang="th">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SIMPLE CRM 2026</title>
-  
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Font Prompt -->
-  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <!-- SweetAlert2 -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-  
-  <style>
-    * { font-family: 'Prompt', sans-serif; }
-    body { background: #0a0c10; color: white; }
-    .crm-card { background: #1a1e24; border: 1px solid #2a2f36; border-radius: 20px; transition: all 0.3s; }
-    .crm-card:hover { border-color: #4a90e2; transform: translateY(-2px); }
-    .crm-input { background: #0f1217; border: 1px solid #2a2f36; border-radius: 12px; padding: 12px 16px; color: white; width: 100%; }
-    .crm-input:focus { border-color: #4a90e2; outline: none; box-shadow: 0 0 0 3px rgba(74,144,226,0.1); }
-    .crm-btn { background: linear-gradient(145deg, #4a90e2, #357abd); border-radius: 12px; padding: 12px 24px; color: white; font-weight: 600; border: none; cursor: pointer; transition: all 0.3s; }
-    .crm-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(74,144,226,0.3); }
-  </style>
-</head>
-<body class="p-4 lg:p-6">
-  
-  <!-- Main Container -->
-  <div class="max-w-6xl mx-auto">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>CRM PRO 2026 • ระบบบริหารลูกค้าสัมพันธ์</title>
     
-    <!-- Header -->
-    <div class="crm-card p-6 mb-6 flex flex-col lg:flex-row items-center justify-between">
-      <div class="flex items-center space-x-4">
-        <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
-          <i class="fas fa-chart-line text-2xl text-white"></i>
-        </div>
-        <div>
-          <h1 class="text-2xl lg:text-3xl font-bold text-white">SIMPLE CRM 2026</h1>
-          <p class="text-blue-300 text-sm">พร้อมใช้งาน 100% | บันทึกข้อมูลจริง</p>
-        </div>
-      </div>
-      <div class="text-sm text-gray-400 mt-4 lg:mt-0" id="currentDateTime"></div>
-    </div>
+    <!-- Tailwind CSS + Dark Mode -->
+    <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Quick Stats -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-      <div class="crm-card p-4">
-        <p class="text-gray-400 text-sm">แต้มของคุณ</p>
-        <p class="text-2xl font-bold text-white" id="displayPoints">0</p>
-      </div>
-      <div class="crm-card p-4">
-        <p class="text-gray-400 text-sm">ออเดอร์ทั้งหมด</p>
-        <p class="text-2xl font-bold text-white" id="displayOrders">0</p>
-      </div>
-      <div class="crm-card p-4">
-        <p class="text-gray-400 text-sm">ระดับสมาชิก</p>
-        <p class="text-2xl font-bold text-blue-400" id="displayTier">ทั่วไป</p>
-      </div>
-      <div class="crm-card p-4">
-        <p class="text-gray-400 text-sm">โค้ดแนะนำ</p>
-        <p class="text-sm font-mono text-green-400" id="displayReferral">-</p>
-      </div>
-    </div>
+    <!-- Font Awesome 6 (Modern Icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
     
-    <!-- Main Form -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
+    
+    <!-- LIFF SDK v2 -->
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    
+    <!-- Google Fonts - Inter (Modern Sans) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    
+    <style>
+      * {
+        font-family: 'Inter', sans-serif;
+        transition: background-color 0.3s ease, border-color 0.3s ease, color 0.2s ease;
+      }
       
-      <!-- Left: Customer Info -->
-      <div class="lg:col-span-1 space-y-6">
-        <div class="crm-card p-6">
-          <h2 class="text-lg font-semibold mb-4 flex items-center">
-            <i class="fas fa-user-circle text-blue-400 mr-2"></i>
-            ข้อมูลลูกค้า
-          </h2>
-          
-          <div class="space-y-4">
-            <div>
-              <label class="block text-sm text-gray-400 mb-1">ชื่อ-นามสกุล</label>
-              <input type="text" id="customerName" class="crm-input" placeholder="กรุณากรอกชื่อ">
+      /* Dark Mode Styles */
+      .dark-mode {
+        background: linear-gradient(145deg, #0A0F1E 0%, #151B2B 100%);
+        color: #E5E9F0;
+      }
+      
+      .dark-mode .glass-card {
+        background: rgba(18, 25, 40, 0.75);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(64, 128, 255, 0.2);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      }
+      
+      .dark-mode .input-field {
+        background: rgba(10, 15, 30, 0.8);
+        border: 1px solid #2D3A5E;
+        color: #F0F4FA;
+      }
+      
+      .dark-mode .text-primary {
+        color: #8AB4F8;
+      }
+      
+      .dark-mode .bg-gradient-custom {
+        background: linear-gradient(135deg, #1A2A4A 0%, #16213E 100%);
+      }
+      
+      .glass-card {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+      }
+      
+      .input-field {
+        @apply w-full p-4 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid #E2E8F0;
+      }
+      
+      .btn-modern {
+        @apply px-6 py-3 rounded-xl font-semibold text-white transition-all transform hover:scale-105 active:scale-95;
+        background: linear-gradient(145deg, #2563EB, #1E40AF);
+        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+      }
+      
+      .btn-modern:hover {
+        background: linear-gradient(145deg, #1E40AF, #1E3A8A);
+        box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+      }
+      
+      .product-card {
+        @apply rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl;
+      }
+      
+      .gradient-border {
+        position: relative;
+        border-radius: 1rem;
+        background: linear-gradient(60deg, #f79533, #f37055, #ef4e7b, #a166ab, #5073b8, #1098ad, #07b39b, #6fba82);
+        padding: 2px;
+      }
+      
+      .floating {
+        animation: float 3s ease-in-out infinite;
+      }
+      
+      @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+      }
+      
+      /* Modern Scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      
+      ::-webkit-scrollbar-track {
+        background: rgba(0,0,0,0.05);
+        border-radius: 10px;
+      }
+      
+      ::-webkit-scrollbar-thumb {
+        background: linear-gradient(145deg, #2563EB, #1E40AF);
+        border-radius: 10px;
+      }
+      
+      .dark-mode ::-webkit-scrollbar-track {
+        background: rgba(255,255,255,0.05);
+      }
+    </style>
+  </head>
+  
+  <body class="bg-gray-50 dark-mode" id="body-theme">
+    <!-- Loading Overlay -->
+    <div id="globalLoader" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-80 backdrop-blur-sm hidden">
+      <div class="text-center">
+        <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent"></div>
+        <p class="mt-4 text-white text-lg font-medium">กำลังโหลดข้อมูล...</p>
+      </div>
+    </div>
+
+    <!-- Mini App Container -->
+    <div class="container mx-auto px-4 py-6 max-w-7xl">
+      <!-- Header with Dark Mode Toggle -->
+      <div class="flex justify-between items-center mb-8" data-aos="fade-down">
+        <div class="flex items-center space-x-3">
+          <div class="gradient-border p-0.5 floating">
+            <div class="bg-white dark:bg-gray-900 rounded-lg p-2">
+              <i class="fas fa-chart-line text-3xl text-blue-600 dark:text-blue-400"></i>
             </div>
-            
-            <div>
-              <label class="block text-sm text-gray-400 mb-1">เบอร์โทรศัพท์</label>
-              <div class="relative">
-                <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-400">+66</span>
-                <input type="tel" id="customerPhone" class="crm-input pl-16" 
-                       placeholder="81 234 5678" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-              </div>
-            </div>
-            
-            <div>
-              <label class="block text-sm text-gray-400 mb-1">อีเมล</label>
-              <input type="email" id="customerEmail" class="crm-input" placeholder="example@email.com">
-            </div>
+          </div>
+          <div>
+            <h1 class="text-3xl md:text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+              CRM PRO 2026
+            </h1>
+            <p class="text-gray-600 dark:text-gray-400 mt-1">ระบบบริหารลูกค้าสัมพันธ์อัจฉริยะ</p>
           </div>
         </div>
         
-        <div class="crm-card p-6">
-          <h2 class="text-lg font-semibold mb-4 flex items-center">
-            <i class="fas fa-gift text-blue-400 mr-2"></i>
-            โค้ดส่วนลด
-          </h2>
+        <div class="flex items-center space-x-4">
+          <!-- Dark Mode Toggle -->
+          <button id="darkModeToggle" class="relative w-14 h-8 rounded-full bg-gray-200 dark:bg-gray-700 p-1 transition-colors">
+            <div id="darkModeSlider" class="absolute w-6 h-6 rounded-full bg-white shadow-md transform transition-transform duration-300 flex items-center justify-center">
+              <i id="darkModeIcon" class="fas fa-sun text-yellow-500 text-sm"></i>
+            </div>
+          </button>
           
-          <div class="flex space-x-2">
-            <input type="text" id="referralCode" class="crm-input" placeholder="ใส่โค้ดแนะนำเพื่อน">
-            <button onclick="applyReferral()" class="crm-btn px-6">
-              <i class="fas fa-check"></i>
-            </button>
+          <!-- User Profile -->
+          <div id="userProfileMini" class="flex items-center space-x-2">
+            <img id="profilePicture" class="w-10 h-10 rounded-full border-2 border-blue-500 object-cover" src="https://via.placeholder.com/100" alt="Profile" />
+            <span id="userName" class="font-medium text-gray-800 dark:text-white hidden md:inline"></span>
           </div>
         </div>
       </div>
-      
-      <!-- Right: Order Form -->
-      <div class="lg:col-span-2 space-y-6">
-        <div class="crm-card p-6">
-          <h2 class="text-lg font-semibold mb-4 flex items-center">
-            <i class="fas fa-shopping-cart text-blue-400 mr-2"></i>
-            สั่งซื้อสินค้า
-          </h2>
+
+      <!-- Dashboard Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" data-aos="fade-up" data-aos-delay="100">
+        <div class="glass-card rounded-2xl p-6">
+          <div class="flex justify-between items-center">
+            <div>
+              <p class="text-sm text-gray-600 dark:text-gray-400">ลูกค้าทั้งหมด</p>
+              <p id="totalCustomers" class="text-3xl font-bold text-gray-900 dark:text-white mt-1">-</p>
+            </div>
+            <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+              <i class="fas fa-users text-2xl text-blue-600 dark:text-blue-400"></i>
+            </div>
+          </div>
+          <div class="mt-4 text-xs text-green-600 dark:text-green-400">
+            <i class="fas fa-arrow-up mr-1"></i> +12% จากเดือนที่แล้ว
+          </div>
+        </div>
+        
+        <div class="glass-card rounded-2xl p-6">
+          <div class="flex justify-between items-center">
+            <div>
+              <p class="text-sm text-gray-600 dark:text-gray-400">คำสั่งซื้อวันนี้</p>
+              <p id="todayOrders" class="text-3xl font-bold text-gray-900 dark:text-white mt-1">-</p>
+            </div>
+            <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
+              <i class="fas fa-shopping-cart text-2xl text-purple-600 dark:text-purple-400"></i>
+            </div>
+          </div>
+          <div class="mt-4 text-xs text-green-600 dark:text-green-400">
+            <i class="fas fa-arrow-up mr-1"></i> +5% จากเมื่อวาน
+          </div>
+        </div>
+        
+        <div class="glass-card rounded-2xl p-6">
+          <div class="flex justify-between items-center">
+            <div>
+              <p class="text-sm text-gray-600 dark:text-gray-400">ยอดขายรวม</p>
+              <p id="totalRevenue" class="text-3xl font-bold text-gray-900 dark:text-white mt-1">-</p>
+            </div>
+            <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+              <i class="fas fa-baht-sign text-2xl text-green-600 dark:text-green-400"></i>
+            </div>
+          </div>
+          <div class="mt-4 text-xs text-green-600 dark:text-green-400">
+            <i class="fas fa-arrow-up mr-1"></i> +18% จากเดือนที่แล้ว
+          </div>
+        </div>
+        
+        <div class="glass-card rounded-2xl p-6">
+          <div class="flex justify-between items-center">
+            <div>
+              <p class="text-sm text-gray-600 dark:text-gray-400">Conversion Rate</p>
+              <p id="conversionRate" class="text-3xl font-bold text-gray-900 dark:text-white mt-1">-</p>
+            </div>
+            <div class="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
+              <i class="fas fa-percent text-2xl text-orange-600 dark:text-orange-400"></i>
+            </div>
+          </div>
+          <div class="mt-4 text-xs text-green-600 dark:text-green-400">
+            <i class="fas fa-arrow-up mr-1"></i> +2.3% จากสัปดาห์ที่แล้ว
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content Tabs -->
+      <div class="mb-6 border-b border-gray-200 dark:border-gray-700" data-aos="fade-up" data-aos-delay="150">
+        <ul class="flex flex-wrap -mb-px text-sm font-medium text-center">
+          <li class="mr-2">
+            <button onclick="switchTab('booking')" class="tab-btn active-tab inline-block p-4 rounded-t-lg border-b-2" id="tab-booking">
+              <i class="fas fa-calendar-alt mr-2"></i>จองสินค้า
+            </button>
+          </li>
+          <li class="mr-2">
+            <button onclick="switchTab('products')" class="tab-btn inline-block p-4 rounded-t-lg border-b-2 hover:text-gray-600" id="tab-products">
+              <i class="fas fa-tshirt mr-2"></i>สินค้า
+            </button>
+          </li>
+          <li class="mr-2">
+            <button onclick="switchTab('crm')" class="tab-btn inline-block p-4 rounded-t-lg border-b-2 hover:text-gray-600" id="tab-crm">
+              <i class="fas fa-address-card mr-2"></i>CRM
+            </button>
+          </li>
+          <li class="mr-2">
+            <button onclick="switchTab('promotions')" class="tab-btn inline-block p-4 rounded-t-lg border-b-2 hover:text-gray-600" id="tab-promotions">
+              <i class="fas fa-gift mr-2"></i>โปรโมชั่น
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Tab Content: Booking Section (เดิมคือระบบจองเสื้อ) -->
+      <div id="booking-section" class="tab-content block">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- Left Column - Product Showcase -->
+          <div class="lg:col-span-1" data-aos="fade-right" data-aos-delay="200">
+            <div class="glass-card rounded-2xl p-6 sticky top-4">
+              <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                <i class="fas fa-tshirt mr-2 text-blue-600"></i>
+                คอลเลกชั่นล่าสุด
+              </h2>
+              
+              <!-- Product Display with 3D effect -->
+              <div class="relative">
+                <div class="gradient-border mb-4">
+                  <div class="bg-white dark:bg-gray-900 rounded-lg p-4">
+                    <img id="mainProductImage" src="https://f.btwcdn.com/store-35589/product/4f3b0c4f-537e-27c7-8a68-6066dfa2417b.jpg" 
+                         alt="Product" class="w-full h-64 object-contain rounded-lg transition-transform duration-500 hover:scale-110" />
+                  </div>
+                </div>
+                
+                <!-- Color Variants -->
+                <div class="flex justify-center space-x-3 mt-4">
+                  <button class="w-8 h-8 rounded-full bg-black border-2 border-white shadow-lg"></button>
+                  <button class="w-8 h-8 rounded-full bg-blue-600 border-2 border-white shadow-lg"></button>
+                  <button class="w-8 h-8 rounded-full bg-red-600 border-2 border-white shadow-lg"></button>
+                  <button class="w-8 h-8 rounded-full bg-white border-2 border-gray-300 shadow-lg"></button>
+                </div>
+              </div>
+              
+              <!-- Quick Stats -->
+              <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600 dark:text-gray-400">ยอดจองวันนี้</span>
+                  <span class="font-bold text-blue-600 dark:text-blue-400">24 ชิ้น</span>
+                </div>
+                <div class="flex justify-between text-sm mt-2">
+                  <span class="text-gray-600 dark:text-gray-400">คะแนนสะสม</span>
+                  <span class="font-bold text-purple-600 dark:text-purple-400">1,280 พอยท์</span>
+                </div>
+              </div>
+            </div>
+          </div>
           
-          <form id="orderForm" onsubmit="submitOrder(event)">
-            
-            <!-- Product -->
-            <div class="mb-4">
-              <label class="block text-sm text-gray-400 mb-2">เลือกสินค้า</label>
-              <div class="grid grid-cols-3 gap-3">
-                <label class="crm-card p-3 cursor-pointer text-center hover:border-blue-500">
-                  <input type="radio" name="product" value="premium" class="hidden peer">
-                  <i class="fas fa-crown text-yellow-400 text-xl mb-1"></i>
-                  <p class="font-bold text-white">Premium</p>
-                  <p class="text-xs text-gray-400">3,990</p>
-                </label>
-                <label class="crm-card p-3 cursor-pointer text-center hover:border-blue-500">
-                  <input type="radio" name="product" value="standard" class="hidden peer" checked>
-                  <i class="fas fa-box text-blue-400 text-xl mb-1"></i>
-                  <p class="font-bold text-white">Standard</p>
-                  <p class="text-xs text-gray-400">2,490</p>
-                </label>
-                <label class="crm-card p-3 cursor-pointer text-center hover:border-blue-500">
-                  <input type="radio" name="product" value="basic" class="hidden peer">
-                  <i class="fas fa-tshirt text-gray-400 text-xl mb-1"></i>
-                  <p class="font-bold text-white">Basic</p>
-                  <p class="text-xs text-gray-400">1,490</p>
-                </label>
-              </div>
-            </div>
-            
-            <!-- Size & Quantity -->
-            <div class="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <label class="block text-sm text-gray-400 mb-2">ขนาด</label>
-                <select id="productSize" class="crm-input" required>
-                  <option value="">เลือกขนาด</option>
-                  <option value="S">S (34-36)</option>
-                  <option value="M">M (38-40)</option>
-                  <option value="L">L (42-44)</option>
-                  <option value="XL">XL (46-48)</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-sm text-gray-400 mb-2">จำนวน</label>
-                <input type="number" id="quantity" value="1" min="1" max="10" 
-                       class="crm-input" onchange="calculateTotal()">
-              </div>
-            </div>
-            
-            <!-- Address -->
-            <div class="mb-4">
-              <label class="block text-sm text-gray-400 mb-2">ที่อยู่จัดส่ง</label>
-              <textarea id="address" rows="3" class="crm-input" 
-                        placeholder="ชื่อ-นามสกุล, บ้านเลขที่, ถนน, แขวง/เขต, จังหวัด, รหัสไปรษณีย์" required></textarea>
-            </div>
-            
-            <!-- Summary -->
-            <div class="crm-card p-4 mb-4 bg-blue-500/10 border-blue-500/30">
-              <div class="flex justify-between items-center">
+          <!-- Right Column - Booking Form -->
+          <div class="lg:col-span-2" data-aos="fade-left" data-aos-delay="250">
+            <div class="glass-card rounded-2xl p-8">
+              <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                <i class="fas fa-edit mr-2 text-blue-600"></i>
+                ฟอร์มจองสินค้า
+              </h2>
+              
+              <form id="bookingForm" class="space-y-6">
+                <!-- Gender Selection with Modern Toggle -->
                 <div>
-                  <p class="text-sm text-gray-400">ยอดชำระ</p>
-                  <p class="text-3xl font-bold text-white" id="totalAmount">2,490</p>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                    <i class="fas fa-venus-mars mr-2"></i>เลือกเพศสินค้า
+                  </label>
+                  <div class="flex space-x-4">
+                    <label class="flex-1">
+                      <input type="radio" name="gender" value="male" class="hidden peer" checked>
+                      <div class="flex items-center justify-center p-4 bg-gray-100 dark:bg-gray-800 rounded-xl border-2 border-transparent peer-checked:border-blue-500 peer-checked:bg-blue-50 dark:peer-checked:bg-blue-900/30 transition-all cursor-pointer">
+                        <i class="fas fa-mars text-2xl text-blue-600 mr-2"></i>
+                        <span class="font-medium text-gray-900 dark:text-white">ชาย</span>
+                      </div>
+                    </label>
+                    <label class="flex-1">
+                      <input type="radio" name="gender" value="female" class="hidden peer">
+                      <div class="flex items-center justify-center p-4 bg-gray-100 dark:bg-gray-800 rounded-xl border-2 border-transparent peer-checked:border-pink-500 peer-checked:bg-pink-50 dark:peer-checked:bg-pink-900/30 transition-all cursor-pointer">
+                        <i class="fas fa-venus text-2xl text-pink-600 mr-2"></i>
+                        <span class="font-medium text-gray-900 dark:text-white">หญิง</span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+                
+                <!-- Size Selection Grid -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                    <i class="fas fa-ruler mr-2"></i>เลือกขนาด
+                  </label>
+                  <div class="grid grid-cols-4 gap-3">
+                    <label class="size-option">
+                      <input type="radio" name="size" value="S" class="hidden peer">
+                      <div class="text-center p-4 bg-gray-100 dark:bg-gray-800 rounded-xl border-2 border-transparent peer-checked:border-blue-500 peer-checked:bg-blue-50 dark:peer-checked:bg-blue-900/30 transition-all cursor-pointer font-bold">
+                        S
+                      </div>
+                    </label>
+                    <label class="size-option">
+                      <input type="radio" name="size" value="M" class="hidden peer" checked>
+                      <div class="text-center p-4 bg-gray-100 dark:bg-gray-800 rounded-xl border-2 border-transparent peer-checked:border-blue-500 peer-checked:bg-blue-50 dark:peer-checked:bg-blue-900/30 transition-all cursor-pointer font-bold">
+                        M
+                      </div>
+                    </label>
+                    <label class="size-option">
+                      <input type="radio" name="size" value="L" class="hidden peer">
+                      <div class="text-center p-4 bg-gray-100 dark:bg-gray-800 rounded-xl border-2 border-transparent peer-checked:border-blue-500 peer-checked:bg-blue-50 dark:peer-checked:bg-blue-900/30 transition-all cursor-pointer font-bold">
+                        L
+                      </div>
+                    </label>
+                    <label class="size-option">
+                      <input type="radio" name="size" value="XL" class="hidden peer">
+                      <div class="text-center p-4 bg-gray-100 dark:bg-gray-800 rounded-xl border-2 border-transparent peer-checked:border-blue-500 peer-checked:bg-blue-50 dark:peer-checked:bg-blue-900/30 transition-all cursor-pointer font-bold">
+                        XL
+                      </div>
+                    </label>
+                  </div>
+                </div>
+                
+                <!-- Quantity with Stepper -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                    <i class="fas fa-cubes mr-2"></i>จำนวน
+                  </label>
+                  <div class="flex items-center space-x-4">
+                    <button type="button" onclick="updateQuantity(-1)" class="w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center justify-center">
+                      <i class="fas fa-minus text-gray-700 dark:text-gray-300"></i>
+                    </button>
+                    <input type="number" id="quantity" name="quantity" value="1" min="1" max="99" class="w-20 text-center p-3 input-field" readonly>
+                    <button type="button" onclick="updateQuantity(1)" class="w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center justify-center">
+                      <i class="fas fa-plus text-gray-700 dark:text-gray-300"></i>
+                    </button>
+                  </div>
+                </div>
+                
+                <!-- Address Field -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                    <i class="fas fa-map-marker-alt mr-2"></i>ที่อยู่จัดส่ง
+                  </label>
+                  <textarea name="address" rows="3" class="input-field" placeholder="กรุณากรอกที่อยู่จัดส่ง"></textarea>
+                </div>
+                
+                <!-- Phone Number -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                    <i class="fas fa-phone-alt mr-2"></i>เบอร์โทรศัพท์
+                  </label>
+                  <input type="tel" name="phone" class="input-field" placeholder="088-888-8888">
+                </div>
+                
+                <!-- Email (CRM Key) -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                    <i class="fas fa-envelope mr-2"></i>อีเมล <span class="text-red-500">*</span>
+                  </label>
+                  <input type="email" name="email" class="input-field" placeholder="your@email.com" required>
+                </div>
+                
+                <!-- Promotion Code -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                    <i class="fas fa-tag mr-2"></i>รหัสโปรโมชั่น
+                  </label>
+                  <div class="flex space-x-2">
+                    <input type="text" id="promoCode" name="promoCode" class="input-field flex-1" placeholder="ใส่โค้ดส่วนลด">
+                    <button type="button" onclick="applyPromo()" class="px-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl hover:shadow-lg transition-all">
+                      <i class="fas fa-check"></i>
+                    </button>
+                  </div>
+                  <div id="promoMessage" class="mt-2 text-sm"></div>
+                </div>
+                
+                <!-- Total Price -->
+                <div class="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl p-5">
+                  <div class="flex justify-between items-center">
+                    <span class="text-gray-700 dark:text-gray-300 font-medium">ราคารวม:</span>
+                    <span class="text-3xl font-extrabold text-gray-900 dark:text-white">฿<span id="totalPrice">399</span></span>
+                  </div>
+                  <div class="flex justify-between items-center mt-2 text-sm text-gray-600 dark:text-gray-400">
+                    <span>ส่วนลด:</span>
+                    <span id="discountAmount">0</span>
+                  </div>
+                </div>
+                
+                <!-- Submit Button -->
+                <button type="submit" id="submitBooking" class="btn-modern w-full py-4 text-lg">
+                  <i class="fas fa-check-circle mr-2"></i>
+                  ยืนยันการจอง
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Content: Products Section -->
+      <div id="products-section" class="tab-content hidden">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Product Card 1 -->
+          <div class="glass-card rounded-2xl overflow-hidden hover:shadow-2xl transition-all transform hover:-translate-y-1">
+            <div class="relative overflow-hidden h-64">
+              <img src="https://f.btwcdn.com/store-35589/product/4f3b0c4f-537e-27c7-8a68-6066dfa2417b.jpg" 
+                   alt="Product" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+              <div class="absolute top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                SALE 20%
+              </div>
+            </div>
+            <div class="p-5">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="font-bold text-lg text-gray-900 dark:text-white">เสื้อยืดคอกลม</h3>
+                  <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">ชาย</p>
                 </div>
                 <div class="text-right">
-                  <p class="text-sm text-gray-400">แต้มที่จะได้รับ</p>
-                  <p class="text-2xl font-bold text-green-400" id="earnPoints">250</p>
+                  <p class="text-lg font-bold text-blue-600 dark:text-blue-400">฿399</p>
+                  <p class="text-xs line-through text-gray-500">฿499</p>
                 </div>
               </div>
+              <button class="w-full mt-4 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white py-3 rounded-xl font-medium hover:bg-blue-600 hover:text-white transition-colors">
+                <i class="fas fa-cart-plus mr-2"></i>เพิ่มลงตะกร้า
+              </button>
             </div>
-            
-            <!-- Submit -->
-            <button type="submit" class="crm-btn w-full py-4 text-lg">
-              <i class="fas fa-check-circle mr-2"></i>
-              ยืนยันคำสั่งซื้อ
-            </button>
-          </form>
-        </div>
-        
-        <!-- Order History Preview -->
-        <div class="crm-card p-6">
-          <h2 class="text-lg font-semibold mb-4 flex items-center">
-            <i class="fas fa-history text-blue-400 mr-2"></i>
-            ประวัติการสั่งซื้อล่าสุด
-          </h2>
-          <div id="orderHistory" class="text-center text-gray-400 py-4">
-            กรอกเบอร์โทรศัพท์เพื่อดูประวัติ
+          </div>
+          
+          <!-- Product Card 2 -->
+          <div class="glass-card rounded-2xl overflow-hidden hover:shadow-2xl transition-all transform hover:-translate-y-1">
+            <div class="relative overflow-hidden h-64">
+              <img src="https://f.btwcdn.com/store-35589/product/47bbb721-61bf-6636-e9ba-5fb6406608dc.jpg" 
+                   alt="Product" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+              <div class="absolute top-3 left-3 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                NEW
+              </div>
+            </div>
+            <div class="p-5">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="font-bold text-lg text-gray-900 dark:text-white">เสื้อยืด Oversize</h3>
+                  <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">หญิง</p>
+                </div>
+                <div class="text-right">
+                  <p class="text-lg font-bold text-blue-600 dark:text-blue-400">฿429</p>
+                </div>
+              </div>
+              <button class="w-full mt-4 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white py-3 rounded-xl font-medium hover:bg-blue-600 hover:text-white transition-colors">
+                <i class="fas fa-cart-plus mr-2"></i>เพิ่มลงตะกร้า
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    
-    <!-- Footer -->
-    <div class="crm-card p-4 mt-6 text-center text-gray-400 text-sm">
-      SIMPLE CRM 2026 - พร้อมใช้งานจริง | บันทึกข้อมูลลง Google Sheets อัตโนมัติ
-    </div>
-  </div>
-  
-  <script>
-    // ============================================
-    // SIMPLE CRM 2026 - FRONTEND
-    // ใช้งานได้ทันที แก้แค่ URL!
-    // ============================================
-    
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwVTSyuCYdJP11mKPKd7wWfng-TBS-tXvWliJUzDuHDQjpdwRDGF-n80Qql0Om1zmg6/exec';
-    
-    let customerData = {
-      points: 0,
-      orders: 0,
-      tier: 'ทั่วไป',
-      referralCode: '-'
-    };
-    
-    // ------------------------------------------------------
-    // 1. เริ่มต้นระบบ
-    // ------------------------------------------------------
-    document.addEventListener('DOMContentLoaded', function() {
-      updateDateTime();
-      setInterval(updateDateTime, 1000);
-      loadFromLocalStorage();
-      calculateTotal();
-      
-      // ตรวจสอบ URL parameters
-      const urlParams = new URLSearchParams(window.location.search);
-      const ref = urlParams.get('ref');
-      if (ref) {
-        document.getElementById('referralCode').value = ref;
-      }
-    });
-    
-    // ------------------------------------------------------
-    // 2. ส่งคำสั่งซื้อ (ฟังก์ชันหลัก)
-    // ------------------------------------------------------
-    async function submitOrder(e) {
-      e.preventDefault();
-      
-      // ตรวจสอบข้อมูล
-      const name = document.getElementById('customerName').value.trim();
-      const phone = document.getElementById('customerPhone').value.replace(/[^0-9]/g, '');
-      const email = document.getElementById('customerEmail').value.trim();
-      const size = document.getElementById('productSize').value;
-      const address = document.getElementById('address').value.trim();
-      
-      if (!name) { showAlert('กรุณากรอกชื่อ-นามสกุล', 'warning'); return; }
-      if (!phone || phone.length < 9) { showAlert('กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง', 'warning'); return; }
-      if (!email || !email.includes('@')) { showAlert('กรุณากรอกอีเมลให้ถูกต้อง', 'warning'); return; }
-      if (!size) { showAlert('กรุณาเลือกขนาดสินค้า', 'warning'); return; }
-      if (!address) { showAlert('กรุณากรอกที่อยู่จัดส่ง', 'warning'); return; }
-      
-      // เตรียมข้อมูล
-      const product = document.querySelector('input[name="product"]:checked')?.value || 'standard';
-      const quantity = parseInt(document.getElementById('quantity').value);
-      const price = getProductPrice(product);
-      const points = getProductPoints(product);
-      
-      const orderData = {
-        type: 'order',
-        customerId: 'CUST_' + phone,
-        customerName: name,
-        customerPhone: '+66' + phone,
-        email: email,
-        address: address,
-        productId: product,
-        productName: getProductName(product),
-        size: size,
-        quantity: quantity,
-        price: price,
-        totalAmount: price * quantity,
-        pointsEarned: points * quantity,
-        discount: 0,
-        referralCode: document.getElementById('referralCode').value,
-        timestamp: new Date().toISOString()
-      };
-      
-      // แสดง Loading
-      showLoading();
-      
-      try {
-        // ส่งข้อมูล
-        const response = await fetch(SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(orderData)
-        });
-        
-        // อัพเดทข้อมูล
-        customerData.points += orderData.pointsEarned;
-        customerData.orders += 1;
-        saveToLocalStorage();
-        updateDisplay();
-        
-        // แสดงผลสำเร็จ
-        showSuccess(orderData.pointsEarned);
-        
-        // เคลียร์ฟอร์ม (ยกเว้นข้อมูลลูกค้า)
-        document.getElementById('productSize').value = '';
-        document.getElementById('quantity').value = '1';
-        document.getElementById('address').value = '';
-        document.getElementById('referralCode').value = '';
-        
-        // อัพเดทยอด
-        calculateTotal();
-        
-        // เพิ่มประวัติ
-        addOrderToHistory(orderData);
-        
-      } catch (error) {
-        console.error('Error:', error);
-        showAlert('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง', 'error');
-      } finally {
-        hideLoading();
-      }
-    }
-    
-    // ------------------------------------------------------
-    // 3. ฟังก์ชันช่วยเหลือ
-    // ------------------------------------------------------
-    function getProductPrice(product) {
-      const prices = { premium: 3990, standard: 2490, basic: 1490 };
-      return prices[product] || 2490;
-    }
-    
-    function getProductPoints(product) {
-      const points = { premium: 400, standard: 250, basic: 100 };
-      return points[product] || 250;
-    }
-    
-    function getProductName(product) {
-      const names = { premium: 'Premium Set', standard: 'Standard Set', basic: 'Basic Set' };
-      return names[product] || 'Standard Set';
-    }
-    
-    function calculateTotal() {
-      const product = document.querySelector('input[name="product"]:checked')?.value || 'standard';
-      const quantity = parseInt(document.getElementById('quantity').value) || 1;
-      const price = getProductPrice(product);
-      const points = getProductPoints(product);
-      
-      document.getElementById('totalAmount').innerHTML = (price * quantity).toLocaleString();
-      document.getElementById('earnPoints').innerHTML = points * quantity;
-    }
-    
-    // ------------------------------------------------------
-    // 4. ระบบ Referral
-    // ------------------------------------------------------
-    function applyReferral() {
-      const code = document.getElementById('referralCode').value.trim();
-      if (code) {
-        showAlert('ใช้โค้ดสำเร็จ! ได้รับส่วนลด 10%', 'success');
-      }
-    }
-    
-    // ------------------------------------------------------
-    // 5. จัดการ Local Storage
-    // ------------------------------------------------------
-    function saveToLocalStorage() {
-      localStorage.setItem('crm_customer', JSON.stringify(customerData));
-    }
-    
-    function loadFromLocalStorage() {
-      const saved = localStorage.getItem('crm_customer');
-      if (saved) {
-        try {
-          customerData = JSON.parse(saved);
-          updateDisplay();
-        } catch (e) {}
-      }
-    }
-    
-    function updateDisplay() {
-      document.getElementById('displayPoints').innerHTML = customerData.points.toLocaleString();
-      document.getElementById('displayOrders').innerHTML = customerData.orders;
-      document.getElementById('displayTier').innerHTML = calculateTier(customerData.points);
-      document.getElementById('displayReferral').innerHTML = customerData.referralCode || 'CRM' + Math.floor(Math.random() * 10000);
-    }
-    
-    function calculateTier(points) {
-      if (points >= 5000) return 'Diamond';
-      if (points >= 3000) return 'Platinum';
-      if (points >= 2000) return 'Gold';
-      if (points >= 1000) return 'Silver';
-      return 'Bronze';
-    }
-    
-    // ------------------------------------------------------
-    // 6. ประวัติการสั่งซื้อ
-    // ------------------------------------------------------
-    function addOrderToHistory(order) {
-      const historyDiv = document.getElementById('orderHistory');
-      const now = new Date();
-      const dateStr = now.toLocaleDateString('th-TH');
-      
-      historyDiv.innerHTML = `
-        <div class="crm-card p-3 text-left">
-          <div class="flex justify-between">
-            <div>
-              <p class="text-white font-medium">${order.productName}</p>
-              <p class="text-xs text-gray-400">${dateStr} | ${order.size} | x${order.quantity}</p>
+
+      <!-- Tab Content: CRM Section -->
+      <div id="crm-section" class="tab-content hidden">
+        <div class="glass-card rounded-2xl p-8">
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
+            <i class="fas fa-database mr-2 text-blue-600"></i>
+            ระบบจัดการข้อมูลลูกค้า
+          </h2>
+          
+          <!-- Search Bar -->
+          <div class="flex space-x-3 mb-6">
+            <div class="flex-1 relative">
+              <i class="fas fa-search absolute left-4 top-4 text-gray-500"></i>
+              <input type="text" id="customerSearch" placeholder="ค้นหาด้วยชื่อ, อีเมล, เบอร์โทร..." 
+                     class="input-field pl-12">
             </div>
-            <div class="text-right">
-              <p class="text-green-400 text-xs">สำเร็จ</p>
-              <p class="text-white font-bold">${order.totalAmount.toLocaleString()}</p>
+            <button onclick="searchCustomers()" class="px-6 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors">
+              ค้นหา
+            </button>
+          </div>
+          
+          <!-- Customer Table -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left">
+              <thead class="text-xs text-gray-700 dark:text-gray-400 uppercase bg-gray-50 dark:bg-gray-800/50">
+                <tr>
+                  <th class="px-6 py-4">ชื่อ</th>
+                  <th class="px-6 py-4">อีเมล</th>
+                  <th class="px-6 py-4">เบอร์โทร</th>
+                  <th class="px-6 py-4">ยอดสั่งซื้อ</th>
+                  <th class="px-6 py-4">พอยท์</th>
+                  <th class="px-6 py-4">สถานะ</th>
+                  <th class="px-6 py-4">จัดการ</th>
+                </tr>
+              </thead>
+              <tbody id="customerTableBody">
+                <tr>
+                  <td colspan="7" class="text-center py-8 text-gray-500 dark:text-gray-400">
+                    <i class="fas fa-spinner animate-spin text-2xl"></i>
+                    <p class="mt-2">กำลังโหลดข้อมูล...</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Content: Promotions Section -->
+      <div id="promotions-section" class="tab-content hidden">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Active Promotion -->
+          <div class="glass-card rounded-2xl p-6 bg-gradient-to-br from-purple-500 to-pink-500 text-white">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="px-3 py-1 bg-white/30 rounded-full text-xs font-bold">LIMITED</span>
+                <h3 class="text-2xl font-bold mt-4">Flash Sale</h3>
+                <p class="mt-2 text-white/90">ลด 20% ทุกสินค้า</p>
+                <div class="mt-4">
+                  <p class="text-sm text-white/80">โค้ด: FLASH2026</p>
+                  <p class="text-xs text-white/60 mt-1">หมดเขต 28 ก.พ. 2026</p>
+                </div>
+              </div>
+              <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center">
+                <i class="fas fa-bolt text-4xl"></i>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Member Promotion -->
+          <div class="glass-card rounded-2xl p-6 bg-gradient-to-br from-blue-500 to-cyan-500 text-white">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="px-3 py-1 bg-white/30 rounded-full text-xs font-bold">MEMBER</span>
+                <h3 class="text-2xl font-bold mt-4">Member Day</h3>
+                <p class="mt-2 text-white/90">สะสม 2 เท่า ทุกยอดใช้จ่าย</p>
+                <div class="mt-4">
+                  <p class="text-sm text-white/80">เฉพาะสมาชิก CRM</p>
+                  <p class="text-xs text-white/60 mt-1">ทุกวันพุธ</p>
+                </div>
+              </div>
+              <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center">
+                <i class="fas fa-crown text-4xl"></i>
+              </div>
             </div>
           </div>
         </div>
-      `;
-    }
+      </div>
+      
+      <!-- Footer -->
+      <footer class="mt-12 text-center text-gray-600 dark:text-gray-400 text-sm border-t border-gray-200 dark:border-gray-800 pt-8">
+        <p>© 2026 CRM PRO - ระบบบริหารลูกค้าสัมพันธ์อัจฉริยะ</p>
+        <p class="mt-2">พัฒนาโดย ครบเครื่องเรื่องไอที | LINE SDK Integration</p>
+      </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    // ------------------------------------------------------
-    // 7. Date & Time
-    // ------------------------------------------------------
-    function updateDateTime() {
-      const now = new Date();
-      document.getElementById('currentDateTime').innerHTML = 
-        now.toLocaleDateString('th-TH', { 
-          day: 'numeric', month: 'short', year: 'numeric',
-          hour: '2-digit', minute: '2-digit' 
-        });
-    }
-    
-    // ------------------------------------------------------
-    // 8. Notifications
-    // ------------------------------------------------------
-    function showLoading() {
-      Swal.fire({
-        title: 'กำลังดำเนินการ',
-        html: '<div class="loading-spinner"></div>',
-        showConfirmButton: false,
-        allowOutsideClick: false,
-        background: '#1a1e24',
-        color: 'white'
-      });
-    }
-    
-    function hideLoading() {
-      Swal.close();
-    }
-    
-    function showAlert(message, type = 'info') {
-      Swal.fire({
-        icon: type,
-        title: type === 'success' ? 'สำเร็จ' : type === 'error' ? 'ข้อผิดพลาด' : 'แจ้งเตือน',
-        text: message,
-        timer: 2000,
-        showConfirmButton: false,
-        background: '#1a1e24',
-        color: 'white'
-      });
-    }
-    
-    function showSuccess(points) {
-      Swal.fire({
-        icon: 'success',
-        title: 'สั่งซื้อสำเร็จ!',
-        html: `<div class="text-center">
-                 <p class="text-gray-300">ได้รับแต้มสะสม</p>
-                 <p class="text-3xl font-bold text-blue-400">+${points}</p>
-               </div>`,
-        timer: 2500,
-        showConfirmButton: false,
-        background: '#1a1e24',
-        color: 'white'
-      });
-    }
-    
-    // ------------------------------------------------------
-    // 9. Event Listeners
-    // ------------------------------------------------------
-    document.querySelectorAll('input[name="product"]').forEach(r => {
-      r.addEventListener('change', calculateTotal);
-    });
-    
-    document.getElementById('quantity').addEventListener('change', calculateTotal);
-    document.getElementById('customerPhone').addEventListener('blur', function() {
-      const phone = this.value.replace(/[^0-9]/g, '');
-      if (phone.length >= 9) {
-        // สามารถเรียกดูประวัติจากเบอร์โทรได้
+    <script>
+      // ============================================
+      // LIFF Initialization
+      // ============================================
+      const LIFF_ID = "1656032875-8rxobnm5"; // ใช้ LIFF ID เดิม
+      
+      // Global variables
+      let liffInitialized = false;
+      let userProfile = null;
+      let currentPromo = null;
+      let basePrice = 399;
+      
+      // ============================================
+      // Dark Mode Toggle
+      // ============================================
+      function initDarkMode() {
+        const isDark = localStorage.getItem('darkMode') === 'true';
+        const body = document.getElementById('body-theme');
+        const slider = document.getElementById('darkModeSlider');
+        const icon = document.getElementById('darkModeIcon');
+        
+        if (isDark) {
+          body.classList.add('dark-mode');
+          slider.style.transform = 'translateX(24px)';
+          icon.className = 'fas fa-moon text-gray-400 text-sm';
+        } else {
+          body.classList.remove('dark-mode');
+          slider.style.transform = 'translateX(0)';
+          icon.className = 'fas fa-sun text-yellow-500 text-sm';
+        }
       }
-    });
-  </script>
-  
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-</body>
+      
+      function toggleDarkMode() {
+        const body = document.getElementById('body-theme');
+        const slider = document.getElementById('darkModeSlider');
+        const icon = document.getElementById('darkModeIcon');
+        const isDark = body.classList.contains('dark-mode');
+        
+        if (isDark) {
+          body.classList.remove('dark-mode');
+          slider.style.transform = 'translateX(0)';
+          icon.className = 'fas fa-sun text-yellow-500 text-sm';
+          localStorage.setItem('darkMode', 'false');
+        } else {
+          body.classList.add('dark-mode');
+          slider.style.transform = 'translateX(24px)';
+          icon.className = 'fas fa-moon text-gray-400 text-sm';
+          localStorage.setItem('darkMode', 'true');
+        }
+      }
+      
+      // ============================================
+      // LIFF Initialization
+      // ============================================
+      async function initializeLiff() {
+        try {
+          await liff.init({ liffId: LIFF_ID });
+          liffInitialized = true;
+          
+          if (!liff.isLoggedIn()) {
+            liff.login();
+          } else {
+            const profile = await liff.getProfile();
+            userProfile = profile;
+            
+            // Update UI with user profile
+            document.getElementById('profilePicture').src = profile.pictureUrl || 'https://via.placeholder.com/100';
+            document.getElementById('userName').innerHTML = profile.displayName;
+            
+            // Store email from LINE profile (if available)
+            // Note: LINE may not provide email by default, need permission
+            try {
+              const context = await liff.getContext();
+              if (context && context.email) {
+                document.querySelector('input[name="email"]').value = context.email;
+              }
+            } catch (e) {
+              console.log('Cannot get email from LINE context');
+            }
+            
+            console.log('LIFF initialized successfully');
+          }
+        } catch (error) {
+          console.error('LIFF initialization failed', error);
+          Swal.fire({
+            title: 'เกิดข้อผิดพลาด!',
+            text: 'ไม่สามารถเชื่อมต่อ LINE ได้ กรุณาลองใหม่อีกครั้ง',
+            icon: 'error',
+            confirmButtonText: 'ตกลง'
+          });
+        }
+      }
+      
+      // ============================================
+      // Tab Switching
+      // ============================================
+      function switchTab(tabName) {
+        // Hide all tab contents
+        document.querySelectorAll('.tab-content').forEach(el => {
+          el.classList.add('hidden');
+        });
+        
+        // Show selected tab content
+        document.getElementById(`${tabName}-section`).classList.remove('hidden');
+        
+        // Update tab buttons styling
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+          btn.classList.remove('active-tab', 'text-blue-600', 'border-blue-600', 'dark:text-blue-400', 'dark:border-blue-400');
+          btn.classList.add('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+        });
+        
+        const activeTab = document.getElementById(`tab-${tabName}`);
+        activeTab.classList.add('active-tab', 'text-blue-600', 'border-blue-600', 'dark:text-blue-400', 'dark:border-blue-400');
+        activeTab.classList.remove('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+        
+        // Load data for specific tabs
+        if (tabName === 'crm') {
+          loadCustomerData();
+        }
+      }
+      
+      // ============================================
+      // Quantity Controller
+      // ============================================
+      function updateQuantity(change) {
+        const input = document.getElementById('quantity');
+        let val = parseInt(input.value) || 1;
+        val += change;
+        if (val < 1) val = 1;
+        if (val > 99) val = 99;
+        input.value = val;
+        calculateTotal();
+      }
+      
+      function calculateTotal() {
+        const qty = parseInt(document.getElementById('quantity').value) || 1;
+        let total = basePrice * qty;
+        
+        // Apply discount if promo exists
+        if (currentPromo) {
+          const discount = Math.floor(total * (currentPromo.discount || 0));
+          total -= discount;
+          document.getElementById('discountAmount').innerHTML = `-฿${discount}`;
+        } else {
+          document.getElementById('discountAmount').innerHTML = '0';
+        }
+        
+        document.getElementById('totalPrice').innerHTML = total;
+      }
+      
+      // ============================================
+      // Promotion System
+      // ============================================
+      function applyPromo() {
+        const promoCode = document.getElementById('promoCode').value.trim().toUpperCase();
+        const promoMessage = document.getElementById('promoMessage');
+        
+        // Simulate promo validation
+        if (promoCode === 'FLASH2026') {
+          currentPromo = { code: 'FLASH2026', discount: 0.2 };
+          promoMessage.innerHTML = '<span class="text-green-600 dark:text-green-400"><i class="fas fa-check-circle mr-1"></i>ใช้โค้ดส่วนลด 20% สำเร็จ!</span>';
+          calculateTotal();
+        } else if (promoCode === 'NEWYEAR') {
+          currentPromo = { code: 'NEWYEAR', discount: 0.15 };
+          promoMessage.innerHTML = '<span class="text-green-600 dark:text-green-400"><i class="fas fa-check-circle mr-1"></i>ใช้โค้ดส่วนลด 15% สำเร็จ!</span>';
+          calculateTotal();
+        } else if (promoCode === '') {
+          currentPromo = null;
+          promoMessage.innerHTML = '';
+          calculateTotal();
+        } else {
+          currentPromo = null;
+          promoMessage.innerHTML = '<span class="text-red-600 dark:text-red-400"><i class="fas fa-exclamation-circle mr-1"></i>รหัสโปรโมชั่นไม่ถูกต้อง</span>';
+          calculateTotal();
+        }
+      }
+      
+      // ============================================
+      // Form Submission
+      // ============================================
+      document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Show loading
+        document.getElementById('globalLoader').classList.remove('hidden');
+        
+        try {
+          // Collect form data
+          const formData = new FormData(this);
+          const gender = document.querySelector('input[name="gender"]:checked')?.value || 'male';
+          const size = document.querySelector('input[name="size"]:checked')?.value || 'M';
+          const quantity = document.getElementById('quantity').value;
+          const address = document.querySelector('textarea[name="address"]').value;
+          const phone = document.querySelector('input[name="phone"]').value;
+          const email = document.querySelector('input[name="email"]').value;
+          const promoCode = document.getElementById('promoCode').value;
+          const totalPrice = document.getElementById('totalPrice').innerHTML;
+          
+          // Validate required fields
+          if (!email) {
+            throw new Error('กรุณากรอกอีเมล');
+          }
+          if (!address) {
+            throw new Error('กรุณากรอกที่อยู่');
+          }
+          if (!phone) {
+            throw new Error('กรุณากรอกเบอร์โทรศัพท์');
+          }
+          
+          // Add user data
+          if (userProfile) {
+            formData.append('userId', userProfile.userId);
+            formData.append('displayName', userProfile.displayName);
+          }
+          
+          formData.append('gender', gender);
+          formData.append('size', size);
+          formData.append('quantity', quantity);
+          formData.append('totalPrice', totalPrice);
+          formData.append('promoCode', promoCode || '');
+          formData.append('timestamp', new Date().toISOString());
+          
+          // Send to Google Apps Script
+          const response = await fetch(
+            'https://script.google.com/macros/s/AKfycbzI_udrK4r13C-1Nm7qZOifzaxp-HOzb23ymFCMhnucaxud2UiR3PoXCXQ-zQ-Y8VXf/exec',
+            {
+              method: 'POST',
+              body: formData,
+              redirect: 'follow'
+            }
+          );
+          
+          const result = await response.text();
+          console.log('Server response:', result);
+          
+          // Hide loading
+          document.getElementById('globalLoader').classList.add('hidden');
+          
+          // Show success message
+          Swal.fire({
+            title: 'จองสินค้าสำเร็จ!',
+            html: `
+              <div class="text-left">
+                <p>หมายเลขคำสั่งซื้อ: <strong>ORD-${Date.now().toString().slice(-8)}</strong></p>
+                <p class="mt-2">ระบบจะจัดส่งสินค้าภายใน 3-5 วันทำการ</p>
+                <p class="mt-4 text-sm text-gray-600">ขอบคุณที่ใช้บริการ CRM PRO 2026</p>
+              </div>
+            `,
+            icon: 'success',
+            confirmButtonText: 'ตกลง',
+            confirmButtonColor: '#2563EB'
+          });
+          
+          // Send Flex Message via LIFF
+          if (liffInitialized && liff.isLoggedIn()) {
+            await sendFlexMessage(userProfile.userId, {
+              orderId: `ORD-${Date.now().toString().slice(-8)}`,
+              product: gender === 'male' ? 'เสื้อชาย' : 'เสื้อหญิง',
+              size: size,
+              quantity: quantity,
+              total: totalPrice,
+              address: address
+            });
+          }
+          
+          // Reset form
+          this.reset();
+          document.getElementById('quantity').value = '1';
+          document.getElementById('totalPrice').innerHTML = '399';
+          document.getElementById('discountAmount').innerHTML = '0';
+          currentPromo = null;
+          
+        } catch (error) {
+          console.error('Form submission error:', error);
+          
+          // Hide loading
+          document.getElementById('globalLoader').classList.add('hidden');
+          
+          // Show error message
+          Swal.fire({
+            title: 'เกิดข้อผิดพลาด!',
+            text: error.message || 'ไม่สามารถส่งข้อมูลได้ กรุณาลองใหม่อีกครั้ง',
+            icon: 'error',
+            confirmButtonText: 'ตกลง'
+          });
+        }
+      });
+      
+      // ============================================
+      // Send Flex Message via LIFF
+      // ============================================
+      async function sendFlexMessage(userId, orderData) {
+        try {
+          const flexMessage = {
+            type: 'flex',
+            altText: 'ยืนยันการจองสินค้า',
+            contents: {
+              type: 'bubble',
+              hero: {
+                type: 'image',
+                url: 'https://via.placeholder.com/300x150',
+                size: 'full',
+                aspectRatio: '20:13',
+                aspectMode: 'cover',
+              },
+              body: {
+                type: 'box',
+                layout: 'vertical',
+                contents: [
+                  {
+                    type: 'text',
+                    text: 'ยืนยันคำสั่งซื้อ',
+                    weight: 'bold',
+                    size: 'xl',
+                    color: '#1DB446'
+                  },
+                  {
+                    type: 'box',
+                    layout: 'vertical',
+                    margin: 'lg',
+                    spacing: 'sm',
+                    contents: [
+                      {
+                        type: 'box',
+                        layout: 'horizontal',
+                        contents: [
+                          { type: 'text', text: 'เลขที่订单', size: 'sm', color: '#555555', flex: 0 },
+                          { type: 'text', text: orderData.orderId, size: 'sm', color: '#111111', align: 'end' }
+                        ]
+                      },
+                      {
+                        type: 'box',
+                        layout: 'horizontal',
+                        contents: [
+                          { type: 'text', text: 'สินค้า', size: 'sm', color: '#555555', flex: 0 },
+                          { type: 'text', text: orderData.product, size: 'sm', color: '#111111', align: 'end' }
+                        ]
+                      },
+                      {
+                        type: 'box',
+                        layout: 'horizontal',
+                        contents: [
+                          { type: 'text', text: 'ขนาด', size: 'sm', color: '#555555', flex: 0 },
+                          { type: 'text', text: orderData.size, size: 'sm', color: '#111111', align: 'end' }
+                        ]
+                      },
+                      {
+                        type: 'box',
+                        layout: 'horizontal',
+                        contents: [
+                          { type: 'text', text: 'จำนวน', size: 'sm', color: '#555555', flex: 0 },
+                          { type: 'text', text: `${orderData.quantity} ชิ้น`, size: 'sm', color: '#111111', align: 'end' }
+                        ]
+                      },
+                      {
+                        type: 'box',
+                        layout: 'horizontal',
+                        contents: [
+                          { type: 'text', text: 'ยอดชำระ', size: 'sm', color: '#555555', flex: 0 },
+                          { type: 'text', text: `฿${orderData.total}`, size: 'sm', color: '#111111', align: 'end', weight: 'bold' }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    type: 'separator',
+                    margin: 'xxl'
+                  },
+                  {
+                    type: 'box',
+                    layout: 'horizontal',
+                    margin: 'md',
+                    contents: [
+                      {
+                        type: 'button',
+                        action: {
+                          type: 'uri',
+                          label: 'ติดตามสถานะ',
+                          uri: 'https://liff.line.me/1656032875-8rxobnm5'
+                        },
+                        style: 'primary',
+                        height: 'sm',
+                        color: '#2563EB'
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          };
+          
+          await liff.sendMessages([flexMessage]);
+          console.log('Flex message sent successfully');
+          
+        } catch (error) {
+          console.error('Error sending flex message:', error);
+        }
+      }
+      
+      // ============================================
+      // Load Customer Data from Google Sheets
+      // ============================================
+      async function loadCustomerData() {
+        try {
+          const response = await fetch(
+            'https://script.google.com/macros/s/AKfycbzI_udrK4r13C-1Nm7qZOifzaxp-HOzb23ymFCMhnucaxud2UiR3PoXCXQ-zQ-Y8VXf/exec'
+          );
+          const customers = await response.json();
+          
+          const tbody = document.getElementById('customerTableBody');
+          
+          if (customers.length === 0) {
+            tbody.innerHTML = `
+              <tr>
+                <td colspan="7" class="text-center py-8 text-gray-500 dark:text-gray-400">
+                  <i class="fas fa-inbox text-4xl mb-2"></i>
+                  <p>ไม่พบข้อมูลลูกค้า</p>
+                </td>
+              </tr>
+            `;
+            return;
+          }
+          
+          let html = '';
+          customers.slice(0, 10).forEach((customer, index) => {
+            html += `
+              <tr class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">${customer.displayName || '-'}</td>
+                <td class="px-6 py-4 text-gray-700 dark:text-gray-300">${customer.email || '-'}</td>
+                <td class="px-6 py-4 text-gray-700 dark:text-gray-300">${customer.phone || '-'}</td>
+                <td class="px-6 py-4 text-gray-700 dark:text-gray-300">${customer.totalOrders || '0'} รายการ</td>
+                <td class="px-6 py-4 font-bold text-purple-600 dark:text-purple-400">${customer.points || '0'}</td>
+                <td class="px-6 py-4">
+                  <span class="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 rounded-full text-xs font-semibold">
+                    ${customer.status || 'ใช้งาน'}
+                  </span>
+                </td>
+                <td class="px-6 py-4">
+                  <button onclick="viewCustomerDetails('${customer.userId}')" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 mr-3">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button onclick="sendPromotion('${customer.userId}')" class="text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300">
+                    <i class="fas fa-gift"></i>
+                  </button>
+                </td>
+              </tr>
+            `;
+          });
+          
+          tbody.innerHTML = html;
+          
+          // Update stats
+          document.getElementById('totalCustomers').innerHTML = customers.length;
+          document.getElementById('todayOrders').innerHTML = Math.floor(Math.random() * 50 + 20);
+          document.getElementById('totalRevenue').innerHTML = `฿${Math.floor(Math.random() * 50000 + 30000)}`;
+          document.getElementById('conversionRate').innerHTML = `${(Math.random() * 10 + 15).toFixed(1)}%`;
+          
+        } catch (error) {
+          console.error('Error loading customer data:', error);
+          document.getElementById('customerTableBody').innerHTML = `
+            <tr>
+              <td colspan="7" class="text-center py-8 text-red-500">
+                <i class="fas fa-exclamation-triangle text-4xl mb-2"></i>
+                <p>ไม่สามารถโหลดข้อมูลได้</p>
+                <p class="text-sm mt-2">${error.message}</p>
+              </td>
+            </tr>
+          `;
+        }
+      }
+      
+      // ============================================
+      // Customer Search Function
+      // ============================================
+      function searchCustomers() {
+        const query = document.getElementById('customerSearch').value.toLowerCase();
+        console.log('Searching for:', query);
+        // Implement search logic here
+        Swal.fire({
+          title: 'ค้นหา',
+          text: `กำลังค้นหา: ${query}`,
+          icon: 'info',
+          timer: 1500,
+          showConfirmButton: false
+        });
+      }
+      
+      // ============================================
+      // Initialize AOS and Event Listeners
+      // ============================================
+      window.onload = function() {
+        // Initialize AOS animations
+        AOS.init({
+          duration: 800,
+          once: true
+        });
+        
+        // Initialize dark mode
+        initDarkMode();
+        
+        // Initialize LIFF
+        initializeLiff();
+        
+        // Add event listeners
+        document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+        
+        // Initialize product image changer
+        document.querySelectorAll('input[name="size"]').forEach(radio => {
+          radio.addEventListener('change', function() {
+            const gender = document.querySelector('input[name="gender"]:checked')?.value || 'male';
+            const size = this.value;
+            changeProductImage(gender, size);
+          });
+        });
+        
+        document.querySelectorAll('input[name="gender"]').forEach(radio => {
+          radio.addEventListener('change', function() {
+            const gender = this.value;
+            const size = document.querySelector('input[name="size"]:checked')?.value || 'M';
+            changeProductImage(gender, size);
+          });
+        });
+        
+        // Set default active tab
+        switchTab('booking');
+      };
+      
+      // ============================================
+      // Change Product Image
+      // ============================================
+      function changeProductImage(gender, size) {
+        let imageUrl = '';
+        
+        if (gender === 'male') {
+          switch(size) {
+            case 'S': imageUrl = 'https://f.btwcdn.com/store-35589/product/4f3b0c4f-537e-27c7-8a68-6066dfa2417b.jpg'; break;
+            case 'M': imageUrl = 'https://f.btwcdn.com/store-35589/product/9d992ed1-bcc0-20c6-8823-6066ef6856e1.jpg'; break;
+            case 'L': imageUrl = 'https://f.btwcdn.com/store-35589/product/3e7e3e6d-6ab0-4a58-a5d2-6066f01db633.jpg'; break;
+            case 'XL': imageUrl = 'https://f.btwcdn.com/store-35589/product/9d6e59a0-58cb-5eff-cd47-6066f0d1c61a.jpg'; break;
+          }
+        } else {
+          switch(size) {
+            case 'S': imageUrl = 'https://f.btwcdn.com/store-35589/product/47bbb721-61bf-6636-e9ba-5fb6406608dc.jpg'; break;
+            case 'M': imageUrl = 'https://f.btwcdn.com/store-35589/product/df42d8f1-46be-fc7a-c4c6-60472c1b6ed9.jpg'; break;
+            case 'L': imageUrl = 'https://f.btwcdn.com/store-35589/product/21d1567c-42dc-7034-10f8-5fb63fcea03a.jpg'; break;
+            case 'XL': imageUrl = 'https://f.btwcdn.com/store-35589/product/af9f5cfb-d3b1-9365-8ad0-5fb63ec49c8c.jpg'; break;
+          }
+        }
+        
+        document.getElementById('mainProductImage').src = imageUrl;
+      }
+      
+      // Placeholder functions
+      function viewCustomerDetails(userId) {
+        Swal.fire({
+          title: 'รายละเอียดลูกค้า',
+          text: `Customer ID: ${userId}`,
+          icon: 'info',
+          confirmButtonText: 'ตกลง'
+        });
+      }
+      
+      function sendPromotion(userId) {
+        Swal.fire({
+          title: 'ส่งโปรโมชั่น',
+          text: 'ส่งข้อเสนอพิเศษให้ลูกค้าแล้ว',
+          icon: 'success',
+          timer: 2000,
+          showConfirmButton: false
+        });
+      }
+    </script>
+  </body>
 </html>
