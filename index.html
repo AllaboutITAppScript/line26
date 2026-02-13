@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>⚡ ระบบส่งเสริมการขาย 2026</title>
+  <title>⚡ CRM CAMPAIGN MANAGEMENT 2026</title>
   
-  <!-- Tailwind CSS + Modern UI -->
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- Fonts Modern -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Font Prompt - ภาษาไทยสวยงาม -->
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
   
-  <!-- SweetAlert2 Modern -->
+  <!-- SweetAlert2 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
   
   <!-- Animate.css -->
@@ -23,373 +23,756 @@
   <!-- Font Awesome 6 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   
+  <!-- AOS Animation -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  
   <style>
+    * {
+      font-family: 'Prompt', sans-serif;
+    }
+    
     body {
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #0f0c1f 0%, #1a1626 50%, #0d0b14 100%);
+      background: radial-gradient(circle at 10% 30%, #1a1a2e 0%, #16213e 50%, #0f0f1f 100%);
       color: #e0e0e0;
+      position: relative;
+      overflow-x: hidden;
     }
     
-    /* Dark Mode Glassmorphism */
-    .glass-morphism-dark {
-      background: rgba(18, 18, 25, 0.75);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    /* Particle Background */
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      opacity: 0.3;
+      pointer-events: none;
     }
     
-    .glass-card-dark {
-      background: rgba(26, 26, 35, 0.7);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.05);
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      animation: float 20s infinite;
     }
     
-    .neon-border-dark {
-      box-shadow: 0 0 15px rgba(138, 43, 226, 0.3),
-                  0 0 30px rgba(75, 0, 130, 0.2),
-                  0 0 45px rgba(106, 13, 173, 0.1);
+    @keyframes float {
+      0%, 100% { transform: translateY(0) translateX(0); }
+      25% { transform: translateY(-20px) translateX(10px); }
+      50% { transform: translateY(-10px) translateX(-10px); }
+      75% { transform: translateY(10px) translateX(5px); }
     }
     
-    .hover-scale-dark {
-      transition: transform 0.3s ease, background 0.3s ease;
+    /* Modern Glassmorphism */
+    .glass-premium {
+      background: rgba(22, 33, 62, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(102, 126, 234, 0.3);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
     }
     
-    .hover-scale-dark:hover {
-      transform: scale(1.02);
-      background: rgba(255, 255, 255, 0.08) !important;
+    .glass-card-premium {
+      background: rgba(26, 32, 53, 0.8);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(102, 126, 234, 0.2);
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
     }
     
-    .floating-dark {
-      animation: floatingDark 4s ease-in-out infinite;
-    }
-    
-    @keyframes floatingDark {
-      0% { transform: translateY(0px); }
-      50% { transform: translateY(-8px); }
-      100% { transform: translateY(0px); }
-    }
-    
-    .gradient-text-dark {
-      background: linear-gradient(135deg, #a78bfa, #c084fc, #e879f9);
+    /* CRM Status Colors */
+    .status-vip {
+      background: linear-gradient(135deg, #ffd700, #ffb347);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      background-clip: text;
     }
     
-    .loading-spinner-dark {
-      border: 3px solid rgba(255,255,255,0.1);
+    .status-gold {
+      background: linear-gradient(135deg, #c0c0c0, #e8e8e8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .status-silver {
+      background: linear-gradient(135deg, #cd7f32, #b87333);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    /* CRM Timeline */
+    .crm-timeline {
+      position: relative;
+      padding-left: 30px;
+    }
+    
+    .crm-timeline::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, #667eea, #764ba2);
+    }
+    
+    .timeline-item {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    
+    .timeline-dot {
+      position: absolute;
+      left: -26px;
+      top: 5px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
-      border-top: 3px solid #a78bfa;
-      width: 40px;
-      height: 40px;
-      animation: spinDark 1s linear infinite;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border: 2px solid rgba(255,255,255,0.3);
+      animation: pulse 2s infinite;
     }
     
-    @keyframes spinDark {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7); }
+      50% { box-shadow: 0 0 0 10px rgba(102, 126, 234, 0); }
     }
     
-    /* Progress Bar Dark */
-    .progress-bar-dark {
-      width: 100%;
-      height: 6px;
-      background: rgba(255,255,255,0.08);
-      border-radius: 10px;
-      overflow: hidden;
+    /* Progress Steps */
+    .progress-step {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
     }
     
-    .progress-fill-dark {
-      height: 100%;
-      background: linear-gradient(90deg, #8b5cf6, #d946ef);
-      transition: width 0.3s ease;
+    .step-number {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: rgba(102, 126, 234, 0.2);
+      border: 2px solid #667eea;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      font-weight: 600;
+      color: #667eea;
     }
     
-    /* Dark Mode Inputs */
-    .dark-input {
-      background: rgba(30, 30, 40, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #f0f0f0;
+    .step-active .step-number {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+    }
+    
+    /* CRM Stats Cards */
+    .crm-stat-card {
+      background: rgba(22, 33, 62, 0.5);
+      border-radius: 20px;
+      padding: 20px;
+      border: 1px solid rgba(102, 126, 234, 0.2);
       transition: all 0.3s ease;
     }
     
-    .dark-input:focus {
-      background: rgba(40, 40, 50, 0.8);
-      border-color: #8b5cf6;
-      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+    .crm-stat-card:hover {
+      transform: translateY(-5px);
+      border-color: #667eea;
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+    }
+    
+    /* Modern Inputs */
+    .crm-input {
+      background: rgba(15, 20, 30, 0.7);
+      border: 2px solid rgba(102, 126, 234, 0.3);
+      border-radius: 15px;
+      padding: 12px 20px;
+      color: white;
+      transition: all 0.3s ease;
+      font-family: 'Prompt', sans-serif;
+    }
+    
+    .crm-input:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+      background: rgba(20, 30, 45, 0.8);
       outline: none;
     }
     
-    .dark-input::placeholder {
-      color: rgba(200, 200, 200, 0.5);
+    .crm-input::placeholder {
+      color: rgba(200, 200, 220, 0.5);
+      font-weight: 300;
     }
     
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar {
-      width: 8px;
-    }
-    
-    ::-webkit-scrollbar-track {
-      background: rgba(20, 20, 30, 0.9);
-    }
-    
-    ::-webkit-scrollbar-thumb {
-      background: rgba(139, 92, 246, 0.5);
-      border-radius: 4px;
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(139, 92, 246, 0.8);
-    }
-    
-    /* Phone Input Styling */
-    .phone-input-container {
+    /* Customer Avatar */
+    .customer-avatar {
       position: relative;
+      display: inline-block;
     }
     
-    .phone-prefix {
+    .customer-status {
       position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #a78bfa;
-      font-weight: 500;
+      bottom: 0;
+      right: 0;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #4ade80;
+      border: 3px solid #1a1a2e;
     }
     
-    .phone-input {
-      padding-left: 60px !important;
+    /* Loyalty Badge */
+    .loyalty-badge {
+      background: linear-gradient(135deg, #667eea15, #764ba215);
+      border-radius: 30px;
+      padding: 5px 15px;
+      border: 1px solid #667eea;
+      display: inline-flex;
+      align-items: center;
     }
     
-    /* Dark Mode Text */
-    .text-dark-primary {
-      color: #f3f4f6;
+    /* CRM Tabs */
+    .crm-tab {
+      padding: 12px 24px;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: rgba(255,255,255,0.7);
     }
     
-    .text-dark-secondary {
-      color: rgba(220, 220, 250, 0.8);
+    .crm-tab.active {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
     }
     
-    .text-dark-muted {
-      color: rgba(200, 200, 220, 0.6);
+    /* Data Table */
+    .crm-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 8px;
+    }
+    
+    .crm-table td {
+      padding: 15px;
+      background: rgba(22, 33, 62, 0.4);
+      border-radius: 12px;
+    }
+    
+    /* Animation */
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    .animate-slide-in {
+      animation: slideIn 0.5s ease forwards;
     }
   </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
+<body class="min-h-screen p-4 lg:p-8 relative">
+  
+  <!-- Particle Background -->
+  <div class="particles" id="particles"></div>
   
   <!-- Main Container -->
-  <div class="w-full max-w-2xl">
+  <div class="relative z-10 max-w-7xl mx-auto">
     
-    <!-- Gamification Badge - Dark Mode -->
-    <div class="glass-morphism-dark rounded-2xl p-6 mb-4 text-dark-primary floating-dark neon-border-dark">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-          <div class="w-12 h-12 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-full flex items-center justify-center shadow-lg">
-            <i class="fas fa-crown text-2xl text-yellow-300"></i>
-          </div>
-          <div>
-            <p class="text-sm text-dark-muted">นักสะสมแต้ม VIP</p>
-            <p class="text-2xl font-bold text-white" id="userPoints">1,250 แต้ม</p>
-          </div>
+    <!-- CRM Header -->
+    <div class="glass-premium rounded-3xl p-6 mb-6 flex flex-col lg:flex-row items-center justify-between" data-aos="fade-down">
+      <div class="flex items-center space-x-4">
+        <div class="w-16 h-16 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl flex items-center justify-center shadow-2xl">
+          <i class="fas fa-chart-line text-3xl text-white"></i>
         </div>
-        <div class="text-right">
-          <p class="text-sm text-dark-muted">อันดับ</p>
-          <p class="text-2xl font-bold text-purple-400">#12</p>
+        <div>
+          <h1 class="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+            CRM CAMPAIGN 2026
+          </h1>
+          <p class="text-gray-400 mt-1 flex items-center">
+            <i class="fas fa-shield-alt mr-2 text-purple-400"></i>
+            ระบบบริหารลูกค้าสัมพันธ์อัจฉริยะ
+          </p>
         </div>
       </div>
       
-      <!-- Progress Bar -->
-      <div class="mt-4">
-        <div class="flex justify-between text-sm mb-1 text-dark-secondary">
-          <span>ระดับทอง</span>
-          <span>75%</span>
+      <!-- Real-time Clock -->
+      <div class="flex items-center space-x-4 mt-4 lg:mt-0">
+        <div class="glass-card-premium rounded-2xl px-6 py-3">
+          <div class="flex items-center space-x-3">
+            <i class="fas fa-calendar-alt text-purple-400"></i>
+            <span class="text-white" id="currentDateTime"></span>
+          </div>
         </div>
-        <div class="progress-bar-dark">
-          <div class="progress-fill-dark" style="width: 75%"></div>
+        <div class="bg-purple-600/30 rounded-2xl px-6 py-3 border border-purple-500/50">
+          <span class="text-purple-300">เวอร์ชัน CRM 4.0</span>
         </div>
       </div>
     </div>
     
-    <!-- Main Card - Dark Mode -->
-    <div class="glass-morphism-dark rounded-3xl p-8 text-dark-primary shadow-2xl neon-border-dark animate__animated animate__fadeInUp">
+    <!-- CRM Dashboard Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
       
-      <!-- Header with Profile -->
-      <div class="flex items-center justify-between mb-8">
-        <div>
-          <h1 class="text-3xl font-bold gradient-text-dark">✨ CAMPAIGN 2026</h1>
-          <p class="text-sm text-dark-muted mt-1">สมัครวันนี้ รับสิทธิพิเศษทันที</p>
-        </div>
-        <div class="relative">
-          <img id="profilePicture" class="w-16 h-16 rounded-full border-2 border-purple-500 shadow-lg shadow-purple-900/30" 
-               src="https://via.placeholder.com/64" alt="Profile">
-          <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full border-2 border-gray-900 flex items-center justify-center">
-            <i class="fas fa-check text-white text-xs"></i>
+      <!-- Customer Profile Card -->
+      <div class="lg:col-span-1 glass-premium rounded-3xl p-6" data-aos="fade-right">
+        <div class="flex flex-col items-center text-center">
+          <div class="customer-avatar mb-4">
+            <img id="profilePicture" class="w-28 h-28 rounded-2xl border-4 border-purple-500 shadow-2xl" 
+                 src="https://via.placeholder.com/112" alt="Profile">
+            <div class="customer-status"></div>
           </div>
-        </div>
-      </div>
-      
-      <!-- User Info - Dark Mode -->
-      <div class="glass-card-dark rounded-xl p-4 mb-6 border border-purple-500/20">
-        <p id="userName" class="font-semibold text-lg text-white">กำลังโหลด...</p>
-        <p id="userEmail" class="text-sm text-purple-400 mt-1"></p>
-        <p id="userId" class="text-xs text-dark-muted mt-1"></p>
-      </div>
-      
-      <!-- Points & Rewards Section - Dark Mode -->
-      <div class="grid grid-cols-3 gap-3 mb-8">
-        <div class="glass-card-dark rounded-xl p-4 text-center hover-scale-dark cursor-pointer border border-purple-500/10">
-          <i class="fas fa-gift text-2xl mb-2 text-pink-400"></i>
-          <p class="text-sm text-dark-secondary">ของรางวัล</p>
-          <p class="font-bold text-lg text-white">12</p>
-        </div>
-        <div class="glass-card-dark rounded-xl p-4 text-center hover-scale-dark cursor-pointer border border-purple-500/10">
-          <i class="fas fa-ticket-alt text-2xl mb-2 text-yellow-400"></i>
-          <p class="text-sm text-dark-secondary">คูปอง</p>
-          <p class="font-bold text-lg text-white">3</p>
-        </div>
-        <div class="glass-card-dark rounded-xl p-4 text-center hover-scale-dark cursor-pointer border border-purple-500/10">
-          <i class="fas fa-star text-2xl mb-2 text-blue-400"></i>
-          <p class="text-sm text-dark-secondary">กิจกรรม</p>
-          <p class="font-bold text-lg text-white">5</p>
-        </div>
-      </div>
-      
-      <!-- Campaign Form -->
-      <form id="campaignForm" class="space-y-6">
-        
-        <!-- Product Selection - Dark Mode -->
-        <div>
-          <label class="block text-sm font-medium mb-3 text-dark-secondary">เลือกผลิตภัณฑ์</label>
-          <div class="grid grid-cols-2 gap-3">
-            <label class="relative glass-card-dark rounded-xl p-4 cursor-pointer hover-scale-dark border border-purple-500/20 transition-all">
-              <input type="radio" name="product" value="premium" class="hidden peer" />
-              <div class="text-center peer-checked:text-purple-400">
-                <i class="fas fa-crown text-2xl mb-2 text-yellow-400"></i>
-                <p class="font-semibold text-white">Premium Set</p>
-                <p class="text-xs text-dark-muted">3,990 บาท</p>
-                <span class="absolute top-2 right-2 w-3 h-3 rounded-full border-2 border-purple-400 peer-checked:bg-purple-500 peer-checked:border-purple-600"></span>
-              </div>
-            </label>
-            
-            <label class="relative glass-card-dark rounded-xl p-4 cursor-pointer hover-scale-dark border border-purple-500/20 transition-all">
-              <input type="radio" name="product" value="standard" class="hidden peer" />
-              <div class="text-center peer-checked:text-purple-400">
-                <i class="fas fa-box text-2xl mb-2 text-blue-400"></i>
-                <p class="font-semibold text-white">Standard Set</p>
-                <p class="text-xs text-dark-muted">2,490 บาท</p>
-                <span class="absolute top-2 right-2 w-3 h-3 rounded-full border-2 border-purple-400 peer-checked:bg-purple-500 peer-checked:border-purple-600"></span>
-              </div>
-            </label>
+          
+          <h2 id="userName" class="text-2xl font-bold text-white mb-1">กำลังโหลด...</h2>
+          <p id="userEmail" class="text-purple-400 text-sm mb-3"></p>
+          
+          <!-- Loyalty Tier -->
+          <div class="loyalty-badge mb-4">
+            <i class="fas fa-crown text-yellow-400 mr-2"></i>
+            <span class="text-white" id="userTier">สมาชิก VIP</span>
           </div>
-        </div>
-        
-        <!-- Size Selection with Visual - Dark Mode -->
-        <div>
-          <label class="block text-sm font-medium mb-3 text-dark-secondary">ขนาดสินค้า</label>
-          <div class="flex gap-3">
-            <button type="button" class="size-btn flex-1 glass-card-dark rounded-xl py-3 px-4 hover:bg-purple-600/20 transition-all text-dark-secondary hover:text-white border border-purple-500/20" data-size="S">
-              S
-            </button>
-            <button type="button" class="size-btn flex-1 glass-card-dark rounded-xl py-3 px-4 hover:bg-purple-600/20 transition-all text-dark-secondary hover:text-white border border-purple-500/20" data-size="M">
-              M
-            </button>
-            <button type="button" class="size-btn flex-1 glass-card-dark rounded-xl py-3 px-4 hover:bg-purple-600/20 transition-all text-dark-secondary hover:text-white border border-purple-500/20" data-size="L">
-              L
-            </button>
-            <button type="button" class="size-btn flex-1 glass-card-dark rounded-xl py-3 px-4 hover:bg-purple-600/20 transition-all text-dark-secondary hover:text-white border border-purple-500/20" data-size="XL">
-              XL
-            </button>
-          </div>
-          <input type="hidden" name="size" id="selectedSize" required>
-        </div>
-        
-        <!-- Quantity with Stepper - Dark Mode -->
-        <div>
-          <label class="block text-sm font-medium mb-3 text-dark-secondary">จำนวน</label>
-          <div class="flex items-center space-x-4">
-            <button type="button" class="qty-btn w-12 h-12 glass-card-dark rounded-xl hover:bg-purple-600/20 transition-all border border-purple-500/20 text-purple-400" data-action="decrease">
-              <i class="fas fa-minus"></i>
-            </button>
-            <input type="number" name="quantity" value="1" min="1" max="10" 
-                   class="w-20 text-center dark-input rounded-xl py-3 px-2" />
-            <button type="button" class="qty-btn w-12 h-12 glass-card-dark rounded-xl hover:bg-purple-600/20 transition-all border border-purple-500/20 text-purple-400" data-action="increase">
-              <i class="fas fa-plus"></i>
-            </button>
-          </div>
-        </div>
-        
-        <!-- Contact Info - Dark Mode with Flexible Phone -->
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium mb-2 text-dark-secondary">
-              <i class="fas fa-phone mr-2 text-purple-400"></i>เบอร์โทรศัพท์
-            </label>
-            <div class="phone-input-container">
-              <span class="phone-prefix text-purple-400">+66</span>
-              <input type="tel" name="phone" id="phoneInput" placeholder="81 234 5678" 
-                     class="w-full dark-input rounded-xl py-3 px-4 phone-input"
-                     oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+          
+          <!-- Customer Stats -->
+          <div class="w-full grid grid-cols-2 gap-3 mt-2">
+            <div class="glass-card-premium rounded-2xl p-3">
+              <p class="text-xs text-gray-400">แต้มสะสม</p>
+              <p class="text-xl font-bold text-white" id="userPoints">1,250</p>
             </div>
-            <p class="text-xs text-dark-muted mt-1">กรอกเฉพาะตัวเลข ไม่ต้องใส่เครื่องหมาย</p>
+            <div class="glass-card-premium rounded-2xl p-3">
+              <p class="text-xs text-gray-400">คำสั่งซื้อ</p>
+              <p class="text-xl font-bold text-white" id="userOrders">12</p>
+            </div>
           </div>
-          <div>
-            <label class="block text-sm font-medium mb-2 text-dark-secondary">
-              <i class="fas fa-envelope mr-2 text-purple-400"></i>อีเมล
-            </label>
-            <input type="email" name="email" id="emailInput" readonly
-                   class="w-full dark-input rounded-xl py-3 px-4 bg-purple-900/20 border-purple-500/30 text-purple-300 cursor-not-allowed" />
-            <p class="text-xs text-dark-muted mt-1">จาก LINE</p>
+          
+          <!-- Referral Code -->
+          <div class="w-full mt-4 p-4 glass-card-premium rounded-2xl">
+            <p class="text-xs text-gray-400 mb-2">โค้ดแนะนำเพื่อนของคุณ</p>
+            <div class="flex items-center justify-between">
+              <code id="userReferralCode" class="bg-purple-900/50 px-4 py-2 rounded-xl text-purple-300 text-sm">CRM-XXXX-2026</code>
+              <button onclick="copyReferralCode()" class="text-purple-400 hover:text-purple-300">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
           </div>
-        </div>
-        
-        <!-- Address - Dark Mode -->
-        <div>
-          <label class="block text-sm font-medium mb-2 text-dark-secondary">
-            <i class="fas fa-map-marker-alt mr-2 text-purple-400"></i>ที่อยู่จัดส่ง
-          </label>
-          <textarea name="address" rows="3" 
-                    placeholder="กรุณากรอกที่อยู่จัดส่ง..."
-                    class="w-full dark-input rounded-xl py-3 px-4"></textarea>
-        </div>
-        
-        <!-- Referral Code - Dark Mode -->
-        <div class="flex space-x-3">
-          <input type="text" name="referralCode" id="referralCode" placeholder="รหัสแนะนำเพื่อน (ถ้ามี)" 
-                 class="flex-1 dark-input rounded-xl py-3 px-4" />
-          <button type="button" id="applyReferral" class="px-6 bg-gradient-to-r from-purple-700 to-indigo-800 rounded-xl hover:from-purple-600 hover:to-indigo-700 transition-all text-white border border-purple-500/30 shadow-lg">
-            ใช้โค้ด
-          </button>
-        </div>
-        
-        <!-- Submit Button - Dark Mode -->
-        <button type="submit" id="submitBtn" 
-                class="w-full bg-gradient-to-r from-purple-700 via-purple-600 to-indigo-800 text-white py-4 rounded-xl font-bold text-lg hover:from-purple-600 hover:via-purple-500 hover:to-indigo-700 transition-all transform hover:scale-105 shadow-2xl shadow-purple-900/30 border border-purple-500/30">
-          <i class="fas fa-check-circle mr-2"></i>
-          ยืนยันการสั่งซื้อ
-        </button>
-        
-        <!-- Terms - Dark Mode -->
-        <p class="text-xs text-center text-dark-muted mt-4">
-          กดยืนยันแสดงว่าคุณยอมรับ 
-          <a href="#" class="text-purple-400 hover:text-purple-300 underline transition-colors">ข้อกำหนดและเงื่อนไข</a>
-        </p>
-      </form>
-      
-      <!-- Social Proof - Dark Mode -->
-      <div class="mt-8 pt-6 border-t border-purple-500/20">
-        <div class="flex justify-between text-sm">
-          <span class="text-dark-secondary">👥 มีคนสั่งซื้อวันนี้ 127 คน</span>
-          <span class="text-dark-secondary">⭐ รีวิว 4.9/5</span>
         </div>
       </div>
       
+      <!-- CRM Main Content -->
+      <div class="lg:col-span-3 space-y-6">
+        
+        <!-- Campaign Stats -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" data-aos="fade-up">
+          <div class="crm-stat-card">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xs text-gray-400">แคมเปญที่ร่วม</p>
+                <p class="text-2xl font-bold text-white">6</p>
+              </div>
+              <div class="w-12 h-12 bg-purple-600/30 rounded-2xl flex items-center justify-center">
+                <i class="fas fa-bullhorn text-2xl text-purple-400"></i>
+              </div>
+            </div>
+            <p class="text-xs text-green-400 mt-2">+2 แคมเปญใหม่</p>
+          </div>
+          
+          <div class="crm-stat-card">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xs text-gray-400">ยอดใช้จ่าย</p>
+                <p class="text-2xl font-bold text-white">24,500</p>
+              </div>
+              <div class="w-12 h-12 bg-pink-600/30 rounded-2xl flex items-center justify-center">
+                <i class="fas fa-coins text-2xl text-pink-400"></i>
+              </div>
+            </div>
+            <p class="text-xs text-green-400 mt-2">+3,200 บาท</p>
+          </div>
+          
+          <div class="crm-stat-card">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xs text-gray-400">คูปองคงเหลือ</p>
+                <p class="text-2xl font-bold text-white">3</p>
+              </div>
+              <div class="w-12 h-12 bg-yellow-600/30 rounded-2xl flex items-center justify-center">
+                <i class="fas fa-ticket-alt text-2xl text-yellow-400"></i>
+              </div>
+            </div>
+            <p class="text-xs text-yellow-400 mt-2">จะหมดอายุ 7 วัน</p>
+          </div>
+          
+          <div class="crm-stat-card">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xs text-gray-400">เพื่อนแนะนำ</p>
+                <p class="text-2xl font-bold text-white">8</p>
+              </div>
+              <div class="w-12 h-12 bg-green-600/30 rounded-2xl flex items-center justify-center">
+                <i class="fas fa-users text-2xl text-green-400"></i>
+              </div>
+            </div>
+            <p class="text-xs text-green-400 mt-2">+2 คนล่าสุด</p>
+          </div>
+        </div>
+        
+        <!-- CRM Tabs -->
+        <div class="glass-premium rounded-3xl p-6" data-aos="fade-up">
+          <div class="flex space-x-2 mb-6 overflow-x-auto pb-2">
+            <button class="crm-tab active" data-tab="campaign">
+              <i class="fas fa-megaphone mr-2"></i>แคมเปญปัจจุบัน
+            </button>
+            <button class="crm-tab" data-tab="history">
+              <i class="fas fa-history mr-2"></i>ประวัติการสั่งซื้อ
+            </button>
+            <button class="crm-tab" data-tab="rewards">
+              <i class="fas fa-gift mr-2"></i>ของรางวัล
+            </button>
+            <button class="crm-tab" data-tab="analytics">
+              <i class="fas fa-chart-pie mr-2"></i>การวิเคราะห์
+            </button>
+          </div>
+          
+          <!-- Tab Content - Campaign Form -->
+          <div id="campaignTab" class="tab-content block">
+            <form id="campaignForm" class="space-y-6">
+              
+              <!-- Product Selection with CRM Tags -->
+              <div>
+                <label class="block text-sm font-medium mb-3 text-gray-300">
+                  <i class="fas fa-tag mr-2 text-purple-400"></i>เลือกแพ็กเกจ
+                </label>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <label class="relative glass-card-premium rounded-2xl p-5 cursor-pointer hover-scale-dark border border-purple-500/30 transition-all hover:border-purple-400">
+                    <input type="radio" name="product" value="premium" class="hidden peer" />
+                    <div class="flex items-start space-x-4">
+                      <div class="w-14 h-14 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-crown text-3xl text-white"></i>
+                      </div>
+                      <div class="flex-1">
+                        <div class="flex items-center justify-between">
+                          <p class="font-bold text-white text-lg">Premium Set</p>
+                          <span class="bg-yellow-500/30 text-yellow-400 px-3 py-1 rounded-full text-xs">แนะนำ</span>
+                        </div>
+                        <p class="text-sm text-gray-400">ครบครันสำหรับนักสะสม</p>
+                        <div class="flex items-center justify-between mt-2">
+                          <span class="text-2xl font-bold text-white">3,990</span>
+                          <span class="text-gray-400">บาท</span>
+                        </div>
+                        <div class="mt-2 text-xs text-green-400">
+                          <i class="fas fa-star mr-1"></i>รับแต้ม 400 แต้ม
+                        </div>
+                      </div>
+                    </div>
+                    <span class="absolute top-3 right-3 w-4 h-4 rounded-full border-2 border-purple-400 peer-checked:bg-purple-500 peer-checked:border-purple-600"></span>
+                  </label>
+                  
+                  <label class="relative glass-card-premium rounded-2xl p-5 cursor-pointer hover-scale-dark border border-purple-500/30 transition-all hover:border-purple-400">
+                    <input type="radio" name="product" value="standard" class="hidden peer" checked />
+                    <div class="flex items-start space-x-4">
+                      <div class="w-14 h-14 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-box text-3xl text-white"></i>
+                      </div>
+                      <div class="flex-1">
+                        <p class="font-bold text-white text-lg">Standard Set</p>
+                        <p class="text-sm text-gray-400">คุ้มค่าสำหรับทุกวัน</p>
+                        <div class="flex items-center justify-between mt-2">
+                          <span class="text-2xl font-bold text-white">2,490</span>
+                          <span class="text-gray-400">บาท</span>
+                        </div>
+                        <div class="mt-2 text-xs text-green-400">
+                          <i class="fas fa-star mr-1"></i>รับแต้ม 250 แต้ม
+                        </div>
+                      </div>
+                    </div>
+                    <span class="absolute top-3 right-3 w-4 h-4 rounded-full border-2 border-purple-400 peer-checked:bg-purple-500 peer-checked:border-purple-600"></span>
+                  </label>
+                </div>
+              </div>
+              
+              <!-- Size Selection with Visual -->
+              <div>
+                <label class="block text-sm font-medium mb-3 text-gray-300">
+                  <i class="fas fa-ruler mr-2 text-purple-400"></i>เลือกขนาด
+                </label>
+                <div class="flex flex-wrap gap-3">
+                  <button type="button" class="size-btn px-6 py-3 glass-card-premium rounded-xl hover:bg-purple-600/30 transition-all text-gray-300 hover:text-white border border-purple-500/30 flex items-center space-x-2" data-size="S">
+                    <i class="fas fa-tshirt"></i>
+                    <span>S</span>
+                    <span class="text-xs text-gray-400">34-36</span>
+                  </button>
+                  <button type="button" class="size-btn px-6 py-3 glass-card-premium rounded-xl hover:bg-purple-600/30 transition-all text-gray-300 hover:text-white border border-purple-500/30 flex items-center space-x-2" data-size="M">
+                    <i class="fas fa-tshirt"></i>
+                    <span>M</span>
+                    <span class="text-xs text-gray-400">38-40</span>
+                  </button>
+                  <button type="button" class="size-btn px-6 py-3 glass-card-premium rounded-xl hover:bg-purple-600/30 transition-all text-gray-300 hover:text-white border border-purple-500/30 flex items-center space-x-2" data-size="L">
+                    <i class="fas fa-tshirt"></i>
+                    <span>L</span>
+                    <span class="text-xs text-gray-400">42-44</span>
+                  </button>
+                  <button type="button" class="size-btn px-6 py-3 glass-card-premium rounded-xl hover:bg-purple-600/30 transition-all text-gray-300 hover:text-white border border-purple-500/30 flex items-center space-x-2" data-size="XL">
+                    <i class="fas fa-tshirt"></i>
+                    <span>XL</span>
+                    <span class="text-xs text-gray-400">46-48</span>
+                  </button>
+                </div>
+                <input type="hidden" name="size" id="selectedSize" required>
+              </div>
+              
+              <!-- Quantity with CRM Style -->
+              <div>
+                <label class="block text-sm font-medium mb-3 text-gray-300">
+                  <i class="fas fa-cubes mr-2 text-purple-400"></i>จำนวน
+                </label>
+                <div class="flex items-center space-x-4">
+                  <button type="button" class="qty-btn w-14 h-14 glass-card-premium rounded-2xl hover:bg-purple-600/30 transition-all border border-purple-500/30 text-purple-400">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <input type="number" name="quantity" value="1" min="1" max="10" 
+                         class="w-24 text-center crm-input text-xl font-bold" />
+                  <button type="button" class="qty-btn w-14 h-14 glass-card-premium rounded-2xl hover:bg-purple-600/30 transition-all border border-purple-500/30 text-purple-400">
+                    <i class="fas fa-plus"></i>
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Customer Information - CRM Style -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                  <label class="block text-sm font-medium mb-2 text-gray-300">
+                    <i class="fas fa-phone-alt mr-2 text-purple-400"></i>เบอร์โทรศัพท์
+                  </label>
+                  <div class="relative">
+                    <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-purple-400 font-medium">+66</span>
+                    <input type="tel" name="phone" id="phoneInput" placeholder="81 234 5678" 
+                           class="w-full crm-input pl-16"
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                  </div>
+                  <p class="text-xs text-gray-500 mt-2 flex items-center">
+                    <i class="fas fa-info-circle mr-1"></i>กรอกเฉพาะตัวเลข 9-10 หลัก
+                  </p>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium mb-2 text-gray-300">
+                    <i class="fas fa-envelope mr-2 text-purple-400"></i>อีเมล (จาก LINE)
+                  </label>
+                  <input type="email" name="email" id="emailInput" readonly
+                         class="w-full crm-input bg-purple-900/20 border-purple-500/50 text-purple-300 cursor-not-allowed" />
+                </div>
+              </div>
+              
+              <!-- Delivery Address -->
+              <div>
+                <label class="block text-sm font-medium mb-2 text-gray-300">
+                  <i class="fas fa-map-marker-alt mr-2 text-purple-400"></i>ที่อยู่จัดส่ง
+                </label>
+                <textarea name="address" rows="3" 
+                          placeholder="กรุณาระบุ ชื่อ-นามสกุล, บ้านเลขที่, ถนน, แขวง/เขต, จังหวัด, รหัสไปรษณีย์"
+                          class="w-full crm-input"></textarea>
+              </div>
+              
+              <!-- CRM Special Offers -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="glass-card-premium rounded-2xl p-5 border border-green-500/30">
+                  <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-green-600/30 rounded-xl flex items-center justify-center">
+                      <i class="fas fa-tag text-2xl text-green-400"></i>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-400">โค้ดส่วนลด</p>
+                      <div class="flex items-center space-x-2">
+                        <input type="text" name="referralCode" id="referralCode" 
+                               placeholder="ใส่รหัสแนะนำเพื่อน" 
+                               class="bg-transparent border-b border-gray-600 px-2 py-1 text-white focus:border-green-500 outline-none" />
+                        <button type="button" id="applyReferral" class="text-green-400 hover:text-green-300">
+                          <i class="fas fa-check-circle text-xl"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="glass-card-premium rounded-2xl p-5 border border-purple-500/30">
+                  <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-purple-600/30 rounded-xl flex items-center justify-center">
+                      <i class="fas fa-star text-2xl text-purple-400"></i>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-400">แต้มที่จะได้รับ</p>
+                      <p class="text-2xl font-bold text-white" id="earnPoints">250</p>
+                      <p class="text-xs text-gray-400">แต้มสะสมปัจจุบัน: <span id="currentPoints">1,250</span></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Submit Button with CRM Style -->
+              <button type="submit" id="submitBtn" 
+                      class="w-full bg-gradient-to-r from-purple-600 via-purple-500 to-indigo-600 text-white py-5 rounded-2xl font-bold text-lg hover:from-purple-500 hover:via-purple-400 hover:to-indigo-500 transition-all transform hover:scale-[1.02] shadow-2xl shadow-purple-600/30 border border-purple-400/50 flex items-center justify-center space-x-3">
+                <i class="fas fa-check-circle text-2xl"></i>
+                <span>ยืนยันคำสั่งซื้อ</span>
+                <span class="text-sm bg-white/20 px-3 py-1 rounded-full">CRM 4.0</span>
+              </button>
+              
+              <!-- Terms -->
+              <p class="text-xs text-center text-gray-500 mt-4">
+                <i class="fas fa-shield-alt mr-1 text-purple-400"></i>
+                กดยืนยันแสดงว่าคุณยอมรับ 
+                <a href="#" class="text-purple-400 hover:text-purple-300 underline transition-colors">ข้อกำหนดและเงื่อนไข</a>
+                และ <a href="#" class="text-purple-400 hover:text-purple-300 underline transition-colors">นโยบายความเป็นส่วนตัว</a>
+              </p>
+            </form>
+          </div>
+          
+          <!-- History Tab (Hidden by default) -->
+          <div id="historyTab" class="tab-content hidden">
+            <div class="space-y-4">
+              <h3 class="text-xl font-bold text-white mb-4">📋 ประวัติการสั่งซื้อ</h3>
+              <div class="crm-timeline">
+                <div class="timeline-item">
+                  <span class="timeline-dot"></span>
+                  <div class="glass-card-premium rounded-2xl p-4">
+                    <div class="flex justify-between">
+                      <div>
+                        <p class="text-white font-semibold">Premium Set</p>
+                        <p class="text-sm text-gray-400">วันที่ 12 มี.ค. 2026</p>
+                      </div>
+                      <div>
+                        <span class="text-green-400">จัดส่งแล้ว</span>
+                        <p class="text-right text-white font-bold">3,990 บาท</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <span class="timeline-dot"></span>
+                  <div class="glass-card-premium rounded-2xl p-4">
+                    <div class="flex justify-between">
+                      <div>
+                        <p class="text-white font-semibold">Standard Set</p>
+                        <p class="text-sm text-gray-400">วันที่ 5 มี.ค. 2026</p>
+                      </div>
+                      <div>
+                        <span class="text-blue-400">กำลังจัดส่ง</span>
+                        <p class="text-right text-white font-bold">2,490 บาท</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Rewards Tab -->
+          <div id="rewardsTab" class="tab-content hidden">
+            <div class="grid grid-cols-2 gap-4">
+              <div class="glass-card-premium rounded-2xl p-4 text-center">
+                <i class="fas fa-coffee text-3xl text-yellow-400 mb-2"></i>
+                <p class="text-white font-semibold">บัตรกาแฟ</p>
+                <p class="text-sm text-gray-400">500 แต้ม</p>
+                <button class="mt-2 text-purple-400 text-sm">แลกรับ</button>
+              </div>
+              <div class="glass-card-premium rounded-2xl p-4 text-center">
+                <i class="fas fa-gift text-3xl text-pink-400 mb-2"></i>
+                <p class="text-white font-semibold">กระเป๋าสะพาย</p>
+                <p class="text-sm text-gray-400">1,200 แต้ม</p>
+                <button class="mt-2 text-purple-400 text-sm">แลกรับ</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Analytics Tab -->
+          <div id="analyticsTab" class="tab-content hidden">
+            <div class="text-center py-8">
+              <i class="fas fa-chart-bar text-5xl text-purple-400 mb-4"></i>
+              <p class="text-gray-400">ข้อมูลการวิเคราะห์กำลังโหลด...</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Customer Support & Social Proof -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="glass-premium rounded-3xl p-6" data-aos="fade-right">
+            <div class="flex items-center space-x-4 mb-4">
+              <div class="w-12 h-12 bg-purple-600/30 rounded-xl flex items-center justify-center">
+                <i class="fas fa-headset text-2xl text-purple-400"></i>
+              </div>
+              <div>
+                <h4 class="text-white font-semibold">ฝ่ายบริการลูกค้า</h4>
+                <p class="text-sm text-gray-400">ตอบกลับภายใน 5 นาที</p>
+              </div>
+            </div>
+            <div class="flex space-x-3">
+              <button id="chatButton" class="flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 rounded-xl hover:from-purple-500 hover:to-indigo-500 transition-all">
+                <i class="fas fa-comment mr-2"></i>แชทกับเรา
+              </button>
+              <button class="flex-1 glass-card-premium text-white py-3 rounded-xl hover:bg-purple-600/30 transition-all">
+                <i class="fas fa-phone-alt mr-2"></i>โทร 02-123-4567
+              </button>
+            </div>
+          </div>
+          
+          <div class="glass-premium rounded-3xl p-6" data-aos="fade-left">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center space-x-2">
+                <i class="fas fa-users text-purple-400"></i>
+                <span class="text-white font-semibold">กำลังสั่งซื้อตอนนี้</span>
+              </div>
+              <span class="text-purple-400 font-bold">127 คน</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <div class="flex -space-x-2">
+                <img src="https://randomuser.me/api/portraits/women/44.jpg" class="w-8 h-8 rounded-full border-2 border-purple-500">
+                <img src="https://randomuser.me/api/portraits/men/32.jpg" class="w-8 h-8 rounded-full border-2 border-purple-500">
+                <img src="https://randomuser.me/api/portraits/women/68.jpg" class="w-8 h-8 rounded-full border-2 border-purple-500">
+                <div class="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-xs text-white border-2 border-purple-500">+124</div>
+              </div>
+              <span class="text-sm text-gray-400">ลูกค้าไว้วางใจเรา</span>
+            </div>
+            <div class="mt-4 flex items-center">
+              <div class="flex text-yellow-400">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star-half-alt"></i>
+              </div>
+              <span class="text-sm text-gray-400 ml-2">4.9/5 จาก 2,345 รีวิว</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     
-    <!-- Floating Action Button - Dark Mode -->
-    <button id="chatButton" class="fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-purple-700 to-indigo-800 rounded-full flex items-center justify-center shadow-2xl shadow-purple-900/50 hover:scale-110 transition-transform floating-dark border border-purple-500/30">
-      <i class="fas fa-headset text-2xl text-white"></i>
-    </button>
+    <!-- Footer -->
+    <div class="glass-premium rounded-3xl p-6 mt-6 text-center" data-aos="fade-up">
+      <div class="flex flex-col lg:flex-row items-center justify-between">
+        <div class="flex items-center space-x-4 mb-4 lg:mb-0">
+          <i class="fas fa-shield-alt text-2xl text-purple-400"></i>
+          <span class="text-sm text-gray-400">ระบบ CRM รองรับการทำธุรกรรมที่ปลอดภัย</span>
+        </div>
+        <div class="flex space-x-6">
+          <a href="#" class="text-gray-400 hover:text-purple-400 transition-colors">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-purple-400 transition-colors">
+            <i class="fab fa-line"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-purple-400 transition-colors">
+            <i class="fab fa-instagram"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-purple-400 transition-colors">
+            <i class="fab fa-tiktok"></i>
+          </a>
+        </div>
+        <div class="text-sm text-gray-500 mt-4 lg:mt-0">
+          © 2026 CRM Campaign Management - สงวนลิขสิทธิ์
+        </div>
+      </div>
+    </div>
     
   </div>
   
@@ -397,13 +780,16 @@
     // LIFF Configuration
     const LIFF_ID = "2008904120-EG1o4Gys"; // เปลี่ยนเป็น LIFF ID จริง
     
-    // Campaign 2026 System - Dark Mode Enhanced
-    class CampaignSystem {
+    // CRM Campaign System 2026
+    class CRMCampaignSystem {
       constructor() {
         this.userData = null;
         this.points = 1250;
         this.selectedSize = null;
         this.userEmail = null;
+        this.orderHistory = [];
+        this.loyaltyTier = 'VIP';
+        this.referralCode = this.generateReferralCode();
         this.init();
       }
       
@@ -413,6 +799,13 @@
         await this.loadUserProfile();
         await this.getUserEmail();
         this.checkReferralParams();
+        this.updateDateTime();
+        this.loadCustomerData();
+        this.initTabs();
+        this.initParticles();
+        
+        // Update time every second
+        setInterval(() => this.updateDateTime(), 1000);
       }
       
       async initializeLIFF() {
@@ -437,9 +830,13 @@
             statusMessage: profile.statusMessage
           };
           
-          document.getElementById('profilePicture').src = profile.pictureUrl || 'https://via.placeholder.com/64';
+          document.getElementById('profilePicture').src = profile.pictureUrl || 'https://via.placeholder.com/112';
           document.getElementById('userName').textContent = profile.displayName;
           document.getElementById('userId').textContent = `LINE ID: @${profile.userId.substring(0, 8)}...`;
+          document.getElementById('userReferralCode').textContent = this.referralCode;
+          
+          // Update CRM Data
+          this.updateCRMData();
           
         } catch (error) {
           console.error('Profile Error:', error);
@@ -448,31 +845,14 @@
       
       async getUserEmail() {
         try {
-          // ตรวจสอบว่า LIFF รองรับการดึงอีเมลหรือไม่
           if (liff.isLoggedIn() && liff.getDecodedIDToken()) {
             const idToken = liff.getDecodedIDToken();
             
-            // ดึงอีเมลจาก ID Token
             if (idToken && idToken.email) {
               this.userEmail = idToken.email;
               document.getElementById('emailInput').value = idToken.email;
             } else {
-              // ถ้าไม่มีอีเมลใน ID Token ให้ลองขอ permission
-              if (!liff.isInClient()) {
-                // ใน LIFF Browser ขอ permission อีเมล
-                try {
-                  const email = await this.requestEmailPermission();
-                  if (email) {
-                    this.userEmail = email;
-                    document.getElementById('emailInput').value = email;
-                  }
-                } catch (emailError) {
-                  console.error('Email permission error:', emailError);
-                  this.handleEmailNotFound();
-                }
-              } else {
-                this.handleEmailNotFound();
-              }
+              this.handleEmailNotFound();
             }
           } else {
             this.handleEmailNotFound();
@@ -483,55 +863,31 @@
         }
       }
       
-      async requestEmailPermission() {
-        return new Promise((resolve, reject) => {
-          liff.permission
-            .request('email')
-            .then(() => {
-              liff.permission
-                .query('email')
-                .then((res) => {
-                  if (res.state === 'granted') {
-                    liff.getProfile().then((profile) => {
-                      resolve(profile.email || 'ไม่พบอีเมล');
-                    });
-                  } else {
-                    reject('Email permission denied');
-                  }
-                });
-            })
-            .catch(reject);
-        });
-      }
-      
       handleEmailNotFound() {
         this.userEmail = 'ไม่พบอีเมล (กรุณาเพิ่มใน LINE)';
         document.getElementById('emailInput').value = 'ไม่พบอีเมล (กรุณาเพิ่มใน LINE)';
-        
-        // แสดงคำแนะนำ
-        Swal.fire({
-          icon: 'info',
-          title: 'ไม่พบอีเมล',
-          text: 'กรุณาเพิ่มอีเมลในบัญชี LINE ของคุณ แล้วลองใหม่อีกครั้ง',
-          confirmButtonColor: '#8b5cf6',
-          background: '#1a1626',
-          color: '#f3f4f6',
-          iconColor: '#a78bfa'
-        });
+      }
+      
+      generateReferralCode() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let code = 'CRM-';
+        for (let i = 0; i < 4; i++) {
+          code += chars[Math.floor(Math.random() * chars.length)];
+        }
+        code += '-2026';
+        return code;
       }
       
       attachEventListeners() {
-        // Size Selection - Dark Mode
+        // Size Selection
         const sizeBtns = document.querySelectorAll('.size-btn');
         sizeBtns.forEach(btn => {
           btn.addEventListener('click', (e) => {
             sizeBtns.forEach(b => {
               b.classList.remove('bg-purple-600/30', 'ring-2', 'ring-purple-500', 'text-white');
-              b.classList.add('text-dark-secondary');
             });
-            e.target.classList.add('bg-purple-600/30', 'ring-2', 'ring-purple-500', 'text-white');
-            e.target.classList.remove('text-dark-secondary');
-            this.selectedSize = e.target.dataset.size;
+            e.currentTarget.classList.add('bg-purple-600/30', 'ring-2', 'ring-purple-500', 'text-white');
+            this.selectedSize = e.currentTarget.dataset.size;
             document.getElementById('selectedSize').value = this.selectedSize;
           });
         });
@@ -541,35 +897,26 @@
         document.querySelector('[data-action="decrease"]').addEventListener('click', () => {
           let val = parseInt(qtyInput.value);
           if (val > 1) qtyInput.value = val - 1;
+          this.updateEarnPoints();
         });
         
         document.querySelector('[data-action="increase"]').addEventListener('click', () => {
           let val = parseInt(qtyInput.value);
           if (val < 10) qtyInput.value = val + 1;
+          this.updateEarnPoints();
+        });
+        
+        // Product Selection Change
+        document.querySelectorAll('input[name="product"]').forEach(radio => {
+          radio.addEventListener('change', () => this.updateEarnPoints());
         });
         
         // Phone Input Validation
         const phoneInput = document.getElementById('phoneInput');
         phoneInput.addEventListener('input', function(e) {
           let value = e.target.value.replace(/[^0-9]/g, '');
-          if (value.length > 10) {
-            value = value.slice(0, 10);
-          }
+          if (value.length > 10) value = value.slice(0, 10);
           e.target.value = value;
-        });
-        
-        phoneInput.addEventListener('blur', function(e) {
-          let value = e.target.value.replace(/[^0-9]/g, '');
-          if (value.length > 0 && value.length < 9) {
-            Swal.fire({
-              icon: 'warning',
-              title: 'เบอร์โทรไม่ถูกต้อง',
-              text: 'กรุณากรอกเบอร์โทรให้ครบ 9-10 หลัก',
-              confirmButtonColor: '#8b5cf6',
-              background: '#1a1626',
-              color: '#f3f4f6'
-            });
-          }
         });
         
         // Form Submit
@@ -582,22 +929,103 @@
         document.getElementById('chatButton').addEventListener('click', () => this.openChat());
       }
       
-      formatPhoneNumber(phone) {
-        if (!phone) return '';
-        // ลบอักขระที่ไม่ใช่ตัวเลขออก
-        let cleaned = phone.replace(/[^0-9]/g, '');
+      updateEarnPoints() {
+        const product = document.querySelector('input[name="product"]:checked')?.value || 'standard';
+        const quantity = parseInt(document.querySelector('input[name="quantity"]').value) || 1;
+        let pointsPerItem = product === 'premium' ? 400 : 250;
+        const totalPoints = pointsPerItem * quantity;
         
-        // ถ้าขึ้นต้นด้วย 0 ให้ตัดออกแล้วเติม +66
-        if (cleaned.startsWith('0')) {
-          cleaned = cleaned.substring(1);
+        document.getElementById('earnPoints').textContent = totalPoints;
+        document.getElementById('earnPoints').classList.add('text-green-400');
+      }
+      
+      updateDateTime() {
+        const now = new Date();
+        const options = { 
+          weekday: 'long', 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false
+        };
+        document.getElementById('currentDateTime').innerHTML = 
+          `<span class="text-white">${now.toLocaleDateString('th-TH', options)}</span>`;
+      }
+      
+      updateCRMData() {
+        // Update customer tier based on points
+        if (this.points >= 2000) {
+          this.loyaltyTier = 'VIP';
+          document.getElementById('userTier').innerHTML = '<i class="fas fa-crown mr-1"></i>สมาชิก VIP';
+        } else if (this.points >= 1000) {
+          this.loyaltyTier = 'Gold';
+          document.getElementById('userTier').innerHTML = '<i class="fas fa-medal mr-1"></i>สมาชิก Gold';
+        } else {
+          this.loyaltyTier = 'Silver';
+          document.getElementById('userTier').innerHTML = '<i class="fas fa-star mr-1"></i>สมาชิก Silver';
         }
         
-        // ถ้ามีความยาว 9-10 หลัก
+        document.getElementById('userPoints').textContent = this.points.toLocaleString();
+        document.getElementById('currentPoints').textContent = this.points.toLocaleString();
+        document.getElementById('userOrders').textContent = '12'; // Mock data
+      }
+      
+      loadCustomerData() {
+        // Mock customer data - In production, fetch from Google Sheets
+        this.orderHistory = [
+          { id: 'ORD-001', product: 'Premium Set', date: '2026-03-12', amount: 3990, status: 'จัดส่งแล้ว' },
+          { id: 'ORD-002', product: 'Standard Set', date: '2026-03-05', amount: 2490, status: 'กำลังจัดส่ง' }
+        ];
+      }
+      
+      initTabs() {
+        const tabs = document.querySelectorAll('.crm-tab');
+        tabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+            // Remove active class from all tabs
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+              content.classList.add('hidden');
+              content.classList.remove('block');
+            });
+            
+            // Show selected tab
+            const tabName = tab.dataset.tab;
+            document.getElementById(`${tabName}Tab`).classList.remove('hidden');
+            document.getElementById(`${tabName}Tab`).classList.add('block');
+          });
+        });
+      }
+      
+      initParticles() {
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 30; i++) {
+          const particle = document.createElement('div');
+          particle.className = 'particle';
+          particle.style.width = Math.random() * 5 + 1 + 'px';
+          particle.style.height = particle.style.width;
+          particle.style.left = Math.random() * 100 + '%';
+          particle.style.top = Math.random() * 100 + '%';
+          particle.style.animationDelay = Math.random() * 20 + 's';
+          particle.style.animationDuration = Math.random() * 10 + 15 + 's';
+          particlesContainer.appendChild(particle);
+        }
+      }
+      
+      formatPhoneNumber(phone) {
+        if (!phone) return '';
+        let cleaned = phone.replace(/[^0-9]/g, '');
+        if (cleaned.startsWith('0')) cleaned = cleaned.substring(1);
         if (cleaned.length >= 9 && cleaned.length <= 10) {
           return `+66${cleaned}`;
         }
-        
-        return phone; // คืนค่าเดิมถ้าไม่ตรงรูปแบบ
+        return phone;
       }
       
       async handleSubmit(e) {
@@ -619,22 +1047,46 @@
         this.showLoading();
         
         const formData = new FormData(e.target);
+        const product = formData.get('product') || 'standard';
+        const quantity = parseInt(formData.get('quantity')) || 1;
+        const pointsEarned = (product === 'premium' ? 400 : 250) * quantity;
+        
         const campaignData = {
+          // Customer Information
+          customerId: this.userData?.userId,
+          customerName: this.userData?.displayName,
+          customerEmail: this.userEmail,
+          customerPhone: this.formatPhoneNumber(phone),
+          customerTier: this.loyaltyTier,
+          
+          // Order Information
+          orderId: `CRM-${Date.now()}`,
           timestamp: new Date().toISOString(),
-          userId: this.userData?.userId,
-          displayName: this.userData?.displayName,
-          email: this.userEmail || document.getElementById('emailInput').value,
-          product: formData.get('product'),
+          product: product,
+          productName: product === 'premium' ? 'Premium Set' : 'Standard Set',
           size: this.selectedSize,
-          quantity: formData.get('quantity'),
-          phone: this.formatPhoneNumber(phone),
-          phoneRaw: phone,
-          address: formData.get('address'),
+          quantity: quantity,
+          price: product === 'premium' ? 3990 : 2490,
+          totalAmount: (product === 'premium' ? 3990 : 2490) * quantity,
+          
+          // CRM Data
+          pointsEarned: pointsEarned,
+          currentPoints: this.points,
+          totalPoints: this.points + pointsEarned,
           referralCode: formData.get('referralCode'),
-          points: this.points,
-          campaignVersion: '2026.1.0-dark',
+          
+          // Delivery
+          address: formData.get('address'),
+          
+          // System Info
+          campaignVersion: 'CRM-2026.4.0',
           deviceType: liff.isInClient() ? 'LINE_MINIAPP' : 'WEBAPP',
-          theme: 'dark-mode'
+          platform: 'CRM_CAMPAIGN_2026',
+          
+          // Tracking
+          source: window.location.search.includes('ref') ? 'referral' : 'direct',
+          userAgent: navigator.userAgent,
+          language: navigator.language
         };
         
         try {
@@ -643,21 +1095,20 @@
             {
               method: 'POST',
               mode: 'no-cors',
-              headers: {
-                'Content-Type': 'application/json',
-              },
+              headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(campaignData)
             }
           );
           
-          this.showSuccess();
-          this.sendConfirmationMessage(campaignData);
+          // Update points
+          this.points += pointsEarned;
+          this.updateCRMData();
           
-          // ปิด window ถ้าเป็น LINE In-App Browser
+          this.showSuccess(pointsEarned);
+          this.sendCRMConfirmation(campaignData);
+          
           if (liff.isInClient()) {
-            setTimeout(() => {
-              liff.closeWindow();
-            }, 2000);
+            setTimeout(() => liff.closeWindow(), 3000);
           }
           
         } catch (error) {
@@ -668,32 +1119,31 @@
         }
       }
       
-      sendConfirmationMessage(data) {
+      sendCRMConfirmation(data) {
         if (!liff.isInClient()) return;
         
         const flexMessage = {
           type: 'flex',
-          altText: 'ยืนยันการสั่งซื้อสำเร็จ',
+          altText: `CRM: คำสั่งซื้อ #${data.orderId}`,
           contents: {
             type: 'bubble',
             styles: {
-              header: {
-                backgroundColor: '#1a1626'
-              },
-              body: {
-                backgroundColor: '#1a1626'
-              },
-              footer: {
-                backgroundColor: '#1a1626'
-              }
+              header: { backgroundColor: '#1a1626' },
+              body: { backgroundColor: '#1a1626' },
+              footer: { backgroundColor: '#1a1626' }
             },
-            hero: {
-              type: 'image',
-              url: 'https://via.placeholder.com/300x150/2d2d3a/ffffff?text=Campaign+2026',
-              size: 'full',
-              aspectRatio: '20:13',
-              aspectMode: 'cover',
-              backgroundColor: '#2d2d3a'
+            header: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'text',
+                  text: '🧑‍💼 CRM CAMPAIGN 2026',
+                  weight: 'bold',
+                  size: 'md',
+                  color: '#c084fc'
+                }
+              ]
             },
             body: {
               type: 'box',
@@ -702,7 +1152,7 @@
               contents: [
                 {
                   type: 'text',
-                  text: '✅ ยืนยันคำสั่งซื้อแล้ว',
+                  text: '✅ ยืนยันคำสั่งซื้อสำเร็จ',
                   weight: 'bold',
                   size: 'xl',
                   color: '#c084fc'
@@ -715,27 +1165,8 @@
                   contents: [
                     {
                       type: 'text',
-                      text: `สินค้า: ${data.product === 'premium' ? 'Premium Set' : 'Standard Set'}`,
-                      wrap: true,
-                      color: '#f3f4f6'
-                    },
-                    {
-                      type: 'text',
-                      text: `ขนาด: ${data.size}`,
-                      wrap: true,
-                      color: '#f3f4f6'
-                    },
-                    {
-                      type: 'text',
-                      text: `จำนวน: ${data.quantity} ชิ้น`,
-                      wrap: true,
-                      color: '#f3f4f6'
-                    },
-                    {
-                      type: 'text',
-                      text: `เบอร์โทร: ${data.phone}`,
-                      wrap: true,
-                      color: '#c084fc',
+                      text: `คำสั่งซื้อ: #${data.orderId.slice(-8)}`,
+                      color: '#f3f4f6',
                       size: 'sm'
                     },
                     {
@@ -745,9 +1176,42 @@
                     },
                     {
                       type: 'text',
-                      text: '🎉 คุณได้รับแต้มสะสม 250 แต้ม',
+                      text: `สินค้า: ${data.productName}`,
+                      color: '#f3f4f6'
+                    },
+                    {
+                      type: 'text',
+                      text: `ขนาด: ${data.size} | จำนวน: ${data.quantity} ชิ้น`,
+                      color: '#f3f4f6'
+                    },
+                    {
+                      type: 'text',
+                      text: `ยอดชำระ: ${data.totalAmount.toLocaleString()} บาท`,
+                      color: '#f3f4f6',
+                      weight: 'bold'
+                    },
+                    {
+                      type: 'separator',
+                      margin: 'md',
+                      color: '#8b5cf6'
+                    },
+                    {
+                      type: 'text',
+                      text: `🎉 คุณได้รับแต้ม ${data.pointsEarned} แต้ม`,
                       color: '#4ade80',
                       weight: 'bold'
+                    },
+                    {
+                      type: 'text',
+                      text: `แต้มสะสมปัจจุบัน: ${data.totalPoints} แต้ม`,
+                      color: '#a78bfa',
+                      size: 'sm'
+                    },
+                    {
+                      type: 'text',
+                      text: `ระดับสมาชิก: ${data.customerTier}`,
+                      color: '#fbbf24',
+                      size: 'sm'
                     }
                   ]
                 }
@@ -756,15 +1220,14 @@
             footer: {
               type: 'box',
               layout: 'vertical',
-              spacing: 'sm',
               backgroundColor: '#1a1626',
               contents: [
                 {
                   type: 'button',
                   action: {
                     type: 'uri',
-                    label: 'ติดตามสถานะสั่งซื้อ',
-                    uri: 'https://liff.line.me/2008904120-EG1o4Gys'
+                    label: '📊 ดูประวัติคำสั่งซื้อ',
+                    uri: `https://liff.line.me/${LIFF_ID}?history=true`
                   },
                   style: 'primary',
                   color: '#8b5cf6'
@@ -777,11 +1240,11 @@
         liff.sendMessages([flexMessage]).catch(console.error);
       }
       
-      // Utility Methods - Dark Mode
+      // Utility Methods
       showLoading() {
         Swal.fire({
-          title: 'กำลังดำเนินการ',
-          html: '<div class="loading-spinner-dark mx-auto"></div>',
+          title: 'กำลังประมวลผลคำสั่งซื้อ',
+          html: '<div class="loading-spinner-dark mx-auto"></div><p class="mt-4 text-gray-400">ระบบ CRM กำลังบันทึกข้อมูล...</p>',
           showConfirmButton: false,
           allowOutsideClick: false,
           background: '#1a1626',
@@ -793,12 +1256,16 @@
         Swal.close();
       }
       
-      showSuccess() {
+      showSuccess(points) {
         Swal.fire({
           icon: 'success',
-          title: 'สำเร็จ!',
-          text: 'สั่งซื้อเรียบร้อยแล้ว',
-          timer: 2000,
+          title: 'สั่งซื้อสำเร็จ!',
+          html: `<div class="text-center">
+                   <p class="text-gray-300 mb-2">ได้รับแต้มสะสม</p>
+                   <p class="text-4xl font-bold text-purple-400 mb-2">+${points}</p>
+                   <p class="text-sm text-gray-400">ขอบคุณที่ใช้บริการ CRM Campaign 2026</p>
+                 </div>`,
+          timer: 3000,
           showConfirmButton: false,
           background: '#1a1626',
           color: '#f3f4f6',
@@ -833,18 +1300,18 @@
       validateReferral() {
         const code = document.getElementById('referralCode').value;
         if (code) {
+          // Mock validation - In production, check against database
           Swal.fire({
             icon: 'success',
             title: 'ใช้โค้ดสำเร็จ!',
-            text: 'คุณได้รับส่วนลด 10%',
-            timer: 1500,
+            text: 'คุณได้รับส่วนลด 10% และแต้มพิเศษ 50 แต้ม',
+            timer: 2000,
             showConfirmButton: false,
             background: '#1a1626',
             color: '#f3f4f6',
             iconColor: '#a78bfa'
           });
           
-          // Visual feedback
           document.getElementById('referralCode').classList.add('border-green-500', 'ring-1', 'ring-green-500');
           setTimeout(() => {
             document.getElementById('referralCode').classList.remove('border-green-500', 'ring-1', 'ring-green-500');
@@ -853,13 +1320,11 @@
       }
       
       openChat() {
+        const url = 'https://line.me/R/oaMessage/@YOUR_OA/';
         if (liff.isInClient()) {
-          liff.openWindow({
-            url: 'https://line.me/R/oaMessage/@YOUR_OA/',
-            external: true
-          });
+          liff.openWindow({ url, external: true });
         } else {
-          window.open('https://line.me/R/oaMessage/@YOUR_OA/', '_blank');
+          window.open(url, '_blank');
         }
       }
       
@@ -873,9 +1338,39 @@
       }
     }
     
-    // Initialize Campaign System
-    const campaign = new CampaignSystem();
+    // Copy Referral Code
+    function copyReferralCode() {
+      const code = document.getElementById('userReferralCode').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        Swal.fire({
+          icon: 'success',
+          title: 'คัดลอกแล้ว!',
+          text: 'โค้ดแนะนำเพื่อนถูกคัดลอกแล้ว',
+          timer: 1500,
+          showConfirmButton: false,
+          background: '#1a1626',
+          color: '#f3f4f6'
+        });
+      });
+    }
+    
+    // Initialize AOS
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof AOS !== 'undefined') {
+        AOS.init({
+          duration: 800,
+          once: true,
+          offset: 100
+        });
+      }
+    });
+    
+    // Initialize CRM System
+    const crmSystem = new CRMCampaignSystem();
   </script>
+  
+  <!-- AOS Animation Script -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   
   <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
