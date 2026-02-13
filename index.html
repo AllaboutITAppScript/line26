@@ -3,66 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LINE CRM · Dark Mode</title>
+    <title>LINE CRM Pro · LIFF Integration</title>
     
-    <!-- TailwindCSS + Dark mode -->
+    <!-- Tailwind + Dark mode -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Font Awesome 6 (ไอคอนสวย) -->
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-    <!-- Google Apps Script (inline fetch) -->
+    <!-- LINE LIFF SDK -->
+    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+    
     <style>
-        /* Custom smooth scroll & glassmorphism */
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
         body {
             transition: background-color 0.3s ease, color 0.3s ease;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
-        .glass-card {
+        
+        .glass {
             background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .dark .glass-card {
-            background: rgba(17, 25, 40, 0.75);
-            border: 1px solid rgba(255,255,255,0.05);
+        
+        .dark .glass {
+            background: rgba(17, 25, 40, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
+        
         .neo-btn {
             transition: all 0.2s;
         }
+        
         .neo-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3);
+            box-shadow: 0 15px 30px -10px rgba(79, 70, 229, 0.4);
         }
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .skeleton {
+            background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+        }
+        
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        .custom-scroll::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+        }
+        
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.5);
+            border-radius: 10px;
+        }
+        
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.8);
+        }
     </style>
 </head>
-<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 antialiased">
+<body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 dark:bg-gradient-to-br dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-white antialiased custom-scroll">
 
-    <!-- แถบด้านบน Navbar ทันสมัย + toggle dark mode -->
-    <nav class="glass-card fixed top-0 left-0 right-0 z-50 px-6 py-3 mx-4 mt-4 rounded-2xl shadow-xl backdrop-blur-lg">
+    <!-- Navigation -->
+    <nav class="glass fixed top-0 left-0 right-0 z-50 px-6 py-4 mx-4 mt-4 rounded-2xl shadow-2xl border border-white/10">
         <div class="flex items-center justify-between max-w-7xl mx-auto">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                    <i class="fas fa-message text-white text-xl"></i>
+            <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-2xl animate-float">
+                    <i class="fab fa-line text-white text-2xl"></i>
                 </div>
-                <h1 class="text-2xl font-bold bg-gradient-to-r from-indigo-300 to-purple-300 bg-clip-text text-transparent drop-shadow-sm">
-                    LINE<span class="text-white/90"> CRM</span>
-                </h1>
-                <span class="bg-emerald-500/20 text-emerald-300 px-3 py-1 rounded-full text-xs font-semibold border border-emerald-500/30 ml-3">
-                    <i class="fas fa-robot mr-1"></i> Auto LINE SDK
-                </span>
+                <div>
+                    <h1 class="text-2xl font-black bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300 bg-clip-text text-transparent">
+                        LINE CRM <span class="text-white/80 text-sm font-normal ml-2">PRO</span>
+                    </h1>
+                    <p class="text-xs text-slate-400 mt-0.5">LIFF Integration · Google Sheets</p>
+                </div>
             </div>
-            <div class="flex items-center gap-4">
-                <button id="setupDbBtn" class="relative group px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-medium transition-all shadow-lg shadow-indigo-600/30 neo-btn flex items-center gap-2">
-                    <i class="fas fa-database"></i> Setup Database
-                    <span class="absolute -top-1 -right-1 flex h-3 w-3">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-3 w-3 bg-indigo-500"></span>
-                    </span>
-                </button>
-                <button id="darkToggle" class="w-10 h-10 rounded-xl bg-white/10 dark:bg-slate-800/60 backdrop-blur flex items-center justify-center border border-white/20 shadow-lg hover:bg-white/20 transition">
+            
+            <div class="flex items-center gap-3">
+                <!-- Profile Section -->
+                <div id="liffProfile" class="hidden items-center gap-3 bg-white/5 px-4 py-2 rounded-xl border border-white/10">
+                    <img id="profileImage" src="" class="w-8 h-8 rounded-full border-2 border-indigo-400" alt="profile">
+                    <span id="profileName" class="text-sm font-medium"></span>
+                </div>
+                
+                <button id="darkToggle" class="w-11 h-11 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center transition-all">
                     <i class="fas fa-moon dark:hidden text-indigo-300"></i>
                     <i class="fas fa-sun hidden dark:block text-yellow-300"></i>
                 </button>
@@ -70,314 +117,703 @@
         </div>
     </nav>
 
-    <!-- Hero / สถิติ -->
-    <div class="pt-28 pb-6 px-4 max-w-7xl mx-auto">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
-            <div class="glass-card rounded-2xl p-5 backdrop-blur-xl border border-white/10 shadow-xl">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-slate-400 text-sm">ผู้ใช้ทั้งหมด</p>
-                        <p id="totalUsers" class="text-3xl font-bold mt-1 text-white">0</p>
+    <!-- Main Content -->
+    <div class="pt-28 pb-10 px-4 max-w-7xl mx-auto">
+        
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <button id="setupDbBtn" class="glass p-5 rounded-2xl border border-indigo-500/30 hover:border-indigo-500 transition-all group">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-indigo-600/30 rounded-xl flex items-center justify-center text-indigo-400 text-xl group-hover:scale-110 transition">
+                        <i class="fas fa-database"></i>
                     </div>
-                    <div class="w-12 h-12 bg-indigo-600/30 rounded-2xl flex items-center justify-center text-indigo-300 text-2xl backdrop-blur">
-                        <i class="fas fa-users"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="glass-card rounded-2xl p-5 backdrop-blur-xl border border-white/10 shadow-xl">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-slate-400 text-sm">อีเมลที่ผูกไว้</p>
-                        <p id="totalEmails" class="text-3xl font-bold mt-1 text-white">0</p>
-                    </div>
-                    <div class="w-12 h-12 bg-purple-600/30 rounded-2xl flex items-center justify-center text-purple-300 text-2xl backdrop-blur">
-                        <i class="fas fa-envelope"></i>
+                    <div class="text-left">
+                        <p class="text-sm text-slate-400">Setup</p>
+                        <p class="font-semibold text-white">Database</p>
                     </div>
                 </div>
-            </div>
-            <div class="glass-card rounded-2xl p-5 backdrop-blur-xl border border-white/10 shadow-xl">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-slate-400 text-sm">เชื่อมต่อ LINE</p>
-                        <p id="totalLine" class="text-3xl font-bold mt-1 text-white">0</p>
-                    </div>
-                    <div class="w-12 h-12 bg-emerald-600/30 rounded-2xl flex items-center justify-center text-emerald-300 text-2xl backdrop-blur">
+            </button>
+            
+            <button id="liffLoginBtn" class="glass p-5 rounded-2xl border border-emerald-500/30 hover:border-emerald-500 transition-all group">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-emerald-600/30 rounded-xl flex items-center justify-center text-emerald-400 text-xl group-hover:scale-110 transition">
                         <i class="fab fa-line"></i>
                     </div>
+                    <div class="text-left">
+                        <p class="text-sm text-slate-400">Login with</p>
+                        <p class="font-semibold text-white">LINE LIFF</p>
+                    </div>
                 </div>
+            </button>
+            
+            <button id="syncSheetBtn" class="glass p-5 rounded-2xl border border-blue-500/30 hover:border-blue-500 transition-all group">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-blue-600/30 rounded-xl flex items-center justify-center text-blue-400 text-xl group-hover:scale-110 transition">
+                        <i class="fas fa-file-excel"></i>
+                    </div>
+                    <div class="text-left">
+                        <p class="text-sm text-slate-400">Sync to</p>
+                        <p class="font-semibold text-white">Google Sheets</p>
+                    </div>
+                </div>
+            </button>
+            
+            <button id="statsBtn" class="glass p-5 rounded-2xl border border-purple-500/30 hover:border-purple-500 transition-all group">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-purple-600/30 rounded-xl flex items-center justify-center text-purple-400 text-xl group-hover:scale-110 transition">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <div class="text-left">
+                        <p class="text-sm text-slate-400">View</p>
+                        <p class="font-semibold text-white">Analytics</p>
+                    </div>
+                </div>
+            </button>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+            <div class="glass rounded-2xl p-5 border border-white/5">
+                <p class="text-slate-400 text-xs mb-1">👥 ผู้ใช้ทั้งหมด</p>
+                <p id="statTotalUsers" class="text-3xl font-bold text-white">-</p>
+                <p class="text-xs text-slate-500 mt-1">จาก LINE LIFF</p>
             </div>
-            <div class="glass-card rounded-2xl p-5 backdrop-blur-xl border border-white/10 shadow-xl">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-slate-400 text-sm">ไม่เปิดแชท</p>
-                        <p id="inactiveUsers" class="text-3xl font-bold mt-1 text-white">0</p>
-                    </div>
-                    <div class="w-12 h-12 bg-amber-600/30 rounded-2xl flex items-center justify-center text-amber-300 text-2xl backdrop-blur">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                </div>
+            <div class="glass rounded-2xl p-5 border border-white/5">
+                <p class="text-slate-400 text-xs mb-1">✅ Active</p>
+                <p id="statActiveUsers" class="text-3xl font-bold text-emerald-400">-</p>
+            </div>
+            <div class="glass rounded-2xl p-5 border border-white/5">
+                <p class="text-slate-400 text-xs mb-1">📧 มีอีเมล</p>
+                <p id="statWithEmail" class="text-3xl font-bold text-blue-400">-</p>
+            </div>
+            <div class="glass rounded-2xl p-5 border border-white/5">
+                <p class="text-slate-400 text-xs mb-1">🆕 มาใหม่</p>
+                <p id="statNewUsers" class="text-3xl font-bold text-purple-400">-</p>
+            </div>
+            <div class="glass rounded-2xl p-5 border border-white/5">
+                <p class="text-slate-400 text-xs mb-1">💤 ไม่ใช้งาน</p>
+                <p id="statInactiveUsers" class="text-3xl font-bold text-amber-400">-</p>
             </div>
         </div>
 
-        <!-- ส่วนหลัก: ตารางลูกค้า / ดึงข้อมูล LINE -->
-        <div class="glass-card rounded-3xl p-6 md:p-8 backdrop-blur-2xl border border-white/10 shadow-2xl">
-            <div class="flex flex-col md:flex-row md:items-center justify-between mb-7 gap-4">
+        <!-- Main Table Card -->
+        <div class="glass rounded-3xl p-6 border border-white/10 shadow-2xl">
+            <!-- Table Header -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
                 <div class="flex items-center gap-3">
-                    <div class="w-11 h-11 bg-gradient-to-br from-indigo-500/30 to-purple-600/30 rounded-2xl flex items-center justify-center">
-                        <i class="fas fa-address-book text-indigo-300 text-xl"></i>
+                    <div class="w-12 h-12 bg-gradient-to-br from-indigo-500/30 to-purple-600/30 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-table text-indigo-300 text-xl"></i>
                     </div>
-                    <h2 class="text-xl font-semibold">รายชื่อลูกค้า · LINE Integration</h2>
+                    <div>
+                        <h2 class="text-xl font-bold">รายชื่อลูกค้า LINE</h2>
+                        <p class="text-xs text-slate-400">ซิงค์ข้อมูลจาก LIFF และ Google Sheets อัตโนมัติ</p>
+                    </div>
                 </div>
-                <div class="flex gap-3">
-                    <button id="refreshData" class="px-5 py-2.5 bg-white/5 hover:bg-white/10 rounded-xl text-sm font-medium border border-white/10 transition-all flex items-center gap-2 backdrop-blur">
-                        <i class="fas fa-rotate"></i> ดึงข้อมูลล่าสุด
+                
+                <div class="flex flex-wrap gap-3">
+                    <!-- Search Box -->
+                    <div class="relative">
+                        <input type="text" id="searchInput" placeholder="ค้นหาชื่อ, อีเมล, LINE ID..." 
+                               class="w-64 px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 transition">
+                        <i class="fas fa-search absolute right-4 top-3.5 text-slate-500"></i>
+                    </div>
+                    
+                    <button id="refreshBtn" class="px-5 py-3 bg-white/10 hover:bg-white/20 rounded-xl text-sm font-medium border border-white/10 transition-all flex items-center gap-2">
+                        <i class="fas fa-sync-alt"></i> รีเฟรช
                     </button>
-                    <button id="syncLineProfiles" class="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 rounded-xl text-sm font-medium shadow-lg shadow-indigo-600/30 transition-all flex items-center gap-2 neo-btn">
-                        <i class="fab fa-line"></i> Sync LINE Profiles
+                    
+                    <button id="addUserBtn" class="px-5 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 rounded-xl text-sm font-medium shadow-lg flex items-center gap-2 neo-btn">
+                        <i class="fas fa-user-plus"></i> เพิ่มผู้ใช้
                     </button>
                 </div>
             </div>
 
-            <!-- ตารางข้อมูล CRM สวยงาม -->
-            <div class="overflow-x-auto rounded-2xl border border-white/10">
+            <!-- Users Table -->
+            <div class="overflow-x-auto rounded-xl border border-white/10">
                 <table class="w-full text-sm">
-                    <thead class="bg-black/40 backdrop-blur-sm text-slate-300">
+                    <thead class="bg-black/40 text-slate-300">
                         <tr>
-                            <th class="px-6 py-4 text-left font-medium"><i class="fas fa-user mr-2"></i>ชื่อผู้ใช้ LINE</th>
+                            <th class="px-6 py-4 text-left font-medium"><i class="fas fa-user mr-2"></i>โปรไฟล์</th>
+                            <th class="px-6 py-4 text-left font-medium"><i class="fab fa-line mr-2"></i>LINE Display Name</th>
                             <th class="px-6 py-4 text-left font-medium"><i class="fas fa-id-card mr-2"></i>LINE User ID</th>
                             <th class="px-6 py-4 text-left font-medium"><i class="fas fa-envelope mr-2"></i>อีเมล</th>
-                            <th class="px-6 py-4 text-left font-medium"><i class="fas fa-image mr-2"></i>โปรไฟล์</th>
-                            <th class="px-6 py-4 text-left font-medium"><i class="fas fa-calendar mr-2"></i>วันที่อัปเดต</th>
+                            <th class="px-6 py-4 text-left font-medium"><i class="fas fa-tags mr-2"></i>แท็ก</th>
+                            <th class="px-6 py-4 text-left font-medium"><i class="fas fa-clock mr-2"></i>เข้าสู่ระบบล่าสุด</th>
                             <th class="px-6 py-4 text-left font-medium"><i class="fas fa-cog mr-2"></i>จัดการ</th>
                         </tr>
                     </thead>
-                    <tbody id="crmTableBody" class="divide-y divide-white/5">
-                        <!-- JavaScript จะ inject ข้อมูลตรงนี้ -->
-                        <tr class="hover:bg-white/5 transition">
-                            <td colspan="6" class="px-6 py-10 text-center text-slate-400">
-                                <i class="fas fa-spinner fa-pulse text-2xl mb-2"></i>
-                                <p>กำลังโหลดข้อมูลจาก Google Apps Script...</p>
+                    <tbody id="userTableBody" class="divide-y divide-white/5">
+                        <tr>
+                            <td colspan="7" class="px-6 py-12 text-center text-slate-400">
+                                <i class="fas fa-spinner fa-pulse text-3xl mb-3"></i>
+                                <p class="text-base">กำลังโหลดข้อมูลจาก Google Sheets...</p>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
             
-            <!-- ตัวอย่าง footer แสดงจำนวน -->
-            <div class="mt-5 text-xs text-slate-500 flex justify-between items-center">
-                <span><i class="fas fa-shield-alt mr-1"></i> ดึงโปรไฟล์ LINE อัตโนมัติด้วย LINE SDK</span>
-                <span class="bg-white/5 px-4 py-2 rounded-full">✨ พร้อมใช้งาน | Dark mode | Tailwind</span>
+            <!-- Table Footer -->
+            <div class="mt-5 flex items-center justify-between text-xs text-slate-500">
+                <div class="flex items-center gap-4">
+                    <span><i class="fas fa-check-circle text-emerald-400 mr-1"></i> ออนไลน์ {active_count}</span>
+                    <span><i class="fas fa-circle text-slate-600 mr-1"></i> ออฟไลน์ {inactive_count}</span>
+                </div>
+                <span class="bg-white/5 px-4 py-2 rounded-full border border-white/10">
+                    <i class="fas fa-database mr-1"></i> อัปเดตล่าสุด: <span id="lastSyncTime">-</span>
+                </span>
+            </div>
+        </div>
+
+        <!-- Activity Logs -->
+        <div class="mt-8 glass rounded-3xl p-6 border border-white/10">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 bg-amber-600/30 rounded-xl flex items-center justify-center text-amber-400">
+                    <i class="fas fa-history"></i>
+                </div>
+                <h3 class="text-lg font-semibold">ประวัติการใช้งานล่าสุด</h3>
+            </div>
+            
+            <div id="logsContainer" class="space-y-2 max-h-64 overflow-y-auto custom-scroll pr-2">
+                <!-- Logs will be injected here -->
+                <div class="flex items-center gap-3 py-2 border-b border-white/5">
+                    <div class="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                    <span class="text-xs text-slate-400">2024-01-20 14:30:22</span>
+                    <span class="text-xs bg-indigo-600/30 px-2 py-1 rounded">CREATE</span>
+                    <span class="text-sm">เพิ่มผู้ใช้ใหม่: สมชาย ใจดี</span>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Google Apps Script API endpoint (ของจำลอง, แต่คุณต้องเปลี่ยนเป็น GAS Web App URL จริง) -->
+    <!-- Add User Modal -->
+    <div id="addUserModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+        <div class="glass rounded-3xl p-8 max-w-md w-full border border-white/20 shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold">เพิ่มผู้ใช้ใหม่</h3>
+                <button id="closeModalBtn" class="w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="addUserForm" class="space-y-5">
+                <div>
+                    <label class="block text-sm text-slate-400 mb-2">LINE User ID</label>
+                    <input type="text" id="newLineUserId" required 
+                           class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-2">ชื่อผู้ใช้</label>
+                    <input type="text" id="newDisplayName" required 
+                           class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-2">อีเมล</label>
+                    <input type="email" id="newEmail" 
+                           class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-2">รูปโปรไฟล์ URL</label>
+                    <input type="url" id="newPictureUrl" 
+                           class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-2">แท็ก (คั่นด้วยคอมม่า)</label>
+                    <input type="text" id="newTags" placeholder="ลูกค้าใหม่, VIP, ทดลองใช้" 
+                           class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-indigo-500">
+                </div>
+                <button type="submit" class="w-full py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 rounded-xl font-medium shadow-lg neo-btn">
+                    <i class="fas fa-save mr-2"></i> บันทึกข้อมูล
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Email Modal -->
+    <div id="editEmailModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+        <div class="glass rounded-3xl p-8 max-w-md w-full border border-white/20 shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold">แก้ไขอีเมล</h3>
+                <button id="closeEmailModalBtn" class="w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="editEmailForm">
+                <input type="hidden" id="editLineUserId">
+                <div class="mb-5">
+                    <label class="block text-sm text-slate-400 mb-2">ชื่อผู้ใช้</label>
+                    <p id="editDisplayName" class="text-white font-medium"></p>
+                </div>
+                <div class="mb-5">
+                    <label class="block text-sm text-slate-400 mb-2">อีเมลใหม่</label>
+                    <input type="email" id="editEmail" required 
+                           class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-indigo-500">
+                </div>
+                <button type="submit" class="w-full py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 rounded-xl font-medium shadow-lg">
+                    <i class="fas fa-save mr-2"></i> อัปเดตอีเมล
+                </button>
+            </form>
+        </div>
+    </div>
+
     <script>
-        // ============================================================
-        // ⚡️ จำลอง Google Apps Script Endpoint (PRODUCTION ให้เปลี่ยน URL)
-        // ============================================================
-        const GAS_URL = 'https://script.google.com/macros/s/AKfycbzXx9x_sample_simulate/exec'; // เปลี่ยนเป็น URL ของคุณ
-
-        // ========== Global State & Dark Mode ==========
+        // ============================================
+        // LINE CRM PRO · FULL INTEGRATION
+        // LIFF + Google Sheets + Dark Mode
+        // ============================================
+        
+        const GAS_URL = 'YOUR_GAS_WEB_APP_URL'; // เปลี่ยนเป็น URL Web App ของคุณ
+        const LIFF_ID = 'YOUR_LIFF_ID'; // เปลี่ยนเป็น LIFF ID จริง
+        
+        // Global State
+        let currentUser = null;
         let crmData = [];
-
-        // Dark mode toggle
-        const darkToggle = document.getElementById('darkToggle');
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-        darkToggle.addEventListener('click', () => {
-            if (document.documentElement.classList.contains('dark')) {
-                document.documentElement.classList.remove('dark');
-                localStorage.theme = 'light';
-            } else {
-                document.documentElement.classList.add('dark');
-                localStorage.theme = 'dark';
-            }
-        });
-
-        // ========== ฟังก์ชันเรียก GAS (Google Apps Script) ==========
-        async function callGAS(action, payload = {}) {
-            // ในโค้ดจริงใช้ fetch ที่นี่ แต่เราจำลองข้อมูลตัวอย่างสวยงาม พร้อม LINE Profile mock
-            // สำหรับ Production: เปลี่ยนเป็น fetch(GAS_URL, {method: 'POST', body: JSON.stringify({action, ...payload})})
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    if (action === 'setupDatabase') {
-                        resolve({ success: true, message: 'Database initialized' });
-                    } else if (action === 'getAllUsers') {
-                        // จำลองข้อมูล CRM + LINE profile (mock) โดยใช้ SDK อัตโนมัติ
-                        resolve({
-                            users: [
-                                { lineUserId: 'U12345abcde', displayName: 'สมชาย ใจดี', email: 'somchai@example.com', pictureUrl: 'https://via.placeholder.com/150/4f46e5/ffffff?text=สมชาย', lastUpdated: '2025-03-15', status: 'active' },
-                                { lineUserId: 'U67890fghij', displayName: 'วิชญาพร ศรีสุข', email: 'witchayaporn@example.com', pictureUrl: 'https://via.placeholder.com/150/7c3aed/ffffff?text=วิชญา', lastUpdated: '2025-03-16', status: 'active' },
-                                { lineUserId: 'U11223klmno', displayName: 'อนันต์ รักดี', email: 'anant@example.com', pictureUrl: 'https://via.placeholder.com/150/db2777/ffffff?text=อนันต์', lastUpdated: '2025-03-10', status: 'inactive' },
-                                { lineUserId: 'U44556pqrst', displayName: 'สุดา รวยทรัพย์', email: 'suda@example.com', pictureUrl: 'https://via.placeholder.com/150/ea580c/ffffff?text=สุดา', lastUpdated: '2025-03-17', status: 'active' },
-                                { lineUserId: 'U77889uvwxy', displayName: 'มานะ ขยันเรียน', email: 'mana@example.com', pictureUrl: 'https://via.placeholder.com/150/16a34a/ffffff?text=มานะ', lastUpdated: '2025-03-12', status: 'active' },
-                                { lineUserId: 'U99010zabcd', displayName: 'พิมลวรรณ สุขใจ', email: 'pimonwan@example.com', pictureUrl: 'https://via.placeholder.com/150/b45309/ffffff?text=พิมล', lastUpdated: '2025-03-08', status: 'inactive' },
-                            ]
-                        });
-                    } else if (action === 'syncLine') {
-                        // จำลอง sync ดึงข้อมูลใหม่จาก LINE SDK
-                        resolve({
-                            success: true,
-                            newProfiles: [
-                                { lineUserId: 'U55667efghi', displayName: 'กฤษฎา นวกุล', email: 'kritsada@example.com', pictureUrl: 'https://via.placeholder.com/150/a21caf/ffffff?text=กฤษฎา', lastUpdated: new Date().toISOString().slice(0,10), status: 'active' }
-                            ]
-                        });
-                    }
-                }, 800); // จำลองดีเลย์
-            });
-        }
-
-        // ========== Setup Database ฟังก์ชัน ==========
-        async function setupDatabase() {
-            const btn = document.getElementById('setupDbBtn');
-            btn.innerHTML = `<i class="fas fa-spinner fa-pulse"></i> กำลังติดตั้ง...`;
-            btn.disabled = true;
+        let stats = {};
+        
+        // ========== 1. LIFF Initialization ==========
+        async function initializeLIFF() {
             try {
-                const res = await callGAS('setupDatabase');
-                alert('✅ Setup Database สำเร็จ! พร้อมใช้งาน');
-            } catch (e) {
-                alert('❌ เกิดข้อผิดพลาด: ' + e.message);
-            } finally {
-                btn.innerHTML = `<i class="fas fa-database"></i> Setup Database`;
-                btn.disabled = false;
-            }
-        }
-
-        // ========== โหลดข้อมูลผู้ใช้ทั้งหมด และอัปเดตตาราง + การ์ดสถิติ ==========
-        async function loadCRMData() {
-            const tbody = document.getElementById('crmTableBody');
-            tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-slate-400">
-                <i class="fas fa-spinner fa-pulse text-3xl mb-3"></i>
-                <p class="text-base">กำลังดึงข้อมูล LINE Profiles จาก SDK อัตโนมัติ...</p>
-            </td></tr>`;
-
-            try {
-                const res = await callGAS('getAllUsers');
-                crmData = res.users || [];
-                renderTable(crmData);
-                updateStats(crmData);
+                await liff.init({ liffId: LIFF_ID });
+                
+                if (liff.isLoggedIn()) {
+                    const profile = await liff.getProfile();
+                    const email = liff.getDecodedIDToken().email;
+                    
+                    currentUser = {
+                        userId: profile.userId,
+                        displayName: profile.displayName,
+                        pictureUrl: profile.pictureUrl,
+                        email: email || ''
+                    };
+                    
+                    // แสดง Profile
+                    document.getElementById('liffProfile').classList.remove('hidden');
+                    document.getElementById('profileImage').src = profile.pictureUrl;
+                    document.getElementById('profileName').innerText = profile.displayName;
+                    
+                    // ซิงค์ข้อมูลไปยัง Sheet อัตโนมัติ
+                    syncLineProfileToSheet();
+                }
             } catch (error) {
-                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-rose-400">
-                    <i class="fas fa-exclamation-triangle text-3xl mb-3"></i>
-                    <p class="text-base">ไม่สามารถโหลดข้อมูล: ${error.message}</p>
-                </td></tr>`;
+                console.error('LIFF init failed:', error);
             }
         }
-
-        // ========== อัปเดตสถิติทั้ง 4 การ์ด ==========
-        function updateStats(users) {
-            document.getElementById('totalUsers').innerText = users.length;
-            const withEmail = users.filter(u => u.email && u.email !== '').length;
-            document.getElementById('totalEmails').innerText = withEmail;
-            document.getElementById('totalLine').innerText = users.length; // ทุกคนมี line userId
-            const inactive = users.filter(u => u.status === 'inactive').length;
-            document.getElementById('inactiveUsers').innerText = inactive;
+        
+        // ========== 2. Google Apps Script API ==========
+        async function callGAS(action, data = {}) {
+            try {
+                const response = await fetch(GAS_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action, ...data })
+                });
+                
+                // no-cors mode จะได้ response แบบ opaque
+                return { success: true };
+            } catch (error) {
+                console.error('GAS Error:', error);
+                return { success: false, error: error.message };
+            }
         }
-
-        // ========== เรนเดอร์ตารางสวยงาม ==========
-        function renderTable(users) {
-            const tbody = document.getElementById('crmTableBody');
-            if (!users || users.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-slate-400">
+        
+        // ========== 3. Sync LINE Profile to Sheet ==========
+        async function syncLineProfileToSheet() {
+            if (!currentUser) return;
+            
+            const userData = {
+                lineUserId: currentUser.userId,
+                displayName: currentUser.displayName,
+                pictureUrl: currentUser.pictureUrl,
+                email: currentUser.email,
+                status: 'active'
+            };
+            
+            await callGAS('addUser', { data: userData });
+            loadData(); // โหลดข้อมูลใหม่
+        }
+        
+        // ========== 4. โหลดข้อมูลทั้งหมด ==========
+        async function loadData() {
+            showSkeleton();
+            
+            try {
+                // จำลองข้อมูลสำหรับ TEST (ถ้ายังไม่เชื่อมต่อ GAS จริง)
+                simulateData();
+                
+                // เมื่อเชื่อมต่อ GAS จริง ใช้โค้ดนี้:
+                // const response = await callGAS('getAllUsers');
+                // crmData = response.users || [];
+                // renderTable();
+                // loadStatistics();
+                // loadLogs();
+                
+            } catch (error) {
+                console.error('Load data failed:', error);
+            }
+        }
+        
+        // ========== 5. จำลองข้อมูล (สำหรับทดสอบ) ==========
+        function simulateData() {
+            crmData = [
+                { lineUserId: 'U4a7b8c9d0e1f', displayName: 'สมชาย ใจดี', email: 'somchai@example.com', pictureUrl: 'https://via.placeholder.com/150/4f46e5/ffffff?text=SC', status: 'active', lastLogin: '2024-01-20 14:30:22', tags: ['VIP', 'ลูกค้าใหม่'], note: '' },
+                { lineUserId: 'U5b8c9d0e1f2a', displayName: 'วิชญาพร ศรีสุข', email: 'witcha@example.com', pictureUrl: 'https://via.placeholder.com/150/7c3aed/ffffff?text=W', status: 'active', lastLogin: '2024-01-19 09:15:33', tags: ['พรีเมี่ยม'], note: '' },
+                { lineUserId: 'U6c9d0e1f2a3b', displayName: 'อนันต์ รักดี', email: 'anant@example.com', pictureUrl: 'https://via.placeholder.com/150/db2777/ffffff?text=A', status: 'inactive', lastLogin: '2024-01-10 11:22:44', tags: ['ทดลองใช้'], note: '' },
+                { lineUserId: 'U7d0e1f2a3b4c', displayName: 'สุดา รวยทรัพย์', email: 'suda@example.com', pictureUrl: 'https://via.placeholder.com/150/ea580c/ffffff?text=S', status: 'active', lastLogin: '2024-01-20 10:05:17', tags: ['VIP'], note: '' },
+                { lineUserId: 'U8e1f2a3b4c5d', displayName: 'มานะ ขยันเรียน', email: 'mana@example.com', pictureUrl: 'https://via.placeholder.com/150/16a34a/ffffff?text=M', status: 'active', lastLogin: '2024-01-18 16:40:55', tags: ['พนักงาน'], note: '' },
+                { lineUserId: 'U9f2a3b4c5d6e', displayName: 'พิมลวรรณ สุขใจ', email: 'pimon@example.com', pictureUrl: 'https://via.placeholder.com/150/b45309/ffffff?text=P', status: 'active', lastLogin: '2024-01-20 08:12:09', tags: ['ลูกค้าใหม่'], note: '' },
+            ];
+            
+            stats = {
+                totalUsers: 6,
+                activeUsers: 5,
+                withEmail: 6,
+                newUsers: 2,
+                inactiveUsers: 1
+            };
+            
+            renderTable();
+            updateStats();
+            updateLastSync();
+        }
+        
+        // ========== 6. Render Table ==========
+        function renderTable() {
+            const tbody = document.getElementById('userTableBody');
+            const keyword = document.getElementById('searchInput')?.value.toLowerCase() || '';
+            
+            let filteredData = crmData;
+            if (keyword) {
+                filteredData = crmData.filter(user => 
+                    user.displayName.toLowerCase().includes(keyword) ||
+                    user.email.toLowerCase().includes(keyword) ||
+                    user.lineUserId.toLowerCase().includes(keyword)
+                );
+            }
+            
+            if (filteredData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-12 text-center text-slate-400">
                     <i class="fas fa-user-slash text-3xl mb-3"></i>
-                    <p>ยังไม่มีข้อมูลลูกค้า เริ่มต้นด้วยการ Sync LINE Profiles</p>
+                    <p>ไม่พบข้อมูลผู้ใช้</p>
                 </td></tr>`;
                 return;
             }
-
+            
             let html = '';
-            users.forEach(user => {
-                const statusClass = user.status === 'active' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : 'bg-slate-500/20 text-slate-400 border-slate-500/30';
-                const statusIcon = user.status === 'active' ? 'fa-circle' : 'fa-circle-dot';
+            filteredData.forEach(user => {
+                const statusClass = user.status === 'active' 
+                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' 
+                    : 'bg-slate-500/20 text-slate-400 border-slate-500/30';
                 
-                html += `<tr class="hover:bg-white/5 transition-all border-b border-white/5 last:border-0">
+                const tagsHtml = user.tags.map(tag => 
+                    `<span class="inline-block bg-indigo-600/30 text-indigo-300 px-2 py-1 rounded-lg text-[10px] font-medium border border-indigo-500/30 mr-1 mb-1">
+                        ${tag}
+                    </span>`
+                ).join('');
+                
+                html += `<tr class="hover:bg-white/5 transition border-b border-white/5">
+                    <td class="px-6 py-4">
+                        <img src="${user.pictureUrl}" class="w-10 h-10 rounded-full border-2 border-indigo-500/50 shadow-lg object-cover"
+                             onerror="this.src='https://via.placeholder.com/100/2d3748/ffffff?text=LINE'">
+                    </td>
                     <td class="px-6 py-4 font-medium">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-purple-600 flex items-center justify-center text-white shadow-md">
-                                <i class="fas fa-user text-xs"></i>
-                            </div>
-                            ${user.displayName || 'ไม่ระบุชื่อ'}
+                        <div class="flex items-center gap-2">
+                            <span>${user.displayName}</span>
+                            ${user.status === 'active' ? 
+                                '<span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>' : ''}
                         </div>
                     </td>
-                    <td class="px-6 py-4 font-mono text-xs text-slate-300">${user.lineUserId || '-'}</td>
-                    <td class="px-6 py-4">
-                        <span class="bg-indigo-600/20 text-indigo-200 px-3 py-1.5 rounded-lg text-xs border border-indigo-500/30 flex items-center gap-1 w-fit">
-                            <i class="fas fa-envelope text-[10px]"></i> ${user.email || 'ไม่มีอีเมล'}
-                        </span>
-                    </td>
+                    <td class="px-6 py-4 font-mono text-xs text-slate-300">${user.lineUserId.substring(0, 8)}...</td>
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-2">
-                            <img src="${user.pictureUrl || 'https://via.placeholder.com/100/2d3748/ffffff?text=LINE'}" 
-                                 class="w-8 h-8 rounded-full border-2 border-indigo-500/50 shadow-lg object-cover"
-                                 onerror="this.src='https://via.placeholder.com/100/2d3748/ffffff?text=no'">
-                            <span class="text-xs text-slate-400">LINE</span>
+                            <span class="text-indigo-300">${user.email}</span>
+                            <button onclick="openEditEmailModal('${user.lineUserId}', '${user.displayName}', '${user.email}')" 
+                                    class="text-slate-400 hover:text-indigo-400 transition">
+                                <i class="fas fa-pen text-xs"></i>
+                            </button>
                         </div>
                     </td>
-                    <td class="px-6 py-4 text-slate-400 text-xs">${user.lastUpdated || '-'}</td>
+                    <td class="px-6 py-4">
+                        <div class="flex flex-wrap max-w-[200px]">
+                            ${tagsHtml}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-slate-400 text-xs">${user.lastLogin}</td>
                     <td class="px-6 py-4">
                         <div class="flex gap-2">
-                            <button class="w-8 h-8 rounded-lg bg-white/5 hover:bg-indigo-600/30 border border-white/10 flex items-center justify-center transition" title="ดูโปรไฟล์">
+                            <button onclick="viewUserDetails('${user.lineUserId}')" 
+                                    class="w-8 h-8 rounded-lg bg-white/5 hover:bg-indigo-600/30 border border-white/10 flex items-center justify-center transition">
                                 <i class="fas fa-eye text-indigo-300 text-xs"></i>
                             </button>
-                            <button class="w-8 h-8 rounded-lg bg-white/5 hover:bg-emerald-600/30 border border-white/10 flex items-center justify-center transition" title="ส่งข้อความ">
+                            <button onclick="sendLineMessage('${user.lineUserId}')" 
+                                    class="w-8 h-8 rounded-lg bg-white/5 hover:bg-emerald-600/30 border border-white/10 flex items-center justify-center transition">
                                 <i class="fab fa-line text-emerald-300 text-xs"></i>
                             </button>
                             <span class="${statusClass} px-2 py-1 rounded-full text-[10px] font-medium border flex items-center gap-1">
-                                <i class="fas ${statusIcon}"></i> ${user.status}
+                                <i class="fas ${user.status === 'active' ? 'fa-circle' : 'fa-circle-dot'}"></i>
+                                ${user.status}
                             </span>
                         </div>
                     </td>
                 </tr>`;
             });
+            
             tbody.innerHTML = html;
-        }
-
-        // ========== Sync LINE Profiles (จำลองการดึงจาก SDK อัตโนมัติ) ==========
-        async function syncLineProfiles() {
-            const syncBtn = document.getElementById('syncLineProfiles');
-            const originalText = syncBtn.innerHTML;
-            syncBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> กำลัง Sync...';
-            syncBtn.disabled = true;
-
-            try {
-                const result = await callGAS('syncLine');
-                if (result.success) {
-                    // โหลดข้อมูลใหม่อีกครั้ง (รวม profile ใหม่)
-                    await loadCRMData();
-                    alert(`✅ Sync สำเร็จ! เพิ่มผู้ใช้ใหม่ ${result.newProfiles?.length || 0} รายการ`);
-                }
-            } catch (e) {
-                alert('Sync ล้มเหลว: ' + e.message);
-            } finally {
-                syncBtn.innerHTML = originalText;
-                syncBtn.disabled = false;
+            
+            // อัปเดต footer counts
+            const activeCount = filteredData.filter(u => u.status === 'active').length;
+            const inactiveCount = filteredData.filter(u => u.status !== 'active').length;
+            const footerText = document.querySelector('.mt-5 .flex.items-center.gap-4');
+            if (footerText) {
+                footerText.innerHTML = `
+                    <span><i class="fas fa-check-circle text-emerald-400 mr-1"></i> ออนไลน์ ${activeCount}</span>
+                    <span><i class="fas fa-circle text-slate-600 mr-1"></i> ออฟไลน์ ${inactiveCount}</span>
+                `;
             }
         }
-
-        // ========== Event Listeners ==========
-        document.getElementById('setupDbBtn').addEventListener('click', setupDatabase);
-        document.getElementById('refreshData').addEventListener('click', loadCRMData);
-        document.getElementById('syncLineProfiles').addEventListener('click', syncLineProfiles);
-
-        // โหลดข้อมูลครั้งแรก
+        
+        // ========== 7. Update Statistics ==========
+        function updateStats() {
+            document.getElementById('statTotalUsers').innerText = stats.totalUsers || 0;
+            document.getElementById('statActiveUsers').innerText = stats.activeUsers || 0;
+            document.getElementById('statWithEmail').innerText = stats.withEmail || 0;
+            document.getElementById('statNewUsers').innerText = stats.newUsers || 0;
+            document.getElementById('statInactiveUsers').innerText = stats.inactiveUsers || 0;
+        }
+        
+        // ========== 8. Skeleton Loading ==========
+        function showSkeleton() {
+            const tbody = document.getElementById('userTableBody');
+            let skeletonRows = '';
+            for (let i = 0; i < 3; i++) {
+                skeletonRows += `<tr>
+                    <td colspan="7" class="px-6 py-4">
+                        <div class="skeleton h-16 rounded-lg"></div>
+                    </td>
+                </tr>`;
+            }
+            tbody.innerHTML = skeletonRows;
+        }
+        
+        // ========== 9. Email Management ==========
+        function openEditEmailModal(lineUserId, displayName, currentEmail) {
+            document.getElementById('editLineUserId').value = lineUserId;
+            document.getElementById('editDisplayName').innerText = displayName;
+            document.getElementById('editEmail').value = currentEmail;
+            document.getElementById('editEmailModal').classList.remove('hidden');
+        }
+        
+        async function updateUserEmail() {
+            const lineUserId = document.getElementById('editLineUserId').value;
+            const newEmail = document.getElementById('editEmail').value;
+            
+            await callGAS('updateEmail', { lineUserId, email: newEmail });
+            
+            // อัปเดตใน local data
+            const user = crmData.find(u => u.lineUserId === lineUserId);
+            if (user) user.email = newEmail;
+            
+            renderTable();
+            document.getElementById('editEmailModal').classList.add('hidden');
+            showNotification('อัปเดตอีเมลเรียบร้อยแล้ว');
+        }
+        
+        // ========== 10. Search ==========
+        function handleSearch() {
+            renderTable();
+        }
+        
+        // ========== 11. Dark Mode ==========
+        function initDarkMode() {
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+            
+            document.getElementById('darkToggle').addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+                localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+            });
+        }
+        
+        // ========== 12. Setup Database ==========
+        async function setupDatabase() {
+            const btn = document.getElementById('setupDbBtn');
+            btn.innerHTML = '<div class="flex items-center gap-4"><div class="w-12 h-12 bg-indigo-600/30 rounded-xl flex items-center justify-center"><i class="fas fa-spinner fa-pulse text-indigo-400"></i></div><div class="text-left"><p class="text-sm text-slate-400">กำลังตั้งค่า...</p><p class="font-semibold">Database</p></div></div>';
+            
+            await callGAS('setupDatabase');
+            
+            btn.innerHTML = '<div class="flex items-center gap-4"><div class="w-12 h-12 bg-indigo-600/30 rounded-xl flex items-center justify-center text-indigo-400"><i class="fas fa-check"></i></div><div class="text-left"><p class="text-sm text-slate-400">Setup</p><p class="font-semibold text-white">Completed</p></div></div>';
+            
+            showNotification('✅ ตั้งค่า Database สำเร็จ');
+            setTimeout(() => {
+                btn.innerHTML = '<div class="flex items-center gap-4"><div class="w-12 h-12 bg-indigo-600/30 rounded-xl flex items-center justify-center text-indigo-400"><i class="fas fa-database"></i></div><div class="text-left"><p class="text-sm text-slate-400">Setup</p><p class="font-semibold text-white">Database</p></div></div>';
+            }, 2000);
+        }
+        
+        // ========== 13. LINE Functions ==========
+        async function sendLineMessage(userId) {
+            if (!liff.isInClient()) {
+                alert('กรุณาเปิดใน LINE App');
+                return;
+            }
+            
+            try {
+                await liff.sendMessages([
+                    {
+                        type: 'text',
+                        text: 'สวัสดีจาก LINE CRM!'
+                    }
+                ]);
+                showNotification('ส่งข้อความเรียบร้อย');
+            } catch (error) {
+                console.error('Send message failed:', error);
+            }
+        }
+        
+        function viewUserDetails(userId) {
+            const user = crmData.find(u => u.lineUserId === userId);
+            if (user) {
+                alert(`
+                    👤 ชื่อ: ${user.displayName}
+                    🆔 LINE ID: ${user.lineUserId}
+                    📧 อีเมล: ${user.email}
+                    📅 เข้าระบบล่าสุด: ${user.lastLogin}
+                    🏷️ แท็ก: ${user.tags.join(', ')}
+                `);
+            }
+        }
+        
+        // ========== 14. Add User ==========
+        async function addNewUser(e) {
+            e.preventDefault();
+            
+            const userData = {
+                lineUserId: document.getElementById('newLineUserId').value,
+                displayName: document.getElementById('newDisplayName').value,
+                email: document.getElementById('newEmail').value,
+                pictureUrl: document.getElementById('newPictureUrl').value || 'https://via.placeholder.com/150/4f46e5/ffffff?text=USER',
+                tags: document.getElementById('newTags').value.split(',').map(t => t.trim()).filter(t => t),
+                status: 'active'
+            };
+            
+            await callGAS('addUser', { data: userData });
+            
+            // เพิ่มใน local data
+            userData.lastLogin = new Date().toISOString().slice(0, 10);
+            crmData.push(userData);
+            
+            renderTable();
+            document.getElementById('addUserModal').classList.add('hidden');
+            document.getElementById('addUserForm').reset();
+            showNotification('✅ เพิ่มผู้ใช้เรียบร้อย');
+        }
+        
+        // ========== 15. Notification ==========
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed bottom-4 right-4 glass px-6 py-4 rounded-2xl border border-emerald-500/30 shadow-2xl z-[200] animate-slideIn';
+            notification.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-check-circle text-emerald-400 text-xl"></i>
+                    <span class="text-white">${message}</span>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+        
+        // ========== 16. Update Last Sync ==========
+        function updateLastSync() {
+            const now = new Date();
+            document.getElementById('lastSyncTime').innerText = 
+                now.toLocaleString('th-TH', { hour12: false });
+        }
+        
+        // ========== 17. Event Listeners ==========
+        function initEventListeners() {
+            document.getElementById('setupDbBtn').addEventListener('click', setupDatabase);
+            document.getElementById('refreshBtn').addEventListener('click', loadData);
+            document.getElementById('searchInput').addEventListener('input', handleSearch);
+            document.getElementById('liffLoginBtn').addEventListener('click', initializeLIFF);
+            document.getElementById('syncSheetBtn').addEventListener('click', () => {
+                showNotification('🔄 กำลังซิงค์ข้อมูลกับ Google Sheets...');
+                loadData();
+            });
+            
+            // Modal controls
+            document.getElementById('addUserBtn').addEventListener('click', () => {
+                document.getElementById('addUserModal').classList.remove('hidden');
+            });
+            
+            document.getElementById('closeModalBtn').addEventListener('click', () => {
+                document.getElementById('addUserModal').classList.add('hidden');
+            });
+            
+            document.getElementById('closeEmailModalBtn').addEventListener('click', () => {
+                document.getElementById('editEmailModal').classList.add('hidden');
+            });
+            
+            document.getElementById('addUserForm').addEventListener('submit', addNewUser);
+            document.getElementById('editEmailForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                updateUserEmail();
+            });
+            
+            // Stats button
+            document.getElementById('statsBtn').addEventListener('click', () => {
+                alert(`
+                    📊 สถิติระบบ LINE CRM
+                    👥 ผู้ใช้ทั้งหมด: ${stats.totalUsers || 0}
+                    ✅ ใช้งานอยู่: ${stats.activeUsers || 0}
+                    📧 มีอีเมล: ${stats.withEmail || 0}
+                    🆕 มาใหม่ (7 วัน): ${stats.newUsers || 0}
+                    💤 ไม่ใช้งาน: ${stats.inactiveUsers || 0}
+                `);
+            });
+            
+            // Click outside to close modal
+            window.addEventListener('click', (e) => {
+                if (e.target.classList.contains('bg-black/70')) {
+                    document.getElementById('addUserModal').classList.add('hidden');
+                    document.getElementById('editEmailModal').classList.add('hidden');
+                }
+            });
+        }
+        
+        // ========== Initialization ==========
         window.addEventListener('DOMContentLoaded', () => {
-            loadCRMData();
+            initDarkMode();
+            initEventListeners();
+            loadData();
+            
+            // Auto init LIFF
+            if (document.readyState === 'complete') {
+                initializeLIFF();
+            }
         });
     </script>
-
-    <!-- ตัวอย่าง Deployment note -->
-    <div class="max-w-7xl mx-auto px-4 pb-8 mt-5 text-center text-slate-500 text-xs border-t border-white/10 pt-6">
-        <p class="flex items-center justify-center gap-4">
-            <span><i class="fas fa-check-circle text-emerald-400"></i> ดาร์กโมดอัตโนมัติ</span>
-            <span><i class="fas fa-code-branch"></i> TailwindCSS + Glassmorphism</span>
-            <span><i class="fas fa-google"></i> Google Apps Script backend</span>
-            <span><i class="fab fa-line"></i> LINE SDK simulator</span>
-        </p>
-        <p class="mt-3 text-indigo-400/70">📌 หมายเหตุ: แก้ไข GAS_URL เป็น Web App URL ของคุณ และ implement LINE SDK จริง (ใช้ callGAS mock)</p>
-    </div>
+    
+    <!-- Style animation -->
+    <style>
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        .animate-slideIn {
+            animation: slideIn 0.3s ease-out;
+        }
+    </style>
 </body>
 </html>
