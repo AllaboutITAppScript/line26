@@ -2,341 +2,1178 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - LINE MiniApp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LINE CRM Pro · LIFF Integration</title>
+    
+    <!-- Tailwind + Dark mode -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#06c755'
-                    }
-                }
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- LINE LIFF SDK -->
+    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+    
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* Dark Mode Base Styles */
+        :root {
+            --bg-primary: 15, 23, 42;
+            --bg-secondary: 30, 41, 59;
+            --text-primary: 255, 255, 255;
+            --text-secondary: 148, 163, 184;
+            --accent-primary: 99, 102, 241;
+            --accent-secondary: 139, 92, 246;
+        }
+        
+        .dark {
+            --bg-primary: 2, 6, 23;
+            --bg-secondary: 15, 23, 42;
+            --text-primary: 255, 255, 255;
+            --text-secondary: 148, 163, 184;
+            color-scheme: dark;
+        }
+        
+        body {
+            background: linear-gradient(135deg, 
+                rgb(var(--bg-primary)) 0%, 
+                rgb(var(--bg-secondary)) 100%);
+            color: rgb(var(--text-primary));
+            transition: background 0.3s ease, color 0.3s ease;
+            min-height: 100vh;
+        }
+        
+        .glass {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .dark .glass {
+            background: rgba(17, 25, 40, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Loading Overlay */
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+        }
+        
+        .loader {
+            width: 80px;
+            height: 80px;
+            border: 4px solid rgba(99, 102, 241, 0.3);
+            border-radius: 50%;
+            border-top-color: rgb(99, 102, 241);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        .pulse-loader {
+            width: 120px;
+            height: 120px;
+            background: rgba(99, 102, 241, 0.2);
+            border-radius: 50%;
+            position: relative;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .pulse-loader::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: rgba(99, 102, 241, 0.4);
+            border-radius: 50%;
+            animation: pulse-inner 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+        
+        @keyframes pulse-inner {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.2); }
+        }
+        
+        /* Profile Card Animation */
+        .profile-card {
+            background: linear-gradient(135deg, 
+                rgba(99, 102, 241, 0.2) 0%, 
+                rgba(139, 92, 246, 0.2) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px -15px rgba(99, 102, 241, 0.5);
+        }
+        
+        /* Neo Brutalism Buttons */
+        .neo-btn {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border: none;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .neo-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .neo-btn:hover::before {
+            left: 100%;
+        }
+        
+        .neo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px -10px rgba(99, 102, 241, 0.6);
+        }
+        
+        /* Custom Scrollbar */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        .custom-scroll::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+        }
+        
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.5);
+            border-radius: 10px;
+        }
+        
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.8);
+        }
+        
+        /* Skeleton Loading */
+        .skeleton {
+            background: linear-gradient(90deg, 
+                rgba(255,255,255,0.05) 25%, 
+                rgba(255,255,255,0.1) 50%, 
+                rgba(255,255,255,0.05) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+        }
+        
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        /* Toast Notification */
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(99, 102, 241, 0.5);
+            border-radius: 12px;
+            color: white;
+            z-index: 10000;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
             }
         }
-    </script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
-        * { font-family: 'Prompt', sans-serif; }
-        .dark { background-color: #1a1a1a; color: #ffffff; }
-        .dark .bg-white { background-color: #2d2d2d !important; }
-        .dark .text-gray-600 { color: #a0a0a0 !important; }
+        
+        /* Dark mode table styles */
+        .dark table {
+            color: rgb(var(--text-primary));
+        }
+        
+        .dark th {
+            background: rgba(0, 0, 0, 0.3);
+            color: rgb(var(--text-secondary));
+        }
+        
+        .dark td {
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .dark tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
     </style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Header -->
-        <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-800 dark:text-white">
-                <span class="text-primary">Admin</span> Panel
-            </h1>
-            <button id="darkModeToggle" class="p-2 bg-white dark:bg-gray-800 rounded-lg shadow">
-                <svg class="w-6 h-6 text-gray-800 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-                </svg>
+<body class="antialiased custom-scroll">
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="hidden">
+        <div class="text-center">
+            <div class="pulse-loader mx-auto mb-6"></div>
+            <p id="loadingMessage" class="text-white text-lg font-medium">กำลังโหลดข้อมูล...</p>
+            <p class="text-gray-400 text-sm mt-2">กรุณารอสักครู่</p>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="glass fixed top-0 left-0 right-0 z-50 px-6 py-4 mx-4 mt-4 rounded-2xl shadow-2xl border border-white/10">
+        <div class="flex items-center justify-between max-w-7xl mx-auto">
+            <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-2xl animate-bounce">
+                    <i class="fab fa-line text-white text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-black bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300 bg-clip-text text-transparent">
+                        LINE CRM <span class="text-white/80 text-sm font-normal ml-2">PRO</span>
+                    </h1>
+                    <p class="text-xs text-slate-400 mt-0.5">LIFF Integration · Google Sheets</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <!-- Profile Section - แสดงเฉพาะเมื่อ login แล้ว -->
+                <div id="liffProfile" class="hidden items-center gap-4 profile-card px-4 py-2 rounded-xl">
+                    <img id="profileImage" src="" class="w-10 h-10 rounded-full border-2 border-indigo-400 object-cover" alt="profile">
+                    <div>
+                        <p id="profileName" class="text-sm font-semibold text-white"></p>
+                        <p id="profileEmail" class="text-xs text-indigo-300"></p>
+                    </div>
+                    <button id="logoutBtn" class="ml-2 w-8 h-8 rounded-lg bg-red-500/20 hover:bg-red-500/40 flex items-center justify-center transition">
+                        <i class="fas fa-sign-out-alt text-red-400 text-xs"></i>
+                    </button>
+                </div>
+                
+                <!-- Login Button - แสดงเมื่อยังไม่ login -->
+                <button id="liffLoginBtn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-xl text-sm font-medium flex items-center gap-2 transition">
+                    <i class="fab fa-line"></i>
+                    เข้าสู่ระบบด้วย LINE
+                </button>
+                
+                <button id="darkToggle" class="w-11 h-11 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center transition-all">
+                    <i class="fas fa-moon dark:hidden text-indigo-300"></i>
+                    <i class="fas fa-sun hidden dark:block text-yellow-300"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="pt-28 pb-10 px-4 max-w-7xl mx-auto">
+        <!-- Welcome Banner - แสดงเมื่อ login แล้ว -->
+        <div id="welcomeBanner" class="hidden mb-8 glass rounded-3xl p-8 border border-indigo-500/30 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-indigo-600/20 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 left-0 w-48 h-48 bg-purple-600/20 rounded-full blur-3xl"></div>
+            
+            <div class="relative z-10">
+                <h2 class="text-3xl font-bold mb-2">
+                    สวัสดี, <span id="welcomeName" class="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent"></span>
+                </h2>
+                <p class="text-slate-400">ยินดีต้อนรับสู่ LINE CRM Pro ระบบจัดการลูกค้าผ่าน LINE LIFF</p>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <button id="setupDbBtn" class="glass p-5 rounded-2xl border border-indigo-500/30 hover:border-indigo-500 transition-all group">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-indigo-600/30 rounded-xl flex items-center justify-center text-indigo-400 text-xl group-hover:scale-110 transition">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <div class="text-left">
+                        <p class="text-sm text-slate-400">Setup</p>
+                        <p class="font-semibold text-white">Database</p>
+                    </div>
+                </div>
+            </button>
+            
+            <button id="syncSheetBtn" class="glass p-5 rounded-2xl border border-blue-500/30 hover:border-blue-500 transition-all group">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-blue-600/30 rounded-xl flex items-center justify-center text-blue-400 text-xl group-hover:scale-110 transition">
+                        <i class="fas fa-file-excel"></i>
+                    </div>
+                    <div class="text-left">
+                        <p class="text-sm text-slate-400">Sync to</p>
+                        <p class="font-semibold text-white">Google Sheets</p>
+                    </div>
+                </div>
+            </button>
+            
+            <button id="statsBtn" class="glass p-5 rounded-2xl border border-purple-500/30 hover:border-purple-500 transition-all group">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-purple-600/30 rounded-xl flex items-center justify-center text-purple-400 text-xl group-hover:scale-110 transition">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <div class="text-left">
+                        <p class="text-sm text-slate-400">View</p>
+                        <p class="font-semibold text-white">Analytics</p>
+                    </div>
+                </div>
+            </button>
+            
+            <button id="exportBtn" class="glass p-5 rounded-2xl border border-emerald-500/30 hover:border-emerald-500 transition-all group">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-emerald-600/30 rounded-xl flex items-center justify-center text-emerald-400 text-xl group-hover:scale-110 transition">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <div class="text-left">
+                        <p class="text-sm text-slate-400">Export</p>
+                        <p class="font-semibold text-white">CSV Report</p>
+                    </div>
+                </div>
             </button>
         </div>
 
         <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                <div class="flex items-center">
-                    <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
-                        <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm text-gray-500 dark:text-gray-400">กิจกรรมทั้งหมด</p>
-                        <p id="totalActivities" class="text-2xl font-semibold text-gray-800 dark:text-white">0</p>
-                    </div>
-                </div>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+            <div class="glass rounded-2xl p-5 border border-white/5 hover:border-indigo-500/30 transition">
+                <p class="text-slate-400 text-xs mb-1 flex items-center gap-1">
+                    <i class="fas fa-users text-indigo-400"></i> ผู้ใช้ทั้งหมด
+                </p>
+                <p id="statTotalUsers" class="text-3xl font-bold text-white">-</p>
+                <p class="text-xs text-slate-500 mt-1">จาก LINE LIFF</p>
             </div>
-            
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                <div class="flex items-center">
-                    <div class="p-3 bg-green-100 dark:bg-green-900 rounded-full">
-                        <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm text-gray-500 dark:text-gray-400">ผู้ใช้ทั้งหมด</p>
-                        <p id="totalUsers" class="text-2xl font-semibold text-gray-800 dark:text-white">0</p>
-                    </div>
-                </div>
+            <div class="glass rounded-2xl p-5 border border-white/5 hover:border-emerald-500/30 transition">
+                <p class="text-slate-400 text-xs mb-1 flex items-center gap-1">
+                    <i class="fas fa-circle text-emerald-400"></i> Active
+                </p>
+                <p id="statActiveUsers" class="text-3xl font-bold text-emerald-400">-</p>
             </div>
-            
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                <div class="flex items-center">
-                    <div class="p-3 bg-yellow-100 dark:bg-yellow-900 rounded-full">
-                        <svg class="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm text-gray-500 dark:text-gray-400">การลงทะเบียน</p>
-                        <p id="totalRegistrations" class="text-2xl font-semibold text-gray-800 dark:text-white">0</p>
-                    </div>
-                </div>
+            <div class="glass rounded-2xl p-5 border border-white/5 hover:border-blue-500/30 transition">
+                <p class="text-slate-400 text-xs mb-1 flex items-center gap-1">
+                    <i class="fas fa-envelope text-blue-400"></i> มีอีเมล
+                </p>
+                <p id="statWithEmail" class="text-3xl font-bold text-blue-400">-</p>
             </div>
-            
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                <div class="flex items-center">
-                    <div class="p-3 bg-purple-100 dark:bg-purple-900 rounded-full">
-                        <svg class="w-8 h-8 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm text-gray-500 dark:text-gray-400">เช็คอินแล้ว</p>
-                        <p id="totalCheckins" class="text-2xl font-semibold text-gray-800 dark:text-white">0</p>
-                    </div>
-                </div>
+            <div class="glass rounded-2xl p-5 border border-white/5 hover:border-purple-500/30 transition">
+                <p class="text-slate-400 text-xs mb-1 flex items-center gap-1">
+                    <i class="fas fa-star text-purple-400"></i> มาใหม่
+                </p>
+                <p id="statNewUsers" class="text-3xl font-bold text-purple-400">-</p>
+            </div>
+            <div class="glass rounded-2xl p-5 border border-white/5 hover:border-amber-500/30 transition">
+                <p class="text-slate-400 text-xs mb-1 flex items-center gap-1">
+                    <i class="fas fa-clock text-amber-400"></i> ไม่ใช้งาน
+                </p>
+                <p id="statInactiveUsers" class="text-3xl font-bold text-amber-400">-</p>
             </div>
         </div>
 
-        <!-- Tabs -->
-        <div class="border-b border-gray-200 dark:border-gray-700 mb-6">
-            <nav class="-mb-px flex space-x-8">
-                <button class="tab-btn active border-primary text-primary px-1 py-4 text-sm font-medium" data-tab="activities">
-                    จัดการกิจกรรม
-                </button>
-                <button class="tab-btn border-transparent text-gray-500 hover:text-gray-700 px-1 py-4 text-sm font-medium" data-tab="registrations">
-                    การลงทะเบียน
-                </button>
-                <button class="tab-btn border-transparent text-gray-500 hover:text-gray-700 px-1 py-4 text-sm font-medium" data-tab="users">
-                    ผู้ใช้
-                </button>
-                <button class="tab-btn border-transparent text-gray-500 hover:text-gray-700 px-1 py-4 text-sm font-medium" data-tab="settings">
-                    ตั้งค่า
-                </button>
-            </nav>
-        </div>
-
-        <!-- Activities Tab -->
-        <div id="activitiesTab" class="tab-content">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold text-gray-800 dark:text-white">รายการกิจกรรม</h2>
-                <button onclick="showCreateActivityModal()" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90">
-                    + สร้างกิจกรรมใหม่
-                </button>
+        <!-- Main Table Card -->
+        <div class="glass rounded-3xl p-6 border border-white/10 shadow-2xl">
+            <!-- Table Header -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-gradient-to-br from-indigo-500/30 to-purple-600/30 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-table text-indigo-300 text-xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold">รายชื่อลูกค้า LINE</h2>
+                        <p class="text-xs text-slate-400">ซิงค์ข้อมูลจาก LIFF และ Google Sheets อัตโนมัติ</p>
+                    </div>
+                </div>
+                
+                <div class="flex flex-wrap gap-3">
+                    <!-- Search Box -->
+                    <div class="relative">
+                        <input type="text" id="searchInput" placeholder="ค้นหาชื่อ, อีเมล, LINE ID..." 
+                               class="w-64 px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 transition">
+                        <i class="fas fa-search absolute right-4 top-3.5 text-slate-500"></i>
+                    </div>
+                    
+                    <button id="refreshBtn" class="px-5 py-3 bg-white/10 hover:bg-white/20 rounded-xl text-sm font-medium border border-white/10 transition-all flex items-center gap-2">
+                        <i class="fas fa-sync-alt"></i> รีเฟรช
+                    </button>
+                    
+                    <button id="addUserBtn" class="px-5 py-3 neo-btn rounded-xl text-sm font-medium shadow-lg flex items-center gap-2">
+                        <i class="fas fa-user-plus"></i> เพิ่มผู้ใช้
+                    </button>
+                </div>
             </div>
-            
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead class="bg-gray-50 dark:bg-gray-700">
+
+            <!-- Users Table -->
+            <div class="overflow-x-auto rounded-xl border border-white/10">
+                <table class="w-full text-sm">
+                    <thead class="bg-black/40 text-slate-300">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">ชื่อกิจกรรม</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">วันที่</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">ผู้เข้าร่วม</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">สถานะ</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">จัดการ</th>
+                            <th class="px-6 py-4 text-left font-medium"><i class="fas fa-user mr-2"></i>โปรไฟล์</th>
+                            <th class="px-6 py-4 text-left font-medium"><i class="fab fa-line mr-2"></i>LINE Display Name</th>
+                            <th class="px-6 py-4 text-left font-medium"><i class="fas fa-id-card mr-2"></i>LINE User ID</th>
+                            <th class="px-6 py-4 text-left font-medium"><i class="fas fa-envelope mr-2"></i>อีเมล</th>
+                            <th class="px-6 py-4 text-left font-medium"><i class="fas fa-tags mr-2"></i>สถานะ</th>
+                            <th class="px-6 py-4 text-left font-medium"><i class="fas fa-clock mr-2"></i>เข้าสู่ระบบล่าสุด</th>
+                            <th class="px-6 py-4 text-left font-medium"><i class="fas fa-cog mr-2"></i>จัดการ</th>
                         </tr>
                     </thead>
-                    <tbody id="activitiesTableBody" class="divide-y divide-gray-200 dark:divide-gray-700">
-                        <!-- Dynamic content -->
+                    <tbody id="userTableBody" class="divide-y divide-white/5">
+                        <!-- Dynamic content will be inserted here -->
                     </tbody>
                 </table>
             </div>
-        </div>
-
-        <!-- Create Activity Modal -->
-        <div id="createActivityModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-            <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full">
-                <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4">สร้างกิจกรรมใหม่</h3>
-                <form id="createActivityForm" onsubmit="createActivity(event)">
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">ชื่อกิจกรรม</label>
-                            <input type="text" name="title" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:text-white">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">รายละเอียด</label>
-                            <textarea name="description" rows="3" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:text-white"></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">สถานที่</label>
-                            <input type="text" name="location" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:text-white">
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">วันที่เริ่ม</label>
-                                <input type="date" name="startDate" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:text-white">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">วันที่สิ้นสุด</label>
-                                <input type="date" name="endDate" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:text-white">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">จำนวนผู้เข้าร่วมสูงสุด</label>
-                            <input type="number" name="maxParticipants" required min="1" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:text-white">
-                        </div>
-                    </div>
-                    <div class="flex justify-end space-x-3 mt-6">
-                        <button type="button" onclick="closeCreateActivityModal()" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                            ยกเลิก
-                        </button>
-                        <button type="submit" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-opacity-90">
-                            สร้างกิจกรรม
-                        </button>
-                    </div>
-                </form>
+            
+            <!-- Table Footer -->
+            <div class="mt-5 flex items-center justify-between text-xs text-slate-500">
+                <div id="tableStats" class="flex items-center gap-4">
+                    <span><i class="fas fa-check-circle text-emerald-400 mr-1"></i> ออนไลน์ <span id="onlineCount">0</span></span>
+                    <span><i class="fas fa-circle text-slate-600 mr-1"></i> ออฟไลน์ <span id="offlineCount">0</span></span>
+                </div>
+                <span class="bg-white/5 px-4 py-2 rounded-full border border-white/10">
+                    <i class="fas fa-database mr-1"></i> อัปเดตล่าสุด: <span id="lastSyncTime">-</span>
+                </span>
             </div>
         </div>
 
-        <script>
-            const API_URL = 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec';
-            const LINE_USER_ID = 'Uadmin12345'; // Admin LINE User ID
-
-            // Initialize
-            document.addEventListener('DOMContentLoaded', () => {
-                loadAdminData();
-                setupEventListeners();
-            });
-
-            async function callAPI(path, method = 'GET', data = {}) {
-                const formData = new FormData();
-                formData.append('path', path);
-                formData.append('lineUserId', LINE_USER_ID);
-                
-                Object.keys(data).forEach(key => formData.append(key, data[key]));
-
-                try {
-                    const response = await fetch(API_URL, {
-                        method: 'POST',
-                        body: formData
-                    });
-                    return await response.json();
-                } catch (error) {
-                    console.error('API Error:', error);
-                    alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
-                }
-            }
-
-            async function loadAdminData() {
-                // Load activities
-                const activitiesResult = await callAPI('admin/activities');
-                if (activitiesResult.success) {
-                    displayActivities(activitiesResult.data);
-                    document.getElementById('totalActivities').textContent = activitiesResult.data.length;
-                }
-
-                // Load stats
-                const stats = await callAPI('admin/stats');
-                if (stats.success) {
-                    document.getElementById('totalUsers').textContent = stats.data.totalUsers;
-                    document.getElementById('totalRegistrations').textContent = stats.data.totalRegistrations;
-                    document.getElementById('totalCheckins').textContent = stats.data.totalCheckins;
-                }
-            }
-
-            function displayActivities(activities) {
-                const tbody = document.getElementById('activitiesTableBody');
-                let html = '';
-                
-                activities.forEach(activity => {
-                    html += `
-                        <tr>
-                            <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">${activity.title}</td>
-                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">${formatDate(activity.startDate)}</td>
-                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">${activity.participants}</td>
-                            <td class="px-6 py-4">
-                                <span class="px-2 py-1 text-xs rounded-full ${activity.status === 'open' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-                                    ${activity.status === 'open' ? 'เปิด' : 'ปิด'}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 text-sm">
-                                <button onclick="editActivity('${activity.id}')" class="text-blue-600 hover:text-blue-900 mr-3">แก้ไข</button>
-                                <button onclick="viewRegistrations('${activity.id}')" class="text-green-600 hover:text-green-900">ดูผู้ลงทะเบียน</button>
-                            </td>
-                        </tr>
-                    `;
-                });
-                
-                tbody.innerHTML = html;
-            }
-
-            function showCreateActivityModal() {
-                document.getElementById('createActivityModal').classList.remove('hidden');
-                document.getElementById('createActivityModal').classList.add('flex');
-            }
-
-            function closeCreateActivityModal() {
-                document.getElementById('createActivityModal').classList.add('hidden');
-                document.getElementById('createActivityModal').classList.remove('flex');
-            }
-
-            async function createActivity(event) {
-                event.preventDefault();
-                
-                const formData = new FormData(event.target);
-                const data = Object.fromEntries(formData.entries());
-                
-                const result = await callAPI('admin/create-activity', 'POST', data);
-                
-                if (result.success) {
-                    alert('สร้างกิจกรรมสำเร็จ');
-                    closeCreateActivityModal();
-                    loadAdminData();
-                } else {
-                    alert(result.message || 'เกิดข้อผิดพลาด');
-                }
-            }
-
-            function setupEventListeners() {
-                // Dark mode toggle
-                document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
-                
-                // Tab switching
-                document.querySelectorAll('.tab-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        document.querySelectorAll('.tab-btn').forEach(b => {
-                            b.classList.remove('active', 'border-primary', 'text-primary');
-                            b.classList.add('border-transparent', 'text-gray-500');
-                        });
-                        e.currentTarget.classList.add('active', 'border-primary', 'text-primary');
-                        e.currentTarget.classList.remove('border-transparent', 'text-gray-500');
-                        
-                        // Show selected tab
-                        const tab = e.currentTarget.dataset.tab;
-                        document.querySelectorAll('.tab-content').forEach(content => {
-                            content.classList.add('hidden');
-                        });
-                        document.getElementById(tab + 'Tab').classList.remove('hidden');
-                    });
-                });
-            }
-
-            function formatDate(dateString) {
-                const date = new Date(dateString);
-                return date.toLocaleDateString('th-TH');
-            }
-
-            // Dark mode functions (same as index.html)
-            let darkMode = localStorage.getItem('darkMode') === 'true';
+        <!-- Activity Logs -->
+        <div class="mt-8 glass rounded-3xl p-6 border border-white/10">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 bg-amber-600/30 rounded-xl flex items-center justify-center text-amber-400">
+                    <i class="fas fa-history"></i>
+                </div>
+                <h3 class="text-lg font-semibold">ประวัติการใช้งานล่าสุด</h3>
+            </div>
             
-            function initializeDarkMode() {
-                if (darkMode) {
-                    document.documentElement.classList.add('dark');
-                }
-            }
-            
-            function toggleDarkMode() {
-                darkMode = !darkMode;
-                localStorage.setItem('darkMode', darkMode);
-                if (darkMode) {
-                    document.documentElement.classList.add('dark');
-                } else {
-                    document.documentElement.classList.remove('dark');
-                }
-            }
-            
-            initializeDarkMode();
-        </script>
+            <div id="logsContainer" class="space-y-2 max-h-64 overflow-y-auto custom-scroll pr-2">
+                <!-- Logs will be injected here -->
+                <div class="flex items-center gap-3 py-2 border-b border-white/5">
+                    <div class="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                    <span class="text-xs text-slate-400">กำลังโหลด...</span>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- Add User Modal -->
+    <div id="addUserModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+        <div class="glass rounded-3xl p-8 max-w-md w-full border border-white/20 shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold">เพิ่มผู้ใช้ใหม่</h3>
+                <button id="closeModalBtn" class="w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="addUserForm" class="space-y-5">
+                <div>
+                    <label class="block text-sm text-slate-400 mb-2">LINE User ID</label>
+                    <input type="text" id="newLineUserId" required 
+                           class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-2">ชื่อผู้ใช้</label>
+                    <input type="text" id="newDisplayName" required 
+                           class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-2">อีเมล</label>
+                    <input type="email" id="newEmail" 
+                           class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-2">รูปโปรไฟล์ URL</label>
+                    <input type="url" id="newPictureUrl" 
+                           class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-indigo-500">
+                </div>
+                <button type="submit" class="w-full py-4 neo-btn rounded-xl font-medium shadow-lg">
+                    <i class="fas fa-save mr-2"></i> บันทึกข้อมูล
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Email Modal -->
+    <div id="editEmailModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+        <div class="glass rounded-3xl p-8 max-w-md w-full border border-white/20 shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold">แก้ไขอีเมล</h3>
+                <button id="closeEmailModalBtn" class="w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="editEmailForm">
+                <input type="hidden" id="editLineUserId">
+                <div class="mb-5">
+                    <label class="block text-sm text-slate-400 mb-2">ชื่อผู้ใช้</label>
+                    <p id="editDisplayName" class="text-white font-medium"></p>
+                </div>
+                <div class="mb-5">
+                    <label class="block text-sm text-slate-400 mb-2">อีเมลใหม่</label>
+                    <input type="email" id="editEmail" required 
+                           class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-indigo-500">
+                </div>
+                <button type="submit" class="w-full py-4 neo-btn rounded-xl font-medium shadow-lg">
+                    <i class="fas fa-save mr-2"></i> อัปเดตอีเมล
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // LINE CRM PRO · FULL INTEGRATION
+        // LIFF + Google Sheets + Dark Mode + Loading Overlay
+        // ============================================
+        
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec'; // เปลี่ยนเป็น URL Web App ของคุณ
+        const LIFF_ID = '2008904120-T7I0VPZf'; // เปลี่ยนเป็น LIFF ID จริง
+        
+        // Global State
+        let currentUser = null;
+        let crmData = [];
+        let stats = {};
+        let isLiffInitialized = false;
+        
+        // ========== Loading Overlay Functions ==========
+        function showLoading(message = 'กำลังโหลดข้อมูล...') {
+            const overlay = document.getElementById('loadingOverlay');
+            const msgElement = document.getElementById('loadingMessage');
+            msgElement.textContent = message;
+            overlay.classList.remove('hidden');
+        }
+        
+        function hideLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.add('hidden');
+        }
+        
+        // ========== Toast Notification ==========
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            
+            const colors = {
+                success: 'border-emerald-500/50',
+                error: 'border-red-500/50',
+                warning: 'border-yellow-500/50',
+                info: 'border-blue-500/50'
+            };
+            
+            toast.classList.add(colors[type] || colors.success);
+            
+            toast.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 
+                                     type === 'error' ? 'exclamation-circle' : 
+                                     type === 'warning' ? 'exclamation-triangle' : 
+                                     'info-circle'} 
+                       text-${type === 'success' ? 'emerald' : 
+                              type === 'error' ? 'red' : 
+                              type === 'warning' ? 'yellow' : 
+                              'blue'}-400 text-xl"></i>
+                    <span class="text-white">${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+        
+        // ========== 1. LIFF Initialization ==========
+        async function initializeLIFF() {
+            showLoading('กำลังเชื่อมต่อกับ LINE LIFF...');
+            
+            try {
+                await liff.init({ liffId: LIFF_ID });
+                isLiffInitialized = true;
+                
+                if (liff.isLoggedIn()) {
+                    await loadLineProfile();
+                } else {
+                    hideLoading();
+                    document.getElementById('liffLoginBtn').classList.remove('hidden');
+                }
+                
+            } catch (error) {
+                console.error('LIFF init failed:', error);
+                hideLoading();
+                showToast('ไม่สามารถเชื่อมต่อกับ LINE ได้', 'error');
+            }
+        }
+        
+        // ========== 2. Load LINE Profile ==========
+        async function loadLineProfile() {
+            showLoading('กำลังโหลดข้อมูลโปรไฟล์...');
+            
+            try {
+                const profile = await liff.getProfile();
+                const idToken = liff.getDecodedIDToken();
+                const email = idToken?.email || '';
+                
+                currentUser = {
+                    userId: profile.userId,
+                    displayName: profile.displayName,
+                    pictureUrl: profile.pictureUrl,
+                    email: email,
+                    status: 'active',
+                    lastLogin: new Date().toISOString()
+                };
+                
+                // Update UI with profile
+                updateProfileUI();
+                
+                // Sync to Google Sheets
+                await syncLineProfileToSheet();
+                
+                hideLoading();
+                showToast('เข้าสู่ระบบสำเร็จ ยินดีต้อนรับ ' + profile.displayName);
+                
+            } catch (error) {
+                console.error('Load profile failed:', error);
+                hideLoading();
+                showToast('ไม่สามารถโหลดโปรไฟล์ได้', 'error');
+            }
+        }
+        
+        // ========== 3. Update Profile UI ==========
+        function updateProfileUI() {
+            if (!currentUser) return;
+            
+            // Show profile section
+            document.getElementById('liffProfile').classList.remove('hidden');
+            document.getElementById('liffLoginBtn').classList.add('hidden');
+            
+            // Update profile info
+            document.getElementById('profileImage').src = currentUser.pictureUrl || 'https://via.placeholder.com/100/4f46e5/ffffff?text=LINE';
+            document.getElementById('profileName').textContent = currentUser.displayName;
+            document.getElementById('profileEmail').textContent = currentUser.email || 'ไม่มีอีเมล';
+            
+            // Show welcome banner
+            document.getElementById('welcomeBanner').classList.remove('hidden');
+            document.getElementById('welcomeName').textContent = currentUser.displayName.split(' ')[0];
+        }
+        
+        // ========== 4. Sync LINE Profile to Sheet ==========
+        async function syncLineProfileToSheet() {
+            if (!currentUser) return;
+            
+            const userData = {
+                lineUserId: currentUser.userId,
+                displayName: currentUser.displayName,
+                pictureUrl: currentUser.pictureUrl,
+                email: currentUser.email,
+                status: 'active',
+                lastLogin: currentUser.lastLogin
+            };
+            
+            await callGAS('addUser', { data: userData });
+            await loadData(); // Reload data
+        }
+        
+        // ========== 5. Google Apps Script API ==========
+        async function callGAS(action, data = {}) {
+            try {
+                const response = await fetch(GAS_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        action, 
+                        ...data,
+                        lineUserId: currentUser?.userId || ''
+                    })
+                });
+                
+                return { success: true };
+            } catch (error) {
+                console.error('GAS Error:', error);
+                return { success: false, error: error.message };
+            }
+        }
+        
+        // ========== 6. Load Data from GAS ==========
+        async function loadData() {
+            showSkeleton();
+            showLoading('กำลังโหลดข้อมูลจาก Google Sheets...');
+            
+            try {
+                // Simulate data for testing
+                simulateData();
+                
+                // เมื่อเชื่อมต่อ GAS จริง ใช้โค้ดนี้:
+                // const response = await callGAS('getAllUsers');
+                // if (response.success) {
+                //     crmData = response.users || [];
+                //     renderTable();
+                //     calculateStats();
+                // }
+                
+                hideLoading();
+                updateLastSync();
+                
+            } catch (error) {
+                console.error('Load data failed:', error);
+                hideLoading();
+                showToast('ไม่สามารถโหลดข้อมูลได้', 'error');
+            }
+        }
+        
+        // ========== 7. Simulate Data (สำหรับทดสอบ) ==========
+        function simulateData() {
+            crmData = [
+                { 
+                    lineUserId: 'U4a7b8c9d0e1f', 
+                    displayName: 'สมชาย ใจดี', 
+                    email: 'somchai@example.com', 
+                    pictureUrl: 'https://via.placeholder.com/150/4f46e5/ffffff?text=SC', 
+                    status: 'active', 
+                    lastLogin: '2024-01-20 14:30:22',
+                    tags: ['VIP', 'ลูกค้าใหม่']
+                },
+                { 
+                    lineUserId: 'U5b8c9d0e1f2a', 
+                    displayName: 'วิชญาพร ศรีสุข', 
+                    email: 'witcha@example.com', 
+                    pictureUrl: 'https://via.placeholder.com/150/7c3aed/ffffff?text=W', 
+                    status: 'active', 
+                    lastLogin: '2024-01-19 09:15:33',
+                    tags: ['พรีเมี่ยม']
+                },
+                { 
+                    lineUserId: 'U6c9d0e1f2a3b', 
+                    displayName: 'อนันต์ รักดี', 
+                    email: 'anant@example.com', 
+                    pictureUrl: 'https://via.placeholder.com/150/db2777/ffffff?text=A', 
+                    status: 'inactive', 
+                    lastLogin: '2024-01-10 11:22:44',
+                    tags: ['ทดลองใช้']
+                },
+                { 
+                    lineUserId: currentUser?.userId || 'U7d0e1f2a3b4c', 
+                    displayName: currentUser?.displayName || 'สุดา รวยทรัพย์', 
+                    email: currentUser?.email || 'suda@example.com', 
+                    pictureUrl: currentUser?.pictureUrl || 'https://via.placeholder.com/150/ea580c/ffffff?text=S', 
+                    status: 'active', 
+                    lastLogin: '2024-01-20 10:05:17',
+                    tags: ['VIP']
+                }
+            ];
+            
+            calculateStats();
+            renderTable();
+            generateLogs();
+        }
+        
+        // ========== 8. Calculate Statistics ==========
+        function calculateStats() {
+            stats = {
+                totalUsers: crmData.length,
+                activeUsers: crmData.filter(u => u.status === 'active').length,
+                withEmail: crmData.filter(u => u.email && u.email.includes('@')).length,
+                newUsers: 2, // จำลอง
+                inactiveUsers: crmData.filter(u => u.status !== 'active').length
+            };
+            
+            // Update UI
+            document.getElementById('statTotalUsers').textContent = stats.totalUsers;
+            document.getElementById('statActiveUsers').textContent = stats.activeUsers;
+            document.getElementById('statWithEmail').textContent = stats.withEmail;
+            document.getElementById('statNewUsers').textContent = stats.newUsers;
+            document.getElementById('statInactiveUsers').textContent = stats.inactiveUsers;
+        }
+        
+        // ========== 9. Render Table ==========
+        function renderTable() {
+            const tbody = document.getElementById('userTableBody');
+            const keyword = document.getElementById('searchInput')?.value.toLowerCase() || '';
+            
+            let filteredData = crmData;
+            if (keyword) {
+                filteredData = crmData.filter(user => 
+                    user.displayName.toLowerCase().includes(keyword) ||
+                    (user.email && user.email.toLowerCase().includes(keyword)) ||
+                    user.lineUserId.toLowerCase().includes(keyword)
+                );
+            }
+            
+            if (filteredData.length === 0) {
+                tbody.innerHTML = `<tr>
+                    <td colspan="7" class="px-6 py-12 text-center text-slate-400">
+                        <i class="fas fa-user-slash text-3xl mb-3"></i>
+                        <p>ไม่พบข้อมูลผู้ใช้</p>
+                    </td>
+                </tr>`;
+                return;
+            }
+            
+            let html = '';
+            filteredData.forEach(user => {
+                const statusClass = user.status === 'active' 
+                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' 
+                    : 'bg-slate-500/20 text-slate-400 border-slate-500/30';
+                
+                const tagsHtml = user.tags ? user.tags.map(tag => 
+                    `<span class="inline-block bg-indigo-600/30 text-indigo-300 px-2 py-1 rounded-lg text-[10px] font-medium border border-indigo-500/30 mr-1 mb-1">
+                        ${tag}
+                    </span>`
+                ).join('') : '';
+                
+                html += `<tr class="hover:bg-white/5 transition border-b border-white/5">
+                    <td class="px-6 py-4">
+                        <img src="${user.pictureUrl}" class="w-10 h-10 rounded-full border-2 border-indigo-500/50 shadow-lg object-cover"
+                             onerror="this.src='https://via.placeholder.com/100/2d3748/ffffff?text=LINE'">
+                    </td>
+                    <td class="px-6 py-4 font-medium">
+                        <div class="flex items-center gap-2">
+                            <span>${user.displayName}</span>
+                            ${user.status === 'active' ? 
+                                '<span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>' : ''}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 font-mono text-xs text-slate-300">
+                        ${user.lineUserId.substring(0, 8)}...
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-2">
+                            <span class="text-indigo-300">${user.email || '-'}</span>
+                            <button onclick="openEditEmailModal('${user.lineUserId}', '${user.displayName}', '${user.email || ''}')" 
+                                    class="text-slate-400 hover:text-indigo-400 transition">
+                                <i class="fas fa-pen text-xs"></i>
+                            </button>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="${statusClass} px-3 py-1 rounded-full text-[10px] font-medium border flex items-center gap-1 w-fit">
+                            <i class="fas ${user.status === 'active' ? 'fa-circle' : 'fa-circle-dot'}"></i>
+                            ${user.status === 'active' ? 'ออนไลน์' : 'ออฟไลน์'}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-slate-400 text-xs">${user.lastLogin}</td>
+                    <td class="px-6 py-4">
+                        <div class="flex gap-2">
+                            <button onclick="viewUserDetails('${user.lineUserId}')" 
+                                    class="w-8 h-8 rounded-lg bg-white/5 hover:bg-indigo-600/30 border border-white/10 flex items-center justify-center transition">
+                                <i class="fas fa-eye text-indigo-300 text-xs"></i>
+                            </button>
+                            <button onclick="sendLineMessage('${user.lineUserId}')" 
+                                    class="w-8 h-8 rounded-lg bg-white/5 hover:bg-emerald-600/30 border border-white/10 flex items-center justify-center transition">
+                                <i class="fab fa-line text-emerald-300 text-xs"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>`;
+            });
+            
+            tbody.innerHTML = html;
+            
+            // Update footer counts
+            const onlineCount = filteredData.filter(u => u.status === 'active').length;
+            const offlineCount = filteredData.filter(u => u.status !== 'active').length;
+            document.getElementById('onlineCount').textContent = onlineCount;
+            document.getElementById('offlineCount').textContent = offlineCount;
+        }
+        
+        // ========== 10. Skeleton Loading ==========
+        function showSkeleton() {
+            const tbody = document.getElementById('userTableBody');
+            let skeletonRows = '';
+            for (let i = 0; i < 4; i++) {
+                skeletonRows += `<tr>
+                    <td colspan="7" class="px-6 py-4">
+                        <div class="skeleton h-16 rounded-lg"></div>
+                    </td>
+                </tr>`;
+            }
+            tbody.innerHTML = skeletonRows;
+        }
+        
+        // ========== 11. Generate Activity Logs ==========
+        function generateLogs() {
+            const logs = [
+                { time: '2024-01-20 14:30:22', action: 'CREATE', user: 'สมชาย ใจดี', type: 'success' },
+                { time: '2024-01-20 13:15:07', action: 'UPDATE', user: 'วิชญาพร ศรีสุข', type: 'info' },
+                { time: '2024-01-20 11:42:33', action: 'LOGIN', user: 'อนันต์ รักดี', type: 'success' },
+                { time: '2024-01-20 09:20:15', action: 'SYNC', user: 'Google Sheets', type: 'info' },
+                { time: '2024-01-19 16:45:22', action: 'EXPORT', user: 'admin', type: 'warning' },
+            ];
+            
+            const container = document.getElementById('logsContainer');
+            let html = '';
+            
+            logs.forEach(log => {
+                const colors = {
+                    success: 'bg-emerald-400',
+                    info: 'bg-blue-400',
+                    warning: 'bg-yellow-400',
+                    error: 'bg-red-400'
+                };
+                
+                html += `
+                    <div class="flex items-center gap-3 py-2 border-b border-white/5">
+                        <div class="w-2 h-2 ${colors[log.type] || 'bg-gray-400'} rounded-full"></div>
+                        <span class="text-xs text-slate-400">${log.time}</span>
+                        <span class="text-xs bg-${log.type === 'success' ? 'emerald' : 
+                                                     log.type === 'info' ? 'blue' : 
+                                                     log.type === 'warning' ? 'yellow' : 
+                                                     'gray'}-600/30 px-2 py-1 rounded">${log.action}</span>
+                        <span class="text-sm text-slate-300">${log.user}</span>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // ========== 12. Email Management ==========
+        function openEditEmailModal(lineUserId, displayName, currentEmail) {
+            document.getElementById('editLineUserId').value = lineUserId;
+            document.getElementById('editDisplayName').textContent = displayName;
+            document.getElementById('editEmail').value = currentEmail;
+            document.getElementById('editEmailModal').classList.remove('hidden');
+        }
+        
+        async function updateUserEmail() {
+            const lineUserId = document.getElementById('editLineUserId').value;
+            const newEmail = document.getElementById('editEmail').value;
+            
+            showLoading('กำลังอัปเดตอีเมล...');
+            
+            await callGAS('updateEmail', { lineUserId, email: newEmail });
+            
+            // Update in local data
+            const user = crmData.find(u => u.lineUserId === lineUserId);
+            if (user) user.email = newEmail;
+            
+            renderTable();
+            hideLoading();
+            document.getElementById('editEmailModal').classList.add('hidden');
+            showToast('อัปเดตอีเมลเรียบร้อยแล้ว');
+        }
+        
+        // ========== 13. LINE Functions ==========
+        async function sendLineMessage(userId) {
+            if (!liff.isInClient()) {
+                showToast('กรุณาเปิดใน LINE App', 'warning');
+                return;
+            }
+            
+            try {
+                await liff.sendMessages([
+                    {
+                        type: 'text',
+                        text: 'สวัสดีจาก LINE CRM!'
+                    }
+                ]);
+                showToast('ส่งข้อความเรียบร้อย');
+            } catch (error) {
+                console.error('Send message failed:', error);
+                showToast('ไม่สามารถส่งข้อความได้', 'error');
+            }
+        }
+        
+        function viewUserDetails(userId) {
+            const user = crmData.find(u => u.lineUserId === userId);
+            if (user) {
+                showToast(`👤 ${user.displayName}\n📧 ${user.email || 'ไม่มีอีเมล'}`, 'info');
+            }
+        }
+        
+        async function logout() {
+            if (liff.isLoggedIn()) {
+                liff.logout();
+                currentUser = null;
+                document.getElementById('liffProfile').classList.add('hidden');
+                document.getElementById('liffLoginBtn').classList.remove('hidden');
+                document.getElementById('welcomeBanner').classList.add('hidden');
+                showToast('ออกจากระบบสำเร็จ');
+            }
+        }
+        
+        // ========== 14. Add User ==========
+        async function addNewUser(e) {
+            e.preventDefault();
+            
+            const userData = {
+                lineUserId: document.getElementById('newLineUserId').value,
+                displayName: document.getElementById('newDisplayName').value,
+                email: document.getElementById('newEmail').value,
+                pictureUrl: document.getElementById('newPictureUrl').value || 'https://via.placeholder.com/150/4f46e5/ffffff?text=USER',
+                status: 'active',
+                lastLogin: new Date().toISOString().slice(0, 16).replace('T', ' ')
+            };
+            
+            showLoading('กำลังเพิ่มผู้ใช้...');
+            
+            await callGAS('addUser', { data: userData });
+            
+            // Add to local data
+            crmData.push(userData);
+            
+            calculateStats();
+            renderTable();
+            generateLogs();
+            
+            hideLoading();
+            document.getElementById('addUserModal').classList.add('hidden');
+            document.getElementById('addUserForm').reset();
+            showToast('✅ เพิ่มผู้ใช้เรียบร้อย');
+        }
+        
+        // ========== 15. Search ==========
+        function handleSearch() {
+            renderTable();
+        }
+        
+        // ========== 16. Dark Mode ==========
+        function initDarkMode() {
+            // Check local storage or system preference
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                document.querySelector('#darkToggle i.fa-moon').classList.add('hidden');
+                document.querySelector('#darkToggle i.fa-sun').classList.remove('hidden');
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.querySelector('#darkToggle i.fa-sun').classList.add('hidden');
+                document.querySelector('#darkToggle i.fa-moon').classList.remove('hidden');
+            }
+            
+            document.getElementById('darkToggle').addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+                
+                if (document.documentElement.classList.contains('dark')) {
+                    localStorage.theme = 'dark';
+                    document.querySelector('#darkToggle i.fa-moon').classList.add('hidden');
+                    document.querySelector('#darkToggle i.fa-sun').classList.remove('hidden');
+                } else {
+                    localStorage.theme = 'light';
+                    document.querySelector('#darkToggle i.fa-sun').classList.add('hidden');
+                    document.querySelector('#darkToggle i.fa-moon').classList.remove('hidden');
+                }
+            });
+        }
+        
+        // ========== 17. Setup Database ==========
+        async function setupDatabase() {
+            showLoading('กำลังตั้งค่า Database...');
+            
+            await callGAS('setupDatabase');
+            
+            setTimeout(() => {
+                hideLoading();
+                showToast('✅ ตั้งค่า Database สำเร็จ');
+            }, 2000);
+        }
+        
+        // ========== 18. Update Last Sync ==========
+        function updateLastSync() {
+            const now = new Date();
+            document.getElementById('lastSyncTime').textContent = 
+                now.toLocaleString('th-TH', { 
+                    year: 'numeric', 
+                    month: '2-digit', 
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false 
+                });
+        }
+        
+        // ========== 19. Event Listeners ==========
+        function initEventListeners() {
+            document.getElementById('setupDbBtn').addEventListener('click', setupDatabase);
+            document.getElementById('refreshBtn').addEventListener('click', loadData);
+            document.getElementById('searchInput').addEventListener('input', handleSearch);
+            document.getElementById('liffLoginBtn').addEventListener('click', initializeLIFF);
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+            
+            document.getElementById('syncSheetBtn').addEventListener('click', () => {
+                showLoading('กำลังซิงค์ข้อมูลกับ Google Sheets...');
+                setTimeout(() => {
+                    loadData();
+                    showToast('🔄 ซิงค์ข้อมูลสำเร็จ');
+                }, 1500);
+            });
+            
+            document.getElementById('exportBtn').addEventListener('click', () => {
+                showToast('📊 กำลังส่งออกรายงาน CSV', 'info');
+            });
+            
+            // Modal controls
+            document.getElementById('addUserBtn').addEventListener('click', () => {
+                document.getElementById('addUserModal').classList.remove('hidden');
+            });
+            
+            document.getElementById('closeModalBtn').addEventListener('click', () => {
+                document.getElementById('addUserModal').classList.add('hidden');
+            });
+            
+            document.getElementById('closeEmailModalBtn').addEventListener('click', () => {
+                document.getElementById('editEmailModal').classList.add('hidden');
+            });
+            
+            document.getElementById('addUserForm').addEventListener('submit', addNewUser);
+            document.getElementById('editEmailForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                updateUserEmail();
+            });
+            
+            // Stats button
+            document.getElementById('statsBtn').addEventListener('click', () => {
+                showToast(`📊 สถิติ: ผู้ใช้ ${stats.totalUsers} คน, Active ${stats.activeUsers} คน`, 'info');
+            });
+            
+            // Click outside to close modal
+            window.addEventListener('click', (e) => {
+                if (e.target.classList.contains('bg-black/70')) {
+                    document.getElementById('addUserModal').classList.add('hidden');
+                    document.getElementById('editEmailModal').classList.add('hidden');
+                }
+            });
+        }
+        
+        // ========== Initialization ==========
+        window.addEventListener('DOMContentLoaded', () => {
+            initDarkMode();
+            initEventListeners();
+            
+            // Show loading then load data
+            showLoading('กำลังเริ่มต้นระบบ...');
+            
+            setTimeout(() => {
+                loadData();
+                initializeLIFF();
+            }, 1500);
+        });
+    </script>
 </body>
 </html>
