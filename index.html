@@ -75,15 +75,6 @@
             transition: opacity 0.3s ease;
         }
         
-        .loader {
-            width: 80px;
-            height: 80px;
-            border: 4px solid rgba(99, 102, 241, 0.3);
-            border-radius: 50%;
-            border-top-color: rgb(99, 102, 241);
-            animation: spin 1s ease-in-out infinite;
-        }
-        
         .pulse-loader {
             width: 120px;
             height: 120px;
@@ -104,10 +95,6 @@
             background: rgba(99, 102, 241, 0.4);
             border-radius: 50%;
             animation: pulse-inner 1.5s ease-in-out infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
         }
         
         @keyframes pulse {
@@ -245,7 +232,7 @@
 </head>
 <body class="antialiased custom-scroll">
     <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="hidden">
+    <div id="loadingOverlay">
         <div class="text-center">
             <div class="pulse-loader mx-auto mb-6"></div>
             <p id="loadingMessage" class="text-white text-lg font-medium">กำลังโหลดข้อมูล...</p>
@@ -257,7 +244,7 @@
     <nav class="glass fixed top-0 left-0 right-0 z-50 px-6 py-4 mx-4 mt-4 rounded-2xl shadow-2xl border border-white/10">
         <div class="flex items-center justify-between max-w-7xl mx-auto">
             <div class="flex items-center space-x-4">
-                <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-2xl animate-bounce">
+                <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-2xl">
                     <i class="fab fa-line text-white text-2xl"></i>
                 </div>
                 <div>
@@ -282,7 +269,7 @@
                 </div>
                 
                 <!-- Login Button - แสดงเมื่อยังไม่ login -->
-                <button id="liffLoginBtn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-xl text-sm font-medium flex items-center gap-2 transition">
+                <button id="liffLoginBtn" class="hidden px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-xl text-sm font-medium flex items-center gap-2 transition">
                     <i class="fab fa-line"></i>
                     เข้าสู่ระบบด้วย LINE
                 </button>
@@ -471,10 +458,6 @@
             
             <div id="logsContainer" class="space-y-2 max-h-64 overflow-y-auto custom-scroll pr-2">
                 <!-- Logs will be injected here -->
-                <div class="flex items-center gap-3 py-2 border-b border-white/5">
-                    <div class="w-2 h-2 bg-emerald-400 rounded-full"></div>
-                    <span class="text-xs text-slate-400">กำลังโหลด...</span>
-                </div>
             </div>
         </div>
     </div>
@@ -551,14 +534,18 @@
         // LIFF + Google Sheets + Dark Mode + Loading Overlay
         // ============================================
         
-        const GAS_URL = 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec'; // เปลี่ยนเป็น URL Web App ของคุณ
-        const LIFF_ID = '2008904120-T7I0VPZf'; // เปลี่ยนเป็น LIFF ID จริง
+        // สำหรับทดสอบโดยไม่ต้องใช้ LIFF จริง ให้เปลี่ยนเป็น false
+        const USE_DUMMY_DATA = true; // เปลี่ยนเป็น false เมื่อต้องการใช้ LIFF จริง
+        
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec';
+        const LIFF_ID = '2008904120-T7I0VPZf';
         
         // Global State
         let currentUser = null;
         let crmData = [];
         let stats = {};
         let isLiffInitialized = false;
+        let liffInitialized = false;
         
         // ========== Loading Overlay Functions ==========
         function showLoading(message = 'กำลังโหลดข้อมูล...') {
@@ -610,27 +597,50 @@
         
         // ========== 1. LIFF Initialization ==========
         async function initializeLIFF() {
+            if (USE_DUMMY_DATA) {
+                // ใช้ข้อมูลจำลอง
+                setupDummyUser();
+                return;
+            }
+            
             showLoading('กำลังเชื่อมต่อกับ LINE LIFF...');
             
             try {
                 await liff.init({ liffId: LIFF_ID });
-                isLiffInitialized = true;
+                liffInitialized = true;
                 
                 if (liff.isLoggedIn()) {
                     await loadLineProfile();
                 } else {
-                    hideLoading();
                     document.getElementById('liffLoginBtn').classList.remove('hidden');
+                    hideLoading();
                 }
                 
             } catch (error) {
                 console.error('LIFF init failed:', error);
                 hideLoading();
-                showToast('ไม่สามารถเชื่อมต่อกับ LINE ได้', 'error');
+                showToast('ไม่สามารถเชื่อมต่อกับ LINE ได้ ใช้ข้อมูลทดแทน', 'warning');
+                setupDummyUser();
             }
         }
         
-        // ========== 2. Load LINE Profile ==========
+        // ========== 2. ตั้งค่าผู้ใช้จำลอง ==========
+        function setupDummyUser() {
+            currentUser = {
+                userId: 'Udummy123456789',
+                displayName: 'ผู้ใช้ทดสอบ',
+                pictureUrl: 'https://via.placeholder.com/100/4f46e5/ffffff?text=TEST',
+                email: 'test@example.com',
+                status: 'active',
+                lastLogin: new Date().toISOString()
+            };
+            
+            updateProfileUI();
+            hideLoading();
+            showToast('เข้าสู่ระบบสำเร็จ (โหมดทดสอบ)', 'success');
+        }
+        
+        // ========== 3. Load LINE Profile ==========
         async function loadLineProfile() {
             showLoading('กำลังโหลดข้อมูลโปรไฟล์...');
             
@@ -664,7 +674,7 @@
             }
         }
         
-        // ========== 3. Update Profile UI ==========
+        // ========== 4. Update Profile UI ==========
         function updateProfileUI() {
             if (!currentUser) return;
             
@@ -682,7 +692,7 @@
             document.getElementById('welcomeName').textContent = currentUser.displayName.split(' ')[0];
         }
         
-        // ========== 4. Sync LINE Profile to Sheet ==========
+        // ========== 5. Sync LINE Profile to Sheet ==========
         async function syncLineProfileToSheet() {
             if (!currentUser) return;
             
@@ -695,12 +705,16 @@
                 lastLogin: currentUser.lastLogin
             };
             
-            await callGAS('addUser', { data: userData });
+            if (!USE_DUMMY_DATA) {
+                await callGAS('addUser', { data: userData });
+            }
             await loadData(); // Reload data
         }
         
-        // ========== 5. Google Apps Script API ==========
+        // ========== 6. Google Apps Script API ==========
         async function callGAS(action, data = {}) {
+            if (USE_DUMMY_DATA) return { success: true };
+            
             try {
                 const response = await fetch(GAS_URL, {
                     method: 'POST',
@@ -720,22 +734,13 @@
             }
         }
         
-        // ========== 6. Load Data from GAS ==========
+        // ========== 7. Load Data from GAS ==========
         async function loadData() {
             showSkeleton();
-            showLoading('กำลังโหลดข้อมูลจาก Google Sheets...');
             
             try {
-                // Simulate data for testing
+                // ใช้ข้อมูลจำลองเสมอ
                 simulateData();
-                
-                // เมื่อเชื่อมต่อ GAS จริง ใช้โค้ดนี้:
-                // const response = await callGAS('getAllUsers');
-                // if (response.success) {
-                //     crmData = response.users || [];
-                //     renderTable();
-                //     calculateStats();
-                // }
                 
                 hideLoading();
                 updateLastSync();
@@ -747,7 +752,7 @@
             }
         }
         
-        // ========== 7. Simulate Data (สำหรับทดสอบ) ==========
+        // ========== 8. Simulate Data ==========
         function simulateData() {
             crmData = [
                 { 
@@ -783,7 +788,7 @@
                     email: currentUser?.email || 'suda@example.com', 
                     pictureUrl: currentUser?.pictureUrl || 'https://via.placeholder.com/150/ea580c/ffffff?text=S', 
                     status: 'active', 
-                    lastLogin: '2024-01-20 10:05:17',
+                    lastLogin: new Date().toLocaleString('th-TH'),
                     tags: ['VIP']
                 }
             ];
@@ -793,13 +798,13 @@
             generateLogs();
         }
         
-        // ========== 8. Calculate Statistics ==========
+        // ========== 9. Calculate Statistics ==========
         function calculateStats() {
             stats = {
                 totalUsers: crmData.length,
                 activeUsers: crmData.filter(u => u.status === 'active').length,
                 withEmail: crmData.filter(u => u.email && u.email.includes('@')).length,
-                newUsers: 2, // จำลอง
+                newUsers: 2,
                 inactiveUsers: crmData.filter(u => u.status !== 'active').length
             };
             
@@ -811,7 +816,7 @@
             document.getElementById('statInactiveUsers').textContent = stats.inactiveUsers;
         }
         
-        // ========== 9. Render Table ==========
+        // ========== 10. Render Table ==========
         function renderTable() {
             const tbody = document.getElementById('userTableBody');
             const keyword = document.getElementById('searchInput')?.value.toLowerCase() || '';
@@ -902,7 +907,7 @@
             document.getElementById('offlineCount').textContent = offlineCount;
         }
         
-        // ========== 10. Skeleton Loading ==========
+        // ========== 11. Skeleton Loading ==========
         function showSkeleton() {
             const tbody = document.getElementById('userTableBody');
             let skeletonRows = '';
@@ -916,14 +921,14 @@
             tbody.innerHTML = skeletonRows;
         }
         
-        // ========== 11. Generate Activity Logs ==========
+        // ========== 12. Generate Activity Logs ==========
         function generateLogs() {
+            const now = new Date();
             const logs = [
-                { time: '2024-01-20 14:30:22', action: 'CREATE', user: 'สมชาย ใจดี', type: 'success' },
-                { time: '2024-01-20 13:15:07', action: 'UPDATE', user: 'วิชญาพร ศรีสุข', type: 'info' },
-                { time: '2024-01-20 11:42:33', action: 'LOGIN', user: 'อนันต์ รักดี', type: 'success' },
-                { time: '2024-01-20 09:20:15', action: 'SYNC', user: 'Google Sheets', type: 'info' },
-                { time: '2024-01-19 16:45:22', action: 'EXPORT', user: 'admin', type: 'warning' },
+                { time: now.toLocaleString('th-TH'), action: 'LOGIN', user: currentUser?.displayName || 'ผู้ใช้', type: 'success' },
+                { time: new Date(now.getTime() - 5*60000).toLocaleString('th-TH'), action: 'SYNC', user: 'Google Sheets', type: 'info' },
+                { time: new Date(now.getTime() - 15*60000).toLocaleString('th-TH'), action: 'UPDATE', user: 'วิชญาพร ศรีสุข', type: 'info' },
+                { time: new Date(now.getTime() - 30*60000).toLocaleString('th-TH'), action: 'CREATE', user: 'สมชาย ใจดี', type: 'success' },
             ];
             
             const container = document.getElementById('logsContainer');
@@ -941,10 +946,9 @@
                     <div class="flex items-center gap-3 py-2 border-b border-white/5">
                         <div class="w-2 h-2 ${colors[log.type] || 'bg-gray-400'} rounded-full"></div>
                         <span class="text-xs text-slate-400">${log.time}</span>
-                        <span class="text-xs bg-${log.type === 'success' ? 'emerald' : 
-                                                     log.type === 'info' ? 'blue' : 
-                                                     log.type === 'warning' ? 'yellow' : 
-                                                     'gray'}-600/30 px-2 py-1 rounded">${log.action}</span>
+                        <span class="text-xs px-2 py-1 rounded ${log.type === 'success' ? 'bg-emerald-600/30' : 
+                                                                     log.type === 'info' ? 'bg-blue-600/30' : 
+                                                                     'bg-gray-600/30'}">${log.action}</span>
                         <span class="text-sm text-slate-300">${log.user}</span>
                     </div>
                 `;
@@ -953,7 +957,7 @@
             container.innerHTML = html;
         }
         
-        // ========== 12. Email Management ==========
+        // ========== 13. Email Management ==========
         function openEditEmailModal(lineUserId, displayName, currentEmail) {
             document.getElementById('editLineUserId').value = lineUserId;
             document.getElementById('editDisplayName').textContent = displayName;
@@ -967,7 +971,9 @@
             
             showLoading('กำลังอัปเดตอีเมล...');
             
-            await callGAS('updateEmail', { lineUserId, email: newEmail });
+            if (!USE_DUMMY_DATA) {
+                await callGAS('updateEmail', { lineUserId, email: newEmail });
+            }
             
             // Update in local data
             const user = crmData.find(u => u.lineUserId === lineUserId);
@@ -979,10 +985,10 @@
             showToast('อัปเดตอีเมลเรียบร้อยแล้ว');
         }
         
-        // ========== 13. LINE Functions ==========
+        // ========== 14. LINE Functions ==========
         async function sendLineMessage(userId) {
-            if (!liff.isInClient()) {
-                showToast('กรุณาเปิดใน LINE App', 'warning');
+            if (!liffInitialized || !liff.isInClient()) {
+                showToast('ฟังก์ชันนี้ใช้ได้เฉพาะใน LINE App', 'warning');
                 return;
             }
             
@@ -1003,22 +1009,22 @@
         function viewUserDetails(userId) {
             const user = crmData.find(u => u.lineUserId === userId);
             if (user) {
-                showToast(`👤 ${user.displayName}\n📧 ${user.email || 'ไม่มีอีเมล'}`, 'info');
+                alert(`👤 ชื่อ: ${user.displayName}\n🆔 LINE ID: ${user.lineUserId}\n📧 อีเมล: ${user.email || 'ไม่มี'}\n📅 เข้าระบบล่าสุด: ${user.lastLogin}\n🏷️ แท็ก: ${user.tags ? user.tags.join(', ') : 'ไม่มี'}`);
             }
         }
         
         async function logout() {
-            if (liff.isLoggedIn()) {
+            if (!USE_DUMMY_DATA && liff.isLoggedIn()) {
                 liff.logout();
-                currentUser = null;
-                document.getElementById('liffProfile').classList.add('hidden');
-                document.getElementById('liffLoginBtn').classList.remove('hidden');
-                document.getElementById('welcomeBanner').classList.add('hidden');
-                showToast('ออกจากระบบสำเร็จ');
             }
+            currentUser = null;
+            document.getElementById('liffProfile').classList.add('hidden');
+            document.getElementById('liffLoginBtn').classList.remove('hidden');
+            document.getElementById('welcomeBanner').classList.add('hidden');
+            showToast('ออกจากระบบสำเร็จ');
         }
         
-        // ========== 14. Add User ==========
+        // ========== 15. Add User ==========
         async function addNewUser(e) {
             e.preventDefault();
             
@@ -1028,12 +1034,15 @@
                 email: document.getElementById('newEmail').value,
                 pictureUrl: document.getElementById('newPictureUrl').value || 'https://via.placeholder.com/150/4f46e5/ffffff?text=USER',
                 status: 'active',
-                lastLogin: new Date().toISOString().slice(0, 16).replace('T', ' ')
+                lastLogin: new Date().toLocaleString('th-TH'),
+                tags: []
             };
             
             showLoading('กำลังเพิ่มผู้ใช้...');
             
-            await callGAS('addUser', { data: userData });
+            if (!USE_DUMMY_DATA) {
+                await callGAS('addUser', { data: userData });
+            }
             
             // Add to local data
             crmData.push(userData);
@@ -1048,12 +1057,12 @@
             showToast('✅ เพิ่มผู้ใช้เรียบร้อย');
         }
         
-        // ========== 15. Search ==========
+        // ========== 16. Search ==========
         function handleSearch() {
             renderTable();
         }
         
-        // ========== 16. Dark Mode ==========
+        // ========== 17. Dark Mode ==========
         function initDarkMode() {
             // Check local storage or system preference
             if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -1081,19 +1090,21 @@
             });
         }
         
-        // ========== 17. Setup Database ==========
+        // ========== 18. Setup Database ==========
         async function setupDatabase() {
             showLoading('กำลังตั้งค่า Database...');
             
-            await callGAS('setupDatabase');
+            if (!USE_DUMMY_DATA) {
+                await callGAS('setupDatabase');
+            }
             
             setTimeout(() => {
                 hideLoading();
                 showToast('✅ ตั้งค่า Database สำเร็จ');
-            }, 2000);
+            }, 1000);
         }
         
-        // ========== 18. Update Last Sync ==========
+        // ========== 19. Update Last Sync ==========
         function updateLastSync() {
             const now = new Date();
             document.getElementById('lastSyncTime').textContent = 
@@ -1108,7 +1119,7 @@
                 });
         }
         
-        // ========== 19. Event Listeners ==========
+        // ========== 20. Event Listeners ==========
         function initEventListeners() {
             document.getElementById('setupDbBtn').addEventListener('click', setupDatabase);
             document.getElementById('refreshBtn').addEventListener('click', loadData);
@@ -1121,7 +1132,7 @@
                 setTimeout(() => {
                     loadData();
                     showToast('🔄 ซิงค์ข้อมูลสำเร็จ');
-                }, 1500);
+                }, 1000);
             });
             
             document.getElementById('exportBtn').addEventListener('click', () => {
@@ -1166,13 +1177,10 @@
             initDarkMode();
             initEventListeners();
             
-            // Show loading then load data
-            showLoading('กำลังเริ่มต้นระบบ...');
-            
+            // เริ่มต้นโหลดข้อมูล
             setTimeout(() => {
-                loadData();
                 initializeLIFF();
-            }, 1500);
+            }, 500);
         });
     </script>
 </body>
