@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LINE MiniApp · กิจกรรม โดย ครบเครื่องเรื่องไอที</title>
+    <title>LINE MiniApp · กิจกรรม</title>
     
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -11,36 +11,31 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- LINE LIFF SDK -->
-    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
-    
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- LINE LIFF SDK -->
+    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
     
     <style>
         * {
             font-family: 'IBM Plex Sans Thai', sans-serif;
-        }
-        
-        :root {
-            --primary: #06c755;
-            --primary-dark: #05b34a;
-            --bg-primary: #0a0a0f;
-            --bg-secondary: #111317;
-            --bg-card: #1a1d24;
-            --border: #2a2e36;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
         body {
-            background-color: var(--bg-primary);
-            color: white;
+            background-color: #0a0a0f;
+            color: #ffffff;
+            min-height: 100vh;
         }
         
         /* Navigation */
         .navbar {
-            background: rgba(26, 29, 36, 0.95);
+            background: rgba(26, 29, 36, 0.8);
             backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid #2a2e36;
             position: fixed;
             top: 0;
             left: 0;
@@ -51,21 +46,21 @@
         
         /* Cards */
         .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
+            background: #1a1d24;
+            border: 1px solid #2a2e36;
             border-radius: 16px;
             overflow: hidden;
             transition: all 0.3s;
         }
         
         .card:hover {
-            border-color: var(--primary);
+            border-color: #06c755;
             transform: translateY(-2px);
         }
         
         /* Buttons */
         .btn-primary {
-            background: var(--primary);
+            background: #06c755;
             color: white;
             padding: 12px 24px;
             border-radius: 12px;
@@ -76,13 +71,13 @@
         }
         
         .btn-primary:hover {
-            background: var(--primary-dark);
+            background: #05b34a;
             transform: scale(1.02);
         }
         
         .btn-outline {
             background: transparent;
-            border: 1px solid var(--border);
+            border: 1px solid #2a2e36;
             color: white;
             padding: 12px 24px;
             border-radius: 12px;
@@ -93,34 +88,22 @@
         
         .btn-outline:hover {
             background: #252930;
-            border-color: var(--primary);
-        }
-        
-        .btn-danger {
-            background: #ef4444;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-        }
-        
-        .btn-danger:hover {
-            background: #dc2626;
+            border-color: #06c755;
         }
         
         /* Input fields */
         .input-field {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
+            background: #111317;
+            border: 1px solid #2a2e36;
             color: white;
             padding: 12px 16px;
             border-radius: 12px;
             width: 100%;
+            transition: all 0.3s;
         }
         
         .input-field:focus {
-            border-color: var(--primary);
+            border-color: #06c755;
             outline: none;
         }
         
@@ -137,7 +120,7 @@
         
         .badge-open {
             background: rgba(6, 199, 85, 0.15);
-            color: var(--primary);
+            color: #06c755;
             border: 1px solid rgba(6, 199, 85, 0.3);
         }
         
@@ -157,21 +140,22 @@
         .progress-bar {
             width: 100%;
             height: 8px;
-            background: var(--border);
+            background: #2a2e36;
             border-radius: 4px;
             overflow: hidden;
         }
         
         .progress-fill {
             height: 100%;
-            background: var(--primary);
+            background: #06c755;
             border-radius: 4px;
             transition: width 0.3s;
         }
         
         /* Modal */
         .modal-overlay {
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
             position: fixed;
             top: 0;
             left: 0;
@@ -184,10 +168,10 @@
         }
         
         .modal-content {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
+            background: #1a1d24;
+            border: 1px solid #2a2e36;
             border-radius: 24px;
-            max-width: 600px;
+            max-width: 500px;
             width: 90%;
             max-height: 90vh;
             overflow-y: auto;
@@ -211,8 +195,8 @@
         .loader {
             width: 48px;
             height: 48px;
-            border: 4px solid var(--bg-card);
-            border-bottom-color: var(--primary);
+            border: 4px solid #1a1d24;
+            border-bottom-color: #06c755;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -226,8 +210,8 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: var(--bg-card);
-            border-left: 4px solid var(--primary);
+            background: #1a1d24;
+            border-left: 4px solid #06c755;
             border-radius: 12px;
             padding: 16px 24px;
             color: white;
@@ -247,6 +231,7 @@
             }
         }
         
+        /* Utilities */
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -260,22 +245,14 @@
         .mt-20 {
             margin-top: 80px;
         }
-
-        /* Admin Panel */
-        .admin-panel {
-            background: linear-gradient(135deg, rgba(6, 199, 85, 0.1), transparent);
-            border: 1px solid var(--primary);
-            border-radius: 16px;
-            padding: 20px;
-        }
     </style>
 </head>
 <body>
-    <!-- Loading -->
+    <!-- Loading Overlay -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="text-center">
             <div class="loader mx-auto mb-4"></div>
-            <p id="loadingMessage">กำลังโหลด...</p>
+            <p id="loadingMessage" class="text-white">กำลังโหลด...</p>
         </div>
     </div>
 
@@ -287,21 +264,21 @@
                     <i class="fab fa-line text-white text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold">LINE MiniApp</h1>
+                    <h1 class="text-xl font-bold text-white">LINE MiniApp</h1>
                     <p class="text-xs text-gray-400">โดย ครบเครื่องเรื่องไอที</p>
                 </div>
             </div>
             
             <div class="flex items-center gap-3">
                 <!-- Admin Button -->
-                <button id="adminBtn" class="hidden p-2 rounded-xl hover:bg-white/10">
+                <button id="adminBtn" class="hidden p-2 rounded-xl hover:bg-white/10 transition">
                     <i class="fas fa-cog text-gray-300"></i>
                 </button>
                 
                 <!-- Profile -->
                 <div id="profileSection" class="hidden items-center gap-3">
                     <div class="text-right">
-                        <p id="profileName" class="text-sm font-medium"></p>
+                        <p id="profileName" class="text-sm font-medium text-white"></p>
                         <p id="profileEmail" class="text-xs text-gray-400"></p>
                     </div>
                     <img id="profileImage" src="" class="w-10 h-10 rounded-full border-2 border-[#06c755] object-cover">
@@ -319,20 +296,20 @@
                     <i class="fas fa-hand-peace text-white text-3xl"></i>
                 </div>
                 <div>
-                    <h2 class="text-2xl font-bold">สวัสดี, <span id="welcomeName" class="text-[#06c755]"></span></h2>
+                    <h2 class="text-2xl font-bold text-white">สวัสดี, <span id="welcomeName" class="text-[#06c755]"></span></h2>
                     <p class="text-gray-400">ยินดีต้อนรับสู่ระบบจัดการกิจกรรม</p>
                 </div>
             </div>
         </div>
 
-        <!-- Stats -->
+        <!-- Stats Cards -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div class="card p-4">
                 <div class="flex justify-between items-center mb-2">
                     <span class="text-sm text-gray-400">กิจกรรมทั้งหมด</span>
                     <i class="fas fa-calendar-alt text-[#06c755]"></i>
                 </div>
-                <p id="statTotalActivities" class="text-3xl font-bold">-</p>
+                <p id="statTotalActivities" class="text-3xl font-bold text-white">-</p>
             </div>
             <div class="card p-4">
                 <div class="flex justify-between items-center mb-2">
@@ -358,28 +335,33 @@
         </div>
 
         <!-- Admin Panel -->
-        <div id="adminPanel" class="hidden admin-panel mb-8">
+        <div id="adminPanel" class="hidden card p-6 mb-8 border-[#06c755]">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold">
+                <h3 class="text-lg font-bold text-white">
                     <i class="fas fa-crown text-[#06c755] mr-2"></i>แผงควบคุมแอดมิน
                 </h3>
-                <button onclick="showCreateActivityModal()" class="btn-primary px-4 py-2 text-sm">
-                    <i class="fas fa-plus mr-2"></i>สร้างกิจกรรม
-                </button>
+                <div class="flex gap-2">
+                    <button onclick="createSampleData()" class="btn-outline px-4 py-2 text-sm">
+                        <i class="fas fa-database mr-2"></i>สร้างข้อมูลตัวอย่าง
+                    </button>
+                    <button onclick="showCreateActivityModal()" class="btn-primary px-4 py-2 text-sm">
+                        <i class="fas fa-plus mr-2"></i>สร้างกิจกรรม
+                    </button>
+                </div>
             </div>
             
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="bg-[#111317] p-4 rounded-xl">
                     <p class="text-xs text-gray-500">ผู้ใช้ทั้งหมด</p>
-                    <p id="adminTotalUsers" class="text-2xl font-bold">0</p>
+                    <p id="adminTotalUsers" class="text-2xl font-bold text-white">0</p>
                 </div>
                 <div class="bg-[#111317] p-4 rounded-xl">
                     <p class="text-xs text-gray-500">กิจกรรม</p>
-                    <p id="adminTotalActivities" class="text-2xl font-bold">0</p>
+                    <p id="adminTotalActivities" class="text-2xl font-bold text-white">0</p>
                 </div>
                 <div class="bg-[#111317] p-4 rounded-xl">
                     <p class="text-xs text-gray-500">การลงทะเบียน</p>
-                    <p id="adminTotalRegistrations" class="text-2xl font-bold">0</p>
+                    <p id="adminTotalRegistrations" class="text-2xl font-bold text-white">0</p>
                 </div>
                 <div class="bg-[#111317] p-4 rounded-xl">
                     <p class="text-xs text-gray-500">รายได้</p>
@@ -388,18 +370,26 @@
             </div>
         </div>
 
-        <!-- Search -->
-        <div class="mb-8">
-            <input type="text" id="searchInput" placeholder="ค้นหากิจกรรม..." 
-                   class="input-field">
+        <!-- Search and Filter -->
+        <div class="mb-8 flex flex-col md:flex-row gap-4">
+            <div class="flex-1 relative">
+                <i class="fas fa-search absolute left-4 top-3.5 text-gray-500"></i>
+                <input type="text" id="searchInput" placeholder="ค้นหากิจกรรม..." class="input-field pl-12">
+            </div>
+            <select id="statusFilter" class="input-field md:w-48">
+                <option value="all">ทั้งหมด</option>
+                <option value="open">เปิดรับสมัคร</option>
+                <option value="closed">ปิดรับสมัคร</option>
+                <option value="full">เต็มแล้ว</option>
+            </select>
         </div>
 
         <!-- Activities Grid -->
         <div id="activitiesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             <!-- Loading skeleton -->
-            <div class="card p-4 animate-pulse h-64"></div>
-            <div class="card p-4 animate-pulse h-64"></div>
-            <div class="card p-4 animate-pulse h-64"></div>
+            <div class="card p-4 animate-pulse" style="height: 300px;"></div>
+            <div class="card p-4 animate-pulse" style="height: 300px;"></div>
+            <div class="card p-4 animate-pulse" style="height: 300px;"></div>
         </div>
     </div>
 
@@ -407,7 +397,7 @@
     <div id="activityModal" class="modal-overlay">
         <div class="modal-content">
             <div class="flex justify-between items-center mb-4">
-                <h3 id="activityModalTitle" class="text-2xl font-bold">สร้างกิจกรรมใหม่</h3>
+                <h3 id="activityModalTitle" class="text-2xl font-bold text-white">สร้างกิจกรรมใหม่</h3>
                 <button onclick="closeActivityModal()" class="text-gray-400 hover:text-white">
                     <i class="fas fa-times text-xl"></i>
                 </button>
@@ -456,12 +446,12 @@
                     
                     <div>
                         <label class="block text-sm text-gray-400 mb-1">รูปภาพ (URL)</label>
-                        <input type="url" id="activityImageUrl" class="input-field" placeholder="https://...">
+                        <input type="url" id="activityImageUrl" class="input-field" placeholder="https://example.com/image.jpg">
                     </div>
                     
                     <div>
                         <label class="block text-sm text-gray-400 mb-1">เบอร์ติดต่อ</label>
-                        <input type="text" id="activityContact" class="input-field">
+                        <input type="text" id="activityContact" class="input-field" placeholder="08X-XXX-XXXX">
                     </div>
                 </div>
                 
@@ -477,27 +467,29 @@
     <div id="detailModal" class="modal-overlay">
         <div class="modal-content">
             <div class="flex justify-between items-center mb-4">
-                <h3 id="detailTitle" class="text-2xl font-bold"></h3>
+                <h3 id="detailTitle" class="text-2xl font-bold text-white"></h3>
                 <button onclick="closeDetailModal()" class="text-gray-400 hover:text-white">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
             
-            <div id="detailContent" class="space-y-4"></div>
+            <div id="detailContent" class="space-y-4">
+                <!-- Content will be inserted here -->
+            </div>
             
             <div class="flex gap-3 mt-6">
                 <button id="registerBtn" class="btn-primary flex-1" onclick="registerActivity()">ลงทะเบียน</button>
                 <button onclick="closeDetailModal()" class="btn-outline flex-1">ปิด</button>
             </div>
             
-            <!-- Admin Controls -->
+            <!-- Admin controls -->
             <div id="adminActivityControls" class="hidden mt-4 pt-4 border-t border-[#2a2e36]">
                 <p class="text-sm text-gray-400 mb-2">จัดการกิจกรรม</p>
                 <div class="flex gap-2">
                     <button onclick="editCurrentActivity()" class="btn-outline flex-1 py-2 text-sm">
                         <i class="fas fa-edit mr-2"></i>แก้ไข
                     </button>
-                    <button onclick="deleteCurrentActivity()" class="btn-danger flex-1 py-2 text-sm">
+                    <button onclick="deleteCurrentActivity()" class="bg-red-500 text-white flex-1 py-2 rounded-xl text-sm hover:bg-red-600">
                         <i class="fas fa-trash mr-2"></i>ลบ
                     </button>
                 </div>
@@ -509,24 +501,29 @@
     <div id="registrationsModal" class="modal-overlay">
         <div class="modal-content">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-2xl font-bold">กิจกรรมที่ลงทะเบียน</h3>
+                <h3 class="text-2xl font-bold text-white">กิจกรรมที่ลงทะเบียน</h3>
                 <button onclick="closeRegistrationsModal()" class="text-gray-400 hover:text-white">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
             
-            <div id="registrationsList" class="space-y-3"></div>
+            <div id="registrationsList" class="space-y-3">
+                <!-- List will be inserted here -->
+            </div>
         </div>
     </div>
 
     <script>
         // ============================================
-        // LINE MiniApp Frontend - ใช้งานกับ GS จริง
+        // LINE MiniApp Frontend - ใช้งานได้จริง
+        // พัฒนาโดย ครบเครื่องเรื่องไอที
         // ============================================
         
-        // เปลี่ยนเป็น URL Web App ของคุณ
-        const GAS_URL = 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec';
-        const LIFF_ID = '2008904120-T7I0VPZf';
+        // Configuration
+        const CONFIG = {
+            GAS_URL: 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec',
+            LIFF_ID: '2008904120-T7I0VPZf'
+        };
         
         // State
         let currentUser = null;
@@ -535,62 +532,14 @@
         let currentActivity = null;
         let isAdmin = false;
         
-        // ========== Utility ==========
-        function showLoading(msg = 'กำลังโหลด...') {
-            document.getElementById('loadingMessage').textContent = msg;
-            document.getElementById('loadingOverlay').style.display = 'flex';
-        }
-        
-        function hideLoading() {
-            document.getElementById('loadingOverlay').style.display = 'none';
-        }
-        
-        function showToast(msg, type = 'success') {
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.innerHTML = msg;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
-        
-        function formatDate(date) {
-            if (!date) return '-';
-            const d = new Date(date);
-            return d.toLocaleDateString('th-TH', { 
-                year: 'numeric', month: 'short', day: 'numeric',
-                hour: '2-digit', minute: '2-digit'
-            });
-        }
-        
-        // ========== API Call ==========
-        async function callGAS(path, data = {}) {
-            const formData = new FormData();
-            formData.append('path', path);
-            
-            if (currentUser?.userId) {
-                formData.append('lineUserId', currentUser.userId);
-            }
-            
-            Object.keys(data).forEach(key => {
-                formData.append(key, data[key]);
-            });
-            
-            try {
-                const res = await fetch(GAS_URL, { method: 'POST', body: formData });
-                return await res.json();
-            } catch (error) {
-                console.error('API Error:', error);
-                throw error;
-            }
-        }
-        
-        // ========== Initialize ==========
+        // Initialize
         document.addEventListener('DOMContentLoaded', async () => {
-            showLoading('กำลังเริ่มต้น...');
+            showLoading('กำลังเริ่มต้นระบบ...');
             
             try {
+                // Initialize LIFF
                 await new Promise((resolve, reject) => {
-                    liff.init({ liffId: LIFF_ID }, resolve, reject);
+                    liff.init({ liffId: CONFIG.LIFF_ID }, resolve, reject);
                 });
                 
                 if (!liff.isLoggedIn()) {
@@ -598,7 +547,10 @@
                     return;
                 }
                 
+                // Load user profile
                 await loadUserProfile();
+                
+                // Load data
                 await loadActivities();
                 await loadMyRegistrations();
                 
@@ -610,6 +562,65 @@
                 alert('ไม่สามารถเชื่อมต่อกับ LINE ได้');
             }
         });
+        
+        // ========== Utility Functions ==========
+        function showLoading(message = 'กำลังโหลด...') {
+            document.getElementById('loadingMessage').textContent = message;
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        }
+        
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+        
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('th-TH', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        // ========== API Calls ==========
+        async function callGAS(path, data = {}) {
+            const formData = new FormData();
+            formData.append('path', path);
+            
+            if (currentUser?.userId) {
+                formData.append('lineUserId', currentUser.userId);
+            }
+            
+            Object.keys(data).forEach(key => {
+                if (data[key] !== undefined && data[key] !== null) {
+                    formData.append(key, data[key]);
+                }
+            });
+            
+            try {
+                const response = await fetch(CONFIG.GAS_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                return await response.json();
+                
+            } catch (error) {
+                console.error('API call error:', error);
+                throw error;
+            }
+        }
         
         // ========== User Profile ==========
         async function loadUserProfile() {
@@ -626,7 +637,7 @@
                 
                 if (result.success) {
                     currentUser = result.data;
-                    isAdmin = currentUser.role === 'admin';
+                    isAdmin = currentUser.role === 'admin' || currentUser.role === 'org';
                     
                     // Update UI
                     document.getElementById('profileSection').classList.remove('hidden');
@@ -645,7 +656,7 @@
                 }
                 
             } catch (error) {
-                console.error('Profile error:', error);
+                console.error('Load profile error:', error);
             }
         }
         
@@ -653,6 +664,7 @@
         async function loadActivities() {
             try {
                 const result = await callGAS('activities', {
+                    status: document.getElementById('statusFilter').value,
                     search: document.getElementById('searchInput').value
                 });
                 
@@ -661,11 +673,9 @@
                     displayActivities();
                     
                     // Update stats
-                    document.getElementById('statTotalActivities').textContent = activities.length;
-                    document.getElementById('statOpenActivities').textContent = 
-                        activities.filter(a => a.status === 'open').length;
-                    document.getElementById('statTotalParticipants').textContent = 
-                        activities.reduce((sum, a) => sum + (a.currentParticipants || 0), 0);
+                    document.getElementById('statTotalActivities').textContent = result.data.totalActivities || activities.length;
+                    document.getElementById('statOpenActivities').textContent = result.data.openActivities || activities.filter(a => a.status === 'open').length;
+                    document.getElementById('statTotalParticipants').textContent = result.data.totalParticipants || activities.reduce((sum, a) => sum + (a.currentParticipants || 0), 0);
                 }
                 
             } catch (error) {
@@ -724,7 +734,7 @@
                         </div>
                         
                         <div class="p-4">
-                            <h3 class="font-semibold text-lg mb-2">${activity.title}</h3>
+                            <h3 class="font-semibold text-lg text-white mb-2">${activity.title}</h3>
                             <p class="text-sm text-gray-400 mb-4 line-clamp-2">${activity.description || ''}</p>
                             
                             <div class="space-y-2 mb-4">
@@ -740,6 +750,16 @@
                                     <i class="fas fa-users w-5 text-[#06c755]"></i>
                                     <span>${activity.currentParticipants || 0}/${activity.maxParticipants} คน</span>
                                 </div>
+                                ${activity.price > 0 ? 
+                                    `<div class="flex items-center text-sm text-gray-300">
+                                        <i class="fas fa-tag w-5 text-[#06c755]"></i>
+                                        <span>฿${activity.price.toLocaleString()}</span>
+                                    </div>` : 
+                                    `<div class="flex items-center text-sm">
+                                        <i class="fas fa-gift w-5 text-[#06c755]"></i>
+                                        <span class="text-[#06c755]">ฟรี</span>
+                                    </div>`
+                                }
                             </div>
                             
                             <div class="progress-bar mb-4">
@@ -766,7 +786,7 @@
         
         // ========== Activity Detail ==========
         async function showActivityDetail(activityId) {
-            showLoading();
+            showLoading('กำลังโหลด...');
             
             try {
                 const result = await callGAS('activity', { activityId });
@@ -781,30 +801,38 @@
                     
                     document.getElementById('detailContent').innerHTML = `
                         ${currentActivity.imageUrl ? 
-                            `<img src="${currentActivity.imageUrl}" class="w-full h-64 object-cover rounded-xl">` : ''
+                            `<img src="${currentActivity.imageUrl}" class="w-full h-64 object-cover rounded-xl">` : 
+                            ''
                         }
+                        
+                        <div class="flex gap-2">
+                            <span class="badge badge-${currentActivity.status}">
+                                <i class="fas fa-${currentActivity.status === 'open' ? 'door-open' : 'lock'}"></i>
+                                ${currentActivity.status === 'open' ? 'เปิดรับสมัคร' : 'ปิดรับสมัคร'}
+                            </span>
+                        </div>
                         
                         <p class="text-gray-400">${currentActivity.description || ''}</p>
                         
                         <div class="grid grid-cols-2 gap-4">
                             <div class="p-4 bg-[#111317] rounded-xl">
                                 <p class="text-xs text-gray-500">วันที่เริ่ม</p>
-                                <p class="font-medium">${formatDate(currentActivity.startDate)}</p>
+                                <p class="text-white">${formatDate(currentActivity.startDate)}</p>
                             </div>
                             <div class="p-4 bg-[#111317] rounded-xl">
                                 <p class="text-xs text-gray-500">วันที่สิ้นสุด</p>
-                                <p class="font-medium">${formatDate(currentActivity.endDate)}</p>
+                                <p class="text-white">${formatDate(currentActivity.endDate)}</p>
                             </div>
                         </div>
                         
                         <div class="p-4 bg-[#111317] rounded-xl">
                             <p class="text-xs text-gray-500">สถานที่</p>
-                            <p class="font-medium">${currentActivity.location || ''}</p>
+                            <p class="text-white">${currentActivity.location || ''}</p>
                         </div>
                         
                         <div class="p-4 bg-[#111317] rounded-xl">
                             <div class="flex justify-between mb-2">
-                                <span>ผู้เข้าร่วม</span>
+                                <span class="text-white">ผู้เข้าร่วม</span>
                                 <span class="text-[#06c755]">${currentActivity.currentParticipants || 0}/${currentActivity.maxParticipants}</span>
                             </div>
                             <div class="progress-bar">
@@ -813,7 +841,7 @@
                         </div>
                         
                         <div class="p-4 bg-[#111317] rounded-xl">
-                            <p class="mb-2">📞 ติดต่อ</p>
+                            <p class="text-white mb-2">📞 ติดต่อ</p>
                             <p class="text-sm text-gray-400">${currentActivity.contact || 'ไม่ระบุ'}</p>
                         </div>
                     `;
@@ -833,14 +861,18 @@
                         registerBtn.textContent = 'ลงทะเบียน';
                     }
                     
-                    // Admin controls
-                    document.getElementById('adminActivityControls').style.display = isAdmin ? 'block' : 'none';
+                    // Show admin controls
+                    if (isAdmin) {
+                        document.getElementById('adminActivityControls').classList.remove('hidden');
+                    } else {
+                        document.getElementById('adminActivityControls').classList.add('hidden');
+                    }
                     
                     document.getElementById('detailModal').style.display = 'flex';
                 }
                 
             } catch (error) {
-                console.error('Detail error:', error);
+                console.error('Load detail error:', error);
                 alert('ไม่สามารถโหลดรายละเอียดได้');
             }
             
@@ -856,9 +888,9 @@
             const id = activityId || currentActivity?.activityId;
             if (!id) return;
             
-            if (!confirm('ต้องการลงทะเบียนใช่หรือไม่?')) return;
+            if (!confirm('คุณต้องการลงทะเบียนกิจกรรมนี้ใช่หรือไม่?')) return;
             
-            showLoading();
+            showLoading('กำลังดำเนินการ...');
             
             try {
                 const result = await callGAS('register', { 
@@ -871,14 +903,14 @@
                     await loadMyRegistrations();
                     await loadActivities();
                     closeDetailModal();
-                    showToast('✅ ลงทะเบียนสำเร็จ');
+                    alert('ลงทะเบียนสำเร็จ');
                 } else {
                     alert(result.message || 'ลงทะเบียนไม่สำเร็จ');
                 }
                 
             } catch (error) {
                 console.error('Register error:', error);
-                alert('เกิดข้อผิดพลาด');
+                alert('เกิดข้อผิดพลาด กรุณาลองอีกครั้ง');
             }
             
             hideLoading();
@@ -909,7 +941,7 @@
                 list.innerHTML = myRegistrations.map(reg => `
                     <div class="p-4 bg-[#111317] rounded-xl border border-[#2a2e36]">
                         <div class="flex justify-between mb-2">
-                            <h4 class="font-medium">${reg.activity?.title || 'กิจกรรม'}</h4>
+                            <h4 class="font-medium text-white">${reg.activity?.title || 'กิจกรรม'}</h4>
                             <span class="text-sm ${reg.status === 'confirmed' ? 'text-[#06c755]' : 'text-yellow-500'}">
                                 ${reg.status === 'confirmed' ? 'ยืนยันแล้ว' : 'รอคิว'}
                             </span>
@@ -928,9 +960,9 @@
         }
         
         async function cancelRegistration(registrationId) {
-            if (!confirm('ต้องการยกเลิกใช่หรือไม่?')) return;
+            if (!confirm('ต้องการยกเลิกการลงทะเบียนใช่หรือไม่?')) return;
             
-            showLoading();
+            showLoading('กำลังดำเนินการ...');
             
             try {
                 const result = await callGAS('cancel', { registrationId });
@@ -939,14 +971,14 @@
                     await loadMyRegistrations();
                     await loadActivities();
                     closeRegistrationsModal();
-                    showToast('ยกเลิกสำเร็จ');
+                    alert('ยกเลิกการลงทะเบียนสำเร็จ');
                 } else {
                     alert(result.message || 'ยกเลิกไม่สำเร็จ');
                 }
                 
             } catch (error) {
                 console.error('Cancel error:', error);
-                alert('เกิดข้อผิดพลาด');
+                alert('เกิดข้อผิดพลาด กรุณาลองอีกครั้ง');
             }
             
             hideLoading();
@@ -980,11 +1012,12 @@
         
         // ========== Create/Edit Activity ==========
         function showCreateActivityModal() {
-            if (!isAdmin) {
-                alert('คุณไม่มีสิทธิ์');
-                return;
-            }
-            
+            resetActivityForm();
+            document.getElementById('activityModalTitle').textContent = 'สร้างกิจกรรมใหม่';
+            document.getElementById('activityModal').style.display = 'flex';
+        }
+        
+        function resetActivityForm() {
             document.getElementById('activityId').value = '';
             document.getElementById('activityTitle').value = '';
             document.getElementById('activityDescription').value = '';
@@ -995,18 +1028,10 @@
             document.getElementById('activityPrice').value = '0';
             document.getElementById('activityImageUrl').value = '';
             document.getElementById('activityContact').value = '';
-            
-            document.getElementById('activityModalTitle').textContent = 'สร้างกิจกรรมใหม่';
-            document.getElementById('activityModal').style.display = 'flex';
         }
         
         async function saveActivity(event) {
             event.preventDefault();
-            
-            if (!isAdmin) {
-                alert('คุณไม่มีสิทธิ์');
-                return;
-            }
             
             const activityData = {
                 title: document.getElementById('activityTitle').value,
@@ -1023,7 +1048,7 @@
             const activityId = document.getElementById('activityId').value;
             const isEdit = !!activityId;
             
-            showLoading();
+            showLoading('กำลังบันทึก...');
             
             try {
                 const path = isEdit ? 'activities/update' : 'activities/create';
@@ -1035,21 +1060,21 @@
                     closeActivityModal();
                     await loadActivities();
                     await loadAdminStats();
-                    showToast(isEdit ? 'แก้ไขสำเร็จ' : 'สร้างสำเร็จ');
+                    alert(isEdit ? 'แก้ไขกิจกรรมสำเร็จ' : 'สร้างกิจกรรมสำเร็จ');
                 } else {
-                    alert(result.message || 'ไม่สำเร็จ');
+                    alert(result.message || 'บันทึกไม่สำเร็จ');
                 }
                 
             } catch (error) {
                 console.error('Save error:', error);
-                alert('เกิดข้อผิดพลาด');
+                alert('เกิดข้อผิดพลาด กรุณาลองอีกครั้ง');
             }
             
             hideLoading();
         }
         
         async function editActivity(activityId) {
-            showLoading();
+            showLoading('กำลังโหลด...');
             
             try {
                 const result = await callGAS('activity', { activityId });
@@ -1061,8 +1086,8 @@
                     document.getElementById('activityTitle').value = activity.title || '';
                     document.getElementById('activityDescription').value = activity.description || '';
                     document.getElementById('activityLocation').value = activity.location || '';
-                    document.getElementById('activityStartDate').value = activity.startDate?.slice(0, 16) || '';
-                    document.getElementById('activityEndDate').value = activity.endDate?.slice(0, 16) || '';
+                    document.getElementById('activityStartDate').value = activity.startDate ? activity.startDate.slice(0, 16) : '';
+                    document.getElementById('activityEndDate').value = activity.endDate ? activity.endDate.slice(0, 16) : '';
                     document.getElementById('activityMaxParticipants').value = activity.maxParticipants || 50;
                     document.getElementById('activityPrice').value = activity.price || 0;
                     document.getElementById('activityImageUrl').value = activity.imageUrl || '';
@@ -1088,9 +1113,9 @@
         }
         
         async function deleteActivity(activityId) {
-            if (!confirm('แน่ใจหรือไม่ว่าต้องการลบ?')) return;
+            if (!confirm('คุณแน่ใจหรือไม่ว่าต้องการลบกิจกรรมนี้?')) return;
             
-            showLoading();
+            showLoading('กำลังลบ...');
             
             try {
                 const result = await callGAS('activities/delete', { activityId });
@@ -1099,14 +1124,14 @@
                     await loadActivities();
                     await loadAdminStats();
                     closeDetailModal();
-                    showToast('ลบสำเร็จ');
+                    alert('ลบกิจกรรมสำเร็จ');
                 } else {
                     alert(result.message || 'ลบไม่สำเร็จ');
                 }
                 
             } catch (error) {
                 console.error('Delete error:', error);
-                alert('เกิดข้อผิดพลาด');
+                alert('เกิดข้อผิดพลาด กรุณาลองอีกครั้ง');
             }
             
             hideLoading();
@@ -1122,17 +1147,80 @@
             document.getElementById('activityModal').style.display = 'none';
         }
         
+        // ========== Sample Data ==========
+        async function createSampleData() {
+            if (!confirm('สร้างข้อมูลตัวอย่าง? (ข้อมูลเดิมจะถูกลบ)')) return;
+            
+            showLoading('กำลังสร้างข้อมูล...');
+            
+            try {
+                // Create sample activities
+                const sampleActivities = [
+                    {
+                        title: '🎨 เวิร์คช็อปทำขนมไทย',
+                        description: 'เรียนรู้การทำขนมไทย 4 ชนิด พร้อมฝึกปฏิบัติจริง',
+                        location: 'เซ็นทรัลเวิลด์ ชั้น 2',
+                        startDate: new Date(Date.now() + 86400000).toISOString().slice(0, 16),
+                        endDate: new Date(Date.now() + 86400000 * 7).toISOString().slice(0, 16),
+                        maxParticipants: 30,
+                        price: 0,
+                        imageUrl: 'https://images.unsplash.com/photo-1558401391-7895-6c9a0c1f6069?w=400',
+                        contact: '08X-XXX-XXXX'
+                    },
+                    {
+                        title: '🤖 สัมมนา AI 2024',
+                        description: 'พบกับผู้เชี่ยวชาญด้าน AI จากบริษัทชั้นนำ',
+                        location: 'โรงแรมเซ็นทารา',
+                        startDate: new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 16),
+                        endDate: new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 16),
+                        maxParticipants: 100,
+                        price: 0,
+                        imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400',
+                        contact: '08Y-XXX-XXXX'
+                    },
+                    {
+                        title: '📱 อบรมการตลาดออนไลน์',
+                        description: 'เรียนรู้เทคนิคการตลาดออนไลน์สำหรับธุรกิจยุคใหม่',
+                        location: 'อาคารไอทีสแควร์',
+                        startDate: new Date(Date.now() + 86400000 * 14).toISOString().slice(0, 16),
+                        endDate: new Date(Date.now() + 86400000 * 14).toISOString().slice(0, 16),
+                        maxParticipants: 50,
+                        price: 1500,
+                        imageUrl: 'https://images.unsplash.com/photo-1558401391-7895-6c9a0c1f6069?w=400',
+                        contact: '08Z-XXX-XXXX'
+                    }
+                ];
+                
+                for (const activity of sampleActivities) {
+                    await callGAS('activities/create', activity);
+                }
+                
+                await loadActivities();
+                await loadAdminStats();
+                
+                alert('สร้างข้อมูลตัวอย่างสำเร็จ');
+                
+            } catch (error) {
+                console.error('Create sample error:', error);
+                alert('เกิดข้อผิดพลาด');
+            }
+            
+            hideLoading();
+        }
+        
         // ========== Event Listeners ==========
         document.getElementById('searchInput').addEventListener('input', () => {
             clearTimeout(window.searchTimeout);
             window.searchTimeout = setTimeout(loadActivities, 500);
         });
         
+        document.getElementById('statusFilter').addEventListener('change', loadActivities);
+        
         // Close modals on outside click
         window.onclick = function(event) {
             const modals = ['activityModal', 'detailModal', 'registrationsModal'];
-            modals.forEach(id => {
-                const modal = document.getElementById(id);
+            modals.forEach(modalId => {
+                const modal = document.getElementById(modalId);
                 if (event.target === modal) {
                     modal.style.display = 'none';
                 }
