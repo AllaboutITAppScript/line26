@@ -8,66 +8,66 @@
     <!-- Tailwind + Dark mode -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
-    <!-- LINE LIFF SDK -->
-    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
-    
+    <!-- Custom CSS -->
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
         * {
-            font-family: 'Prompt', sans-serif;
+            font-family: 'Inter', sans-serif;
         }
         
-        /* Dark Mode */
+        /* Modern Dark Theme */
         :root {
-            --bg-primary: 249, 250, 251;
-            --bg-secondary: 255, 255, 255;
-            --text-primary: 17, 24, 39;
-            --text-secondary: 107, 114, 128;
-            --border-color: 229, 231, 235;
+            --primary: #06c755;
+            --primary-dark: #05b34a;
+            --primary-light: #7ee0a3;
+            --bg-dark: #0f0f13;
+            --bg-card: #1a1a1f;
+            --bg-hover: #24242b;
+            --border: #2c2c35;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --text-muted: #6b6b7c;
         }
         
-        .dark {
-            --bg-primary: 17, 24, 39;
-            --bg-secondary: 31, 41, 55;
-            --text-primary: 243, 244, 246;
-            --text-secondary: 156, 163, 175;
-            --border-color: 55, 65, 81;
+        .light {
+            --bg-dark: #f3f4f6;
+            --bg-card: #ffffff;
+            --bg-hover: #f9fafb;
+            --border: #e5e7eb;
+            --text-primary: #111827;
+            --text-secondary: #4b5563;
+            --text-muted: #6b7280;
         }
         
         body {
-            background-color: rgb(var(--bg-primary));
-            color: rgb(var(--text-primary));
-            transition: all 0.3s ease;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            transition: background-color 0.3s, color 0.3s;
+            min-height: 100vh;
         }
         
-        /* Loading Overlay */
-        #loadingOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.3s ease;
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
         }
         
-        #loadingOverlay.hidden {
-            display: none;
+        ::-webkit-scrollbar-track {
+            background: var(--bg-card);
         }
         
-        .line-loader {
-            width: 80px;
-            height: 80px;
-            border: 4px solid #06c755;
-            border-top-color: transparent;
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+        
+        /* Loading Animation */
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--bg-card);
+            border-bottom-color: var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -78,75 +78,174 @@
         
         /* Activity Card */
         .activity-card {
-            background-color: rgb(var(--bg-secondary));
-            border: 1px solid rgb(var(--border-color));
-            transition: all 0.3s ease;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .activity-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
         }
         
         .activity-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            border-color: var(--primary);
         }
         
-        /* Status Badge */
-        .status-badge {
-            padding: 4px 12px;
-            border-radius: 9999px;
+        .activity-card:hover::before {
+            transform: translateX(0);
+        }
+        
+        /* Status Badges */
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
             font-size: 12px;
             font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
         }
         
-        .status-open {
-            background-color: #06c75520;
-            color: #06c755;
-            border: 1px solid #06c75540;
+        .badge-open {
+            background: rgba(6, 199, 85, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(6, 199, 85, 0.2);
         }
         
-        .status-closed {
-            background-color: #ef444420;
+        .badge-closed {
+            background: rgba(239, 68, 68, 0.1);
             color: #ef4444;
-            border: 1px solid #ef444440;
+            border: 1px solid rgba(239, 68, 68, 0.2);
         }
         
-        .status-full {
-            background-color: #f59e0b20;
+        .badge-full {
+            background: rgba(245, 158, 11, 0.1);
             color: #f59e0b;
-            border: 1px solid #f59e0b40;
+            border: 1px solid rgba(245, 158, 11, 0.2);
         }
         
-        /* Custom Scrollbar */
-        .custom-scroll::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+        /* Modern Button */
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
         }
         
-        .custom-scroll::-webkit-scrollbar-track {
-            background: rgb(var(--bg-primary));
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: scale(1.02);
+            box-shadow: 0 10px 20px -5px rgba(6, 199, 85, 0.3);
         }
         
-        .custom-scroll::-webkit-scrollbar-thumb {
-            background: #06c755;
-            border-radius: 10px;
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .btn-outline:hover {
+            background: var(--bg-hover);
+            border-color: var(--primary);
+        }
+        
+        /* Glass Effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .dark .glass {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Stats Card */
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        
+        .stat-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
         }
         
         /* Modal */
-        .modal {
-            background-color: rgb(var(--bg-secondary));
-            border: 1px solid rgb(var(--border-color));
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
         }
         
-        /* Toast */
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        /* Toast Notification */
         .toast {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 12px 24px;
-            background-color: rgb(var(--bg-secondary));
-            border-left: 4px solid #06c755;
-            border-radius: 8px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            z-index: 10000;
-            animation: slideIn 0.3s ease;
+            bottom: 24px;
+            right: 24px;
+            padding: 16px 24px;
+            background: var(--bg-card);
+            border-left: 4px solid var(--primary);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+            animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 300px;
         }
         
         @keyframes slideIn {
@@ -159,60 +258,123 @@
                 opacity: 1;
             }
         }
+        
+        /* Skeleton Loading */
+        .skeleton {
+            background: linear-gradient(90deg, var(--border) 25%, var(--bg-hover) 50%, var(--border) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
     </style>
 </head>
-<body class="custom-scroll">
+<body class="light">
     <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="hidden">
+    <div id="loadingOverlay" class="fixed inset-0 modal-overlay z-[9999] hidden items-center justify-center">
         <div class="text-center">
-            <div class="line-loader mx-auto mb-4"></div>
-            <p id="loadingMessage" class="text-white text-lg">กำลังโหลดข้อมูล...</p>
+            <div class="loader mx-auto mb-4"></div>
+            <p id="loadingMessage" class="text-white text-lg font-medium">กำลังโหลดข้อมูล...</p>
             <p class="text-gray-400 text-sm mt-2">กรุณารอสักครู่</p>
         </div>
     </div>
 
     <!-- Navigation -->
-    <nav class="fixed top-0 left-0 right-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-700 z-50">
-        <div class="max-w-7xl mx-auto px-4 py-3">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-[#06c755] rounded-xl flex items-center justify-center">
-                        <i class="fab fa-line text-white text-xl"></i>
+    <nav class="fixed top-0 left-0 right-0 glass z-50 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#06c755] to-[#00a344] flex items-center justify-center shadow-lg">
+                    <i class="fab fa-line text-white text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold">LINE MiniApp</h1>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">กิจกรรมและลงทะเบียน</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <!-- Notifications -->
+                <button id="notificationsBtn" class="relative p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                    <i class="fas fa-bell text-gray-600 dark:text-gray-300"></i>
+                    <span id="notificationBadge" class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full hidden"></span>
+                </button>
+                
+                <!-- Profile -->
+                <div id="profileSection" class="hidden items-center gap-3">
+                    <div class="text-right">
+                        <p id="profileName" class="text-sm font-medium"></p>
+                        <p id="profileEmail" class="text-xs text-gray-500 dark:text-gray-400"></p>
                     </div>
-                    <div>
-                        <h1 class="text-xl font-bold text-gray-900 dark:text-white">LINE MiniApp</h1>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">กิจกรรมและลงทะเบียน</p>
+                    <div class="relative">
+                        <img id="profileImage" src="" class="w-10 h-10 rounded-full border-2 border-[#06c755] object-cover">
+                        <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-gray-900 rounded-full"></span>
                     </div>
                 </div>
                 
-                <div class="flex items-center gap-2">
-                    <!-- Profile -->
-                    <div id="profileSection" class="hidden items-center gap-3">
-                        <div class="text-right">
-                            <p id="profileName" class="text-sm font-medium text-gray-900 dark:text-white"></p>
-                            <p id="profileEmail" class="text-xs text-gray-500 dark:text-gray-400"></p>
-                        </div>
-                        <img id="profileImage" src="" class="w-10 h-10 rounded-full border-2 border-[#06c755] object-cover">
-                    </div>
-                    
-                    <!-- Dark Mode Toggle -->
-                    <button id="darkToggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
-                        <i class="fas fa-moon dark:hidden"></i>
-                        <i class="fas fa-sun hidden dark:block"></i>
-                    </button>
-                </div>
+                <!-- Dark Mode Toggle -->
+                <button id="darkToggle" class="p-2 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                    <i class="fas fa-moon text-gray-600 dark:hidden"></i>
+                    <i class="fas fa-sun text-yellow-500 hidden dark:block"></i>
+                </button>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <div class="pt-20 pb-10 px-4 max-w-7xl mx-auto">
+    <div class="pt-24 pb-10 px-4 max-w-7xl mx-auto">
         <!-- Welcome Banner -->
-        <div id="welcomeBanner" class="hidden mb-6 p-6 bg-gradient-to-r from-[#06c75520] to-[#00a34420] rounded-2xl border border-[#06c755]">
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
-                สวัสดี, <span id="welcomeName" class="text-[#06c755]"></span>
-            </h2>
-            <p class="text-gray-600 dark:text-gray-300 mt-1">ยินดีต้อนรับสู่ LINE MiniApp ค้นหากิจกรรมที่คุณสนใจได้เลย</p>
+        <div id="welcomeBanner" class="hidden mb-8 p-6 rounded-2xl bg-gradient-to-r from-[#06c75520] to-[#00a34420] border border-[#06c755]">
+            <div class="flex items-center gap-4">
+                <div class="w-16 h-16 rounded-2xl bg-[#06c755] flex items-center justify-center">
+                    <i class="fas fa-hand-peace text-white text-3xl"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold">สวัสดี, <span id="welcomeName" class="text-[#06c755]"></span></h2>
+                    <p class="text-gray-600 dark:text-gray-400 mt-1">ยินดีต้อนรับกลับ! มีกิจกรรมใหม่รอคุณอยู่นะ</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="stat-card">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">กิจกรรมทั้งหมด</span>
+                    <i class="fas fa-calendar-alt text-[#06c755]"></i>
+                </div>
+                <p id="statTotalActivities" class="text-3xl font-bold">-</p>
+                <p class="text-xs text-gray-400 mt-1">อัปเดตล่าสุดวันนี้</p>
+            </div>
+            
+            <div class="stat-card">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">เปิดรับสมัคร</span>
+                    <i class="fas fa-door-open text-green-500"></i>
+                </div>
+                <p id="statOpenActivities" class="text-3xl font-bold text-[#06c755]">-</p>
+                <p class="text-xs text-gray-400 mt-1">รอคุณอยู่</p>
+            </div>
+            
+            <div class="stat-card">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">ผู้เข้าร่วม</span>
+                    <i class="fas fa-users text-blue-500"></i>
+                </div>
+                <p id="statTotalParticipants" class="text-3xl font-bold text-blue-500">-</p>
+                <p class="text-xs text-gray-400 mt-1">คนทั่วประเทศ</p>
+            </div>
+            
+            <div class="stat-card cursor-pointer" onclick="showMyRegistrations()">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">ลงทะเบียนแล้ว</span>
+                    <i class="fas fa-check-circle text-purple-500"></i>
+                </div>
+                <p id="statMyRegistrations" class="text-3xl font-bold text-purple-500">-</p>
+                <p class="text-xs text-gray-400 mt-1">คลิกดูรายการ</p>
+            </div>
         </div>
 
         <!-- Search and Filter -->
@@ -220,148 +382,181 @@
             <div class="flex flex-col md:flex-row gap-4">
                 <div class="flex-1 relative">
                     <i class="fas fa-search absolute left-4 top-3.5 text-gray-400"></i>
-                    <input type="text" id="searchInput" placeholder="ค้นหากิจกรรม..." 
-                           class="w-full pl-12 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#06c755]">
+                    <input type="text" id="searchInput" placeholder="ค้นหากิจกรรม, สถานที่, หมวดหมู่..." 
+                           class="w-full pl-12 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#06c755] focus:border-transparent">
                 </div>
                 <select id="statusFilter" class="px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#06c755]">
-                    <option value="all">ทั้งหมด</option>
-                    <option value="open">เปิดรับสมัคร</option>
-                    <option value="closed">ปิดรับสมัคร</option>
-                    <option value="full">เต็มแล้ว</option>
+                    <option value="all">📋 กิจกรรมทั้งหมด</option>
+                    <option value="open">🟢 เปิดรับสมัคร</option>
+                    <option value="closed">🔴 ปิดรับสมัคร</option>
+                    <option value="full">🟡 เต็มแล้ว</option>
                 </select>
             </div>
         </div>
 
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
-                <p class="text-sm text-gray-500 dark:text-gray-400">กิจกรรมทั้งหมด</p>
-                <p id="statTotalActivities" class="text-2xl font-bold text-gray-900 dark:text-white">-</p>
-            </div>
-            <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
-                <p class="text-sm text-gray-500 dark:text-gray-400">เปิดรับสมัคร</p>
-                <p id="statOpenActivities" class="text-2xl font-bold text-[#06c755]">-</p>
-            </div>
-            <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
-                <p class="text-sm text-gray-500 dark:text-gray-400">ผู้เข้าร่วม</p>
-                <p id="statTotalParticipants" class="text-2xl font-bold text-blue-500">-</p>
-            </div>
-            <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
-                <p class="text-sm text-gray-500 dark:text-gray-400">ลงทะเบียนแล้ว</p>
-                <p id="statMyRegistrations" class="text-2xl font-bold text-purple-500">-</p>
-            </div>
-        </div>
-
         <!-- Activities Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            <!-- Activities will be loaded here -->
+        <div id="activitiesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Skeleton Loading -->
+            <div class="activity-card rounded-2xl p-4 skeleton" style="height: 400px;"></div>
+            <div class="activity-card rounded-2xl p-4 skeleton" style="height: 400px;"></div>
+            <div class="activity-card rounded-2xl p-4 skeleton" style="height: 400px;"></div>
         </div>
 
         <!-- Pagination -->
-        <div class="flex items-center justify-between">
-            <button id="prevPage" class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg disabled:opacity-50">
+        <div class="flex items-center justify-between bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+            <button id="prevPage" class="btn-outline px-6 py-2 disabled:opacity-50 disabled:cursor-not-allowed">
                 <i class="fas fa-chevron-left mr-2"></i>ก่อนหน้า
             </button>
-            <span id="pageInfo" class="text-gray-600 dark:text-gray-400">หน้า 1 / 1</span>
-            <button id="nextPage" class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg disabled:opacity-50">
+            <span id="pageInfo" class="text-gray-600 dark:text-gray-400 font-medium">หน้า 1 / 1</span>
+            <button id="nextPage" class="btn-outline px-6 py-2 disabled:opacity-50 disabled:cursor-not-allowed">
                 ถัดไป<i class="fas fa-chevron-right ml-2"></i>
             </button>
         </div>
     </div>
 
     <!-- Activity Detail Modal -->
-    <div id="activityModal" class="fixed inset-0 z-[100] hidden bg-black/50 backdrop-blur-sm">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="modal max-w-2xl w-full rounded-2xl p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 id="modalTitle" class="text-2xl font-bold text-gray-900 dark:text-white"></h3>
-                    <button onclick="closeModal()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
-                        <i class="fas fa-times text-gray-500"></i>
-                    </button>
-                </div>
-                
-                <div id="modalContent" class="space-y-4">
-                    <!-- Dynamic content -->
-                </div>
-                
-                <div class="mt-6 flex gap-3">
-                    <button id="registerBtn" class="flex-1 py-3 bg-[#06c755] text-white rounded-xl font-medium hover:bg-[#05b34a] transition">
-                        ลงทะเบียนเข้าร่วม
-                    </button>
-                    <button onclick="closeModal()" class="px-6 py-3 border border-gray-200 dark:border-gray-700 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                        ปิด
-                    </button>
-                </div>
+    <div id="activityModal" class="fixed inset-0 modal-overlay z-[100] hidden items-center justify-center p-4">
+        <div class="modal-content max-w-2xl w-full p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="modalTitle" class="text-2xl font-bold"></h3>
+                <button onclick="closeModal()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition">
+                    <i class="fas fa-times text-gray-500"></i>
+                </button>
+            </div>
+            
+            <div id="modalContent" class="space-y-6">
+                <!-- Dynamic content -->
+            </div>
+            
+            <div class="mt-6 flex gap-3">
+                <button id="registerBtn" class="btn-primary flex-1">
+                    ลงทะเบียนเข้าร่วม
+                </button>
+                <button onclick="closeModal()" class="btn-outline px-6">
+                    ปิด
+                </button>
             </div>
         </div>
     </div>
 
     <!-- My Registrations Modal -->
-    <div id="registrationsModal" class="fixed inset-0 z-[100] hidden bg-black/50 backdrop-blur-sm">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="modal max-w-2xl w-full rounded-2xl p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">กิจกรรมที่ฉันลงทะเบียน</h3>
-                    <button onclick="closeRegistrationsModal()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
-                        <i class="fas fa-times text-gray-500"></i>
-                    </button>
-                </div>
-                
-                <div id="registrationsList" class="space-y-3 max-h-96 overflow-y-auto custom-scroll">
-                    <!-- Registrations will be loaded here -->
-                </div>
+    <div id="registrationsModal" class="fixed inset-0 modal-overlay z-[100] hidden items-center justify-center p-4">
+        <div class="modal-content max-w-2xl w-full p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-2xl font-bold">กิจกรรมที่ฉันลงทะเบียน</h3>
+                <button onclick="closeRegistrationsModal()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition">
+                    <i class="fas fa-times text-gray-500"></i>
+                </button>
+            </div>
+            
+            <div id="registrationsList" class="space-y-3 max-h-96 overflow-y-auto custom-scroll pr-2">
+                <!-- Registrations will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifications Modal -->
+    <div id="notificationsModal" class="fixed inset-0 modal-overlay z-[100] hidden items-center justify-center p-4">
+        <div class="modal-content max-w-md w-full p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-2xl font-bold">การแจ้งเตือน</h3>
+                <button onclick="closeNotificationsModal()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition">
+                    <i class="fas fa-times text-gray-500"></i>
+                </button>
+            </div>
+            
+            <div id="notificationsList" class="space-y-3 max-h-96 overflow-y-auto custom-scroll pr-2">
+                <!-- Notifications will be loaded here -->
             </div>
         </div>
     </div>
 
     <script>
         // ============================================
-        // LINE MiniApp Frontend
-        // เชื่อมต่อกับ Google Apps Script Backend
+        // LINE MiniApp Frontend - Production Version
+        // Fully Integrated with Google Apps Script
         // ============================================
         
-        // ***************** การตั้งค่า *****************
-        const GAS_URL = 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec'; // เปลี่ยนเป็น URL จาก Google Apps Script
+        // Configuration
+        const CONFIG = {
+            GAS_URL: 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec',
+            LIFF_ID: '2008904120-T7I0VPZf',
+            VERSION: '2.0.0',
+            PAGE_SIZE: 9
+        };
         
-        // ***************** State Management *****************
-        let currentUser = null;
-        let activities = [];
-        let myRegistrations = [];
-        let currentPage = 1;
-        let totalPages = 1;
-        let currentFilter = 'all';
-        let searchKeyword = '';
+        // State Management
+        const state = {
+            currentUser: null,
+            activities: [],
+            myRegistrations: [],
+            notifications: [],
+            currentPage: 1,
+            totalPages: 1,
+            currentFilter: 'all',
+            searchKeyword: '',
+            isLoading: false
+        };
         
-        // ========== 1. เริ่มต้นระบบ ==========
+        // DOM Elements
+        const elements = {
+            loadingOverlay: document.getElementById('loadingOverlay'),
+            loadingMessage: document.getElementById('loadingMessage'),
+            activitiesContainer: document.getElementById('activitiesContainer'),
+            profileSection: document.getElementById('profileSection'),
+            profileName: document.getElementById('profileName'),
+            profileEmail: document.getElementById('profileEmail'),
+            profileImage: document.getElementById('profileImage'),
+            welcomeBanner: document.getElementById('welcomeBanner'),
+            welcomeName: document.getElementById('welcomeName'),
+            statTotalActivities: document.getElementById('statTotalActivities'),
+            statOpenActivities: document.getElementById('statOpenActivities'),
+            statTotalParticipants: document.getElementById('statTotalParticipants'),
+            statMyRegistrations: document.getElementById('statMyRegistrations'),
+            pageInfo: document.getElementById('pageInfo'),
+            prevPage: document.getElementById('prevPage'),
+            nextPage: document.getElementById('nextPage'),
+            searchInput: document.getElementById('searchInput'),
+            statusFilter: document.getElementById('statusFilter'),
+            darkToggle: document.getElementById('darkToggle'),
+            notificationBadge: document.getElementById('notificationBadge'),
+            notificationsBtn: document.getElementById('notificationsBtn')
+        };
+        
+        // ========== Initialization ==========
         document.addEventListener('DOMContentLoaded', async () => {
-            showLoading('กำลังเริ่มต้นระบบ...');
-            
             try {
-                // เริ่มต้น Dark Mode
-                initDarkMode();
+                showLoading('กำลังเริ่มต้นระบบ...');
                 
-                // เริ่มต้น LIFF
+                // Initialize theme
+                initTheme();
+                
+                // Initialize LIFF
                 await initLIFF();
                 
-                // โหลดข้อมูล
-                await loadHomeData();
+                // Load initial data
+                await Promise.all([
+                    loadHomeData(),
+                    loadNotifications()
+                ]);
                 
                 hideLoading();
                 
             } catch (error) {
                 console.error('Initialization error:', error);
                 hideLoading();
-                showToast('เกิดข้อผิดพลาด: ' + error.message, 'error');
+                showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
+                
+                // Fallback to dummy data
+                loadDummyData();
             }
         });
         
-        // ========== 2. เริ่มต้น LIFF ==========
+        // ========== LIFF Integration ==========
         async function initLIFF() {
             return new Promise((resolve, reject) => {
-                liff.init({ 
-                    liffId: '2008904120-T7I0VPZf' // ใส่ LIFF ID ของคุณ
-                }, async () => {
-                    console.log('LIFF initialized');
+                liff.init({ liffId: CONFIG.LIFF_ID }, async () => {
+                    console.log('✅ LIFF initialized');
                     
                     if (liff.isLoggedIn()) {
                         try {
@@ -374,21 +569,26 @@
                         liff.login();
                     }
                 }, (error) => {
-                    console.error('LIFF init failed:', error);
-                    // ใช้ข้อมูลทดสอบถ้า LIFF ไม่ทำงาน
+                    console.error('❌ LIFF init failed:', error);
+                    
+                    // Check if running in LINE browser
+                    if (liff.isInClient()) {
+                        showToast('กรุณาเปิดไลค์และลองอีกครั้ง', 'error');
+                    }
+                    
+                    // Use dummy data for testing
                     setupDummyUser();
                     resolve();
                 });
             });
         }
         
-        // ========== 3. โหลดโปรไฟล์ผู้ใช้ ==========
+        // ========== User Profile ==========
         async function loadUserProfile() {
             try {
                 const profile = await liff.getProfile();
                 const idToken = liff.getDecodedIDToken();
                 
-                // เรียก API เพื่อขอข้อมูลผู้ใช้
                 const formData = new FormData();
                 formData.append('path', 'user/profile');
                 formData.append('lineUserId', profile.userId);
@@ -396,7 +596,7 @@
                 formData.append('pictureUrl', profile.pictureUrl);
                 formData.append('email', idToken?.email || '');
                 
-                const response = await fetch(GAS_URL, {
+                const response = await fetch(CONFIG.GAS_URL, {
                     method: 'POST',
                     body: formData
                 });
@@ -404,8 +604,11 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    currentUser = result.data;
+                    state.currentUser = result.data;
                     updateProfileUI();
+                    
+                    // Load user registrations
+                    await loadMyRegistrations();
                 }
                 
             } catch (error) {
@@ -414,39 +617,26 @@
             }
         }
         
-        // ========== 4. ตั้งค่าผู้ใช้ทดสอบ ==========
         function setupDummyUser() {
-            currentUser = {
+            state.currentUser = {
                 userId: 'USR' + Date.now(),
                 displayName: 'ผู้ใช้ทดสอบ',
-                pictureUrl: 'https://via.placeholder.com/100/06c755/ffffff?text=USER',
-                email: 'test@example.com'
+                pictureUrl: 'https://via.placeholder.com/100/06c755/ffffff?text=LINE',
+                email: 'test@example.com',
+                role: 'user'
             };
             updateProfileUI();
-            showToast('ใช้โหมดทดสอบ', 'warning');
+            showToast('โหมดทดสอบ (ไม่เชื่อมต่อ LINE)', 'warning');
         }
         
-        // ========== 5. อัปเดตโปรไฟล์ใน UI ==========
-        function updateProfileUI() {
-            if (!currentUser) return;
-            
-            document.getElementById('profileSection').classList.remove('hidden');
-            document.getElementById('profileName').textContent = currentUser.displayName;
-            document.getElementById('profileEmail').textContent = currentUser.email || 'ไม่มีอีเมล';
-            document.getElementById('profileImage').src = currentUser.pictureUrl || 'https://via.placeholder.com/100/06c755/ffffff?text=LINE';
-            
-            document.getElementById('welcomeBanner').classList.remove('hidden');
-            document.getElementById('welcomeName').textContent = currentUser.displayName.split(' ')[0];
-        }
-        
-        // ========== 6. โหลดข้อมูลหน้าแรก ==========
+        // ========== Data Loading ==========
         async function loadHomeData() {
             try {
                 const formData = new FormData();
                 formData.append('path', 'home');
-                formData.append('lineUserId', currentUser?.userId || '');
+                formData.append('lineUserId', state.currentUser?.userId || '');
                 
-                const response = await fetch(GAS_URL, {
+                const response = await fetch(CONFIG.GAS_URL, {
                     method: 'POST',
                     body: formData
                 });
@@ -454,33 +644,29 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    displayFeaturedActivities(result.data.featuredActivities);
                     updateStats(result.data);
                 }
                 
-                // โหลดกิจกรรมทั้งหมด
+                // Load activities
                 await loadActivities();
-                
-                // โหลดกิจกรรมที่ลงทะเบียน
-                await loadMyRegistrations();
                 
             } catch (error) {
                 console.error('Load home error:', error);
-                // ใช้ข้อมูลทดสอบ
                 loadDummyData();
             }
         }
         
-        // ========== 7. โหลดกิจกรรม ==========
         async function loadActivities() {
             try {
                 const formData = new FormData();
                 formData.append('path', 'activities');
-                formData.append('page', currentPage);
-                formData.append('status', currentFilter);
-                formData.append('lineUserId', currentUser?.userId || '');
+                formData.append('page', state.currentPage);
+                formData.append('status', state.currentFilter);
+                formData.append('search', state.searchKeyword);
+                formData.append('pageSize', CONFIG.PAGE_SIZE);
+                formData.append('lineUserId', state.currentUser?.userId || '');
                 
-                const response = await fetch(GAS_URL, {
+                const response = await fetch(CONFIG.GAS_URL, {
                     method: 'POST',
                     body: formData
                 });
@@ -488,10 +674,12 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    activities = result.data.activities;
-                    totalPages = result.data.totalPages;
+                    state.activities = result.data.activities;
+                    state.totalPages = result.data.totalPages;
+                    
                     displayActivities();
                     updatePagination();
+                    updateStats(result.data);
                 }
                 
             } catch (error) {
@@ -500,16 +688,15 @@
             }
         }
         
-        // ========== 8. โหลดกิจกรรมที่ลงทะเบียน ==========
         async function loadMyRegistrations() {
-            if (!currentUser) return;
+            if (!state.currentUser) return;
             
             try {
                 const formData = new FormData();
                 formData.append('path', 'user/registrations');
-                formData.append('lineUserId', currentUser.userId);
+                formData.append('lineUserId', state.currentUser.userId);
                 
-                const response = await fetch(GAS_URL, {
+                const response = await fetch(CONFIG.GAS_URL, {
                     method: 'POST',
                     body: formData
                 });
@@ -517,8 +704,8 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    myRegistrations = result.data;
-                    document.getElementById('statMyRegistrations').textContent = myRegistrations.length;
+                    state.myRegistrations = result.data;
+                    elements.statMyRegistrations.textContent = state.myRegistrations.length;
                 }
                 
             } catch (error) {
@@ -526,94 +713,153 @@
             }
         }
         
-        // ========== 9. แสดงกิจกรรม ==========
-        function displayActivities() {
-            const container = document.querySelector('.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3');
+        async function loadNotifications() {
+            if (!state.currentUser) return;
             
-            if (!activities || activities.length === 0) {
-                container.innerHTML = `
-                    <div class="col-span-full text-center py-12">
-                        <i class="fas fa-calendar-times text-4xl text-gray-400 mb-3"></i>
-                        <p class="text-gray-500 dark:text-gray-400">ไม่พบกิจกรรม</p>
+            try {
+                const formData = new FormData();
+                formData.append('path', 'user/notifications');
+                formData.append('lineUserId', state.currentUser.userId);
+                formData.append('unreadOnly', 'true');
+                
+                const response = await fetch(CONFIG.GAS_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    state.notifications = result.data.notifications || [];
+                    const unreadCount = result.data.unreadCount || 0;
+                    
+                    if (unreadCount > 0) {
+                        elements.notificationBadge.classList.remove('hidden');
+                        elements.notificationBadge.textContent = unreadCount;
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Load notifications error:', error);
+            }
+        }
+        
+        // ========== UI Rendering ==========
+        function displayActivities() {
+            if (!state.activities || state.activities.length === 0) {
+                elements.activitiesContainer.innerHTML = `
+                    <div class="col-span-full text-center py-16">
+                        <div class="w-24 h-24 mx-auto mb-4 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+                            <i class="fas fa-calendar-times text-4xl text-gray-400"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2">ไม่พบกิจกรรม</h3>
+                        <p class="text-gray-500 dark:text-gray-400">ลองค้นหาด้วยคำอื่น หรือเปลี่ยนตัวกรองดูนะ</p>
                     </div>
                 `;
                 return;
             }
             
             let html = '';
-            activities.forEach(activity => {
-                const isRegistered = myRegistrations.some(r => r.activityId === activity.id);
-                const statusClass = getStatusClass(activity.status);
+            state.activities.forEach(activity => {
+                const isRegistered = state.myRegistrations.some(r => r.activityId === activity.id);
+                const statusClass = `badge-${activity.status}`;
                 const participantsPercent = (activity.currentParticipants / activity.maxParticipants) * 100;
                 
                 html += `
-                    <div class="activity-card rounded-xl overflow-hidden cursor-pointer" onclick="showActivityDetail('${activity.id}')">
-                        ${activity.imageUrl ? 
-                            `<img src="${activity.imageUrl}" class="w-full h-48 object-cover">` : 
-                            `<div class="w-full h-48 bg-gradient-to-br from-[#06c755] to-[#00a344] flex items-center justify-center">
-                                <i class="fas fa-calendar-alt text-white text-4xl"></i>
-                            </div>`
-                        }
-                        <div class="p-4">
-                            <div class="flex justify-between items-start mb-2">
-                                <h3 class="font-semibold text-lg text-gray-900 dark:text-white">${activity.title}</h3>
-                                <span class="status-badge ${statusClass}">${getStatusText(activity.status)}</span>
+                    <div class="activity-card rounded-2xl overflow-hidden cursor-pointer group" onclick="showActivityDetail('${activity.id}')">
+                        <div class="relative h-48 overflow-hidden">
+                            ${activity.imageUrl ? 
+                                `<img src="${activity.imageUrl}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">` : 
+                                `<div class="w-full h-full bg-gradient-to-br from-[#06c755] to-[#00a344] flex items-center justify-center">
+                                    <i class="fas fa-calendar-alt text-white text-5xl opacity-50"></i>
+                                </div>`
+                            }
+                            <div class="absolute top-4 right-4">
+                                <span class="badge ${statusClass}">
+                                    <i class="fas fa-${activity.status === 'open' ? 'door-open' : activity.status === 'closed' ? 'lock' : 'users'}"></i>
+                                    ${getStatusText(activity.status)}
+                                </span>
                             </div>
-                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">${activity.description}</p>
+                        </div>
+                        
+                        <div class="p-5">
+                            <h3 class="font-semibold text-lg mb-2 line-clamp-1">${activity.title}</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4 line-clamp-2">${activity.description}</p>
                             
-                            <div class="space-y-2 mb-3">
-                                <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                            <div class="space-y-3 mb-4">
+                                <div class="flex items-center text-sm">
                                     <i class="fas fa-calendar w-5 text-[#06c755]"></i>
                                     <span>${formatDate(activity.startDate)}</span>
                                 </div>
-                                <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                                <div class="flex items-center text-sm">
                                     <i class="fas fa-map-marker-alt w-5 text-[#06c755]"></i>
-                                    <span>${activity.location}</span>
+                                    <span class="line-clamp-1">${activity.location}</span>
                                 </div>
-                                <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                                <div class="flex items-center text-sm">
                                     <i class="fas fa-users w-5 text-[#06c755]"></i>
-                                    <span>${activity.currentParticipants}/${activity.maxParticipants} คน</span>
+                                    <span>${activity.currentParticipants} / ${activity.maxParticipants} คน</span>
                                 </div>
+                                ${activity.price > 0 ? 
+                                    `<div class="flex items-center text-sm">
+                                        <i class="fas fa-tag w-5 text-[#06c755]"></i>
+                                        <span>฿${activity.price.toLocaleString()}</span>
+                                    </div>` : 
+                                    `<div class="flex items-center text-sm">
+                                        <i class="fas fa-gift w-5 text-[#06c755]"></i>
+                                        <span class="text-green-500">ฟรี</span>
+                                    </div>`
+                                }
                             </div>
                             
-                            <!-- Progress bar -->
-                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-3">
-                                <div class="bg-[#06c755] h-2 rounded-full" style="width: ${participantsPercent}%"></div>
+                            <div class="progress-bar mb-4">
+                                <div class="progress-fill" style="width: ${participantsPercent}%"></div>
                             </div>
                             
                             ${isRegistered ? 
-                                '<div class="text-center py-2 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-lg text-sm">✅ ลงทะเบียนแล้ว</div>' : 
+                                '<div class="text-center py-3 bg-green-500/10 text-green-500 rounded-xl text-sm font-medium">✅ ลงทะเบียนแล้ว</div>' : 
                                 activity.status === 'open' ?
-                                '<button class="w-full py-2 bg-[#06c755] text-white rounded-lg text-sm font-medium hover:bg-[#05b34a] transition" onclick="event.stopPropagation(); registerActivity(\'' + activity.id + '\')">ลงทะเบียน</button>' :
-                                '<button class="w-full py-2 bg-gray-300 dark:bg-gray-700 text-gray-500 rounded-lg text-sm font-medium cursor-not-allowed" disabled>ปิดรับสมัคร</button>'
+                                `<button class="w-full py-3 bg-[#06c755] text-white rounded-xl text-sm font-medium hover:bg-[#05b34a] transition transform hover:scale-[1.02]" onclick="event.stopPropagation(); registerActivity('${activity.id}')">
+                                    <i class="fas fa-pen-fancy mr-2"></i>ลงทะเบียน
+                                </button>` :
+                                `<button class="w-full py-3 bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded-xl text-sm font-medium cursor-not-allowed" disabled>
+                                    <i class="fas fa-ban mr-2"></i>ปิดรับสมัคร
+                                </button>`
                             }
                         </div>
                     </div>
                 `;
             });
             
-            container.innerHTML = html;
+            elements.activitiesContainer.innerHTML = html;
         }
         
-        // ========== 10. แสดงกิจกรรมแนะนำ ==========
-        function displayFeaturedActivities(featured) {
-            // สามารถเพิ่ม section กิจกรรมแนะนำได้
+        function updateProfileUI() {
+            if (!state.currentUser) return;
+            
+            elements.profileSection.classList.remove('hidden');
+            elements.profileName.textContent = state.currentUser.displayName;
+            elements.profileEmail.textContent = state.currentUser.email || 'ไม่มีอีเมล';
+            elements.profileImage.src = state.currentUser.pictureUrl || 'https://via.placeholder.com/100/06c755/ffffff?text=LINE';
+            
+            elements.welcomeBanner.classList.remove('hidden');
+            elements.welcomeName.textContent = state.currentUser.displayName.split(' ')[0];
         }
         
-        // ========== 11. อัปเดตสถิติ ==========
         function updateStats(data) {
-            document.getElementById('statTotalActivities').textContent = data.totalActivities || 0;
+            elements.statTotalActivities.textContent = data.totalActivities || state.activities.length;
+            elements.statOpenActivities.textContent = data.openActivities || state.activities.filter(a => a.status === 'open').length;
             
-            // คำนวณกิจกรรมที่เปิดรับสมัคร
-            const openCount = activities.filter(a => a.status === 'open').length;
-            document.getElementById('statOpenActivities').textContent = openCount;
-            
-            // คำนวณผู้เข้าร่วมทั้งหมด
-            const totalParticipants = activities.reduce((sum, a) => sum + (a.currentParticipants || 0), 0);
-            document.getElementById('statTotalParticipants').textContent = totalParticipants;
+            const totalParticipants = data.totalParticipants || state.activities.reduce((sum, a) => sum + (a.currentParticipants || 0), 0);
+            elements.statTotalParticipants.textContent = totalParticipants;
         }
         
-        // ========== 12. แสดงรายละเอียดกิจกรรม ==========
+        function updatePagination() {
+            elements.pageInfo.textContent = `หน้า ${state.currentPage} / ${state.totalPages}`;
+            elements.prevPage.disabled = state.currentPage === 1;
+            elements.nextPage.disabled = state.currentPage === state.totalPages;
+        }
+        
+        // ========== Activity Detail ==========
         async function showActivityDetail(activityId) {
             showLoading('กำลังโหลดรายละเอียด...');
             
@@ -621,9 +867,9 @@
                 const formData = new FormData();
                 formData.append('path', 'activity');
                 formData.append('activityId', activityId);
-                formData.append('lineUserId', currentUser?.userId || '');
+                formData.append('lineUserId', state.currentUser?.userId || '');
                 
-                const response = await fetch(GAS_URL, {
+                const response = await fetch(CONFIG.GAS_URL, {
                     method: 'POST',
                     body: formData
                 });
@@ -632,97 +878,153 @@
                 
                 if (result.success) {
                     displayActivityModal(result.data);
+                } else {
+                    showToast('ไม่พบกิจกรรม', 'error');
                 }
-                
-                hideLoading();
                 
             } catch (error) {
                 console.error('Load activity detail error:', error);
-                hideLoading();
                 showToast('ไม่สามารถโหลดรายละเอียดได้', 'error');
             }
+            
+            hideLoading();
         }
         
-        // ========== 13. แสดง Modal กิจกรรม ==========
         function displayActivityModal(activity) {
             const modal = document.getElementById('activityModal');
-            const isRegistered = myRegistrations.some(r => r.activityId === activity.id);
+            const isRegistered = state.myRegistrations.some(r => r.activityId === activity.id);
+            const participantsPercent = (activity.currentParticipants / activity.maxParticipants) * 100;
             
             document.getElementById('modalTitle').textContent = activity.title;
+            
+            // Parse JSON fields
+            let requirements = [];
+            let benefits = [];
+            let tags = [];
+            
+            try {
+                requirements = activity.requirements ? JSON.parse(activity.requirements) : [];
+                benefits = activity.benefits ? JSON.parse(activity.benefits) : [];
+                tags = activity.tags ? JSON.parse(activity.tags) : [];
+            } catch (e) {
+                requirements = activity.requirements ? [activity.requirements] : [];
+                benefits = activity.benefits ? [activity.benefits] : [];
+                tags = activity.tags ? activity.tags.split(',') : [];
+            }
             
             const content = document.getElementById('modalContent');
             content.innerHTML = `
                 ${activity.imageUrl ? 
-                    `<img src="${activity.imageUrl}" class="w-full h-64 object-cover rounded-lg">` : 
+                    `<img src="${activity.imageUrl}" class="w-full h-64 object-cover rounded-xl">` : 
                     ''
                 }
-                <p class="text-gray-600 dark:text-gray-400">${activity.description}</p>
+                
+                <div class="flex flex-wrap gap-2">
+                    <span class="badge badge-${activity.status}">
+                        <i class="fas fa-${activity.status === 'open' ? 'door-open' : activity.status === 'closed' ? 'lock' : 'users'}"></i>
+                        ${getStatusText(activity.status)}
+                    </span>
+                    ${tags.map(tag => `<span class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-xs">#${tag}</span>`).join('')}
+                </div>
+                
+                <p class="text-gray-600 dark:text-gray-400 leading-relaxed">${activity.description}</p>
                 
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                        <p class="text-xs text-gray-500 dark:text-gray-400">วันที่เริ่ม</p>
+                    <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">วันที่เริ่ม</p>
                         <p class="font-medium">${formatDate(activity.startDate)}</p>
                     </div>
-                    <div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                        <p class="text-xs text-gray-500 dark:text-gray-400">วันที่สิ้นสุด</p>
+                    <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">วันที่สิ้นสุด</p>
                         <p class="font-medium">${formatDate(activity.endDate)}</p>
                     </div>
                 </div>
                 
-                <div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
                     <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">สถานที่</p>
                     <p class="font-medium">${activity.location}</p>
+                    ${activity.latitude && activity.longitude ? 
+                        `<p class="text-xs text-gray-400 mt-1">พิกัด: ${activity.latitude}, ${activity.longitude}</p>` : ''
+                    }
                 </div>
                 
-                <div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">ผู้เข้าร่วม</p>
+                <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
                     <div class="flex justify-between items-center mb-2">
-                        <span class="font-medium">${activity.currentParticipants}/${activity.maxParticipants} คน</span>
-                        <span class="text-sm ${getStatusClass(activity.status)}">${getStatusText(activity.status)}</span>
+                        <span class="text-sm font-medium">จำนวนผู้เข้าร่วม</span>
+                        <span class="text-sm ${getStatusClass(activity.status)}">${activity.currentParticipants}/${activity.maxParticipants}</span>
                     </div>
-                    <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
-                        <div class="bg-[#06c755] h-2 rounded-full" style="width: ${(activity.currentParticipants / activity.maxParticipants) * 100}%"></div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${participantsPercent}%"></div>
                     </div>
+                </div>
+                
+                ${requirements.length > 0 ? `
+                    <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                        <p class="text-sm font-medium mb-2">📋 คุณสมบัติผู้สมัคร</p>
+                        <ul class="space-y-1">
+                            ${requirements.map(req => `<li class="text-sm text-gray-600 dark:text-gray-400 flex items-start gap-2"><i class="fas fa-check-circle text-[#06c755] text-xs mt-1"></i>${req}</li>`).join('')}
+                        </ul>
+                    </div>
+                ` : ''}
+                
+                ${benefits.length > 0 ? `
+                    <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                        <p class="text-sm font-medium mb-2">🎁 สิทธิประโยชน์</p>
+                        <ul class="space-y-1">
+                            ${benefits.map(benefit => `<li class="text-sm text-gray-600 dark:text-gray-400 flex items-start gap-2"><i class="fas fa-gift text-[#06c755] text-xs mt-1"></i>${benefit}</li>`).join('')}
+                        </ul>
+                    </div>
+                ` : ''}
+                
+                <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                    <p class="text-sm font-medium mb-2">📞 ติดต่อ</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">${activity.contact || 'ไม่ระบุ'}</p>
+                </div>
+                
+                <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+                    <span><i class="far fa-eye mr-1"></i> ${activity.viewCount || 0} ครั้ง</span>
+                    <span><i class="far fa-star mr-1"></i> ${activity.rating || 0} (${activity.reviewCount || 0} รีวิว)</span>
                 </div>
             `;
             
             const registerBtn = document.getElementById('registerBtn');
             if (isRegistered) {
                 registerBtn.disabled = true;
-                registerBtn.className = 'flex-1 py-3 bg-gray-300 dark:bg-gray-700 text-gray-500 rounded-xl font-medium cursor-not-allowed';
-                registerBtn.textContent = 'ลงทะเบียนแล้ว';
+                registerBtn.className = 'btn-primary flex-1 opacity-50 cursor-not-allowed';
+                registerBtn.innerHTML = '<i class="fas fa-check-circle mr-2"></i>ลงทะเบียนแล้ว';
             } else if (activity.status !== 'open') {
                 registerBtn.disabled = true;
-                registerBtn.className = 'flex-1 py-3 bg-gray-300 dark:bg-gray-700 text-gray-500 rounded-xl font-medium cursor-not-allowed';
-                registerBtn.textContent = 'ไม่สามารถลงทะเบียนได้';
+                registerBtn.className = 'btn-primary flex-1 opacity-50 cursor-not-allowed';
+                registerBtn.innerHTML = '<i class="fas fa-ban mr-2"></i>ไม่สามารถลงทะเบียนได้';
             } else {
                 registerBtn.disabled = false;
-                registerBtn.className = 'flex-1 py-3 bg-[#06c755] text-white rounded-xl font-medium hover:bg-[#05b34a] transition';
-                registerBtn.textContent = 'ลงทะเบียนเข้าร่วม';
+                registerBtn.className = 'btn-primary flex-1';
+                registerBtn.innerHTML = '<i class="fas fa-pen-fancy mr-2"></i>ลงทะเบียนเข้าร่วม';
                 registerBtn.onclick = () => registerForActivity(activity.id);
             }
             
             modal.classList.remove('hidden');
+            modal.style.display = 'flex';
         }
         
-        // ========== 14. ลงทะเบียนกิจกรรม ==========
+        // ========== Registration ==========
         async function registerForActivity(activityId) {
-            if (!currentUser) {
+            if (!state.currentUser) {
                 showToast('กรุณาเข้าสู่ระบบก่อน', 'warning');
                 return;
             }
             
-            showLoading('กำลังดำเนินการ...');
+            showLoading('กำลังดำเนินการลงทะเบียน...');
             
             try {
                 const formData = new FormData();
                 formData.append('path', 'register');
                 formData.append('activityId', activityId);
-                formData.append('userId', currentUser.userId);
-                formData.append('lineUserId', currentUser.userId);
-                formData.append('displayName', currentUser.displayName);
+                formData.append('userId', state.currentUser.userId);
+                formData.append('lineUserId', state.currentUser.userId);
+                formData.append('displayName', state.currentUser.displayName);
                 
-                const response = await fetch(GAS_URL, {
+                const response = await fetch(CONFIG.GAS_URL, {
                     method: 'POST',
                     body: formData
                 });
@@ -730,82 +1032,186 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    showToast('ลงทะเบียนสำเร็จ!');
+                    showToast('✅ ลงทะเบียนสำเร็จ!');
                     closeModal();
-                    await loadMyRegistrations();
-                    await loadActivities(); // รีโหลดกิจกรรมเพื่ออัปเดตจำนวน
+                    
+                    // Reload data
+                    await Promise.all([
+                        loadMyRegistrations(),
+                        loadActivities()
+                    ]);
+                    
+                    // Show success message with more details
+                    if (result.data.status === 'waiting') {
+                        showToast(`⏳ อยู่ในคิวรอ ลำดับที่ ${result.data.queuePosition}`, 'info');
+                    }
                 } else {
                     showToast(result.message || 'ลงทะเบียนไม่สำเร็จ', 'error');
                 }
                 
-                hideLoading();
-                
             } catch (error) {
                 console.error('Register error:', error);
-                hideLoading();
-                showToast('เกิดข้อผิดพลาด', 'error');
+                showToast('เกิดข้อผิดพลาด กรุณาลองอีกครั้ง', 'error');
             }
+            
+            hideLoading();
         }
         
-        // ========== 15. ข้อมูลทดสอบ ==========
+        // ========== Show Registrations ==========
+        function showMyRegistrations() {
+            const modal = document.getElementById('registrationsModal');
+            const list = document.getElementById('registrationsList');
+            
+            if (state.myRegistrations.length === 0) {
+                list.innerHTML = `
+                    <div class="text-center py-8">
+                        <i class="fas fa-ticket-alt text-4xl text-gray-400 mb-3"></i>
+                        <p class="text-gray-500 dark:text-gray-400">ยังไม่มีการลงทะเบียน</p>
+                        <button onclick="closeRegistrationsModal()" class="btn-outline mt-4 px-6 py-2">
+                            ตกลง
+                        </button>
+                    </div>
+                `;
+            } else {
+                let html = '';
+                state.myRegistrations.forEach(reg => {
+                    const statusClass = reg.status === 'confirmed' ? 'text-green-500' : 
+                                       reg.status === 'waiting' ? 'text-yellow-500' : 'text-red-500';
+                    
+                    html += `
+                        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-medium">${reg.activity?.title || 'กิจกรรม'}</h4>
+                                <span class="${statusClass} text-sm">
+                                    <i class="fas fa-${reg.status === 'confirmed' ? 'check-circle' : reg.status === 'waiting' ? 'clock' : 'times-circle'}"></i>
+                                    ${reg.status === 'confirmed' ? 'ยืนยันแล้ว' : reg.status === 'waiting' ? 'รอคิว' : 'ยกเลิก'}
+                                </span>
+                            </div>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                                <i class="far fa-calendar mr-1"></i> ${formatDate(reg.registrationDate)}
+                            </p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                <i class="far fa-clock mr-1"></i> ${reg.activity?.startDate ? formatDate(reg.activity.startDate) : ''}
+                            </p>
+                            ${reg.status === 'confirmed' ? `
+                                <button class="mt-3 text-sm text-red-500 hover:text-red-600" onclick="cancelRegistration('${reg.id}')">
+                                    <i class="fas fa-times mr-1"></i>ยกเลิกการลงทะเบียน
+                                </button>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+                list.innerHTML = html;
+            }
+            
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+        }
+        
+        async function cancelRegistration(registrationId) {
+            if (!confirm('ต้องการยกเลิกการลงทะเบียนใช่หรือไม่?')) return;
+            
+            showLoading('กำลังดำเนินการ...');
+            
+            try {
+                const formData = new FormData();
+                formData.append('path', 'cancel');
+                formData.append('registrationId', registrationId);
+                formData.append('lineUserId', state.currentUser.userId);
+                
+                const response = await fetch(CONFIG.GAS_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showToast('ยกเลิกการลงทะเบียนสำเร็จ');
+                    closeRegistrationsModal();
+                    
+                    // Reload data
+                    await Promise.all([
+                        loadMyRegistrations(),
+                        loadActivities()
+                    ]);
+                } else {
+                    showToast(result.message || 'ยกเลิกไม่สำเร็จ', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Cancel error:', error);
+                showToast('เกิดข้อผิดพลาด', 'error');
+            }
+            
+            hideLoading();
+        }
+        
+        // ========== Dummy Data for Testing ==========
         function loadDummyData() {
-            activities = [
+            state.activities = [
                 {
                     id: 'ACT1',
-                    title: 'เวิร์คช็อปทำขนมไทย',
-                    description: 'เรียนรู้การทำขนมไทยโบราณ 4 ชนิด พร้อมรับประกาศนียบัตร',
-                    location: 'ห้องประชุม 1 ชั้น 2',
+                    title: '🎨 เวิร์คช็อปทำขนมไทยโบราณ',
+                    description: 'เรียนรู้การทำขนมไทย 4 ชนิด พร้อมฝึกปฏิบัติจริงกับเชฟมืออาชีพ',
+                    location: 'ชั้น 2 ห้องครัวสาธิต เซ็นทรัลเวิลด์',
                     startDate: new Date().toISOString(),
-                    endDate: new Date().toISOString(),
+                    endDate: new Date(Date.now() + 86400000 * 2).toISOString(),
                     maxParticipants: 30,
                     currentParticipants: 12,
                     status: 'open',
-                    imageUrl: ''
+                    imageUrl: '',
+                    price: 0,
+                    rating: 4.5,
+                    viewCount: 120
                 },
                 {
                     id: 'ACT2',
-                    title: 'เสวนาเทคโนโลยี AI',
-                    description: 'พบกับผู้เชี่ยวชาญด้าน AI จากบริษัทชั้นนำ',
-                    location: 'ห้องประชุมใหญ่',
-                    startDate: new Date().toISOString(),
-                    endDate: new Date().toISOString(),
-                    maxParticipants: 50,
-                    currentParticipants: 25,
+                    title: '🤖 เสวนาเทคโนโลยี AI 2024',
+                    description: 'พบกับผู้เชี่ยวชาญด้าน AI จากบริษัทชั้นนำ พร้อมเครือข่าย',
+                    location: 'ห้องประชุมใหญ่ ชั้น 5 อาคารสยามสแควร์',
+                    startDate: new Date(Date.now() + 86400000 * 3).toISOString(),
+                    endDate: new Date(Date.now() + 86400000 * 3).toISOString(),
+                    maxParticipants: 100,
+                    currentParticipants: 45,
                     status: 'open',
-                    imageUrl: ''
+                    imageUrl: '',
+                    price: 0,
+                    rating: 4.8,
+                    viewCount: 250
                 },
                 {
                     id: 'ACT3',
-                    title: 'อบรมการตลาดออนไลน์',
+                    title: '📱 อบรมการตลาดออนไลน์',
                     description: 'เรียนรู้เทคนิคการตลาดออนไลน์สำหรับธุรกิจยุคใหม่',
-                    location: 'ห้องสัมมนา B',
-                    startDate: new Date().toISOString(),
-                    endDate: new Date().toISOString(),
-                    maxParticipants: 40,
-                    currentParticipants: 40,
+                    location: 'ห้องสัมมนา B ชั้น 3',
+                    startDate: new Date(Date.now() + 86400000 * 5).toISOString(),
+                    endDate: new Date(Date.now() + 86400000 * 7).toISOString(),
+                    maxParticipants: 50,
+                    currentParticipants: 50,
                     status: 'full',
-                    imageUrl: ''
+                    imageUrl: '',
+                    price: 1500,
+                    rating: 4.2,
+                    viewCount: 89
                 }
             ];
             
+            state.totalPages = 1;
             displayActivities();
-            
-            document.getElementById('statTotalActivities').textContent = '3';
-            document.getElementById('statOpenActivities').textContent = '2';
-            document.getElementById('statTotalParticipants').textContent = '77';
+            updateStats({ totalActivities: 3, openActivities: 2, totalParticipants: 107 });
         }
         
         function loadDummyActivities() {
-            // ใช้ข้อมูลเดียวกับ loadDummyData
             loadDummyData();
         }
         
-        // ========== 16. Utility Functions ==========
+        // ========== Utility Functions ==========
         function formatDate(dateString) {
             const date = new Date(dateString);
             return date.toLocaleDateString('th-TH', { 
                 year: 'numeric', 
-                month: 'long', 
+                month: 'short', 
                 day: 'numeric',
                 hour: '2-digit',
                 minute: '2-digit'
@@ -813,35 +1219,43 @@
         }
         
         function getStatusClass(status) {
-            switch(status) {
-                case 'open': return 'status-open';
-                case 'closed': return 'status-closed';
-                case 'full': return 'status-full';
-                default: return 'status-closed';
-            }
+            return `badge-${status}`;
         }
         
         function getStatusText(status) {
-            switch(status) {
-                case 'open': return 'เปิดรับสมัคร';
-                case 'closed': return 'ปิดรับสมัคร';
-                case 'full': return 'เต็มแล้ว';
-                default: return 'ปิดรับสมัคร';
-            }
+            const statusMap = {
+                'open': 'เปิดรับสมัคร',
+                'closed': 'ปิดรับสมัคร',
+                'full': 'เต็มแล้ว',
+                'cancelled': 'ยกเลิก',
+                'draft': 'ร่าง'
+            };
+            return statusMap[status] || status;
         }
         
         function showLoading(message) {
-            document.getElementById('loadingMessage').textContent = message;
-            document.getElementById('loadingOverlay').classList.remove('hidden');
+            state.isLoading = true;
+            elements.loadingMessage.textContent = message || 'กำลังโหลดข้อมูล...';
+            elements.loadingOverlay.classList.remove('hidden');
+            elements.loadingOverlay.style.display = 'flex';
         }
         
         function hideLoading() {
-            document.getElementById('loadingOverlay').classList.add('hidden');
+            state.isLoading = false;
+            elements.loadingOverlay.classList.add('hidden');
+            elements.loadingOverlay.style.display = 'none';
         }
         
         function showToast(message, type = 'success') {
             const toast = document.createElement('div');
             toast.className = 'toast';
+            
+            const icons = {
+                success: 'check-circle',
+                error: 'exclamation-circle',
+                warning: 'exclamation-triangle',
+                info: 'info-circle'
+            };
             
             const colors = {
                 success: '#06c755',
@@ -853,11 +1267,7 @@
             toast.style.borderLeftColor = colors[type] || colors.success;
             toast.innerHTML = `
                 <div class="flex items-center gap-3">
-                    <i class="fas fa-${type === 'success' ? 'check-circle' : 
-                                     type === 'error' ? 'exclamation-circle' : 
-                                     type === 'warning' ? 'exclamation-triangle' : 
-                                     'info-circle'}" 
-                       style="color: ${colors[type] || colors.success}"></i>
+                    <i class="fas fa-${icons[type]}" style="color: ${colors[type] || colors.success}"></i>
                     <span class="text-gray-900 dark:text-white">${message}</span>
                 </div>
             `;
@@ -869,60 +1279,143 @@
             }, 3000);
         }
         
+        // ========== Modal Controls ==========
         function closeModal() {
-            document.getElementById('activityModal').classList.add('hidden');
+            const modal = document.getElementById('activityModal');
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
         }
         
         function closeRegistrationsModal() {
-            document.getElementById('registrationsModal').classList.add('hidden');
+            const modal = document.getElementById('registrationsModal');
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
         }
         
-        // ========== 17. Pagination ==========
-        function updatePagination() {
-            document.getElementById('pageInfo').textContent = `หน้า ${currentPage} / ${totalPages}`;
-            document.getElementById('prevPage').disabled = currentPage === 1;
-            document.getElementById('nextPage').disabled = currentPage === totalPages;
+        function closeNotificationsModal() {
+            const modal = document.getElementById('notificationsModal');
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
         }
         
-        document.getElementById('prevPage').addEventListener('click', () => {
-            if (currentPage > 1) {
-                currentPage--;
+        // Close modals on outside click
+        window.onclick = function(event) {
+            const modals = ['activityModal', 'registrationsModal', 'notificationsModal'];
+            modals.forEach(modalId => {
+                const modal = document.getElementById(modalId);
+                if (event.target === modal) {
+                    modal.classList.add('hidden');
+                    modal.style.display = 'none';
+                }
+            });
+        };
+        
+        // ========== Event Listeners ==========
+        elements.prevPage.addEventListener('click', () => {
+            if (state.currentPage > 1) {
+                state.currentPage--;
                 loadActivities();
             }
         });
         
-        document.getElementById('nextPage').addEventListener('click', () => {
-            if (currentPage < totalPages) {
-                currentPage++;
+        elements.nextPage.addEventListener('click', () => {
+            if (state.currentPage < state.totalPages) {
+                state.currentPage++;
                 loadActivities();
             }
         });
         
-        // ========== 18. Search and Filter ==========
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            searchKeyword = e.target.value;
-            // Implement search
+        let searchTimeout;
+        elements.searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                state.searchKeyword = e.target.value;
+                state.currentPage = 1;
+                loadActivities();
+            }, 500);
         });
         
-        document.getElementById('statusFilter').addEventListener('change', (e) => {
-            currentFilter = e.target.value;
-            currentPage = 1;
+        elements.statusFilter.addEventListener('change', (e) => {
+            state.currentFilter = e.target.value;
+            state.currentPage = 1;
             loadActivities();
         });
         
-        // ========== 19. Dark Mode ==========
-        function initDarkMode() {
-            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.add('dark');
+        elements.notificationsBtn.addEventListener('click', async () => {
+            const modal = document.getElementById('notificationsModal');
+            const list = document.getElementById('notificationsList');
+            
+            if (state.notifications.length === 0) {
+                list.innerHTML = `
+                    <div class="text-center py-8">
+                        <i class="fas fa-bell-slash text-4xl text-gray-400 mb-3"></i>
+                        <p class="text-gray-500 dark:text-gray-400">ไม่มีการแจ้งเตือน</p>
+                    </div>
+                `;
             } else {
-                document.documentElement.classList.remove('dark');
+                let html = '';
+                state.notifications.forEach(notif => {
+                    html += `
+                        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl ${!notif.isRead ? 'border-l-4 border-[#06c755]' : ''}">
+                            <div class="flex items-start gap-3">
+                                <i class="fas fa-${notif.icon || 'bell'} text-[#06c755] mt-1"></i>
+                                <div class="flex-1">
+                                    <h4 class="font-medium mb-1">${notif.title}</h4>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">${notif.message}</p>
+                                    <p class="text-xs text-gray-400 mt-2">${formatDate(notif.createdAt)}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                list.innerHTML = html;
             }
             
-            document.getElementById('darkToggle').addEventListener('click', () => {
-                document.documentElement.classList.toggle('dark');
-                localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-            });
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+            
+            // Mark as read
+            elements.notificationBadge.classList.add('hidden');
+        });
+        
+        // ========== Theme Management ==========
+        function initTheme() {
+            const isDark = localStorage.getItem('theme') === 'dark' || 
+                          (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            
+            if (isDark) {
+                document.body.classList.remove('light');
+                document.body.classList.add('dark');
+            } else {
+                document.body.classList.remove('dark');
+                document.body.classList.add('light');
+            }
+            
+            updateThemeIcon();
         }
+        
+        function updateThemeIcon() {
+            const isDark = document.body.classList.contains('dark');
+            elements.darkToggle.innerHTML = isDark ? 
+                '<i class="fas fa-sun text-yellow-500"></i>' : 
+                '<i class="fas fa-moon text-gray-600"></i>';
+        }
+        
+        elements.darkToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark');
+            document.body.classList.toggle('light');
+            localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+            updateThemeIcon();
+        });
+        
+        // ========== Export functions for global access ==========
+        window.showActivityDetail = showActivityDetail;
+        window.registerActivity = registerForActivity;
+        window.showMyRegistrations = showMyRegistrations;
+        window.cancelRegistration = cancelRegistration;
+        window.closeModal = closeModal;
+        window.closeRegistrationsModal = closeRegistrationsModal;
+        window.closeNotificationsModal = closeNotificationsModal;
     </script>
 </body>
 </html>
