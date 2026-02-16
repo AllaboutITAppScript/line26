@@ -8,6 +8,9 @@
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- LINE LIFF SDK - โหลดก่อน -->
+    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+    
     <!-- Custom CSS - Dark Mode Only -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -347,6 +350,17 @@
             font-size: 12px;
             border: 1px solid var(--border);
         }
+        
+        /* Connection Error */
+        .connection-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body class="dark">
@@ -396,6 +410,15 @@
 
     <!-- Main Content -->
     <div class="pt-24 pb-10 px-4 max-w-7xl mx-auto">
+        <!-- Connection Status -->
+        <div id="connectionError" class="connection-error hidden">
+            <i class="fas fa-exclamation-triangle mr-2"></i>
+            <span id="errorMessage">ไม่สามารถเชื่อมต่อกับระบบได้</span>
+            <button onclick="retryConnection()" class="ml-4 underline hover:no-underline">
+                ลองอีกครั้ง
+            </button>
+        </div>
+
         <!-- Welcome Banner -->
         <div id="welcomeBanner" class="hidden mb-8 p-6 rounded-2xl bg-gradient-to-r from-[#06c75510] to-[#00a34410] border border-[#06c75530]">
             <div class="flex items-center gap-4">
@@ -554,7 +577,8 @@
             LIFF_ID: '2008904120-T7I0VPZf',
             VERSION: '2.0.0',
             PAGE_SIZE: 9,
-            MAX_RETRIES: 3
+            MAX_RETRIES: 3,
+            LIFF_TIMEOUT: 5000 // 5 seconds timeout for LIFF
         };
         
         // State Management
@@ -568,7 +592,8 @@
             currentFilter: 'all',
             searchKeyword: '',
             isLoading: false,
-            retryCount: 0
+            retryCount: 0,
+            liffReady: false
         };
         
         // DOM Elements
@@ -592,36 +617,88 @@
             searchInput: document.getElementById('searchInput'),
             statusFilter: document.getElementById('statusFilter'),
             notificationBadge: document.getElementById('notificationBadge'),
-            notificationsBtn: document.getElementById('notificationsBtn')
+            notificationsBtn: document.getElementById('notificationsBtn'),
+            connectionError: document.getElementById('connectionError'),
+            errorMessage: document.getElementById('errorMessage')
         };
+        
+        // ========== Wait for LIFF ==========
+        function waitForLIFF(timeout = CONFIG.LIFF_TIMEOUT) {
+            return new Promise((resolve, reject) => {
+                const startTime = Date.now();
+                
+                const checkLIFF = () => {
+                    if (typeof liff !== 'undefined' && liff) {
+                        console.log('✅ LIFF object found');
+                        resolve();
+                    } else if (Date.now() - startTime > timeout) {
+                        reject(new Error('LIFF timeout - object not found'));
+                    } else {
+                        setTimeout(checkLIFF, 100);
+                    }
+                };
+                
+                checkLIFF();
+            });
+        }
         
         // ========== Initialization ==========
         document.addEventListener('DOMContentLoaded', async () => {
+            showLoading('กำลังเริ่มต้นระบบ...');
+            
             try {
-                showLoading('กำลังเริ่มต้นระบบ...');
+                // Wait for LIFF to be available
+                await waitForLIFF();
+                console.log('✅ LIFF SDK loaded');
                 
                 // Initialize LIFF
                 await initLIFF();
-                
-                // Load initial data
-                await loadHomeData();
                 
                 hideLoading();
                 
             } catch (error) {
                 console.error('Initialization error:', error);
                 hideLoading();
-                showError('ไม่สามารถเชื่อมต่อกับระบบได้ กรุณาลองใหม่อีกครั้ง');
+                
+                // Show connection error
+                showConnectionError('ไม่สามารถเชื่อมต่อกับ LINE ได้ กรุณาลองใหม่อีกครั้ง');
+                
+                // Hide skeleton
+                elements.activitiesContainer.innerHTML = `
+                    <div class="col-span-full empty-state">
+                        <i class="fas fa-exclamation-triangle text-4xl text-[#ef4444] mb-3"></i>
+                        <h3 class="text-xl font-semibold text-white mb-2">การเชื่อมต่อล้มเหลว</h3>
+                        <p class="text-gray-400 mb-4">${error.message || 'ไม่สามารถเชื่อมต่อกับ LINE SDK ได้'}</p>
+                        <button onclick="retryConnection()" class="btn-primary">
+                            <i class="fas fa-redo mr-2"></i>ลองอีกครั้ง
+                        </button>
+                    </div>
+                `;
             }
         });
+        
+        // ========== Retry Connection ==========
+        function retryConnection() {
+            elements.connectionError.classList.add('hidden');
+            location.reload();
+        }
+        
+        // ========== Show Connection Error ==========
+        function showConnectionError(message) {
+            elements.errorMessage.textContent = message;
+            elements.connectionError.classList.remove('hidden');
+        }
         
         // ========== LIFF Integration ==========
         async function initLIFF() {
             return new Promise((resolve, reject) => {
-                liff.init({ liffId: CONFIG.LIFF_ID }, async () => {
-                    console.log('✅ LIFF initialized');
+                liff.init({ 
+                    liffId: CONFIG.LIFF_ID 
+                }, async () => {
+                    console.log('✅ LIFF initialized successfully');
                     
                     if (!liff.isLoggedIn()) {
+                        console.log('User not logged in, redirecting to login...');
                         liff.login();
                         return;
                     }
@@ -636,11 +713,11 @@
                 }, (error) => {
                     console.error('❌ LIFF init failed:', error);
                     
-                    // Only show error, no dummy data
+                    // Check if running in LINE browser
                     if (liff.isInClient()) {
-                        showError('กรุณาเปิดแอป LINE และลองอีกครั้ง');
+                        showConnectionError('กรุณาเปิดแอป LINE และลองอีกครั้ง');
                     } else {
-                        showError('ไม่สามารถเชื่อมต่อ LINE ได้');
+                        showConnectionError('กรุณาเปิดผ่านแอป LINE');
                     }
                     
                     reject(error);
@@ -653,6 +730,8 @@
             try {
                 const profile = await liff.getProfile();
                 const idToken = liff.getDecodedIDToken();
+                
+                console.log('Profile loaded:', profile.displayName);
                 
                 const formData = new FormData();
                 formData.append('path', 'user/profile');
@@ -678,9 +757,12 @@
                 // Load user registrations
                 await loadMyRegistrations();
                 
+                // Load home data
+                await loadHomeData();
+                
             } catch (error) {
                 console.error('Load profile error:', error);
-                showError('ไม่สามารถโหลดโปรไฟล์ผู้ใช้ได้');
+                showConnectionError('ไม่สามารถโหลดโปรไฟล์ผู้ใช้ได้');
                 throw error;
             }
         }
@@ -738,7 +820,7 @@
                 
             } catch (error) {
                 console.error('Load home error:', error);
-                showError('ไม่สามารถโหลดข้อมูลหน้าแรกได้');
+                showConnectionError('ไม่สามารถโหลดข้อมูลหน้าแรกได้');
                 throw error;
             }
         }
@@ -775,14 +857,13 @@
                 
             } catch (error) {
                 console.error('Load activities error:', error);
-                showError('ไม่สามารถโหลดรายการกิจกรรมได้');
                 
-                // Show empty state
+                // Show error state
                 elements.activitiesContainer.innerHTML = `
                     <div class="col-span-full empty-state">
-                        <i class="fas fa-exclamation-circle text-4xl text-gray-500 mb-3"></i>
+                        <i class="fas fa-exclamation-circle text-4xl text-[#ef4444] mb-3"></i>
                         <h3 class="text-xl font-semibold text-white mb-2">เกิดข้อผิดพลาด</h3>
-                        <p class="text-gray-400 mb-4">ไม่สามารถโหลดข้อมูลกิจกรรมได้</p>
+                        <p class="text-gray-400 mb-4">${error.message || 'ไม่สามารถโหลดข้อมูลกิจกรรมได้'}</p>
                         <button onclick="loadActivities()" class="btn-primary">
                             <i class="fas fa-redo mr-2"></i>ลองอีกครั้ง
                         </button>
@@ -981,7 +1062,7 @@
         // ========== Activity Detail ==========
         async function showActivityDetail(activityId) {
             if (!state.currentUser) {
-                showError('กรุณาเข้าสู่ระบบก่อน');
+                showConnectionError('กรุณาเข้าสู่ระบบก่อน');
                 return;
             }
             
@@ -1008,7 +1089,7 @@
                 
             } catch (error) {
                 console.error('Load activity detail error:', error);
-                showError('ไม่สามารถโหลดรายละเอียดกิจกรรมได้');
+                showConnectionError('ไม่สามารถโหลดรายละเอียดกิจกรรมได้');
             }
             
             hideLoading();
@@ -1161,7 +1242,7 @@
         // ========== Registration ==========
         async function registerForActivity(activityId) {
             if (!state.currentUser) {
-                showError('กรุณาเข้าสู่ระบบก่อน');
+                showConnectionError('กรุณาเข้าสู่ระบบก่อน');
                 return;
             }
             
@@ -1190,7 +1271,7 @@
                     throw new Error(result.message);
                 }
                 
-                showSuccess('✅ ลงทะเบียนสำเร็จ!');
+                showToast('✅ ลงทะเบียนสำเร็จ!', 'success');
                 closeModal();
                 
                 // Reload data
@@ -1201,12 +1282,12 @@
                 
                 // Show queue info if waiting
                 if (result.data?.status === 'waiting') {
-                    showInfo(`⏳ อยู่ในคิวรอ ลำดับที่ ${result.data.queuePosition}`);
+                    showToast(`⏳ อยู่ในคิวรอ ลำดับที่ ${result.data.queuePosition}`, 'info');
                 }
                 
             } catch (error) {
                 console.error('Register error:', error);
-                showError(error.message || 'ลงทะเบียนไม่สำเร็จ กรุณาลองอีกครั้ง');
+                showToast(error.message || 'ลงทะเบียนไม่สำเร็จ กรุณาลองอีกครั้ง', 'error');
             }
             
             hideLoading();
@@ -1235,7 +1316,7 @@
                     throw new Error(result.message);
                 }
                 
-                showSuccess('ยกเลิกการลงทะเบียนสำเร็จ');
+                showToast('ยกเลิกการลงทะเบียนสำเร็จ', 'success');
                 closeRegistrationsModal();
                 
                 // Reload data
@@ -1246,7 +1327,7 @@
                 
             } catch (error) {
                 console.error('Cancel error:', error);
-                showError(error.message || 'ยกเลิกไม่สำเร็จ กรุณาลองอีกครั้ง');
+                showToast(error.message || 'ยกเลิกไม่สำเร็จ กรุณาลองอีกครั้ง', 'error');
             }
             
             hideLoading();
@@ -1255,7 +1336,7 @@
         // ========== Show Registrations ==========
         function showMyRegistrations() {
             if (!state.currentUser) {
-                showError('กรุณาเข้าสู่ระบบก่อน');
+                showConnectionError('กรุณาเข้าสู่ระบบก่อน');
                 return;
             }
             
@@ -1327,7 +1408,7 @@
         // ========== Show Notifications ==========
         async function showNotifications() {
             if (!state.currentUser) {
-                showError('กรุณาเข้าสู่ระบบก่อน');
+                showConnectionError('กรุณาเข้าสู่ระบบก่อน');
                 return;
             }
             
@@ -1404,6 +1485,10 @@
             return statusMap[status] || status;
         }
         
+        function getStatusClass(status) {
+            return `badge-${status}`;
+        }
+        
         function getButtonText(status) {
             const buttonMap = {
                 'closed': 'ปิดรับสมัครแล้ว',
@@ -1437,18 +1522,6 @@
             state.isLoading = false;
             elements.loadingOverlay.classList.add('hidden');
             elements.loadingOverlay.style.display = 'none';
-        }
-        
-        function showSuccess(message) {
-            showToast(message, 'success');
-        }
-        
-        function showError(message) {
-            showToast(message, 'error');
-        }
-        
-        function showInfo(message) {
-            showToast(message, 'info');
         }
         
         function showToast(message, type = 'success') {
@@ -1556,6 +1629,7 @@
         window.closeModal = closeModal;
         window.closeRegistrationsModal = closeRegistrationsModal;
         window.closeNotificationsModal = closeNotificationsModal;
+        window.retryConnection = retryConnection;
     </script>
 </body>
 </html>
