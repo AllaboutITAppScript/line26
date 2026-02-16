@@ -75,6 +75,10 @@
             transition: opacity 0.3s ease;
         }
         
+        #loadingOverlay.hidden {
+            display: none;
+        }
+        
         .pulse-loader {
             width: 120px;
             height: 120px;
@@ -534,7 +538,7 @@
         // LIFF + Google Sheets + Dark Mode + Loading Overlay
         // ============================================
         
-        // สำหรับทดสอบโดยไม่ต้องใช้ LIFF จริง ให้เปลี่ยนเป็น false
+        // สำหรับทดสอบโดยไม่ต้องใช้ LIFF จริง
         const USE_DUMMY_DATA = true; // เปลี่ยนเป็น false เมื่อต้องการใช้ LIFF จริง
         
         const GAS_URL = 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec';
@@ -544,7 +548,6 @@
         let currentUser = null;
         let crmData = [];
         let stats = {};
-        let isLiffInitialized = false;
         let liffInitialized = false;
         
         // ========== Loading Overlay Functions ==========
@@ -595,16 +598,37 @@
             }, 3000);
         }
         
-        // ========== 1. LIFF Initialization ==========
-        async function initializeLIFF() {
-            if (USE_DUMMY_DATA) {
-                // ใช้ข้อมูลจำลอง
-                setupDummyUser();
-                return;
+        // ========== 1. Initialize App ==========
+        async function initializeApp() {
+            showLoading('กำลังเริ่มต้นระบบ...');
+            
+            try {
+                // เริ่มต้น dark mode
+                initDarkMode();
+                
+                // โหลดข้อมูล
+                await loadData();
+                
+                // เริ่มต้น LIFF (ถ้าไม่ได้ใช้ dummy data)
+                if (!USE_DUMMY_DATA) {
+                    await initializeLIFF();
+                } else {
+                    // ใช้ข้อมูลจำลอง
+                    setupDummyUser();
+                }
+                
+                // ซ่อน loading
+                hideLoading();
+                
+            } catch (error) {
+                console.error('Initialization error:', error);
+                hideLoading();
+                showToast('เกิดข้อผิดพลาดในการเริ่มต้นระบบ', 'error');
             }
-            
-            showLoading('กำลังเชื่อมต่อกับ LINE LIFF...');
-            
+        }
+        
+        // ========== 2. LIFF Initialization ==========
+        async function initializeLIFF() {
             try {
                 await liff.init({ liffId: LIFF_ID });
                 liffInitialized = true;
@@ -613,18 +637,16 @@
                     await loadLineProfile();
                 } else {
                     document.getElementById('liffLoginBtn').classList.remove('hidden');
-                    hideLoading();
                 }
                 
             } catch (error) {
                 console.error('LIFF init failed:', error);
-                hideLoading();
-                showToast('ไม่สามารถเชื่อมต่อกับ LINE ได้ ใช้ข้อมูลทดแทน', 'warning');
+                showToast('ไม่สามารถเชื่อมต่อกับ LINE ได้', 'warning');
                 setupDummyUser();
             }
         }
         
-        // ========== 2. ตั้งค่าผู้ใช้จำลอง ==========
+        // ========== 3. ตั้งค่าผู้ใช้จำลอง ==========
         function setupDummyUser() {
             currentUser = {
                 userId: 'Udummy123456789',
@@ -636,14 +658,11 @@
             };
             
             updateProfileUI();
-            hideLoading();
             showToast('เข้าสู่ระบบสำเร็จ (โหมดทดสอบ)', 'success');
         }
         
-        // ========== 3. Load LINE Profile ==========
+        // ========== 4. Load LINE Profile ==========
         async function loadLineProfile() {
-            showLoading('กำลังโหลดข้อมูลโปรไฟล์...');
-            
             try {
                 const profile = await liff.getProfile();
                 const idToken = liff.getDecodedIDToken();
@@ -658,23 +677,20 @@
                     lastLogin: new Date().toISOString()
                 };
                 
-                // Update UI with profile
                 updateProfileUI();
                 
                 // Sync to Google Sheets
                 await syncLineProfileToSheet();
                 
-                hideLoading();
                 showToast('เข้าสู่ระบบสำเร็จ ยินดีต้อนรับ ' + profile.displayName);
                 
             } catch (error) {
                 console.error('Load profile failed:', error);
-                hideLoading();
                 showToast('ไม่สามารถโหลดโปรไฟล์ได้', 'error');
             }
         }
         
-        // ========== 4. Update Profile UI ==========
+        // ========== 5. Update Profile UI ==========
         function updateProfileUI() {
             if (!currentUser) return;
             
@@ -692,7 +708,7 @@
             document.getElementById('welcomeName').textContent = currentUser.displayName.split(' ')[0];
         }
         
-        // ========== 5. Sync LINE Profile to Sheet ==========
+        // ========== 6. Sync LINE Profile to Sheet ==========
         async function syncLineProfileToSheet() {
             if (!currentUser) return;
             
@@ -708,10 +724,9 @@
             if (!USE_DUMMY_DATA) {
                 await callGAS('addUser', { data: userData });
             }
-            await loadData(); // Reload data
         }
         
-        // ========== 6. Google Apps Script API ==========
+        // ========== 7. Google Apps Script API ==========
         async function callGAS(action, data = {}) {
             if (USE_DUMMY_DATA) return { success: true };
             
@@ -734,25 +749,23 @@
             }
         }
         
-        // ========== 7. Load Data from GAS ==========
+        // ========== 8. Load Data ==========
         async function loadData() {
             showSkeleton();
             
             try {
-                // ใช้ข้อมูลจำลองเสมอ
+                // สร้างข้อมูลจำลอง
                 simulateData();
                 
-                hideLoading();
                 updateLastSync();
                 
             } catch (error) {
                 console.error('Load data failed:', error);
-                hideLoading();
                 showToast('ไม่สามารถโหลดข้อมูลได้', 'error');
             }
         }
         
-        // ========== 8. Simulate Data ==========
+        // ========== 9. Simulate Data ==========
         function simulateData() {
             crmData = [
                 { 
@@ -781,24 +794,28 @@
                     status: 'inactive', 
                     lastLogin: '2024-01-10 11:22:44',
                     tags: ['ทดลองใช้']
-                },
-                { 
-                    lineUserId: currentUser?.userId || 'U7d0e1f2a3b4c', 
-                    displayName: currentUser?.displayName || 'สุดา รวยทรัพย์', 
-                    email: currentUser?.email || 'suda@example.com', 
-                    pictureUrl: currentUser?.pictureUrl || 'https://via.placeholder.com/150/ea580c/ffffff?text=S', 
-                    status: 'active', 
-                    lastLogin: new Date().toLocaleString('th-TH'),
-                    tags: ['VIP']
                 }
             ];
+            
+            // เพิ่มผู้ใช้ปัจจุบันถ้ามี
+            if (currentUser) {
+                crmData.push({
+                    lineUserId: currentUser.userId,
+                    displayName: currentUser.displayName,
+                    email: currentUser.email,
+                    pictureUrl: currentUser.pictureUrl,
+                    status: 'active',
+                    lastLogin: new Date().toLocaleString('th-TH'),
+                    tags: ['VIP']
+                });
+            }
             
             calculateStats();
             renderTable();
             generateLogs();
         }
         
-        // ========== 9. Calculate Statistics ==========
+        // ========== 10. Calculate Statistics ==========
         function calculateStats() {
             stats = {
                 totalUsers: crmData.length,
@@ -816,7 +833,7 @@
             document.getElementById('statInactiveUsers').textContent = stats.inactiveUsers;
         }
         
-        // ========== 10. Render Table ==========
+        // ========== 11. Render Table ==========
         function renderTable() {
             const tbody = document.getElementById('userTableBody');
             const keyword = document.getElementById('searchInput')?.value.toLowerCase() || '';
@@ -907,7 +924,7 @@
             document.getElementById('offlineCount').textContent = offlineCount;
         }
         
-        // ========== 11. Skeleton Loading ==========
+        // ========== 12. Skeleton Loading ==========
         function showSkeleton() {
             const tbody = document.getElementById('userTableBody');
             let skeletonRows = '';
@@ -921,7 +938,7 @@
             tbody.innerHTML = skeletonRows;
         }
         
-        // ========== 12. Generate Activity Logs ==========
+        // ========== 13. Generate Activity Logs ==========
         function generateLogs() {
             const now = new Date();
             const logs = [
@@ -957,7 +974,7 @@
             container.innerHTML = html;
         }
         
-        // ========== 13. Email Management ==========
+        // ========== 14. Email Management ==========
         function openEditEmailModal(lineUserId, displayName, currentEmail) {
             document.getElementById('editLineUserId').value = lineUserId;
             document.getElementById('editDisplayName').textContent = displayName;
@@ -985,7 +1002,7 @@
             showToast('อัปเดตอีเมลเรียบร้อยแล้ว');
         }
         
-        // ========== 14. LINE Functions ==========
+        // ========== 15. LINE Functions ==========
         async function sendLineMessage(userId) {
             if (!liffInitialized || !liff.isInClient()) {
                 showToast('ฟังก์ชันนี้ใช้ได้เฉพาะใน LINE App', 'warning');
@@ -1024,7 +1041,7 @@
             showToast('ออกจากระบบสำเร็จ');
         }
         
-        // ========== 15. Add User ==========
+        // ========== 16. Add User ==========
         async function addNewUser(e) {
             e.preventDefault();
             
@@ -1057,12 +1074,12 @@
             showToast('✅ เพิ่มผู้ใช้เรียบร้อย');
         }
         
-        // ========== 16. Search ==========
+        // ========== 17. Search ==========
         function handleSearch() {
             renderTable();
         }
         
-        // ========== 17. Dark Mode ==========
+        // ========== 18. Dark Mode ==========
         function initDarkMode() {
             // Check local storage or system preference
             if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -1090,7 +1107,7 @@
             });
         }
         
-        // ========== 18. Setup Database ==========
+        // ========== 19. Setup Database ==========
         async function setupDatabase() {
             showLoading('กำลังตั้งค่า Database...');
             
@@ -1104,7 +1121,7 @@
             }, 1000);
         }
         
-        // ========== 19. Update Last Sync ==========
+        // ========== 20. Update Last Sync ==========
         function updateLastSync() {
             const now = new Date();
             document.getElementById('lastSyncTime').textContent = 
@@ -1119,7 +1136,7 @@
                 });
         }
         
-        // ========== 20. Event Listeners ==========
+        // ========== 21. Event Listeners ==========
         function initEventListeners() {
             document.getElementById('setupDbBtn').addEventListener('click', setupDatabase);
             document.getElementById('refreshBtn').addEventListener('click', loadData);
@@ -1172,16 +1189,9 @@
             });
         }
         
-        // ========== Initialization ==========
-        window.addEventListener('DOMContentLoaded', () => {
-            initDarkMode();
-            initEventListeners();
-            
-            // เริ่มต้นโหลดข้อมูล
-            setTimeout(() => {
-                initializeLIFF();
-            }, 500);
-        });
+        // ========== Start App ==========
+        // เริ่มต้นแอพเมื่อโหลดหน้าเว็บเสร็จ
+        document.addEventListener('DOMContentLoaded', initializeApp);
     </script>
 </body>
 </html>
