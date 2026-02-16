@@ -3,133 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LINE MiniApp · กิจกรรม โดย ครบเครื่องเรื่องไอที</title>
+    <title>LINE MiniApp · กิจกรรม</title>
     
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Google Fonts - Prompt + IBM Plex Sans Thai -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- LINE LIFF SDK -->
     <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
     
-    <!-- Font Awesome 6 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Custom CSS -->
     <style>
-        /* ใช้ Google Fonts เป็นหลัก */
         * {
-            font-family: 'IBM Plex Sans Thai', 'Prompt', 'Inter', sans-serif;
-        }
-        
-        /* Dark Theme */
-        :root {
-            --primary: #06c755;
-            --primary-dark: #05b34a;
-            --primary-light: #7ee0a3;
-            --bg-primary: #0a0a0f;
-            --bg-secondary: #111317;
-            --bg-card: #1a1d24;
-            --bg-hover: #252930;
-            --border: #2a2e36;
-            --text-primary: #ffffff;
-            --text-secondary: #9ca3af;
-            --text-muted: #6b7280;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --error: #ef4444;
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
         body {
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
+            background-color: #0a0a0f;
+            color: #ffffff;
             min-height: 100vh;
-            background-image: radial-gradient(circle at 10% 20%, rgba(6, 199, 85, 0.03) 0%, transparent 30%);
         }
         
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: var(--bg-secondary);
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 10px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-dark);
-        }
-        
-        /* Loading Animation */
-        .loader {
-            width: 48px;
-            height: 48px;
-            border: 4px solid var(--bg-card);
-            border-bottom-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* Activity Card */
-        .activity-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .activity-card::before {
-            content: '';
-            position: absolute;
+        /* Navigation */
+        .navbar {
+            background: rgba(26, 29, 36, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid #2a2e36;
+            position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--primary-light));
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
+            z-index: 50;
+            padding: 12px 16px;
         }
         
-        .activity-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.5);
-            border-color: var(--primary);
+        /* Cards */
+        .card {
+            background: #1a1d24;
+            border: 1px solid #2a2e36;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s;
         }
         
-        .activity-card:hover::before {
-            transform: translateX(0);
+        .card:hover {
+            border-color: #06c755;
+            transform: translateY(-2px);
         }
         
-        /* Status Badges */
+        /* Buttons */
+        .btn-primary {
+            background: #06c755;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background: #05b34a;
+            transform: scale(1.02);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #2a2e36;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-outline:hover {
+            background: #252930;
+            border-color: #06c755;
+        }
+        
+        /* Input fields */
+        .input-field {
+            background: #111317;
+            border: 1px solid #2a2e36;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            width: 100%;
+            transition: all 0.3s;
+        }
+        
+        .input-field:focus {
+            border-color: #06c755;
+            outline: none;
+        }
+        
+        /* Badges */
         .badge {
-            padding: 6px 12px;
+            padding: 4px 12px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 500;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            backdrop-filter: blur(4px);
+            gap: 4px;
         }
         
         .badge-open {
             background: rgba(6, 199, 85, 0.15);
-            color: var(--primary);
+            color: #06c755;
             border: 1px solid rgba(6, 199, 85, 0.3);
         }
         
@@ -145,187 +136,88 @@
             border: 1px solid rgba(245, 158, 11, 0.3);
         }
         
-        .badge-cancelled {
-            background: rgba(107, 114, 128, 0.15);
-            color: #9ca3af;
-            border: 1px solid rgba(107, 114, 128, 0.3);
-        }
-
-        .badge-draft {
-            background: rgba(107, 114, 128, 0.15);
-            color: #9ca3af;
-            border: 1px solid rgba(107, 114, 128, 0.3);
-        }
-        
-        /* Buttons */
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: 600;
-            transition: all 0.3s;
-            border: none;
-            cursor: pointer;
-        }
-        
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: scale(1.02);
-            box-shadow: 0 0 20px rgba(6, 199, 85, 0.3);
-        }
-        
-        .btn-primary:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-        
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: 500;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-        
-        .btn-outline:hover {
-            background: var(--bg-hover);
-            border-color: var(--primary);
-        }
-
-        .btn-danger {
-            background: #ef4444;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 10px;
-            font-weight: 500;
-            transition: all 0.3s;
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn-danger:hover {
-            background: #dc2626;
-            transform: scale(1.02);
-        }
-
-        .btn-success {
-            background: #10b981;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 10px;
-            font-weight: 500;
-            transition: all 0.3s;
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn-success:hover {
-            background: #059669;
-            transform: scale(1.02);
-        }
-        
-        /* Glass Effect */
-        .glass {
-            background: rgba(26, 29, 36, 0.8);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        /* Stats Card */
-        .stat-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 20px;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .stat-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100px;
-            height: 100px;
-            background: radial-gradient(circle at top right, rgba(6, 199, 85, 0.1), transparent 70%);
-            border-radius: 50%;
-        }
-        
-        .stat-card:hover {
-            border-color: var(--primary);
-            transform: translateY(-2px);
-        }
-        
-        /* Modal */
-        .modal-overlay {
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
-        }
-        
-        .modal-content {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        
-        /* Progress Bar */
+        /* Progress bar */
         .progress-bar {
             width: 100%;
             height: 8px;
-            background: var(--border);
+            background: #2a2e36;
             border-radius: 4px;
             overflow: hidden;
         }
         
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            background: #06c755;
             border-radius: 4px;
-            transition: width 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            transition: width 0.3s;
         }
         
-        .progress-fill::after {
-            content: '';
-            position: absolute;
+        /* Modal */
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            animation: shimmer 2s infinite;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
         }
         
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
+        .modal-content {
+            background: #1a1d24;
+            border: 1px solid #2a2e36;
+            border-radius: 24px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 24px;
+        }
+        
+        /* Loading */
+        .loading-overlay {
+            background: rgba(0, 0, 0, 0.9);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #1a1d24;
+            border-bottom-color: #06c755;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
         
         /* Toast */
         .toast {
             position: fixed;
-            bottom: 24px;
-            right: 24px;
-            padding: 16px 24px;
-            background: var(--bg-card);
-            border-left: 4px solid var(--primary);
+            bottom: 20px;
+            right: 20px;
+            background: #1a1d24;
+            border-left: 4px solid #06c755;
             border-radius: 12px;
-            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
-            z-index: 9999;
-            animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            min-width: 300px;
-            border: 1px solid var(--border);
+            padding: 16px 24px;
+            color: white;
+            box-shadow: 0 10px 30px -5px black;
+            z-index: 10000;
+            animation: slideIn 0.3s;
         }
         
         @keyframes slideIn {
@@ -339,264 +231,36 @@
             }
         }
         
-        /* Input Fields */
-        .input-field {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-            transition: all 0.3s;
-            border-radius: 12px;
+        /* Utilities */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 16px;
         }
         
-        .input-field:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(6, 199, 85, 0.1);
-            outline: none;
+        .hidden {
+            display: none !important;
         }
         
-        /* Select Dropdown */
-        select {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-            border-radius: 12px;
-        }
-        
-        select option {
-            background: var(--bg-card);
-            color: var(--text-primary);
-        }
-        
-        /* Skeleton Loading */
-        .skeleton {
-            background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-hover) 50%, var(--bg-card) 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-        }
-        
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-        
-        /* Empty State */
-        .empty-state {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 48px;
-            text-align: center;
-        }
-        
-        /* Tag */
-        .tag {
-            background: var(--bg-secondary);
-            color: var(--text-secondary);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            border: 1px solid var(--border);
-        }
-        
-        /* Connection Error */
-        .connection-error {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #ef4444;
-            padding: 12px;
-            border-radius: 12px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        /* Footer Styles */
-        .footer {
-            background: var(--bg-secondary);
-            border-top: 1px solid var(--border);
-            color: var(--text-secondary);
-        }
-
-        .footer a {
-            color: var(--text-secondary);
-            transition: color 0.3s ease;
-        }
-
-        .footer a:hover {
-            color: var(--primary);
-        }
-
-        .footer .social-icon {
-            width: 36px;
-            height: 36px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .footer .social-icon:hover {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: white;
-            transform: translateY(-3px);
-        }
-
-        .footer .footer-link {
-            position: relative;
-            display: inline-block;
-            padding-bottom: 2px;
-        }
-
-        .footer .footer-link::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 1px;
-            background: var(--primary);
-            transition: width 0.3s ease;
-        }
-
-        .footer .footer-link:hover::after {
-            width: 100%;
-        }
-
-        .footer .footer-logo {
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 700;
-        }
-
-        .footer .footer-section {
-            position: relative;
-        }
-
-        .footer .footer-section::before {
-            content: '';
-            position: absolute;
-            top: -10px;
-            left: 0;
-            width: 40px;
-            height: 2px;
-            background: var(--primary);
-            border-radius: 2px;
-        }
-        
-        /* Line clamp */
-        .line-clamp-1 {
-            display: -webkit-box;
-            -webkit-line-clamp: 1;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        
-        .line-clamp-3 {
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        /* Payment Status */
-        .payment-pending {
-            background: rgba(245, 158, 11, 0.1);
-            color: #f59e0b;
-            padding: 4px 8px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 500;
-        }
-
-        .payment-paid {
-            background: rgba(16, 185, 129, 0.1);
-            color: #10b981;
-            padding: 4px 8px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 500;
-        }
-
-        .payment-refunded {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-            padding: 4px 8px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 500;
-        }
-
-        .payment-free {
-            background: rgba(107, 114, 128, 0.1);
-            color: #9ca3af;
-            padding: 4px 8px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 500;
-        }
-
-        /* Admin Controls */
-        .admin-controls {
-            background: linear-gradient(135deg, rgba(6, 199, 85, 0.1), rgba(0, 163, 68, 0.05));
-            border: 1px solid var(--primary);
-            border-radius: 16px;
-            padding: 20px;
-        }
-
-        /* Animation */
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .pulse {
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .stat-card {
-                padding: 15px;
-            }
-            
-            .footer .grid {
-                gap: 30px;
-            }
-
-            .toast {
-                left: 24px;
-                right: 24px;
-                min-width: auto;
-            }
+        .mt-20 {
+            margin-top: 80px;
         }
     </style>
 </head>
-<body class="dark">
+<body>
     <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="fixed inset-0 modal-overlay z-[9999] hidden items-center justify-center">
+    <div id="loadingOverlay" class="loading-overlay">
         <div class="text-center">
             <div class="loader mx-auto mb-4"></div>
-            <p id="loadingMessage" class="text-white text-lg font-medium">กำลังโหลดข้อมูล...</p>
-            <p class="text-gray-400 text-sm mt-2">กรุณารอสักครู่</p>
+            <p id="loadingMessage" class="text-white">กำลังโหลด...</p>
         </div>
     </div>
 
     <!-- Navigation -->
-    <nav class="fixed top-0 left-0 right-0 glass z-50 px-4 py-3">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#06c755] to-[#00a344] flex items-center justify-center shadow-lg shadow-[#06c755]/20">
+    <nav class="navbar">
+        <div class="container flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#06c755] to-[#00a344] flex items-center justify-center">
                     <i class="fab fa-line text-white text-xl"></i>
                 </div>
                 <div>
@@ -605,19 +269,10 @@
                 </div>
             </div>
             
-            <div class="flex items-center gap-4">
-                <!-- Admin Button (แสดงเฉพาะ admin) -->
-                <button id="adminBtn" class="hidden p-2 rounded-xl hover:bg-white/10 transition relative group">
+            <div class="flex items-center gap-3">
+                <!-- Admin Button -->
+                <button id="adminBtn" class="hidden p-2 rounded-xl hover:bg-white/10 transition">
                     <i class="fas fa-cog text-gray-300"></i>
-                    <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap">
-                        จัดการระบบ
-                    </span>
-                </button>
-
-                <!-- Notifications -->
-                <button id="notificationsBtn" class="relative p-2 rounded-xl hover:bg-white/10 transition">
-                    <i class="fas fa-bell text-gray-300"></i>
-                    <span id="notificationBadge" class="absolute -top-1 -right-1 min-w-[20px] h-5 bg-[#06c755] text-white text-xs rounded-full flex items-center justify-center px-1 hidden"></span>
                 </button>
                 
                 <!-- Profile -->
@@ -626,305 +281,215 @@
                         <p id="profileName" class="text-sm font-medium text-white"></p>
                         <p id="profileEmail" class="text-xs text-gray-400"></p>
                     </div>
-                    <div class="relative cursor-pointer group" onclick="toggleProfileMenu()">
-                        <img id="profileImage" src="" class="w-10 h-10 rounded-full border-2 border-[#06c755] object-cover">
-                        <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[#0a0a0f] rounded-full"></span>
-                        
-                        <!-- Profile Dropdown Menu -->
-                        <div id="profileMenu" class="absolute right-0 top-12 w-48 bg-[#1a1d24] border border-[#2a2e36] rounded-xl shadow-xl hidden">
-                            <div class="py-2">
-                                <a href="#" onclick="showProfileSettings(); return false;" class="block px-4 py-2 text-sm text-gray-300 hover:bg-[#252930] hover:text-white transition">
-                                    <i class="fas fa-user mr-2"></i>โปรไฟล์ของฉัน
-                                </a>
-                                <a href="#" onclick="showMyRegistrations(); return false;" class="block px-4 py-2 text-sm text-gray-300 hover:bg-[#252930] hover:text-white transition">
-                                    <i class="fas fa-ticket-alt mr-2"></i>กิจกรรมของฉัน
-                                </a>
-                                <a href="#" onclick="showSettings(); return false;" class="block px-4 py-2 text-sm text-gray-300 hover:bg-[#252930] hover:text-white transition">
-                                    <i class="fas fa-sliders-h mr-2"></i>ตั้งค่า
-                                </a>
-                                <div class="border-t border-[#2a2e36] my-2"></div>
-                                <a href="#" onclick="logout(); return false;" class="block px-4 py-2 text-sm text-red-500 hover:bg-[#252930] transition">
-                                    <i class="fas fa-sign-out-alt mr-2"></i>ออกจากระบบ
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+                    <img id="profileImage" src="" class="w-10 h-10 rounded-full border-2 border-[#06c755] object-cover">
                 </div>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <div class="pt-24 pb-10 px-4 max-w-7xl mx-auto min-h-screen">
-        <!-- Connection Status -->
-        <div id="connectionError" class="connection-error hidden">
-            <i class="fas fa-exclamation-triangle mr-2"></i>
-            <span id="errorMessage">ไม่สามารถเชื่อมต่อกับระบบได้</span>
-            <button onclick="retryConnection()" class="ml-4 underline hover:no-underline">
-                ลองอีกครั้ง
-            </button>
-        </div>
-
+    <div class="container mt-20 pb-10">
         <!-- Welcome Banner -->
-        <div id="welcomeBanner" class="hidden mb-8 p-6 rounded-2xl bg-gradient-to-r from-[#06c75510] to-[#00a34410] border border-[#06c75530]">
+        <div id="welcomeBanner" class="hidden mb-8 p-6 rounded-2xl bg-gradient-to-r from-[#06c75520] to-[#00a34420] border border-[#06c75540]">
             <div class="flex items-center gap-4">
-                <div class="w-16 h-16 rounded-2xl bg-[#06c755] flex items-center justify-center shadow-lg shadow-[#06c755]/30">
+                <div class="w-16 h-16 rounded-2xl bg-[#06c755] flex items-center justify-center">
                     <i class="fas fa-hand-peace text-white text-3xl"></i>
                 </div>
                 <div>
                     <h2 class="text-2xl font-bold text-white">สวัสดี, <span id="welcomeName" class="text-[#06c755]"></span></h2>
-                    <p class="text-gray-400 mt-1">ยินดีต้อนรับกลับ! มีกิจกรรมใหม่รอคุณอยู่นะ</p>
+                    <p class="text-gray-400">ยินดีต้อนรับสู่ระบบจัดการกิจกรรม</p>
                 </div>
             </div>
         </div>
 
         <!-- Stats Cards -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div class="stat-card">
-                <div class="flex items-center justify-between mb-2">
+            <div class="card p-4">
+                <div class="flex justify-between items-center mb-2">
                     <span class="text-sm text-gray-400">กิจกรรมทั้งหมด</span>
                     <i class="fas fa-calendar-alt text-[#06c755]"></i>
                 </div>
                 <p id="statTotalActivities" class="text-3xl font-bold text-white">-</p>
-                <p class="text-xs text-gray-500 mt-1">อัปเดตล่าสุดวันนี้</p>
             </div>
-            
-            <div class="stat-card">
-                <div class="flex items-center justify-between mb-2">
+            <div class="card p-4">
+                <div class="flex justify-between items-center mb-2">
                     <span class="text-sm text-gray-400">เปิดรับสมัคร</span>
                     <i class="fas fa-door-open text-[#06c755]"></i>
                 </div>
                 <p id="statOpenActivities" class="text-3xl font-bold text-[#06c755]">-</p>
-                <p class="text-xs text-gray-500 mt-1">รอคุณอยู่</p>
             </div>
-            
-            <div class="stat-card">
-                <div class="flex items-center justify-between mb-2">
+            <div class="card p-4">
+                <div class="flex justify-between items-center mb-2">
                     <span class="text-sm text-gray-400">ผู้เข้าร่วม</span>
                     <i class="fas fa-users text-blue-400"></i>
                 </div>
                 <p id="statTotalParticipants" class="text-3xl font-bold text-blue-400">-</p>
-                <p class="text-xs text-gray-500 mt-1">คนทั่วประเทศ</p>
             </div>
-            
-            <div class="stat-card cursor-pointer" onclick="showMyRegistrations()">
-                <div class="flex items-center justify-between mb-2">
+            <div class="card p-4 cursor-pointer" onclick="showMyRegistrations()">
+                <div class="flex justify-between items-center mb-2">
                     <span class="text-sm text-gray-400">ลงทะเบียนแล้ว</span>
                     <i class="fas fa-check-circle text-purple-400"></i>
                 </div>
                 <p id="statMyRegistrations" class="text-3xl font-bold text-purple-400">-</p>
-                <p class="text-xs text-gray-500 mt-1">คลิกดูรายการ</p>
+            </div>
+        </div>
+
+        <!-- Admin Panel -->
+        <div id="adminPanel" class="hidden card p-6 mb-8 border-[#06c755]">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-white">
+                    <i class="fas fa-crown text-[#06c755] mr-2"></i>แผงควบคุมแอดมิน
+                </h3>
+                <div class="flex gap-2">
+                    <button onclick="createSampleData()" class="btn-outline px-4 py-2 text-sm">
+                        <i class="fas fa-database mr-2"></i>สร้างข้อมูลตัวอย่าง
+                    </button>
+                    <button onclick="showCreateActivityModal()" class="btn-primary px-4 py-2 text-sm">
+                        <i class="fas fa-plus mr-2"></i>สร้างกิจกรรม
+                    </button>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-[#111317] p-4 rounded-xl">
+                    <p class="text-xs text-gray-500">ผู้ใช้ทั้งหมด</p>
+                    <p id="adminTotalUsers" class="text-2xl font-bold text-white">0</p>
+                </div>
+                <div class="bg-[#111317] p-4 rounded-xl">
+                    <p class="text-xs text-gray-500">กิจกรรม</p>
+                    <p id="adminTotalActivities" class="text-2xl font-bold text-white">0</p>
+                </div>
+                <div class="bg-[#111317] p-4 rounded-xl">
+                    <p class="text-xs text-gray-500">การลงทะเบียน</p>
+                    <p id="adminTotalRegistrations" class="text-2xl font-bold text-white">0</p>
+                </div>
+                <div class="bg-[#111317] p-4 rounded-xl">
+                    <p class="text-xs text-gray-500">รายได้</p>
+                    <p id="adminRevenue" class="text-2xl font-bold text-yellow-500">฿0</p>
+                </div>
             </div>
         </div>
 
         <!-- Search and Filter -->
-        <div class="mb-8">
-            <div class="flex flex-col md:flex-row gap-4">
-                <div class="flex-1 relative">
-                    <i class="fas fa-search absolute left-4 top-3.5 text-gray-500"></i>
-                    <input type="text" id="searchInput" placeholder="ค้นหากิจกรรม, สถานที่, หมวดหมู่..." 
-                           class="w-full pl-12 pr-4 py-3 input-field">
-                </div>
-                <select id="statusFilter" class="px-4 py-3 input-field">
-                    <option value="all">📋 กิจกรรมทั้งหมด</option>
-                    <option value="open">🟢 เปิดรับสมัคร</option>
-                    <option value="closed">🔴 ปิดรับสมัคร</option>
-                    <option value="full">🟡 เต็มแล้ว</option>
-                </select>
-                <select id="categoryFilter" class="px-4 py-3 input-field hidden md:block">
-                    <option value="all">🏷️ ทุกหมวดหมู่</option>
-                </select>
+        <div class="mb-8 flex flex-col md:flex-row gap-4">
+            <div class="flex-1 relative">
+                <i class="fas fa-search absolute left-4 top-3.5 text-gray-500"></i>
+                <input type="text" id="searchInput" placeholder="ค้นหากิจกรรม..." class="input-field pl-12">
             </div>
+            <select id="statusFilter" class="input-field md:w-48">
+                <option value="all">ทั้งหมด</option>
+                <option value="open">เปิดรับสมัคร</option>
+                <option value="closed">ปิดรับสมัคร</option>
+                <option value="full">เต็มแล้ว</option>
+            </select>
         </div>
 
         <!-- Activities Grid -->
         <div id="activitiesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            <!-- Skeleton Loading -->
-            <div class="activity-card rounded-2xl p-4 skeleton" style="height: 400px;"></div>
-            <div class="activity-card rounded-2xl p-4 skeleton" style="height: 400px;"></div>
-            <div class="activity-card rounded-2xl p-4 skeleton" style="height: 400px;"></div>
-        </div>
-
-        <!-- Pagination -->
-        <div class="flex items-center justify-between bg-[#1a1d24] rounded-xl p-4 border border-[#2a2e36] mb-8">
-            <button id="prevPage" class="btn-outline px-6 py-2 disabled:opacity-50 disabled:cursor-not-allowed">
-                <i class="fas fa-chevron-left mr-2"></i>ก่อนหน้า
-            </button>
-            <span id="pageInfo" class="text-gray-400 font-medium">หน้า 1 / 1</span>
-            <button id="nextPage" class="btn-outline px-6 py-2 disabled:opacity-50 disabled:cursor-not-allowed">
-                ถัดไป<i class="fas fa-chevron-right ml-2"></i>
-            </button>
-        </div>
-
-        <!-- Admin Panel (แสดงเฉพาะ admin) -->
-        <div id="adminPanel" class="hidden mb-8 admin-controls">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-bold text-white"><i class="fas fa-crown text-[#06c755] mr-2"></i>แผงควบคุมผู้ดูแลระบบ</h3>
-                <button onclick="refreshAdminStats()" class="btn-outline px-4 py-2 text-sm">
-                    <i class="fas fa-sync-alt mr-2"></i>รีเฟรช
-                </button>
-            </div>
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
-                <div class="bg-[#111317] p-4 rounded-xl border border-[#2a2e36]">
-                    <p class="text-xs text-gray-500 mb-1">ผู้ใช้ทั้งหมด</p>
-                    <p id="adminTotalUsers" class="text-2xl font-bold text-white">-</p>
-                </div>
-                <div class="bg-[#111317] p-4 rounded-xl border border-[#2a2e36]">
-                    <p class="text-xs text-gray-500 mb-1">กิจกรรม</p>
-                    <p id="adminTotalActivities" class="text-2xl font-bold text-white">-</p>
-                </div>
-                <div class="bg-[#111317] p-4 rounded-xl border border-[#2a2e36]">
-                    <p class="text-xs text-gray-500 mb-1">การลงทะเบียน</p>
-                    <p id="adminTotalRegistrations" class="text-2xl font-bold text-white">-</p>
-                </div>
-                <div class="bg-[#111317] p-4 rounded-xl border border-[#2a2e36]">
-                    <p class="text-xs text-gray-500 mb-1">วันนี้</p>
-                    <p id="adminTodayRegistrations" class="text-2xl font-bold text-[#06c755]">-</p>
-                </div>
-                <div class="bg-[#111317] p-4 rounded-xl border border-[#2a2e36]">
-                    <p class="text-xs text-gray-500 mb-1">รายได้</p>
-                    <p id="adminRevenue" class="text-2xl font-bold text-yellow-500">฿-</p>
-                </div>
-            </div>
-            <div class="flex gap-2">
-                <button onclick="showCreateActivityModal()" class="btn-success px-4 py-2 text-sm">
-                    <i class="fas fa-plus mr-2"></i>สร้างกิจกรรม
-                </button>
-                <button onclick="showManageUsers()" class="btn-outline px-4 py-2 text-sm">
-                    <i class="fas fa-users mr-2"></i>จัดการผู้ใช้
-                </button>
-                <button onclick="backupData()" class="btn-outline px-4 py-2 text-sm">
-                    <i class="fas fa-database mr-2"></i>สำรองข้อมูล
-                </button>
-                <button onclick="showSettings()" class="btn-outline px-4 py-2 text-sm">
-                    <i class="fas fa-sliders-h mr-2"></i>ตั้งค่าระบบ
-                </button>
-            </div>
+            <!-- Loading skeleton -->
+            <div class="card p-4 animate-pulse" style="height: 300px;"></div>
+            <div class="card p-4 animate-pulse" style="height: 300px;"></div>
+            <div class="card p-4 animate-pulse" style="height: 300px;"></div>
         </div>
     </div>
 
-    <!-- Footer - พัฒนาโดย ครบเครื่องเรื่องไอที -->
-    <footer class="footer pt-12 pb-6 px-4">
-        <div class="max-w-7xl mx-auto">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-                <!-- About Section -->
-                <div class="footer-section">
-                    <div class="flex items-center gap-2 mb-4">
-                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#06c755] to-[#00a344] flex items-center justify-center">
-                            <i class="fab fa-line text-white text-sm"></i>
-                        </div>
-                        <span class="text-lg font-bold footer-logo">LINE MiniApp</span>
-                    </div>
-                    <p class="text-sm text-gray-400 leading-relaxed mb-4">
-                        แพลตฟอร์มกิจกรรมและลงทะเบียนออนไลน์ บน LINE MiniApp พัฒนาโดย ครบเครื่องเรื่องไอที
-                    </p>
-                    <div class="flex gap-2">
-                        <a href="https://facebook.com/krobkruang" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                        <a href="https://line.me/R/ti/p/@krobkruang" target="_blank" class="social-icon"><i class="fab fa-line"></i></a>
-                        <a href="https://youtube.com/@krobkruang" target="_blank" class="social-icon"><i class="fab fa-youtube"></i></a>
-                        <a href="https://tiktok.com/@krobkruang" target="_blank" class="social-icon"><i class="fab fa-tiktok"></i></a>
-                    </div>
-                </div>
-                
-                <!-- Quick Links -->
-                <div class="footer-section">
-                    <h3 class="text-white font-semibold mb-4">เมนูด่วน</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'}); return false;" class="footer-link text-sm"><i class="fas fa-chevron-right text-[#06c755] text-xs mr-2"></i>หน้าหลัก</a></li>
-                        <li><a href="#" onclick="filterByCategory('all'); return false;" class="footer-link text-sm"><i class="fas fa-chevron-right text-[#06c755] text-xs mr-2"></i>กิจกรรมทั้งหมด</a></li>
-                        <li><a href="#" onclick="showMyRegistrations(); return false;" class="footer-link text-sm"><i class="fas fa-chevron-right text-[#06c755] text-xs mr-2"></i>กิจกรรมของฉัน</a></li>
-                        <li><a href="#" onclick="showNotifications(); return false;" class="footer-link text-sm"><i class="fas fa-chevron-right text-[#06c755] text-xs mr-2"></i>การแจ้งเตือน</a></li>
-                    </ul>
-                </div>
-                
-                <!-- Support -->
-                <div class="footer-section">
-                    <h3 class="text-white font-semibold mb-4">ช่วยเหลือ</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" onclick="showFAQ(); return false;" class="footer-link text-sm"><i class="fas fa-chevron-right text-[#06c755] text-xs mr-2"></i>คำถามที่พบบ่อย</a></li>
-                        <li><a href="#" onclick="showHowToUse(); return false;" class="footer-link text-sm"><i class="fas fa-chevron-right text-[#06c755] text-xs mr-2"></i>วิธีการใช้งาน</a></li>
-                        <li><a href="#" onclick="showPrivacyPolicy(); return false;" class="footer-link text-sm"><i class="fas fa-chevron-right text-[#06c755] text-xs mr-2"></i>นโยบายความเป็นส่วนตัว</a></li>
-                        <li><a href="#" onclick="showTerms(); return false;" class="footer-link text-sm"><i class="fas fa-chevron-right text-[#06c755] text-xs mr-2"></i>ข้อกำหนดการใช้งาน</a></li>
-                    </ul>
-                </div>
-                
-                <!-- Contact -->
-                <div class="footer-section">
-                    <h3 class="text-white font-semibold mb-4">ติดต่อเรา</h3>
-                    <ul class="space-y-3">
-                        <li class="flex items-start gap-3">
-                            <i class="fas fa-map-marker-alt text-[#06c755] mt-1"></i>
-                            <span class="text-sm text-gray-400">99/9 หมู่ 4 ต.บางพูด อ.ปากเกร็ด จ.นนทบุรี 11120</span>
-                        </li>
-                        <li class="flex items-center gap-3">
-                            <i class="fas fa-phone text-[#06c755]"></i>
-                            <a href="tel:021234567" class="text-sm text-gray-400 hover:text-[#06c755]">02-123-4567</a>
-                        </li>
-                        <li class="flex items-center gap-3">
-                            <i class="fas fa-envelope text-[#06c755]"></i>
-                            <a href="mailto:info@krobkruang.com" class="text-sm text-gray-400 hover:text-[#06c755]">info@krobkruang.com</a>
-                        </li>
-                        <li class="flex items-center gap-3">
-                            <i class="fas fa-globe text-[#06c755]"></i>
-                            <a href="https://www.krobkruang.com" target="_blank" class="text-sm text-gray-400 hover:text-[#06c755]">www.krobkruang.com</a>
-                        </li>
-                    </ul>
-                </div>
+    <!-- Create/Edit Activity Modal -->
+    <div id="activityModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="activityModalTitle" class="text-2xl font-bold text-white">สร้างกิจกรรมใหม่</h3>
+                <button onclick="closeActivityModal()" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
             </div>
             
-            <!-- Divider -->
-            <div class="border-t border-[#2a2e36] pt-6">
-                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p class="text-sm text-gray-500">
-                        &copy; 2024 LINE MiniApp. พัฒนาโดย <a href="https://www.krobkruang.com" target="_blank" class="text-[#06c755] hover:underline font-medium">ครบเครื่องเรื่องไอที</a> สงวนลิขสิทธิ์
-                    </p>
-                    <div class="flex gap-4">
-                        <a href="#" onclick="showPrivacyPolicy(); return false;" class="text-xs text-gray-500 hover:text-[#06c755]">นโยบายความเป็นส่วนตัว</a>
-                        <span class="text-gray-600">|</span>
-                        <a href="#" onclick="showTerms(); return false;" class="text-xs text-gray-500 hover:text-[#06c755]">ข้อกำหนดการใช้งาน</a>
-                        <span class="text-gray-600">|</span>
-                        <a href="#" onclick="showSitemap(); return false;" class="text-xs text-gray-500 hover:text-[#06c755]">แผนผังเว็บไซต์</a>
+            <form id="activityForm" onsubmit="saveActivity(event)">
+                <input type="hidden" id="activityId">
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">ชื่อกิจกรรม *</label>
+                        <input type="text" id="activityTitle" class="input-field" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">คำอธิบาย *</label>
+                        <textarea id="activityDescription" rows="3" class="input-field" required></textarea>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">สถานที่ *</label>
+                        <input type="text" id="activityLocation" class="input-field" required>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">วันที่เริ่ม *</label>
+                            <input type="datetime-local" id="activityStartDate" class="input-field" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">วันที่สิ้นสุด *</label>
+                            <input type="datetime-local" id="activityEndDate" class="input-field" required>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">จำนวนที่รับ *</label>
+                            <input type="number" id="activityMaxParticipants" class="input-field" min="1" value="50" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">ราคา (0 = ฟรี)</label>
+                            <input type="number" id="activityPrice" class="input-field" min="0" value="0">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">รูปภาพ (URL)</label>
+                        <input type="url" id="activityImageUrl" class="input-field" placeholder="https://example.com/image.jpg">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">เบอร์ติดต่อ</label>
+                        <input type="text" id="activityContact" class="input-field" placeholder="08X-XXX-XXXX">
                     </div>
                 </div>
-                <!-- Version -->
-                <div class="text-center mt-4">
-                    <span class="text-xs text-gray-600">เวอร์ชัน 2.0.0 | พัฒนาโดย ครบเครื่องเรื่องไอที</span>
+                
+                <div class="flex gap-3 mt-6">
+                    <button type="submit" class="btn-primary flex-1">บันทึก</button>
+                    <button type="button" onclick="closeActivityModal()" class="btn-outline flex-1">ยกเลิก</button>
                 </div>
-            </div>
+            </form>
         </div>
-    </footer>
+    </div>
 
     <!-- Activity Detail Modal -->
-    <div id="activityModal" class="fixed inset-0 modal-overlay z-[100] hidden items-center justify-center p-4">
-        <div class="modal-content max-w-2xl w-full p-6">
+    <div id="detailModal" class="modal-overlay">
+        <div class="modal-content">
             <div class="flex justify-between items-center mb-4">
-                <h3 id="modalTitle" class="text-2xl font-bold text-white"></h3>
-                <button onclick="closeModal()" class="p-2 hover:bg-white/10 rounded-xl transition">
-                    <i class="fas fa-times text-gray-400"></i>
+                <h3 id="detailTitle" class="text-2xl font-bold text-white"></h3>
+                <button onclick="closeDetailModal()" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
             
-            <div id="modalContent" class="space-y-6">
-                <!-- Dynamic content -->
+            <div id="detailContent" class="space-y-4">
+                <!-- Content will be inserted here -->
             </div>
             
-            <div class="mt-6 flex gap-3">
-                <button id="registerBtn" class="btn-primary flex-1">
-                    ลงทะเบียนเข้าร่วม
-                </button>
-                <button onclick="closeModal()" class="btn-outline px-6">
-                    ปิด
-                </button>
+            <div class="flex gap-3 mt-6">
+                <button id="registerBtn" class="btn-primary flex-1" onclick="registerActivity()">ลงทะเบียน</button>
+                <button onclick="closeDetailModal()" class="btn-outline flex-1">ปิด</button>
             </div>
-
-            <!-- Admin Activity Controls (แสดงเฉพาะ admin) -->
-            <div id="adminActivityControls" class="mt-4 pt-4 border-t border-[#2a2e36] hidden">
+            
+            <!-- Admin controls -->
+            <div id="adminActivityControls" class="hidden mt-4 pt-4 border-t border-[#2a2e36]">
                 <p class="text-sm text-gray-400 mb-2">จัดการกิจกรรม</p>
                 <div class="flex gap-2">
-                    <button onclick="editActivity()" class="btn-outline flex-1 py-2 text-sm">
+                    <button onclick="editCurrentActivity()" class="btn-outline flex-1 py-2 text-sm">
                         <i class="fas fa-edit mr-2"></i>แก้ไข
                     </button>
-                    <button onclick="deleteActivity()" class="btn-danger flex-1 py-2 text-sm">
+                    <button onclick="deleteCurrentActivity()" class="bg-red-500 text-white flex-1 py-2 rounded-xl text-sm hover:bg-red-600">
                         <i class="fas fa-trash mr-2"></i>ลบ
                     </button>
                 </div>
@@ -933,344 +498,87 @@
     </div>
 
     <!-- My Registrations Modal -->
-    <div id="registrationsModal" class="fixed inset-0 modal-overlay z-[100] hidden items-center justify-center p-4">
-        <div class="modal-content max-w-2xl w-full p-6">
+    <div id="registrationsModal" class="modal-overlay">
+        <div class="modal-content">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-2xl font-bold text-white">กิจกรรมที่ฉันลงทะเบียน</h3>
-                <button onclick="closeRegistrationsModal()" class="p-2 hover:bg-white/10 rounded-xl transition">
-                    <i class="fas fa-times text-gray-400"></i>
+                <h3 class="text-2xl font-bold text-white">กิจกรรมที่ลงทะเบียน</h3>
+                <button onclick="closeRegistrationsModal()" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
             
-            <div id="registrationsList" class="space-y-3 max-h-96 overflow-y-auto pr-2">
-                <!-- Registrations will be loaded here -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Notifications Modal -->
-    <div id="notificationsModal" class="fixed inset-0 modal-overlay z-[100] hidden items-center justify-center p-4">
-        <div class="modal-content max-w-md w-full p-6">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-2xl font-bold text-white">การแจ้งเตือน</h3>
-                <button onclick="closeNotificationsModal()" class="p-2 hover:bg-white/10 rounded-xl transition">
-                    <i class="fas fa-times text-gray-400"></i>
-                </button>
-            </div>
-            
-            <div id="notificationsList" class="space-y-3 max-h-96 overflow-y-auto pr-2">
-                <!-- Notifications will be loaded here -->
-            </div>
-            <div class="mt-4 text-center">
-                <button onclick="markAllNotificationsRead()" class="text-sm text-[#06c755] hover:underline">
-                    <i class="fas fa-check-double mr-1"></i>ทำเครื่องหมายว่าอ่านทั้งหมด
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Profile Settings Modal -->
-    <div id="profileSettingsModal" class="fixed inset-0 modal-overlay z-[100] hidden items-center justify-center p-4">
-        <div class="modal-content max-w-md w-full p-6">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-2xl font-bold text-white">ตั้งค่าโปรไฟล์</h3>
-                <button onclick="closeProfileSettingsModal()" class="p-2 hover:bg-white/10 rounded-xl transition">
-                    <i class="fas fa-times text-gray-400"></i>
-                </button>
-            </div>
-            
-            <form id="profileForm" class="space-y-4" onsubmit="saveProfile(event)">
-                <div>
-                    <label class="block text-sm text-gray-400 mb-1">ชื่อ-นามสกุล</label>
-                    <input type="text" id="profileDisplayName" class="input-field w-full px-4 py-3" required>
-                </div>
-                <div>
-                    <label class="block text-sm text-gray-400 mb-1">เบอร์โทรศัพท์</label>
-                    <input type="tel" id="profilePhone" class="input-field w-full px-4 py-3">
-                </div>
-                <div>
-                    <label class="block text-sm text-gray-400 mb-1">วันเกิด</label>
-                    <input type="date" id="profileBirthDate" class="input-field w-full px-4 py-3">
-                </div>
-                <div>
-                    <label class="block text-sm text-gray-400 mb-1">เพศ</label>
-                    <select id="profileGender" class="input-field w-full px-4 py-3">
-                        <option value="ไม่ระบุ">ไม่ระบุ</option>
-                        <option value="ชาย">ชาย</option>
-                        <option value="หญิง">หญิง</option>
-                        <option value="อื่นๆ">อื่นๆ</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm text-gray-400 mb-1">จังหวัด</label>
-                    <input type="text" id="profileProvince" class="input-field w-full px-4 py-3">
-                </div>
-                <div>
-                    <label class="block text-sm text-gray-400 mb-1">ความสนใจ (คั่นด้วยเครื่องหมาย ,)</label>
-                    <input type="text" id="profileInterests" class="input-field w-full px-4 py-3" placeholder="เช่น กีฬา,ดนตรี,ท่องเที่ยว">
-                </div>
-                
-                <div class="flex gap-3 pt-4">
-                    <button type="submit" class="btn-primary flex-1">บันทึก</button>
-                    <button type="button" onclick="closeProfileSettingsModal()" class="btn-outline px-6">ยกเลิก</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Create/Edit Activity Modal -->
-    <div id="createActivityModal" class="fixed inset-0 modal-overlay z-[100] hidden items-center justify-center p-4">
-        <div class="modal-content max-w-3xl w-full p-6">
-            <div class="flex justify-between items-center mb-4">
-                <h3 id="activityModalTitle" class="text-2xl font-bold text-white">สร้างกิจกรรมใหม่</h3>
-                <button onclick="closeCreateActivityModal()" class="p-2 hover:bg-white/10 rounded-xl transition">
-                    <i class="fas fa-times text-gray-400"></i>
-                </button>
-            </div>
-            
-            <form id="activityForm" class="space-y-4 max-h-96 overflow-y-auto pr-2" onsubmit="saveActivity(event)">
-                <input type="hidden" id="activityId">
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="col-span-2">
-                        <label class="block text-sm text-gray-400 mb-1">ชื่อกิจกรรม *</label>
-                        <input type="text" id="activityTitle" class="input-field w-full px-4 py-3" required>
-                    </div>
-                    
-                    <div class="col-span-2">
-                        <label class="block text-sm text-gray-400 mb-1">คำอธิบาย *</label>
-                        <textarea id="activityDescription" rows="3" class="input-field w-full px-4 py-3" required></textarea>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm text-gray-400 mb-1">หมวดหมู่ *</label>
-                        <select id="activityCategory" class="input-field w-full px-4 py-3" required>
-                            <option value="">เลือกหมวดหมู่</option>
-                        </select>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm text-gray-400 mb-1">สถานที่ *</label>
-                        <input type="text" id="activityLocation" class="input-field w-full px-4 py-3" required>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm text-gray-400 mb-1">วันที่เริ่ม *</label>
-                        <input type="datetime-local" id="activityStartDate" class="input-field w-full px-4 py-3" required>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm text-gray-400 mb-1">วันที่สิ้นสุด *</label>
-                        <input type="datetime-local" id="activityEndDate" class="input-field w-full px-4 py-3" required>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm text-gray-400 mb-1">จำนวนผู้เข้าร่วมสูงสุด *</label>
-                        <input type="number" id="activityMaxParticipants" class="input-field w-full px-4 py-3" min="1" required>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm text-gray-400 mb-1">จำนวนขั้นต่ำ</label>
-                        <input type="number" id="activityMinParticipants" class="input-field w-full px-4 py-3" min="0" value="1">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm text-gray-400 mb-1">ราคา (0 = ฟรี)</label>
-                        <input type="number" id="activityPrice" class="input-field w-full px-4 py-3" min="0" value="0">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm text-gray-400 mb-1">รูปภาพหลัก (URL)</label>
-                        <input type="url" id="activityImageUrl" class="input-field w-full px-4 py-3" placeholder="https://...">
-                    </div>
-                    
-                    <div class="col-span-2">
-                        <label class="block text-sm text-gray-400 mb-1">แท็ก (คั่นด้วยเครื่องหมาย ,)</label>
-                        <input type="text" id="activityTags" class="input-field w-full px-4 py-3" placeholder="เช่น เทคโนโลยี, AI, สัมมนา">
-                    </div>
-                    
-                    <div class="col-span-2">
-                        <label class="block text-sm text-gray-400 mb-1">คุณสมบัติผู้สมัคร (บรรทัดละ 1 รายการ)</label>
-                        <textarea id="activityRequirements" rows="3" class="input-field w-full px-4 py-3" placeholder="อายุ 15 ปีขึ้นไป&#10;มีพื้นฐานการใช้งานคอมพิวเตอร์"></textarea>
-                    </div>
-                    
-                    <div class="col-span-2">
-                        <label class="block text-sm text-gray-400 mb-1">สิทธิประโยชน์ (บรรทัดละ 1 รายการ)</label>
-                        <textarea id="activityBenefits" rows="3" class="input-field w-full px-4 py-3" placeholder="ได้รับประกาศนียบัตร&#10;อาหารว่าง"></textarea>
-                    </div>
-                    
-                    <div class="col-span-2">
-                        <label class="block text-sm text-gray-400 mb-1">ข้อมูลติดต่อ</label>
-                        <input type="text" id="activityContact" class="input-field w-full px-4 py-3" placeholder="เบอร์โทรศัพท์, อีเมล">
-                    </div>
-                </div>
-                
-                <div class="flex gap-3 pt-4">
-                    <button type="submit" class="btn-primary flex-1">บันทึกกิจกรรม</button>
-                    <button type="button" onclick="closeCreateActivityModal()" class="btn-outline px-6">ยกเลิก</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Settings Modal -->
-    <div id="settingsModal" class="fixed inset-0 modal-overlay z-[100] hidden items-center justify-center p-4">
-        <div class="modal-content max-w-md w-full p-6">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-2xl font-bold text-white">ตั้งค่าระบบ</h3>
-                <button onclick="closeSettingsModal()" class="p-2 hover:bg-white/10 rounded-xl transition">
-                    <i class="fas fa-times text-gray-400"></i>
-                </button>
-            </div>
-            
-            <div id="settingsContent" class="space-y-4">
-                <!-- Settings will be loaded here -->
-            </div>
-        </div>
-    </div>
-
-    <!-- FAQ Modal -->
-    <div id="faqModal" class="fixed inset-0 modal-overlay z-[100] hidden items-center justify-center p-4">
-        <div class="modal-content max-w-2xl w-full p-6">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-2xl font-bold text-white">คำถามที่พบบ่อย</h3>
-                <button onclick="closeFaqModal()" class="p-2 hover:bg-white/10 rounded-xl transition">
-                    <i class="fas fa-times text-gray-400"></i>
-                </button>
-            </div>
-            
-            <div class="space-y-4 max-h-96 overflow-y-auto pr-2">
-                <div class="p-4 bg-[#111317] rounded-xl border border-[#2a2e36]">
-                    <h4 class="font-medium text-white mb-2">📌 ฉันจะลงทะเบียนกิจกรรมได้อย่างไร?</h4>
-                    <p class="text-sm text-gray-400">คลิกที่กิจกรรมที่สนใจ จากนั้นกดปุ่ม "ลงทะเบียน" และยืนยันการลงทะเบียน ระบบจะแจ้งผลการลงทะเบียนให้ทราบ</p>
-                </div>
-                <div class="p-4 bg-[#111317] rounded-xl border border-[#2a2e36]">
-                    <h4 class="font-medium text-white mb-2">📌 การลงทะเบียนฟรีต้องชำระเงินหรือไม่?</h4>
-                    <p class="text-sm text-gray-400">กิจกรรมที่ระบุว่า "ฟรี" ไม่มีค่าใช้จ่าย สามารถลงทะเบียนได้ทันที</p>
-                </div>
-                <div class="p-4 bg-[#111317] rounded-xl border border-[#2a2e36]">
-                    <h4 class="font-medium text-white mb-2">📌 ฉันจะยกเลิกการลงทะเบียนได้อย่างไร?</h4>
-                    <p class="text-sm text-gray-400">ไปที่ "กิจกรรมของฉัน" แล้วคลิกปุ่มยกเลิกในกิจกรรมที่ต้องการ ระบบจะดำเนินการให้อัตโนมัติ</p>
-                </div>
-                <div class="p-4 bg-[#111317] rounded-xl border border-[#2a2e36]">
-                    <h4 class="font-medium text-white mb-2">📌 การแจ้งเตือนมีไว้ทำอะไร?</h4>
-                    <p class="text-sm text-gray-400">ระบบจะแจ้งเตือนเมื่อมีการอัปเดตกิจกรรมที่คุณสนใจ หรือเมื่อมีการยืนยันการลงทะเบียน</p>
-                </div>
+            <div id="registrationsList" class="space-y-3">
+                <!-- List will be inserted here -->
             </div>
         </div>
     </div>
 
     <script>
         // ============================================
-        // LINE MiniApp Frontend - Production Version
+        // LINE MiniApp Frontend - ใช้งานได้จริง
         // พัฒนาโดย ครบเครื่องเรื่องไอที
-        // เชื่อมต่อกับ Backend อย่างสมบูรณ์
         // ============================================
         
-        // Configuration - เปลี่ยนเป็น URL ของ Web App ที่ Deploy แล้ว
+        // Configuration
         const CONFIG = {
             GAS_URL: 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec',
-            LIFF_ID: '2008904120-T7I0VPZf',
-            VERSION: '2.0.0',
-            PAGE_SIZE: 9,
-            MAX_RETRIES: 3,
-            LIFF_TIMEOUT: 5000
+            LIFF_ID: '2008904120-T7I0VPZf'
         };
         
-        // State Management
-        const state = {
-            currentUser: null,
-            activities: [],
-            myRegistrations: [],
-            notifications: [],
-            categories: [],
-            currentPage: 1,
-            totalPages: 1,
-            currentFilter: 'all',
-            currentCategory: 'all',
-            searchKeyword: '',
-            isLoading: false,
-            isAdmin: false,
-            retryCount: 0,
-            liffReady: false,
-            currentActivity: null
-        };
+        // State
+        let currentUser = null;
+        let activities = [];
+        let myRegistrations = [];
+        let currentActivity = null;
+        let isAdmin = false;
         
-        // DOM Elements
-        const elements = {
-            loadingOverlay: document.getElementById('loadingOverlay'),
-            loadingMessage: document.getElementById('loadingMessage'),
-            activitiesContainer: document.getElementById('activitiesContainer'),
-            profileSection: document.getElementById('profileSection'),
-            profileName: document.getElementById('profileName'),
-            profileEmail: document.getElementById('profileEmail'),
-            profileImage: document.getElementById('profileImage'),
-            profileMenu: document.getElementById('profileMenu'),
-            welcomeBanner: document.getElementById('welcomeBanner'),
-            welcomeName: document.getElementById('welcomeName'),
-            statTotalActivities: document.getElementById('statTotalActivities'),
-            statOpenActivities: document.getElementById('statOpenActivities'),
-            statTotalParticipants: document.getElementById('statTotalParticipants'),
-            statMyRegistrations: document.getElementById('statMyRegistrations'),
-            pageInfo: document.getElementById('pageInfo'),
-            prevPage: document.getElementById('prevPage'),
-            nextPage: document.getElementById('nextPage'),
-            searchInput: document.getElementById('searchInput'),
-            statusFilter: document.getElementById('statusFilter'),
-            categoryFilter: document.getElementById('categoryFilter'),
-            notificationBadge: document.getElementById('notificationBadge'),
-            notificationsBtn: document.getElementById('notificationsBtn'),
-            adminBtn: document.getElementById('adminBtn'),
-            adminPanel: document.getElementById('adminPanel'),
-            connectionError: document.getElementById('connectionError'),
-            errorMessage: document.getElementById('errorMessage')
-        };
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            showLoading('กำลังเริ่มต้นระบบ...');
+            
+            try {
+                // Initialize LIFF
+                await new Promise((resolve, reject) => {
+                    liff.init({ liffId: CONFIG.LIFF_ID }, resolve, reject);
+                });
+                
+                if (!liff.isLoggedIn()) {
+                    liff.login();
+                    return;
+                }
+                
+                // Load user profile
+                await loadUserProfile();
+                
+                // Load data
+                await loadActivities();
+                await loadMyRegistrations();
+                
+                hideLoading();
+                
+            } catch (error) {
+                console.error('Init error:', error);
+                hideLoading();
+                alert('ไม่สามารถเชื่อมต่อกับ LINE ได้');
+            }
+        });
         
         // ========== Utility Functions ==========
-        function showLoading(message) {
-            state.isLoading = true;
-            elements.loadingMessage.textContent = message || 'กำลังโหลดข้อมูล...';
-            elements.loadingOverlay.classList.remove('hidden');
-            elements.loadingOverlay.style.display = 'flex';
+        function showLoading(message = 'กำลังโหลด...') {
+            document.getElementById('loadingMessage').textContent = message;
+            document.getElementById('loadingOverlay').style.display = 'flex';
         }
         
         function hideLoading() {
-            state.isLoading = false;
-            elements.loadingOverlay.classList.add('hidden');
-            elements.loadingOverlay.style.display = 'none';
+            document.getElementById('loadingOverlay').style.display = 'none';
         }
         
         function showToast(message, type = 'success') {
             const toast = document.createElement('div');
             toast.className = 'toast';
-            
-            const icons = {
-                success: 'check-circle',
-                error: 'exclamation-circle',
-                warning: 'exclamation-triangle',
-                info: 'info-circle'
-            };
-            
-            const colors = {
-                success: '#06c755',
-                error: '#ef4444',
-                warning: '#f59e0b',
-                info: '#3b82f6'
-            };
-            
-            toast.style.borderLeftColor = colors[type] || colors.success;
-            toast.innerHTML = `
-                <div class="flex items-center gap-3">
-                    <i class="fas fa-${icons[type]}" style="color: ${colors[type] || colors.success}"></i>
-                    <span class="text-white">${message}</span>
-                </div>
-            `;
-            
+            toast.innerHTML = message;
             document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.remove();
-            }, 3000);
+            setTimeout(() => toast.remove(), 3000);
         }
         
         function formatDate(dateString) {
@@ -1285,191 +593,33 @@
             });
         }
         
-        function formatDateOnly(dateString) {
-            if (!dateString) return '-';
-            const date = new Date(dateString);
-            return date.toLocaleDateString('th-TH', { 
-                year: 'numeric', 
-                month: 'short', 
-                day: 'numeric'
-            });
-        }
-        
-        function getStatusIcon(status) {
-            const icons = {
-                'open': 'door-open',
-                'closed': 'lock',
-                'full': 'users',
-                'cancelled': 'ban',
-                'draft': 'file'
-            };
-            return icons[status] || 'circle';
-        }
-        
-        function getStatusText(status) {
-            const statusMap = {
-                'open': 'เปิดรับสมัคร',
-                'closed': 'ปิดรับสมัคร',
-                'full': 'เต็มแล้ว',
-                'cancelled': 'ยกเลิก',
-                'draft': 'ร่าง'
-            };
-            return statusMap[status] || status;
-        }
-        
-        function getButtonText(status) {
-            const buttonMap = {
-                'closed': 'ปิดรับสมัครแล้ว',
-                'full': 'เต็มแล้ว',
-                'cancelled': 'กิจกรรมยกเลิก',
-                'draft': 'อยู่ระหว่างดำเนินการ'
-            };
-            return buttonMap[status] || 'ไม่สามารถลงทะเบียนได้';
-        }
-        
-        function getRegistrationStatus(status) {
-            const statusMap = {
-                'confirmed': 'ยืนยันแล้ว',
-                'waiting': 'รอคิว',
-                'cancelled': 'ยกเลิก',
-                'attended': 'เข้าร่วมแล้ว',
-                'no-show': 'ไม่มาเข้าร่วม'
-            };
-            return statusMap[status] || status;
-        }
-        
-        function getPaymentStatusText(status) {
-            const statusMap = {
-                'pending': 'รอชำระเงิน',
-                'paid': 'ชำระแล้ว',
-                'refunded': 'คืนเงิน',
-                'free': 'ไม่มีค่าใช้จ่าย'
-            };
-            return statusMap[status] || status;
-        }
-        
-        function getPaymentStatusClass(status) {
-            const classes = {
-                'pending': 'payment-pending',
-                'paid': 'payment-paid',
-                'refunded': 'payment-refunded',
-                'free': 'payment-free'
-            };
-            return classes[status] || 'payment-pending';
-        }
-        
-        function showConnectionError(message) {
-            elements.errorMessage.textContent = message;
-            elements.connectionError.classList.remove('hidden');
-        }
-        
         // ========== API Calls ==========
-        async function fetchWithRetry(url, options, retries = CONFIG.MAX_RETRIES) {
-            for (let i = 0; i < retries; i++) {
-                try {
-                    const response = await fetch(url, options);
-                    
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    
-                    const data = await response.json();
-                    return data;
-                    
-                } catch (error) {
-                    console.log(`Attempt ${i + 1} failed:`, error);
-                    
-                    if (i === retries - 1) {
-                        throw error;
-                    }
-                    
-                    await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
-                }
-            }
-        }
-        
         async function callGAS(path, data = {}) {
-            try {
-                const formData = new FormData();
-                formData.append('path', path);
-                
-                // เพิ่ม lineUserId เสมอถ้ามี
-                if (state.currentUser?.userId) {
-                    formData.append('lineUserId', state.currentUser.userId);
+            const formData = new FormData();
+            formData.append('path', path);
+            
+            if (currentUser?.userId) {
+                formData.append('lineUserId', currentUser.userId);
+            }
+            
+            Object.keys(data).forEach(key => {
+                if (data[key] !== undefined && data[key] !== null) {
+                    formData.append(key, data[key]);
                 }
-                
-                // เพิ่มข้อมูลอื่นๆ
-                Object.keys(data).forEach(key => {
-                    if (data[key] !== undefined && data[key] !== null) {
-                        formData.append(key, data[key]);
-                    }
-                });
-                
-                const result = await fetchWithRetry(CONFIG.GAS_URL, {
+            });
+            
+            try {
+                const response = await fetch(CONFIG.GAS_URL, {
                     method: 'POST',
                     body: formData
                 });
                 
-                return result;
+                return await response.json();
                 
             } catch (error) {
-                console.error('GAS call error:', error);
+                console.error('API call error:', error);
                 throw error;
             }
-        }
-        
-        // ========== LIFF Integration ==========
-        function waitForLIFF(timeout = CONFIG.LIFF_TIMEOUT) {
-            return new Promise((resolve, reject) => {
-                const startTime = Date.now();
-                
-                const checkLIFF = () => {
-                    if (typeof liff !== 'undefined' && liff) {
-                        console.log('✅ LIFF object found');
-                        resolve();
-                    } else if (Date.now() - startTime > timeout) {
-                        reject(new Error('LIFF timeout - object not found'));
-                    } else {
-                        setTimeout(checkLIFF, 100);
-                    }
-                };
-                
-                checkLIFF();
-            });
-        }
-        
-        async function initLIFF() {
-            return new Promise((resolve, reject) => {
-                liff.init({ 
-                    liffId: CONFIG.LIFF_ID 
-                }, async () => {
-                    console.log('✅ LIFF initialized successfully');
-                    
-                    if (!liff.isLoggedIn()) {
-                        console.log('User not logged in, redirecting to login...');
-                        liff.login();
-                        return;
-                    }
-                    
-                    try {
-                        await loadUserProfile();
-                        resolve();
-                    } catch (error) {
-                        reject(error);
-                    }
-                    
-                }, (error) => {
-                    console.error('❌ LIFF init failed:', error);
-                    
-                    if (liff.isInClient()) {
-                        showConnectionError('กรุณาเปิดแอป LINE และลองอีกครั้ง');
-                    } else {
-                        showConnectionError('กรุณาเปิดผ่านแอป LINE');
-                    }
-                    
-                    reject(error);
-                });
-            });
         }
         
         // ========== User Profile ==========
@@ -1478,8 +628,6 @@
                 const profile = await liff.getProfile();
                 const idToken = liff.getDecodedIDToken();
                 
-                console.log('Profile loaded:', profile.displayName);
-                
                 const result = await callGAS('user/profile', {
                     lineUserId: profile.userId,
                     displayName: profile.displayName,
@@ -1487,252 +635,125 @@
                     email: idToken?.email || ''
                 });
                 
-                if (!result.success) {
-                    throw new Error(result.message || 'ไม่สามารถโหลดโปรไฟล์ได้');
+                if (result.success) {
+                    currentUser = result.data;
+                    isAdmin = currentUser.role === 'admin' || currentUser.role === 'org';
+                    
+                    // Update UI
+                    document.getElementById('profileSection').classList.remove('hidden');
+                    document.getElementById('profileName').textContent = currentUser.displayName;
+                    document.getElementById('profileEmail').textContent = currentUser.email || 'ไม่มีอีเมล';
+                    document.getElementById('profileImage').src = currentUser.pictureUrl || 'https://via.placeholder.com/100/06c755/ffffff?text=LINE';
+                    
+                    document.getElementById('welcomeBanner').classList.remove('hidden');
+                    document.getElementById('welcomeName').textContent = currentUser.displayName.split(' ')[0];
+                    
+                    if (isAdmin) {
+                        document.getElementById('adminBtn').classList.remove('hidden');
+                        document.getElementById('adminBtn').onclick = toggleAdminPanel;
+                        await loadAdminStats();
+                    }
                 }
-                
-                state.currentUser = result.data;
-                
-                // ตรวจสอบว่าเป็น admin หรือไม่
-                state.isAdmin = state.currentUser.role === 'admin' || state.currentUser.role === 'org';
-                
-                updateProfileUI();
-                
-                // โหลดข้อมูลอื่นๆ
-                await Promise.all([
-                    loadCategories(),
-                    loadMyRegistrations(),
-                    loadHomeData()
-                ]);
                 
             } catch (error) {
                 console.error('Load profile error:', error);
-                showConnectionError('ไม่สามารถโหลดโปรไฟล์ผู้ใช้ได้');
-                throw error;
-            }
-        }
-        
-        async function updateUserProfile(profileData) {
-            try {
-                showLoading('กำลังบันทึกข้อมูล...');
-                
-                const result = await callGAS('user/update', profileData);
-                
-                if (!result.success) {
-                    throw new Error(result.message);
-                }
-                
-                // อัปเดต state
-                state.currentUser = { ...state.currentUser, ...profileData };
-                
-                showToast('บันทึกข้อมูลสำเร็จ', 'success');
-                closeProfileSettingsModal();
-                
-            } catch (error) {
-                console.error('Update profile error:', error);
-                showToast(error.message || 'บันทึกข้อมูลไม่สำเร็จ', 'error');
-            } finally {
-                hideLoading();
-            }
-        }
-        
-        // ========== Categories ==========
-        async function loadCategories() {
-            try {
-                // ในที่นี้สมมติว่า backend มี API สำหรับดึงหมวดหมู่
-                // ถ้ายังไม่มี ให้ใช้ข้อมูลตัวอย่าง
-                const categories = [
-                    { id: 'CAT001', name: 'อบรม' },
-                    { id: 'CAT002', name: 'สัมมนา' },
-                    { id: 'CAT003', name: 'workshop' },
-                    { id: 'CAT004', name: 'กีฬา' },
-                    { id: 'CAT005', name: 'ดนตรี' },
-                    { id: 'CAT006', name: 'ศิลปะ' },
-                    { id: 'CAT007', name: 'ท่องเที่ยว' }
-                ];
-                
-                state.categories = categories;
-                
-                // อัปเดต dropdown
-                if (elements.categoryFilter) {
-                    let options = '<option value="all">🏷️ ทุกหมวดหมู่</option>';
-                    categories.forEach(cat => {
-                        options += `<option value="${cat.id}">${cat.name}</option>`;
-                    });
-                    elements.categoryFilter.innerHTML = options;
-                }
-                
-                // อัปเดต dropdown ใน modal สร้างกิจกรรม
-                const categorySelect = document.getElementById('activityCategory');
-                if (categorySelect) {
-                    let options = '<option value="">เลือกหมวดหมู่</option>';
-                    categories.forEach(cat => {
-                        options += `<option value="${cat.id}">${cat.name}</option>`;
-                    });
-                    categorySelect.innerHTML = options;
-                }
-                
-            } catch (error) {
-                console.error('Load categories error:', error);
             }
         }
         
         // ========== Activities ==========
-        async function loadHomeData() {
-            try {
-                if (!state.currentUser) return;
-                
-                const result = await callGAS('home');
-                
-                if (!result.success) {
-                    throw new Error(result.message);
-                }
-                
-                // อัปเดตสถิติ
-                if (result.data) {
-                    elements.statTotalActivities.textContent = result.data.totalActivities || 0;
-                    elements.statOpenActivities.textContent = result.data.openActivities || 0;
-                    elements.statTotalParticipants.textContent = result.data.totalParticipants || 0;
-                }
-                
-                await loadActivities();
-                
-            } catch (error) {
-                console.error('Load home error:', error);
-                showConnectionError('ไม่สามารถโหลดข้อมูลหน้าแรกได้');
-            }
-        }
-        
         async function loadActivities() {
             try {
-                if (!state.currentUser) return;
-                
                 const result = await callGAS('activities', {
-                    page: state.currentPage,
-                    status: state.currentFilter,
-                    search: state.searchKeyword,
-                    pageSize: CONFIG.PAGE_SIZE
+                    status: document.getElementById('statusFilter').value,
+                    search: document.getElementById('searchInput').value
                 });
                 
-                if (!result.success) {
-                    throw new Error(result.message);
-                }
-                
-                state.activities = result.data.activities || [];
-                state.totalPages = result.data.totalPages || 1;
-                
-                displayActivities();
-                updatePagination();
-                
-                // อัปเดตสถิติ
-                if (result.data.totalActivities) {
-                    elements.statTotalActivities.textContent = result.data.totalActivities;
-                }
-                if (result.data.openActivities) {
-                    elements.statOpenActivities.textContent = result.data.openActivities;
-                }
-                if (result.data.totalParticipants) {
-                    elements.statTotalParticipants.textContent = result.data.totalParticipants;
+                if (result.success) {
+                    activities = result.data.activities || [];
+                    displayActivities();
+                    
+                    // Update stats
+                    document.getElementById('statTotalActivities').textContent = result.data.totalActivities || activities.length;
+                    document.getElementById('statOpenActivities').textContent = result.data.openActivities || activities.filter(a => a.status === 'open').length;
+                    document.getElementById('statTotalParticipants').textContent = result.data.totalParticipants || activities.reduce((sum, a) => sum + (a.currentParticipants || 0), 0);
                 }
                 
             } catch (error) {
                 console.error('Load activities error:', error);
-                
-                elements.activitiesContainer.innerHTML = `
-                    <div class="col-span-full empty-state">
-                        <i class="fas fa-exclamation-circle text-4xl text-[#ef4444] mb-3"></i>
-                        <h3 class="text-xl font-semibold text-white mb-2">เกิดข้อผิดพลาด</h3>
-                        <p class="text-gray-400 mb-4">${error.message || 'ไม่สามารถโหลดข้อมูลกิจกรรมได้'}</p>
-                        <button onclick="loadActivities()" class="btn-primary">
-                            <i class="fas fa-redo mr-2"></i>ลองอีกครั้ง
-                        </button>
-                    </div>
-                `;
             }
         }
         
         function displayActivities() {
-            if (!state.activities || state.activities.length === 0) {
-                elements.activitiesContainer.innerHTML = `
-                    <div class="col-span-full empty-state">
+            const container = document.getElementById('activitiesContainer');
+            
+            if (!activities.length) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-12">
                         <i class="fas fa-calendar-times text-4xl text-gray-500 mb-3"></i>
-                        <h3 class="text-xl font-semibold text-white mb-2">ไม่พบกิจกรรม</h3>
-                        <p class="text-gray-400">ลองค้นหาด้วยคำอื่น หรือเปลี่ยนตัวกรองดูนะ</p>
+                        <p class="text-gray-400">ไม่พบกิจกรรม</p>
+                        ${isAdmin ? `
+                            <button onclick="showCreateActivityModal()" class="btn-primary mt-4">
+                                <i class="fas fa-plus mr-2"></i>สร้างกิจกรรมแรก
+                            </button>
+                        ` : ''}
                     </div>
                 `;
                 return;
             }
             
             let html = '';
-            state.activities.forEach(activity => {
-                const isRegistered = state.myRegistrations.some(r => r.activityId === activity.activityId);
-                const statusClass = `badge-${activity.status}`;
-                const participantsPercent = (activity.currentParticipants / activity.maxParticipants) * 100;
-                
-                // Parse tags
-                let tags = [];
-                try {
-                    tags = activity.tags ? JSON.parse(activity.tags) : [];
-                } catch {
-                    tags = activity.tags ? activity.tags.split(',').map(t => t.trim()) : [];
-                }
-                
-                // หาชื่อหมวดหมู่
-                const category = state.categories.find(c => c.id === activity.category) || { name: 'อื่นๆ' };
+            activities.forEach(activity => {
+                const isRegistered = myRegistrations.some(r => r.activityId === activity.activityId);
+                const percent = ((activity.currentParticipants || 0) / activity.maxParticipants) * 100;
                 
                 html += `
-                    <div class="activity-card rounded-2xl overflow-hidden cursor-pointer group" onclick="showActivityDetail('${activity.activityId}')">
-                        <div class="relative h-48 overflow-hidden">
+                    <div class="card cursor-pointer" onclick="showActivityDetail('${activity.activityId}')">
+                        <div class="relative h-48">
                             ${activity.imageUrl ? 
-                                `<img src="${activity.imageUrl}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">` : 
+                                `<img src="${activity.imageUrl}" class="w-full h-full object-cover">` : 
                                 `<div class="w-full h-full bg-gradient-to-br from-[#06c755] to-[#00a344] flex items-center justify-center">
                                     <i class="fas fa-calendar-alt text-white text-5xl opacity-50"></i>
                                 </div>`
                             }
                             <div class="absolute top-4 right-4">
-                                <span class="badge ${statusClass}">
-                                    <i class="fas fa-${getStatusIcon(activity.status)}"></i>
-                                    ${getStatusText(activity.status)}
+                                <span class="badge badge-${activity.status}">
+                                    <i class="fas fa-${activity.status === 'open' ? 'door-open' : 'lock'}"></i>
+                                    ${activity.status === 'open' ? 'เปิดรับสมัคร' : 'ปิดรับสมัคร'}
                                 </span>
                             </div>
-                            ${activity.isFeatured === 'TRUE' ? `
-                                <div class="absolute top-4 left-4">
-                                    <span class="badge bg-yellow-500 text-white border-yellow-600">
-                                        <i class="fas fa-star"></i> แนะนำ
+                            ${isAdmin ? `
+                                <div class="absolute top-4 left-4 flex gap-2">
+                                    <span class="badge bg-blue-500 text-white cursor-pointer" onclick="event.stopPropagation(); editActivity('${activity.activityId}')">
+                                        <i class="fas fa-edit"></i>
+                                    </span>
+                                    <span class="badge bg-red-500 text-white cursor-pointer" onclick="event.stopPropagation(); deleteActivity('${activity.activityId}')">
+                                        <i class="fas fa-trash"></i>
                                     </span>
                                 </div>
                             ` : ''}
                         </div>
                         
-                        <div class="p-5">
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="text-xs text-[#06c755] bg-[#06c755]/10 px-2 py-1 rounded-full">
-                                    ${category.name}
-                                </span>
-                                ${tags.slice(0, 2).map(tag => `<span class="tag">#${tag}</span>`).join('')}
-                                ${tags.length > 2 ? `<span class="tag">+${tags.length - 2}</span>` : ''}
-                            </div>
+                        <div class="p-4">
+                            <h3 class="font-semibold text-lg text-white mb-2">${activity.title}</h3>
+                            <p class="text-sm text-gray-400 mb-4 line-clamp-2">${activity.description || ''}</p>
                             
-                            <h3 class="font-semibold text-lg text-white mb-2 line-clamp-1">${activity.title}</h3>
-                            <p class="text-sm text-gray-400 mb-4 line-clamp-2">${activity.description}</p>
-                            
-                            <div class="space-y-3 mb-4">
+                            <div class="space-y-2 mb-4">
                                 <div class="flex items-center text-sm text-gray-300">
                                     <i class="fas fa-calendar w-5 text-[#06c755]"></i>
-                                    <span>${formatDateOnly(activity.startDate)}</span>
+                                    <span>${formatDate(activity.startDate)}</span>
                                 </div>
                                 <div class="flex items-center text-sm text-gray-300">
                                     <i class="fas fa-map-marker-alt w-5 text-[#06c755]"></i>
-                                    <span class="line-clamp-1">${activity.location}</span>
+                                    <span>${activity.location || ''}</span>
                                 </div>
                                 <div class="flex items-center text-sm text-gray-300">
                                     <i class="fas fa-users w-5 text-[#06c755]"></i>
-                                    <span>${activity.currentParticipants} / ${activity.maxParticipants} คน</span>
+                                    <span>${activity.currentParticipants || 0}/${activity.maxParticipants} คน</span>
                                 </div>
                                 ${activity.price > 0 ? 
                                     `<div class="flex items-center text-sm text-gray-300">
                                         <i class="fas fa-tag w-5 text-[#06c755]"></i>
-                                        <span>฿${Number(activity.price).toLocaleString()}</span>
+                                        <span>฿${activity.price.toLocaleString()}</span>
                                     </div>` : 
                                     `<div class="flex items-center text-sm">
                                         <i class="fas fa-gift w-5 text-[#06c755]"></i>
@@ -1742,17 +763,17 @@
                             </div>
                             
                             <div class="progress-bar mb-4">
-                                <div class="progress-fill" style="width: ${participantsPercent}%"></div>
+                                <div class="progress-fill" style="width: ${percent}%"></div>
                             </div>
                             
                             ${isRegistered ? 
-                                '<div class="text-center py-3 bg-[#06c755]/10 text-[#06c755] rounded-xl text-sm font-medium border border-[#06c755]/20">✅ ลงทะเบียนแล้ว</div>' : 
+                                '<div class="text-center py-2 bg-[#06c755]/10 text-[#06c755] rounded-xl text-sm">✅ ลงทะเบียนแล้ว</div>' : 
                                 activity.status === 'open' ?
-                                `<button class="w-full py-3 bg-[#06c755] text-white rounded-xl text-sm font-medium hover:bg-[#05b34a] transition transform hover:scale-[1.02]" onclick="event.stopPropagation(); registerActivity('${activity.activityId}')">
-                                    <i class="fas fa-pen-fancy mr-2"></i>ลงทะเบียน
+                                `<button class="w-full py-3 bg-[#06c755] text-white rounded-xl text-sm hover:bg-[#05b34a]" onclick="event.stopPropagation(); registerActivity('${activity.activityId}')">
+                                    ลงทะเบียน
                                 </button>` :
-                                `<button class="w-full py-3 bg-[#2a2e36] text-gray-500 rounded-xl text-sm font-medium cursor-not-allowed border border-[#3a3e46]" disabled>
-                                    <i class="fas fa-ban mr-2"></i>${getButtonText(activity.status)}
+                                `<button class="w-full py-3 bg-[#2a2e36] text-gray-500 rounded-xl text-sm cursor-not-allowed" disabled>
+                                    ปิดรับสมัคร
                                 </button>`
                             }
                         </div>
@@ -1760,276 +781,182 @@
                 `;
             });
             
-            elements.activitiesContainer.innerHTML = html;
+            container.innerHTML = html;
         }
         
+        // ========== Activity Detail ==========
         async function showActivityDetail(activityId) {
-            if (!state.currentUser) {
-                showConnectionError('กรุณาเข้าสู่ระบบก่อน');
-                return;
-            }
-            
-            showLoading('กำลังโหลดรายละเอียด...');
+            showLoading('กำลังโหลด...');
             
             try {
                 const result = await callGAS('activity', { activityId });
                 
-                if (!result.success) {
-                    throw new Error(result.message);
+                if (result.success) {
+                    currentActivity = result.data;
+                    
+                    document.getElementById('detailTitle').textContent = currentActivity.title;
+                    
+                    const isRegistered = myRegistrations.some(r => r.activityId === activityId);
+                    const percent = ((currentActivity.currentParticipants || 0) / currentActivity.maxParticipants) * 100;
+                    
+                    document.getElementById('detailContent').innerHTML = `
+                        ${currentActivity.imageUrl ? 
+                            `<img src="${currentActivity.imageUrl}" class="w-full h-64 object-cover rounded-xl">` : 
+                            ''
+                        }
+                        
+                        <div class="flex gap-2">
+                            <span class="badge badge-${currentActivity.status}">
+                                <i class="fas fa-${currentActivity.status === 'open' ? 'door-open' : 'lock'}"></i>
+                                ${currentActivity.status === 'open' ? 'เปิดรับสมัคร' : 'ปิดรับสมัคร'}
+                            </span>
+                        </div>
+                        
+                        <p class="text-gray-400">${currentActivity.description || ''}</p>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="p-4 bg-[#111317] rounded-xl">
+                                <p class="text-xs text-gray-500">วันที่เริ่ม</p>
+                                <p class="text-white">${formatDate(currentActivity.startDate)}</p>
+                            </div>
+                            <div class="p-4 bg-[#111317] rounded-xl">
+                                <p class="text-xs text-gray-500">วันที่สิ้นสุด</p>
+                                <p class="text-white">${formatDate(currentActivity.endDate)}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="p-4 bg-[#111317] rounded-xl">
+                            <p class="text-xs text-gray-500">สถานที่</p>
+                            <p class="text-white">${currentActivity.location || ''}</p>
+                        </div>
+                        
+                        <div class="p-4 bg-[#111317] rounded-xl">
+                            <div class="flex justify-between mb-2">
+                                <span class="text-white">ผู้เข้าร่วม</span>
+                                <span class="text-[#06c755]">${currentActivity.currentParticipants || 0}/${currentActivity.maxParticipants}</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${percent}%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-4 bg-[#111317] rounded-xl">
+                            <p class="text-white mb-2">📞 ติดต่อ</p>
+                            <p class="text-sm text-gray-400">${currentActivity.contact || 'ไม่ระบุ'}</p>
+                        </div>
+                    `;
+                    
+                    const registerBtn = document.getElementById('registerBtn');
+                    if (isRegistered) {
+                        registerBtn.disabled = true;
+                        registerBtn.className = 'btn-primary flex-1 opacity-50 cursor-not-allowed';
+                        registerBtn.textContent = 'ลงทะเบียนแล้ว';
+                    } else if (currentActivity.status !== 'open') {
+                        registerBtn.disabled = true;
+                        registerBtn.className = 'btn-primary flex-1 opacity-50 cursor-not-allowed';
+                        registerBtn.textContent = 'ไม่สามารถลงทะเบียนได้';
+                    } else {
+                        registerBtn.disabled = false;
+                        registerBtn.className = 'btn-primary flex-1';
+                        registerBtn.textContent = 'ลงทะเบียน';
+                    }
+                    
+                    // Show admin controls
+                    if (isAdmin) {
+                        document.getElementById('adminActivityControls').classList.remove('hidden');
+                    } else {
+                        document.getElementById('adminActivityControls').classList.add('hidden');
+                    }
+                    
+                    document.getElementById('detailModal').style.display = 'flex';
                 }
                 
-                state.currentActivity = result.data;
-                displayActivityModal(result.data);
-                
             } catch (error) {
-                console.error('Load activity detail error:', error);
-                showToast('ไม่สามารถโหลดรายละเอียดกิจกรรมได้', 'error');
+                console.error('Load detail error:', error);
+                alert('ไม่สามารถโหลดรายละเอียดได้');
             }
             
             hideLoading();
         }
         
-        function displayActivityModal(activity) {
-            const modal = document.getElementById('activityModal');
-            const isRegistered = state.myRegistrations.some(r => r.activityId === activity.activityId);
-            const participantsPercent = (activity.currentParticipants / activity.maxParticipants) * 100;
-            
-            document.getElementById('modalTitle').textContent = activity.title;
-            
-            // Parse JSON fields
-            let requirements = [];
-            let benefits = [];
-            let tags = [];
-            let galleryUrls = [];
-            
-            try {
-                requirements = activity.requirements ? 
-                    (typeof activity.requirements === 'string' ? JSON.parse(activity.requirements) : activity.requirements) : [];
-                benefits = activity.benefits ? 
-                    (typeof activity.benefits === 'string' ? JSON.parse(activity.benefits) : activity.benefits) : [];
-                tags = activity.tags ? 
-                    (typeof activity.tags === 'string' ? JSON.parse(activity.tags) : activity.tags) : [];
-                galleryUrls = activity.galleryUrls ? 
-                    (typeof activity.galleryUrls === 'string' ? JSON.parse(activity.galleryUrls) : activity.galleryUrls) : [];
-            } catch (e) {
-                requirements = activity.requirements ? [activity.requirements] : [];
-                benefits = activity.benefits ? [activity.benefits] : [];
-                tags = activity.tags ? activity.tags.split(',').map(t => t.trim()) : [];
-            }
-            
-            // หาชื่อหมวดหมู่
-            const category = state.categories.find(c => c.id === activity.category) || { name: 'อื่นๆ' };
-            
-            const content = document.getElementById('modalContent');
-            content.innerHTML = `
-                <!-- Image Gallery -->
-                ${galleryUrls.length > 0 ? `
-                    <div class="grid grid-cols-${Math.min(galleryUrls.length, 3)} gap-2">
-                        ${galleryUrls.slice(0, 3).map(url => 
-                            `<img src="${url}" class="w-full h-24 object-cover rounded-lg cursor-pointer" onclick="window.open('${url}')">`
-                        ).join('')}
-                    </div>
-                ` : activity.imageUrl ? 
-                    `<img src="${activity.imageUrl}" class="w-full h-64 object-cover rounded-xl cursor-pointer" onclick="window.open('${activity.imageUrl}')">` : 
-                    ''
-                }
-                
-                <!-- Tags and Status -->
-                <div class="flex flex-wrap gap-2 items-center">
-                    <span class="badge badge-${activity.status}">
-                        <i class="fas fa-${getStatusIcon(activity.status)}"></i>
-                        ${getStatusText(activity.status)}
-                    </span>
-                    <span class="tag">${category.name}</span>
-                    ${tags.map(tag => `<span class="tag">#${tag}</span>`).join('')}
-                </div>
-                
-                <!-- Description -->
-                <p class="text-gray-400 leading-relaxed">${activity.description}</p>
-                
-                <!-- Date & Location -->
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="p-4 bg-[#111317] rounded-xl border border-[#2a2e36]">
-                        <p class="text-xs text-gray-500 mb-1">วันที่เริ่ม</p>
-                        <p class="font-medium text-white">${formatDate(activity.startDate)}</p>
-                    </div>
-                    <div class="p-4 bg-[#111317] rounded-xl border border-[#2a2e36]">
-                        <p class="text-xs text-gray-500 mb-1">วันที่สิ้นสุด</p>
-                        <p class="font-medium text-white">${formatDate(activity.endDate)}</p>
-                    </div>
-                </div>
-                
-                <div class="p-4 bg-[#111317] rounded-xl border border-[#2a2e36]">
-                    <p class="text-xs text-gray-500 mb-1">สถานที่</p>
-                    <p class="font-medium text-white">${activity.location}</p>
-                    ${activity.latitude && activity.longitude ? 
-                        `<p class="text-xs text-gray-500 mt-1">พิกัด: ${activity.latitude}, ${activity.longitude}</p>` : ''
-                    }
-                </div>
-                
-                <!-- Participants Progress -->
-                <div class="p-4 bg-[#111317] rounded-xl border border-[#2a2e36]">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-sm font-medium text-white">จำนวนผู้เข้าร่วม</span>
-                        <span class="text-sm text-[#06c755]">${activity.currentParticipants} / ${activity.maxParticipants}</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${participantsPercent}%"></div>
-                    </div>
-                    ${activity.waitlistCount > 0 ? 
-                        `<p class="text-xs text-yellow-500 mt-2">⏳ กำลังรอคิว ${activity.waitlistCount} คน</p>` : ''
-                    }
-                </div>
-                
-                <!-- Requirements -->
-                ${requirements.length > 0 ? `
-                    <div class="p-4 bg-[#111317] rounded-xl border border-[#2a2e36]">
-                        <p class="text-sm font-medium text-white mb-3">📋 คุณสมบัติผู้สมัคร</p>
-                        <ul class="space-y-2">
-                            ${requirements.map(req => `
-                                <li class="text-sm text-gray-400 flex items-start gap-2">
-                                    <i class="fas fa-check-circle text-[#06c755] text-xs mt-1"></i>
-                                    ${req}
-                                </li>
-                            `).join('')}
-                        </ul>
-                    </div>
-                ` : ''}
-                
-                <!-- Benefits -->
-                ${benefits.length > 0 ? `
-                    <div class="p-4 bg-[#111317] rounded-xl border border-[#2a2e36]">
-                        <p class="text-sm font-medium text-white mb-3">🎁 สิทธิประโยชน์</p>
-                        <ul class="space-y-2">
-                            ${benefits.map(benefit => `
-                                <li class="text-sm text-gray-400 flex items-start gap-2">
-                                    <i class="fas fa-gift text-[#06c755] text-xs mt-1"></i>
-                                    ${benefit}
-                                </li>
-                            `).join('')}
-                        </ul>
-                    </div>
-                ` : ''}
-                
-                <!-- Price & Payment -->
-                <div class="p-4 bg-[#111317] rounded-xl border border-[#2a2e36]">
-                    <div class="flex justify-between items-center">
-                        <span class="text-sm font-medium text-white">ค่าใช้จ่าย</span>
-                        ${activity.price > 0 ? 
-                            `<span class="text-xl font-bold text-[#06c755]">฿${Number(activity.price).toLocaleString()}</span>` : 
-                            `<span class="text-xl font-bold text-[#06c755]">ฟรี</span>`
-                        }
-                    </div>
-                    ${activity.paymentMethods && activity.paymentMethods.length > 0 ? `
-                        <p class="text-xs text-gray-500 mt-2">ช่องทางชำระเงิน: ${activity.paymentMethods.join(', ')}</p>
-                    ` : ''}
-                </div>
-                
-                <!-- Contact -->
-                <div class="p-4 bg-[#111317] rounded-xl border border-[#2a2e36]">
-                    <p class="text-sm font-medium text-white mb-2">📞 ติดต่อ</p>
-                    <p class="text-sm text-gray-400">${activity.contact || 'ไม่ระบุ'}</p>
-                </div>
-                
-                <!-- Stats -->
-                <div class="flex items-center justify-between text-sm text-gray-500 border-t border-[#2a2e36] pt-4">
-                    <span><i class="far fa-eye mr-1"></i> ${activity.viewCount || 0} ครั้ง</span>
-                    <span><i class="far fa-star mr-1"></i> ${activity.rating || 0} (${activity.reviewCount || 0} รีวิว)</span>
-                </div>
-            `;
-            
-            const registerBtn = document.getElementById('registerBtn');
-            if (isRegistered) {
-                registerBtn.disabled = true;
-                registerBtn.className = 'btn-primary flex-1 opacity-50 cursor-not-allowed';
-                registerBtn.innerHTML = '<i class="fas fa-check-circle mr-2"></i>ลงทะเบียนแล้ว';
-            } else if (activity.status !== 'open') {
-                registerBtn.disabled = true;
-                registerBtn.className = 'btn-primary flex-1 opacity-50 cursor-not-allowed';
-                registerBtn.innerHTML = `<i class="fas fa-ban mr-2"></i>${getButtonText(activity.status)}`;
-            } else {
-                registerBtn.disabled = false;
-                registerBtn.className = 'btn-primary flex-1';
-                registerBtn.innerHTML = '<i class="fas fa-pen-fancy mr-2"></i>ลงทะเบียนเข้าร่วม';
-                registerBtn.onclick = () => registerActivity(activity.activityId);
-            }
-            
-            // แสดงปุ่มจัดการสำหรับ admin
-            const adminControls = document.getElementById('adminActivityControls');
-            if (state.isAdmin) {
-                adminControls.classList.remove('hidden');
-            } else {
-                adminControls.classList.add('hidden');
-            }
-            
-            modal.classList.remove('hidden');
-            modal.style.display = 'flex';
+        function closeDetailModal() {
+            document.getElementById('detailModal').style.display = 'none';
         }
         
         // ========== Registration ==========
         async function registerActivity(activityId) {
-            if (!state.currentUser) {
-                showToast('กรุณาเข้าสู่ระบบก่อน', 'error');
-                return;
-            }
+            const id = activityId || currentActivity?.activityId;
+            if (!id) return;
             
-            if (!confirm('คุณต้องการลงทะเบียนกิจกรรมนี้ใช่หรือไม่?')) {
-                return;
-            }
+            if (!confirm('คุณต้องการลงทะเบียนกิจกรรมนี้ใช่หรือไม่?')) return;
             
-            showLoading('กำลังดำเนินการลงทะเบียน...');
+            showLoading('กำลังดำเนินการ...');
             
             try {
                 const result = await callGAS('register', { 
-                    activityId,
-                    displayName: state.currentUser.displayName,
-                    email: state.currentUser.email || '',
-                    phone: state.currentUser.phone || ''
+                    activityId: id,
+                    displayName: currentUser.displayName,
+                    email: currentUser.email || ''
                 });
                 
-                if (!result.success) {
-                    throw new Error(result.message);
-                }
-                
-                showToast('✅ ลงทะเบียนสำเร็จ!', 'success');
-                closeModal();
-                
-                // โหลดข้อมูลใหม่
-                await Promise.all([
-                    loadMyRegistrations(),
-                    loadActivities()
-                ]);
-                
-                // แสดงข้อความถ้าอยู่ในคิว
-                if (result.data?.status === 'waiting') {
-                    showToast(`⏳ อยู่ในคิวรอ ลำดับที่ ${result.data.queuePosition}`, 'info');
+                if (result.success) {
+                    await loadMyRegistrations();
+                    await loadActivities();
+                    closeDetailModal();
+                    alert('ลงทะเบียนสำเร็จ');
+                } else {
+                    alert(result.message || 'ลงทะเบียนไม่สำเร็จ');
                 }
                 
             } catch (error) {
                 console.error('Register error:', error);
-                showToast(error.message || 'ลงทะเบียนไม่สำเร็จ กรุณาลองอีกครั้ง', 'error');
+                alert('เกิดข้อผิดพลาด กรุณาลองอีกครั้ง');
             }
             
             hideLoading();
         }
         
+        // ========== My Registrations ==========
         async function loadMyRegistrations() {
-            if (!state.currentUser) return;
-            
             try {
                 const result = await callGAS('user/registrations');
                 
-                if (!result.success) {
-                    throw new Error(result.message);
+                if (result.success) {
+                    myRegistrations = result.data || [];
+                    document.getElementById('statMyRegistrations').textContent = myRegistrations.length;
                 }
-                
-                state.myRegistrations = result.data || [];
-                elements.statMyRegistrations.textContent = state.myRegistrations.length;
                 
             } catch (error) {
                 console.error('Load registrations error:', error);
-                elements.statMyRegistrations.textContent = '0';
             }
+        }
+        
+        function showMyRegistrations() {
+            const modal = document.getElementById('registrationsModal');
+            const list = document.getElementById('registrationsList');
+            
+            if (!myRegistrations.length) {
+                list.innerHTML = '<p class="text-center text-gray-400 py-8">ยังไม่มีการลงทะเบียน</p>';
+            } else {
+                list.innerHTML = myRegistrations.map(reg => `
+                    <div class="p-4 bg-[#111317] rounded-xl border border-[#2a2e36]">
+                        <div class="flex justify-between mb-2">
+                            <h4 class="font-medium text-white">${reg.activity?.title || 'กิจกรรม'}</h4>
+                            <span class="text-sm ${reg.status === 'confirmed' ? 'text-[#06c755]' : 'text-yellow-500'}">
+                                ${reg.status === 'confirmed' ? 'ยืนยันแล้ว' : 'รอคิว'}
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-400">ลงทะเบียน: ${formatDate(reg.registrationDate)}</p>
+                        ${reg.status === 'confirmed' ? `
+                            <button class="mt-2 text-sm text-red-500" onclick="cancelRegistration('${reg.regId}')">
+                                <i class="fas fa-times mr-1"></i>ยกเลิก
+                            </button>
+                        ` : ''}
+                    </div>
+                `).join('');
+            }
+            
+            modal.style.display = 'flex';
         }
         
         async function cancelRegistration(registrationId) {
@@ -2040,806 +967,265 @@
             try {
                 const result = await callGAS('cancel', { registrationId });
                 
-                if (!result.success) {
-                    throw new Error(result.message);
+                if (result.success) {
+                    await loadMyRegistrations();
+                    await loadActivities();
+                    closeRegistrationsModal();
+                    alert('ยกเลิกการลงทะเบียนสำเร็จ');
+                } else {
+                    alert(result.message || 'ยกเลิกไม่สำเร็จ');
                 }
-                
-                showToast('ยกเลิกการลงทะเบียนสำเร็จ', 'success');
-                closeRegistrationsModal();
-                
-                // โหลดข้อมูลใหม่
-                await Promise.all([
-                    loadMyRegistrations(),
-                    loadActivities()
-                ]);
                 
             } catch (error) {
                 console.error('Cancel error:', error);
-                showToast(error.message || 'ยกเลิกไม่สำเร็จ กรุณาลองอีกครั้ง', 'error');
+                alert('เกิดข้อผิดพลาด กรุณาลองอีกครั้ง');
             }
             
             hideLoading();
         }
         
-        function showMyRegistrations() {
-            if (!state.currentUser) {
-                showToast('กรุณาเข้าสู่ระบบก่อน', 'error');
-                return;
-            }
-            
-            const modal = document.getElementById('registrationsModal');
-            const list = document.getElementById('registrationsList');
-            
-            if (state.myRegistrations.length === 0) {
-                list.innerHTML = `
-                    <div class="text-center py-12 empty-state">
-                        <i class="fas fa-ticket-alt text-4xl text-gray-500 mb-3"></i>
-                        <p class="text-gray-400 mb-4">ยังไม่มีการลงทะเบียน</p>
-                        <button onclick="closeRegistrationsModal()" class="btn-outline">
-                            <i class="fas fa-check mr-2"></i>ตกลง
-                        </button>
-                    </div>
-                `;
-            } else {
-                let html = '';
-                state.myRegistrations.forEach(reg => {
-                    const statusColors = {
-                        'confirmed': 'text-[#06c755]',
-                        'waiting': 'text-yellow-500',
-                        'cancelled': 'text-red-500',
-                        'attended': 'text-blue-400',
-                        'no-show': 'text-gray-500'
-                    };
-                    
-                    const statusIcons = {
-                        'confirmed': 'check-circle',
-                        'waiting': 'clock',
-                        'cancelled': 'times-circle',
-                        'attended': 'check-double',
-                        'no-show': 'times-circle'
-                    };
-                    
-                    html += `
-                        <div class="p-4 bg-[#111317] rounded-xl border border-[#2a2e36]">
-                            <div class="flex justify-between items-start mb-3">
-                                <div>
-                                    <h4 class="font-medium text-white">${reg.activity?.title || 'กิจกรรม'}</h4>
-                                    <span class="text-xs text-gray-500">รหัส: ${reg.regId}</span>
-                                </div>
-                                <div class="text-right">
-                                    <span class="${statusColors[reg.status] || 'text-gray-400'} text-sm block">
-                                        <i class="fas fa-${statusIcons[reg.status] || 'info-circle'}"></i>
-                                        ${getRegistrationStatus(reg.status)}
-                                    </span>
-                                    <span class="${getPaymentStatusClass(reg.paymentStatus)} mt-1 inline-block">
-                                        ${getPaymentStatusText(reg.paymentStatus)}
-                                    </span>
-                                </div>
-                            </div>
-                            
-                            <div class="space-y-2 text-sm text-gray-400 mb-3">
-                                <p><i class="far fa-calendar mr-2"></i> ลงทะเบียน: ${formatDate(reg.registrationDate)}</p>
-                                <p><i class="far fa-clock mr-2"></i> จัดกิจกรรม: ${reg.activity?.startDate ? formatDate(reg.activity.startDate) : '-'}</p>
-                                ${reg.paymentAmount > 0 ? `<p><i class="fas fa-money-bill mr-2"></i> จำนวนเงิน: ฿${Number(reg.paymentAmount).toLocaleString()}</p>` : ''}
-                                ${reg.remark ? `<p><i class="fas fa-sticky-note mr-2"></i> หมายเหตุ: ${reg.remark}</p>` : ''}
-                            </div>
-                            
-                            <div class="flex gap-2">
-                                ${reg.status === 'confirmed' ? `
-                                    <button class="flex-1 text-sm bg-red-500/10 text-red-500 hover:bg-red-500/20 px-4 py-2 rounded-lg transition" onclick="cancelRegistration('${reg.regId}')">
-                                        <i class="fas fa-times mr-1"></i>ยกเลิกการลงทะเบียน
-                                    </button>
-                                ` : reg.status === 'waiting' ? `
-                                    <button class="flex-1 text-sm bg-red-500/10 text-red-500 hover:bg-red-500/20 px-4 py-2 rounded-lg transition" onclick="cancelRegistration('${reg.regId}')">
-                                        <i class="fas fa-times mr-1"></i>ออกจากคิว
-                                    </button>
-                                ` : ''}
-                                ${reg.activity ? `
-                                    <button class="flex-1 text-sm bg-[#06c755]/10 text-[#06c755] hover:bg-[#06c755]/20 px-4 py-2 rounded-lg transition" onclick="showActivityDetail('${reg.activityId}')">
-                                        <i class="fas fa-eye mr-1"></i>ดูรายละเอียด
-                                    </button>
-                                ` : ''}
-                            </div>
-                        </div>
-                    `;
-                });
-                list.innerHTML = html;
-            }
-            
-            modal.classList.remove('hidden');
-            modal.style.display = 'flex';
-        }
-        
-        // ========== Notifications ==========
-        async function loadNotifications() {
-            if (!state.currentUser) return;
-            
-            try {
-                const result = await callGAS('user/notifications', { unreadOnly: 'true' });
-                
-                if (!result.success) {
-                    throw new Error(result.message);
-                }
-                
-                state.notifications = result.data?.notifications || [];
-                const unreadCount = result.data?.unreadCount || 0;
-                
-                if (unreadCount > 0) {
-                    elements.notificationBadge.textContent = unreadCount > 99 ? '99+' : unreadCount;
-                    elements.notificationBadge.classList.remove('hidden');
-                } else {
-                    elements.notificationBadge.classList.add('hidden');
-                }
-                
-            } catch (error) {
-                console.error('Load notifications error:', error);
-            }
-        }
-        
-        async function showNotifications() {
-            if (!state.currentUser) {
-                showToast('กรุณาเข้าสู่ระบบก่อน', 'error');
-                return;
-            }
-            
-            const modal = document.getElementById('notificationsModal');
-            const list = document.getElementById('notificationsList');
-            
-            await loadNotifications();
-            
-            if (state.notifications.length === 0) {
-                list.innerHTML = `
-                    <div class="text-center py-12 empty-state">
-                        <i class="fas fa-bell-slash text-4xl text-gray-500 mb-3"></i>
-                        <p class="text-gray-400">ไม่มีการแจ้งเตือน</p>
-                    </div>
-                `;
-            } else {
-                let html = '';
-                state.notifications.forEach(notif => {
-                    const typeColors = {
-                        'success': 'text-[#06c755]',
-                        'warning': 'text-yellow-500',
-                        'error': 'text-red-500',
-                        'info': 'text-blue-400'
-                    };
-                    
-                    html += `
-                        <div class="p-4 bg-[#111317] rounded-xl border border-[#2a2e36] ${!notif.isRead || notif.isRead === 'FALSE' ? 'border-l-4 border-l-[#06c755]' : ''}">
-                            <div class="flex items-start gap-3">
-                                <i class="fas fa-${notif.icon || 'bell'} ${typeColors[notif.type] || 'text-[#06c755]'} mt-1"></i>
-                                <div class="flex-1">
-                                    <h4 class="font-medium text-white mb-1">${notif.title}</h4>
-                                    <p class="text-sm text-gray-400 mb-2">${notif.message}</p>
-                                    <div class="flex justify-between items-center">
-                                        <p class="text-xs text-gray-500">${formatDate(notif.createdAt)}</p>
-                                        ${notif.actionUrl ? `
-                                            <a href="${notif.actionUrl}" class="text-xs text-[#06c755] hover:underline">${notif.actionText || 'ดูเพิ่มเติม'}</a>
-                                        ` : ''}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-                list.innerHTML = html;
-            }
-            
-            modal.classList.remove('hidden');
-            modal.style.display = 'flex';
-        }
-        
-        async function markAllNotificationsRead() {
-            try {
-                const result = await callGAS('notifications/mark-read', { markAll: 'true' });
-                
-                if (!result.success) {
-                    throw new Error(result.message);
-                }
-                
-                elements.notificationBadge.classList.add('hidden');
-                showToast('ทำเครื่องหมายว่าอ่านทั้งหมดแล้ว', 'success');
-                
-            } catch (error) {
-                console.error('Mark all read error:', error);
-                showToast('ไม่สามารถทำเครื่องหมายว่าอ่านได้', 'error');
-            }
+        function closeRegistrationsModal() {
+            document.getElementById('registrationsModal').style.display = 'none';
         }
         
         // ========== Admin Functions ==========
+        function toggleAdminPanel() {
+            const panel = document.getElementById('adminPanel');
+            panel.classList.toggle('hidden');
+        }
+        
         async function loadAdminStats() {
             try {
                 const result = await callGAS('admin/stats');
                 
-                if (!result.success) {
-                    throw new Error(result.message);
+                if (result.success) {
+                    document.getElementById('adminTotalUsers').textContent = result.data.users || 0;
+                    document.getElementById('adminTotalActivities').textContent = result.data.activities || 0;
+                    document.getElementById('adminTotalRegistrations').textContent = result.data.registrations || 0;
+                    document.getElementById('adminRevenue').textContent = `฿${(result.data.revenue || 0).toLocaleString()}`;
                 }
-                
-                const stats = result.data;
-                
-                document.getElementById('adminTotalUsers').textContent = stats.users || 0;
-                document.getElementById('adminTotalActivities').textContent = stats.activities || 0;
-                document.getElementById('adminTotalRegistrations').textContent = stats.registrations || 0;
-                document.getElementById('adminTodayRegistrations').textContent = stats.todayRegistrations || 0;
-                document.getElementById('adminRevenue').textContent = `฿${(stats.revenue || 0).toLocaleString()}`;
                 
             } catch (error) {
                 console.error('Load admin stats error:', error);
             }
         }
         
-        function toggleAdminPanel() {
-            if (!state.isAdmin) return;
-            
-            if (elements.adminPanel.classList.contains('hidden')) {
-                elements.adminPanel.classList.remove('hidden');
-                loadAdminStats();
-            } else {
-                elements.adminPanel.classList.add('hidden');
-            }
-        }
-        
-        function refreshAdminStats() {
-            loadAdminStats();
-            showToast('รีเฟรชข้อมูลสำเร็จ', 'success');
-        }
-        
+        // ========== Create/Edit Activity ==========
         function showCreateActivityModal() {
-            if (!state.isAdmin) {
-                showToast('คุณไม่มีสิทธิ์เข้าถึง', 'error');
-                return;
-            }
-            
-            // รีเซ็ตฟอร์ม
+            resetActivityForm();
+            document.getElementById('activityModalTitle').textContent = 'สร้างกิจกรรมใหม่';
+            document.getElementById('activityModal').style.display = 'flex';
+        }
+        
+        function resetActivityForm() {
             document.getElementById('activityId').value = '';
             document.getElementById('activityTitle').value = '';
             document.getElementById('activityDescription').value = '';
-            document.getElementById('activityCategory').value = '';
             document.getElementById('activityLocation').value = '';
             document.getElementById('activityStartDate').value = '';
             document.getElementById('activityEndDate').value = '';
-            document.getElementById('activityMaxParticipants').value = '100';
-            document.getElementById('activityMinParticipants').value = '1';
+            document.getElementById('activityMaxParticipants').value = '50';
             document.getElementById('activityPrice').value = '0';
             document.getElementById('activityImageUrl').value = '';
-            document.getElementById('activityTags').value = '';
-            document.getElementById('activityRequirements').value = '';
-            document.getElementById('activityBenefits').value = '';
             document.getElementById('activityContact').value = '';
-            
-            document.getElementById('activityModalTitle').textContent = 'สร้างกิจกรรมใหม่';
-            
-            const modal = document.getElementById('createActivityModal');
-            modal.classList.remove('hidden');
-            modal.style.display = 'flex';
-        }
-        
-        function closeCreateActivityModal() {
-            const modal = document.getElementById('createActivityModal');
-            modal.classList.add('hidden');
-            modal.style.display = 'none';
         }
         
         async function saveActivity(event) {
             event.preventDefault();
             
-            if (!state.isAdmin) {
-                showToast('คุณไม่มีสิทธิ์สร้างกิจกรรม', 'error');
-                return;
-            }
-            
-            showLoading('กำลังบันทึกกิจกรรม...');
-            
-            try {
-                const activityId = document.getElementById('activityId').value;
-                const isEdit = !!activityId;
-                
-                // เตรียมข้อมูล
-                const requirements = document.getElementById('activityRequirements').value
-                    .split('\n')
-                    .filter(line => line.trim() !== '');
-                
-                const benefits = document.getElementById('activityBenefits').value
-                    .split('\n')
-                    .filter(line => line.trim() !== '');
-                
-                const tags = document.getElementById('activityTags').value
-                    .split(',')
-                    .map(tag => tag.trim())
-                    .filter(tag => tag !== '');
-                
-                const activityData = {
-                    title: document.getElementById('activityTitle').value,
-                    description: document.getElementById('activityDescription').value,
-                    category: document.getElementById('activityCategory').value,
-                    location: document.getElementById('activityLocation').value,
-                    startDate: document.getElementById('activityStartDate').value,
-                    endDate: document.getElementById('activityEndDate').value,
-                    maxParticipants: parseInt(document.getElementById('activityMaxParticipants').value),
-                    minParticipants: parseInt(document.getElementById('activityMinParticipants').value) || 1,
-                    price: parseInt(document.getElementById('activityPrice').value) || 0,
-                    imageUrl: document.getElementById('activityImageUrl').value,
-                    tags: JSON.stringify(tags),
-                    requirements: JSON.stringify(requirements),
-                    benefits: JSON.stringify(benefits),
-                    contact: document.getElementById('activityContact').value
-                };
-                
-                let result;
-                if (isEdit) {
-                    result = await callGAS('activities/update', { 
-                        activityId, 
-                        ...activityData 
-                    });
-                } else {
-                    result = await callGAS('activities/create', activityData);
-                }
-                
-                if (!result.success) {
-                    throw new Error(result.message);
-                }
-                
-                showToast(isEdit ? 'แก้ไขกิจกรรมสำเร็จ' : 'สร้างกิจกรรมสำเร็จ', 'success');
-                closeCreateActivityModal();
-                
-                // โหลดข้อมูลใหม่
-                await loadActivities();
-                
-            } catch (error) {
-                console.error('Save activity error:', error);
-                showToast(error.message || 'บันทึกกิจกรรมไม่สำเร็จ', 'error');
-            }
-            
-            hideLoading();
-        }
-        
-        function editActivity() {
-            if (!state.isAdmin || !state.currentActivity) return;
-            
-            const activity = state.currentActivity;
-            
-            document.getElementById('activityId').value = activity.activityId;
-            document.getElementById('activityTitle').value = activity.title || '';
-            document.getElementById('activityDescription').value = activity.description || '';
-            document.getElementById('activityCategory').value = activity.category || '';
-            document.getElementById('activityLocation').value = activity.location || '';
-            document.getElementById('activityStartDate').value = activity.startDate ? activity.startDate.slice(0, 16) : '';
-            document.getElementById('activityEndDate').value = activity.endDate ? activity.endDate.slice(0, 16) : '';
-            document.getElementById('activityMaxParticipants').value = activity.maxParticipants || 100;
-            document.getElementById('activityMinParticipants').value = activity.minParticipants || 1;
-            document.getElementById('activityPrice').value = activity.price || 0;
-            document.getElementById('activityImageUrl').value = activity.imageUrl || '';
-            
-            // แปลง tags
-            let tags = [];
-            try {
-                tags = activity.tags ? JSON.parse(activity.tags) : [];
-            } catch {
-                tags = activity.tags ? activity.tags.split(',') : [];
-            }
-            document.getElementById('activityTags').value = tags.join(', ');
-            
-            // แปลง requirements
-            let requirements = [];
-            try {
-                requirements = activity.requirements ? JSON.parse(activity.requirements) : [];
-            } catch {
-                requirements = activity.requirements ? [activity.requirements] : [];
-            }
-            document.getElementById('activityRequirements').value = requirements.join('\n');
-            
-            // แปลง benefits
-            let benefits = [];
-            try {
-                benefits = activity.benefits ? JSON.parse(activity.benefits) : [];
-            } catch {
-                benefits = activity.benefits ? [activity.benefits] : [];
-            }
-            document.getElementById('activityBenefits').value = benefits.join('\n');
-            
-            document.getElementById('activityContact').value = activity.contact || '';
-            
-            document.getElementById('activityModalTitle').textContent = 'แก้ไขกิจกรรม';
-            
-            closeModal();
-            
-            const modal = document.getElementById('createActivityModal');
-            modal.classList.remove('hidden');
-            modal.style.display = 'flex';
-        }
-        
-        async function deleteActivity() {
-            if (!state.isAdmin || !state.currentActivity) return;
-            
-            if (!confirm('คุณแน่ใจหรือไม่ว่าต้องการลบกิจกรรมนี้? การดำเนินการนี้ไม่สามารถยกเลิกได้')) {
-                return;
-            }
-            
-            showLoading('กำลังลบกิจกรรม...');
-            
-            try {
-                const result = await callGAS('activities/delete', { 
-                    activityId: state.currentActivity.activityId 
-                });
-                
-                if (!result.success) {
-                    throw new Error(result.message);
-                }
-                
-                showToast('ลบกิจกรรมสำเร็จ', 'success');
-                closeModal();
-                
-                // โหลดข้อมูลใหม่
-                await loadActivities();
-                
-            } catch (error) {
-                console.error('Delete activity error:', error);
-                showToast(error.message || 'ลบกิจกรรมไม่สำเร็จ', 'error');
-            }
-            
-            hideLoading();
-        }
-        
-        async function backupData() {
-            if (!state.isAdmin) return;
-            
-            if (!confirm('ต้องการสำรองข้อมูลตอนนี้หรือไม่?')) return;
-            
-            showLoading('กำลังสำรองข้อมูล...');
-            
-            try {
-                const result = await callGAS('admin/backup');
-                
-                if (!result.success) {
-                    throw new Error(result.message);
-                }
-                
-                showToast('สำรองข้อมูลสำเร็จ', 'success');
-                
-                if (result.data?.fileUrl) {
-                    window.open(result.data.fileUrl, '_blank');
-                }
-                
-            } catch (error) {
-                console.error('Backup error:', error);
-                showToast(error.message || 'สำรองข้อมูลไม่สำเร็จ', 'error');
-            }
-            
-            hideLoading();
-        }
-        
-        function showManageUsers() {
-            if (!state.isAdmin) return;
-            
-            showToast('กำลังพัฒนา...', 'info');
-        }
-        
-        // ========== Profile Menu ==========
-        function toggleProfileMenu() {
-            if (elements.profileMenu.classList.contains('hidden')) {
-                elements.profileMenu.classList.remove('hidden');
-            } else {
-                elements.profileMenu.classList.add('hidden');
-            }
-        }
-        
-        // ปิดเมนูเมื่อคลิกข้างนอก
-        document.addEventListener('click', function(event) {
-            if (!event.target.closest('.relative') && !elements.profileMenu.classList.contains('hidden')) {
-                elements.profileMenu.classList.add('hidden');
-            }
-        });
-        
-        function showProfileSettings() {
-            if (!state.currentUser) return;
-            
-            // เติมข้อมูลในฟอร์ม
-            document.getElementById('profileDisplayName').value = state.currentUser.displayName || '';
-            document.getElementById('profilePhone').value = state.currentUser.phone || '';
-            document.getElementById('profileBirthDate').value = state.currentUser.birthDate || '';
-            document.getElementById('profileGender').value = state.currentUser.gender || 'ไม่ระบุ';
-            document.getElementById('profileProvince').value = state.currentUser.province || '';
-            document.getElementById('profileInterests').value = state.currentUser.interests || '';
-            
-            const modal = document.getElementById('profileSettingsModal');
-            modal.classList.remove('hidden');
-            modal.style.display = 'flex';
-            
-            elements.profileMenu.classList.add('hidden');
-        }
-        
-        function closeProfileSettingsModal() {
-            const modal = document.getElementById('profileSettingsModal');
-            modal.classList.add('hidden');
-            modal.style.display = 'none';
-        }
-        
-        function saveProfile(event) {
-            event.preventDefault();
-            
-            const profileData = {
-                displayName: document.getElementById('profileDisplayName').value,
-                phone: document.getElementById('profilePhone').value,
-                birthDate: document.getElementById('profileBirthDate').value,
-                gender: document.getElementById('profileGender').value,
-                province: document.getElementById('profileProvince').value,
-                interests: document.getElementById('profileInterests').value
+            const activityData = {
+                title: document.getElementById('activityTitle').value,
+                description: document.getElementById('activityDescription').value,
+                location: document.getElementById('activityLocation').value,
+                startDate: document.getElementById('activityStartDate').value,
+                endDate: document.getElementById('activityEndDate').value,
+                maxParticipants: parseInt(document.getElementById('activityMaxParticipants').value),
+                price: parseInt(document.getElementById('activityPrice').value) || 0,
+                imageUrl: document.getElementById('activityImageUrl').value,
+                contact: document.getElementById('activityContact').value
             };
             
-            updateUserProfile(profileData);
-        }
-        
-        function showSettings() {
-            const modal = document.getElementById('settingsModal');
-            const content = document.getElementById('settingsContent');
+            const activityId = document.getElementById('activityId').value;
+            const isEdit = !!activityId;
             
-            content.innerHTML = `
-                <div class="p-4 bg-[#111317] rounded-xl border border-[#2a2e36]">
-                    <p class="text-sm text-gray-400">กำลังโหลด...</p>
-                </div>
-            `;
+            showLoading('กำลังบันทึก...');
             
-            modal.classList.remove('hidden');
-            modal.style.display = 'flex';
+            try {
+                const path = isEdit ? 'activities/update' : 'activities/create';
+                const data = isEdit ? { activityId, ...activityData } : activityData;
+                
+                const result = await callGAS(path, data);
+                
+                if (result.success) {
+                    closeActivityModal();
+                    await loadActivities();
+                    await loadAdminStats();
+                    alert(isEdit ? 'แก้ไขกิจกรรมสำเร็จ' : 'สร้างกิจกรรมสำเร็จ');
+                } else {
+                    alert(result.message || 'บันทึกไม่สำเร็จ');
+                }
+                
+            } catch (error) {
+                console.error('Save error:', error);
+                alert('เกิดข้อผิดพลาด กรุณาลองอีกครั้ง');
+            }
             
-            // โหลด settings
-            setTimeout(() => {
-                content.innerHTML = `
-                    <div class="space-y-4">
-                        <div class="p-4 bg-[#111317] rounded-xl border border-[#2a2e36]">
-                            <h4 class="font-medium text-white mb-2">การแจ้งเตือน</h4>
-                            <label class="flex items-center justify-between">
-                                <span class="text-sm text-gray-400">แจ้งเตือนเมื่อมีกิจกรรมใหม่</span>
-                                <input type="checkbox" class="toggle" checked>
-                            </label>
-                            <label class="flex items-center justify-between mt-2">
-                                <span class="text-sm text-gray-400">แจ้งเตือนเมื่อกิจกรรมใกล้เริ่ม</span>
-                                <input type="checkbox" class="toggle" checked>
-                            </label>
-                        </div>
-                        
-                        <div class="p-4 bg-[#111317] rounded-xl border border-[#2a2e36]">
-                            <h4 class="font-medium text-white mb-2">ภาษา</h4>
-                            <select class="input-field w-full px-4 py-2">
-                                <option value="th">ภาษาไทย</option>
-                                <option value="en">English</option>
-                            </select>
-                        </div>
-                        
-                        <button class="btn-primary w-full" onclick="saveSettings()">
-                            บันทึกการตั้งค่า
-                        </button>
-                    </div>
-                `;
-            }, 500);
+            hideLoading();
         }
         
-        function closeSettingsModal() {
-            const modal = document.getElementById('settingsModal');
-            modal.classList.add('hidden');
-            modal.style.display = 'none';
+        async function editActivity(activityId) {
+            showLoading('กำลังโหลด...');
+            
+            try {
+                const result = await callGAS('activity', { activityId });
+                
+                if (result.success) {
+                    const activity = result.data;
+                    
+                    document.getElementById('activityId').value = activity.activityId;
+                    document.getElementById('activityTitle').value = activity.title || '';
+                    document.getElementById('activityDescription').value = activity.description || '';
+                    document.getElementById('activityLocation').value = activity.location || '';
+                    document.getElementById('activityStartDate').value = activity.startDate ? activity.startDate.slice(0, 16) : '';
+                    document.getElementById('activityEndDate').value = activity.endDate ? activity.endDate.slice(0, 16) : '';
+                    document.getElementById('activityMaxParticipants').value = activity.maxParticipants || 50;
+                    document.getElementById('activityPrice').value = activity.price || 0;
+                    document.getElementById('activityImageUrl').value = activity.imageUrl || '';
+                    document.getElementById('activityContact').value = activity.contact || '';
+                    
+                    document.getElementById('activityModalTitle').textContent = 'แก้ไขกิจกรรม';
+                    closeDetailModal();
+                    document.getElementById('activityModal').style.display = 'flex';
+                }
+                
+            } catch (error) {
+                console.error('Edit error:', error);
+                alert('ไม่สามารถโหลดข้อมูลได้');
+            }
+            
+            hideLoading();
         }
         
-        function saveSettings() {
-            showToast('บันทึกการตั้งค่าเรียบร้อย', 'success');
-            closeSettingsModal();
-        }
-        
-        function logout() {
-            if (confirm('คุณต้องการออกจากระบบใช่หรือไม่?')) {
-                liff.logout();
-                location.reload();
+        function editCurrentActivity() {
+            if (currentActivity) {
+                editActivity(currentActivity.activityId);
             }
         }
         
-        function retryConnection() {
-            elements.connectionError.classList.add('hidden');
-            location.reload();
+        async function deleteActivity(activityId) {
+            if (!confirm('คุณแน่ใจหรือไม่ว่าต้องการลบกิจกรรมนี้?')) return;
+            
+            showLoading('กำลังลบ...');
+            
+            try {
+                const result = await callGAS('activities/delete', { activityId });
+                
+                if (result.success) {
+                    await loadActivities();
+                    await loadAdminStats();
+                    closeDetailModal();
+                    alert('ลบกิจกรรมสำเร็จ');
+                } else {
+                    alert(result.message || 'ลบไม่สำเร็จ');
+                }
+                
+            } catch (error) {
+                console.error('Delete error:', error);
+                alert('เกิดข้อผิดพลาด กรุณาลองอีกครั้ง');
+            }
+            
+            hideLoading();
         }
         
-        // ========== FAQ and Info Modals ==========
-        function showFAQ() {
-            const modal = document.getElementById('faqModal');
-            modal.classList.remove('hidden');
-            modal.style.display = 'flex';
+        function deleteCurrentActivity() {
+            if (currentActivity) {
+                deleteActivity(currentActivity.activityId);
+            }
         }
         
-        function closeFaqModal() {
-            const modal = document.getElementById('faqModal');
-            modal.classList.add('hidden');
-            modal.style.display = 'none';
+        function closeActivityModal() {
+            document.getElementById('activityModal').style.display = 'none';
         }
         
-        function showHowToUse() {
-            showToast('กำลังพัฒนา...', 'info');
+        // ========== Sample Data ==========
+        async function createSampleData() {
+            if (!confirm('สร้างข้อมูลตัวอย่าง? (ข้อมูลเดิมจะถูกลบ)')) return;
+            
+            showLoading('กำลังสร้างข้อมูล...');
+            
+            try {
+                // Create sample activities
+                const sampleActivities = [
+                    {
+                        title: '🎨 เวิร์คช็อปทำขนมไทย',
+                        description: 'เรียนรู้การทำขนมไทย 4 ชนิด พร้อมฝึกปฏิบัติจริง',
+                        location: 'เซ็นทรัลเวิลด์ ชั้น 2',
+                        startDate: new Date(Date.now() + 86400000).toISOString().slice(0, 16),
+                        endDate: new Date(Date.now() + 86400000 * 7).toISOString().slice(0, 16),
+                        maxParticipants: 30,
+                        price: 0,
+                        imageUrl: 'https://images.unsplash.com/photo-1558401391-7895-6c9a0c1f6069?w=400',
+                        contact: '08X-XXX-XXXX'
+                    },
+                    {
+                        title: '🤖 สัมมนา AI 2024',
+                        description: 'พบกับผู้เชี่ยวชาญด้าน AI จากบริษัทชั้นนำ',
+                        location: 'โรงแรมเซ็นทารา',
+                        startDate: new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 16),
+                        endDate: new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 16),
+                        maxParticipants: 100,
+                        price: 0,
+                        imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400',
+                        contact: '08Y-XXX-XXXX'
+                    },
+                    {
+                        title: '📱 อบรมการตลาดออนไลน์',
+                        description: 'เรียนรู้เทคนิคการตลาดออนไลน์สำหรับธุรกิจยุคใหม่',
+                        location: 'อาคารไอทีสแควร์',
+                        startDate: new Date(Date.now() + 86400000 * 14).toISOString().slice(0, 16),
+                        endDate: new Date(Date.now() + 86400000 * 14).toISOString().slice(0, 16),
+                        maxParticipants: 50,
+                        price: 1500,
+                        imageUrl: 'https://images.unsplash.com/photo-1558401391-7895-6c9a0c1f6069?w=400',
+                        contact: '08Z-XXX-XXXX'
+                    }
+                ];
+                
+                for (const activity of sampleActivities) {
+                    await callGAS('activities/create', activity);
+                }
+                
+                await loadActivities();
+                await loadAdminStats();
+                
+                alert('สร้างข้อมูลตัวอย่างสำเร็จ');
+                
+            } catch (error) {
+                console.error('Create sample error:', error);
+                alert('เกิดข้อผิดพลาด');
+            }
+            
+            hideLoading();
         }
         
-        function showPrivacyPolicy() {
-            showToast('กำลังพัฒนา...', 'info');
-        }
+        // ========== Event Listeners ==========
+        document.getElementById('searchInput').addEventListener('input', () => {
+            clearTimeout(window.searchTimeout);
+            window.searchTimeout = setTimeout(loadActivities, 500);
+        });
         
-        function showTerms() {
-            showToast('กำลังพัฒนา...', 'info');
-        }
-        
-        function showSitemap() {
-            showToast('กำลังพัฒนา...', 'info');
-        }
-        
-        // ========== Modal Controls ==========
-        function closeModal() {
-            const modal = document.getElementById('activityModal');
-            modal.classList.add('hidden');
-            modal.style.display = 'none';
-        }
-        
-        function closeRegistrationsModal() {
-            const modal = document.getElementById('registrationsModal');
-            modal.classList.add('hidden');
-            modal.style.display = 'none';
-        }
-        
-        function closeNotificationsModal() {
-            const modal = document.getElementById('notificationsModal');
-            modal.classList.add('hidden');
-            modal.style.display = 'none';
-        }
+        document.getElementById('statusFilter').addEventListener('change', loadActivities);
         
         // Close modals on outside click
         window.onclick = function(event) {
-            const modals = [
-                'activityModal', 
-                'registrationsModal', 
-                'notificationsModal',
-                'profileSettingsModal',
-                'createActivityModal',
-                'settingsModal',
-                'faqModal'
-            ];
-            
+            const modals = ['activityModal', 'detailModal', 'registrationsModal'];
             modals.forEach(modalId => {
                 const modal = document.getElementById(modalId);
                 if (event.target === modal) {
-                    modal.classList.add('hidden');
                     modal.style.display = 'none';
                 }
             });
         };
-        
-        // ========== UI Updates ==========
-        function updateProfileUI() {
-            if (!state.currentUser) return;
-            
-            elements.profileSection.classList.remove('hidden');
-            elements.profileName.textContent = state.currentUser.displayName;
-            elements.profileEmail.textContent = state.currentUser.email || 'ไม่มีอีเมล';
-            elements.profileImage.src = state.currentUser.pictureUrl || 'https://via.placeholder.com/100/06c755/ffffff?text=LINE';
-            
-            elements.welcomeBanner.classList.remove('hidden');
-            elements.welcomeName.textContent = state.currentUser.displayName.split(' ')[0];
-            
-            // แสดงปุ่ม admin ถ้ามีสิทธิ์
-            if (state.isAdmin) {
-                elements.adminBtn.classList.remove('hidden');
-                elements.adminBtn.onclick = toggleAdminPanel;
-            }
-        }
-        
-        function updatePagination() {
-            elements.pageInfo.textContent = `หน้า ${state.currentPage} / ${state.totalPages}`;
-            elements.prevPage.disabled = state.currentPage === 1;
-            elements.nextPage.disabled = state.currentPage === state.totalPages;
-        }
-        
-        // ========== Event Listeners ==========
-        elements.prevPage.addEventListener('click', () => {
-            if (state.currentPage > 1) {
-                state.currentPage--;
-                loadActivities();
-            }
-        });
-        
-        elements.nextPage.addEventListener('click', () => {
-            if (state.currentPage < state.totalPages) {
-                state.currentPage++;
-                loadActivities();
-            }
-        });
-        
-        let searchTimeout;
-        elements.searchInput.addEventListener('input', (e) => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                state.searchKeyword = e.target.value;
-                state.currentPage = 1;
-                loadActivities();
-            }, 500);
-        });
-        
-        elements.statusFilter.addEventListener('change', (e) => {
-            state.currentFilter = e.target.value;
-            state.currentPage = 1;
-            loadActivities();
-        });
-        
-        if (elements.categoryFilter) {
-            elements.categoryFilter.addEventListener('change', (e) => {
-                state.currentCategory = e.target.value;
-                // TODO: เพิ่มการกรองตามหมวดหมู่
-                loadActivities();
-            });
-        }
-        
-        elements.notificationsBtn.addEventListener('click', showNotifications);
-        
-        // ========== Initialization ==========
-        document.addEventListener('DOMContentLoaded', async () => {
-            showLoading('กำลังเริ่มต้นระบบ...');
-            
-            try {
-                await waitForLIFF();
-                console.log('✅ LIFF SDK loaded');
-                
-                await initLIFF();
-                
-                hideLoading();
-                
-            } catch (error) {
-                console.error('Initialization error:', error);
-                hideLoading();
-                
-                showConnectionError('ไม่สามารถเชื่อมต่อกับ LINE ได้ กรุณาลองใหม่อีกครั้ง');
-                
-                elements.activitiesContainer.innerHTML = `
-                    <div class="col-span-full empty-state">
-                        <i class="fas fa-exclamation-triangle text-4xl text-[#ef4444] mb-3"></i>
-                        <h3 class="text-xl font-semibold text-white mb-2">การเชื่อมต่อล้มเหลว</h3>
-                        <p class="text-gray-400 mb-4">${error.message || 'ไม่สามารถเชื่อมต่อกับ LINE SDK ได้'}</p>
-                        <button onclick="retryConnection()" class="btn-primary">
-                            <i class="fas fa-redo mr-2"></i>ลองอีกครั้ง
-                        </button>
-                    </div>
-                `;
-            }
-        });
-        
-        // Export functions
-        window.showActivityDetail = showActivityDetail;
-        window.registerActivity = registerActivity;
-        window.showMyRegistrations = showMyRegistrations;
-        window.cancelRegistration = cancelRegistration;
-        window.closeModal = closeModal;
-        window.closeRegistrationsModal = closeRegistrationsModal;
-        window.closeNotificationsModal = closeNotificationsModal;
-        window.closeProfileSettingsModal = closeProfileSettingsModal;
-        window.closeCreateActivityModal = closeCreateActivityModal;
-        window.closeSettingsModal = closeSettingsModal;
-        window.closeFaqModal = closeFaqModal;
-        window.retryConnection = retryConnection;
-        window.toggleProfileMenu = toggleProfileMenu;
-        window.showProfileSettings = showProfileSettings;
-        window.saveProfile = saveProfile;
-        window.showSettings = showSettings;
-        window.saveSettings = saveSettings;
-        window.logout = logout;
-        window.showFAQ = showFAQ;
-        window.showHowToUse = showHowToUse;
-        window.showPrivacyPolicy = showPrivacyPolicy;
-        window.showTerms = showTerms;
-        window.showSitemap = showSitemap;
-        window.filterByCategory = (category) => {
-            if (elements.categoryFilter) {
-                elements.categoryFilter.value = category;
-                state.currentCategory = category;
-                loadActivities();
-            }
-        };
-        window.markAllNotificationsRead = markAllNotificationsRead;
-        window.editActivity = editActivity;
-        window.deleteActivity = deleteActivity;
-        window.refreshAdminStats = refreshAdminStats;
-        window.showCreateActivityModal = showCreateActivityModal;
-        window.backupData = backupData;
     </script>
 </body>
 </html>
