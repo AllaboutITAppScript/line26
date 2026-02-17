@@ -2,16 +2,16 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LINE MiniApp · กิจกรรม</title>
     
-    <!-- Tailwind CSS -->
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Google Fonts -->
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- LINE LIFF SDK -->
+    <!-- LINE LIFF -->
     <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
     
     <!-- Font Awesome -->
@@ -28,22 +28,17 @@
         :root {
             --primary: #06c755;
             --primary-dark: #05b34a;
-            --primary-light: #7ee0a3;
-            --bg-primary: #0a0a0f;
-            --bg-secondary: #111317;
+            --bg: #0a0a0f;
             --bg-card: #1a1d24;
-            --bg-hover: #252930;
             --border: #2a2e36;
-            --text-primary: #ffffff;
+            --text: #ffffff;
             --text-secondary: #9ca3af;
-            --text-muted: #6b7280;
         }
         
         body {
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            min-height: 100vh;
-            padding-bottom: 70px; /* space for bottom nav */
+            background-color: var(--bg);
+            color: var(--text);
+            padding-bottom: 70px;
         }
         
         /* Bottom Navigation */
@@ -58,7 +53,6 @@
             justify-content: space-around;
             padding: 8px 0;
             z-index: 50;
-            backdrop-filter: blur(10px);
         }
         
         .nav-item {
@@ -67,11 +61,9 @@
             flex-direction: column;
             align-items: center;
             gap: 4px;
-            color: var(--text-muted);
+            color: var(--text-secondary);
             font-size: 12px;
-            transition: all 0.2s;
             cursor: pointer;
-            padding: 8px 0;
         }
         
         .nav-item.active {
@@ -82,7 +74,7 @@
             font-size: 20px;
         }
         
-        /* Tabs Content */
+        /* Tab Content */
         .tab-content {
             display: none;
             padding: 16px;
@@ -96,100 +88,68 @@
         .activity-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 20px;
-            overflow: hidden;
-            transition: all 0.3s;
-            margin-bottom: 16px;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
         }
         
-        .activity-card:hover {
-            transform: translateY(-4px);
+        .activity-card:active {
+            transform: scale(0.98);
             border-color: var(--primary);
-            box-shadow: 0 10px 20px -5px rgba(0,0,0,0.5);
         }
         
         .badge {
-            padding: 4px 12px;
+            padding: 4px 10px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
         }
         
         .badge-open {
-            background: rgba(6, 199, 85, 0.15);
+            background: rgba(6,199,85,0.15);
             color: var(--primary);
-            border: 1px solid rgba(6, 199, 85, 0.3);
+            border: 1px solid rgba(6,199,85,0.3);
         }
         
         .badge-closed {
-            background: rgba(239, 68, 68, 0.15);
+            background: rgba(239,68,68,0.15);
             color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.3);
+            border: 1px solid rgba(239,68,68,0.3);
         }
         
         .badge-full {
-            background: rgba(245, 158, 11, 0.15);
+            background: rgba(245,158,11,0.15);
             color: #f59e0b;
-            border: 1px solid rgba(245, 158, 11, 0.3);
+            border: 1px solid rgba(245,158,11,0.3);
         }
         
+        /* Buttons */
         .btn-primary {
             background: var(--primary);
             color: white;
-            padding: 12px 24px;
+            padding: 12px;
             border-radius: 12px;
             font-weight: 600;
             border: none;
-            cursor: pointer;
             width: 100%;
-            transition: all 0.3s;
-        }
-        
-        .btn-primary:active {
-            transform: scale(0.98);
-            background: var(--primary-dark);
+            cursor: pointer;
         }
         
         .btn-primary:disabled {
             opacity: 0.5;
-            pointer-events: none;
+            cursor: not-allowed;
         }
         
         .btn-outline {
             background: transparent;
             border: 1px solid var(--border);
-            color: var(--text-primary);
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            width: 100%;
-        }
-        
-        /* Admin Panel */
-        .admin-section {
-            background: linear-gradient(135deg, rgba(6,199,85,0.1), rgba(0,0,0,0));
-            border: 1px solid var(--primary);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 16px;
-        }
-        
-        .admin-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 12px;
-        }
-        
-        .admin-stat {
-            background: var(--bg-secondary);
+            color: var(--text);
             padding: 12px;
             border-radius: 12px;
-            text-align: center;
+            width: 100%;
+            cursor: pointer;
         }
         
         /* Modal */
@@ -205,12 +165,16 @@
             padding: 16px;
         }
         
+        .modal.active {
+            display: flex;
+        }
+        
         .modal-content {
             background: var(--bg-card);
             border-radius: 24px;
             max-width: 500px;
             width: 100%;
-            max-height: 90vh;
+            max-height: 80vh;
             overflow-y: auto;
             padding: 20px;
         }
@@ -243,12 +207,12 @@
             to { transform: rotate(360deg); }
         }
         
-        /* Profile Header */
+        /* Profile */
         .profile-header {
             background: var(--bg-card);
-            border-radius: 24px;
-            padding: 20px;
-            margin-bottom: 20px;
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 16px;
             display: flex;
             align-items: center;
             gap: 16px;
@@ -256,29 +220,77 @@
         }
         
         .profile-avatar {
-            width: 70px;
-            height: 70px;
-            border-radius: 35px;
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
             border: 3px solid var(--primary);
             object-fit: cover;
         }
         
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
+        /* Stats */
+        .stat-card {
             background: var(--bg-card);
-            border-radius: 24px;
             border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
         }
         
-        /* Forms */
-        .input-field {
-            background: var(--bg-secondary);
+        /* Search */
+        .search-box {
+            position: relative;
+            margin-bottom: 16px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 12px 12px 12px 44px;
+            background: var(--bg-card);
             border: 1px solid var(--border);
-            color: var(--text-primary);
+            border-radius: 30px;
+            color: var(--text);
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+        
+        /* Filter */
+        .filter-container {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .filter-btn {
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 14px;
+            white-space: nowrap;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+        
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        /* Input */
+        .input-field {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text);
             border-radius: 12px;
-            padding: 12px 16px;
+            padding: 12px;
             width: 100%;
             margin-bottom: 12px;
         }
@@ -288,27 +300,53 @@
             border-color: var(--primary);
         }
         
-        /* Search */
-        .search-box {
-            position: relative;
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+        
+        /* Admin Section */
+        .admin-section {
+            background: linear-gradient(135deg, rgba(6,199,85,0.1), transparent);
+            border: 1px solid var(--primary);
+            border-radius: 16px;
+            padding: 16px;
             margin-bottom: 16px;
         }
         
-        .search-box i {
-            position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
+        .admin-stat {
+            background: var(--bg-card);
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
         }
         
-        .search-box input {
-            width: 100%;
-            padding: 12px 12px 12px 44px;
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 16px;
+            right: 16px;
             background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 30px;
-            color: var(--text-primary);
+            border-left: 4px solid var(--primary);
+            border-radius: 12px;
+            padding: 12px 16px;
+            z-index: 1000;
+            display: none;
+            animation: slideUp 0.3s ease;
+        }
+        
+        .toast.show {
+            display: block;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
     </style>
 </head>
@@ -317,27 +355,43 @@
     <div class="loading" id="loading">
         <div class="spinner"></div>
     </div>
+    
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <p id="toast-message"></p>
+    </div>
 
     <!-- Main Content -->
     <div class="min-h-screen">
         <!-- Tab: Home -->
         <div id="tab-home" class="tab-content active">
             <!-- Profile Header -->
-            <div class="profile-header">
+            <div class="profile-header" onclick="toggleProfileMenu()">
                 <img id="profile-avatar" src="" alt="avatar" class="profile-avatar">
                 <div class="flex-1">
-                    <h2 id="profile-name" class="text-xl font-bold">กำลังโหลด...</h2>
+                    <h2 id="profile-name" class="text-lg font-bold">กำลังโหลด...</h2>
                     <p id="profile-email" class="text-sm text-gray-400"></p>
+                </div>
+                <i class="fas fa-chevron-down text-gray-400"></i>
+            </div>
+            
+            <!-- Profile Menu (Dropdown) -->
+            <div id="profile-menu" class="hidden bg-[#1a1d24] border border-[#2a2e36] rounded-xl p-2 mb-4">
+                <div class="p-3 hover:bg-[#252930] rounded-lg cursor-pointer" onclick="showProfileSettings()">
+                    <i class="fas fa-user mr-2 text-[#06c755]"></i> แก้ไขโปรไฟล์
+                </div>
+                <div class="p-3 hover:bg-[#252930] rounded-lg cursor-pointer" onclick="logout()">
+                    <i class="fas fa-sign-out-alt mr-2 text-red-500"></i> ออกจากระบบ
                 </div>
             </div>
 
             <!-- Stats -->
             <div class="grid grid-cols-2 gap-3 mb-4">
-                <div class="bg-[#1a1d24] p-4 rounded-xl border border-[#2a2e36]">
+                <div class="stat-card">
                     <p class="text-xs text-gray-400">กิจกรรมทั้งหมด</p>
-                    <p id="stat-total" class="text-2xl font-bold text-white">-</p>
+                    <p id="stat-total" class="text-2xl font-bold">-</p>
                 </div>
-                <div class="bg-[#1a1d24] p-4 rounded-xl border border-[#2a2e36]">
+                <div class="stat-card">
                     <p class="text-xs text-gray-400">เปิดรับสมัคร</p>
                     <p id="stat-open" class="text-2xl font-bold text-[#06c755]">-</p>
                 </div>
@@ -349,49 +403,43 @@
                 <input type="text" id="search-input" placeholder="ค้นหากิจกรรม...">
             </div>
 
-            <!-- Filter Tabs -->
-            <div class="flex gap-2 mb-4 overflow-x-auto pb-2">
-                <button class="filter-btn active px-4 py-2 rounded-full text-sm whitespace-nowrap" data-filter="all">ทั้งหมด</button>
-                <button class="filter-btn px-4 py-2 rounded-full text-sm whitespace-nowrap bg-[#1a1d24] text-gray-400" data-filter="open">🟢 เปิดรับ</button>
-                <button class="filter-btn px-4 py-2 rounded-full text-sm whitespace-nowrap bg-[#1a1d24] text-gray-400" data-filter="full">🟡 เต็ม</button>
-                <button class="filter-btn px-4 py-2 rounded-full text-sm whitespace-nowrap bg-[#1a1d24] text-gray-400" data-filter="closed">🔴 ปิด</button>
+            <!-- Filter -->
+            <div class="filter-container">
+                <button class="filter-btn active" data-filter="all">ทั้งหมด</button>
+                <button class="filter-btn" data-filter="open">🟢 เปิดรับ</button>
+                <button class="filter-btn" data-filter="full">🟡 เต็ม</button>
+                <button class="filter-btn" data-filter="closed">🔴 ปิด</button>
             </div>
 
             <!-- Activities List -->
-            <div id="activities-list" class="space-y-3">
-                <!-- Dynamic content -->
-            </div>
+            <div id="activities-list" class="space-y-3"></div>
         </div>
 
         <!-- Tab: My Activities -->
         <div id="tab-my" class="tab-content">
             <h2 class="text-xl font-bold mb-4">กิจกรรมของฉัน</h2>
-            <div id="my-activities-list" class="space-y-3">
-                <!-- Dynamic content -->
-            </div>
+            <div id="my-activities-list" class="space-y-3"></div>
         </div>
 
         <!-- Tab: Notifications -->
         <div id="tab-notifications" class="tab-content">
             <h2 class="text-xl font-bold mb-4">การแจ้งเตือน</h2>
-            <div id="notifications-list" class="space-y-3">
-                <!-- Dynamic content -->
-            </div>
+            <div id="notifications-list" class="space-y-3"></div>
         </div>
 
-        <!-- Tab: Admin (เฉพาะ admin) -->
+        <!-- Tab: Admin -->
         <div id="tab-admin" class="tab-content">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-bold">จัดการระบบ</h2>
-                <button id="refresh-admin" class="text-sm text-[#06c755]">
+                <button id="refresh-admin" class="text-[#06c755] text-sm">
                     <i class="fas fa-sync-alt mr-1"></i>รีเฟรช
                 </button>
             </div>
 
             <!-- Admin Stats -->
             <div class="admin-section">
-                <h3 class="font-semibold mb-3">สถิติระบบ</h3>
-                <div class="admin-grid">
+                <h3 class="font-semibold mb-3">สถิติ</h3>
+                <div class="grid grid-cols-2 gap-3">
                     <div class="admin-stat">
                         <p class="text-xs text-gray-400">ผู้ใช้</p>
                         <p id="admin-users" class="text-xl font-bold">-</p>
@@ -413,26 +461,24 @@
 
             <!-- Admin Actions -->
             <div class="admin-section">
-                <h3 class="font-semibold mb-3">จัดการกิจกรรม</h3>
+                <h3 class="font-semibold mb-3">จัดการ</h3>
                 <button class="btn-primary mb-2" onclick="showCreateActivityModal()">
-                    <i class="fas fa-plus mr-2"></i>สร้างกิจกรรมใหม่
+                    <i class="fas fa-plus mr-2"></i>สร้างกิจกรรม
                 </button>
                 <div class="grid grid-cols-2 gap-2">
-                    <button class="btn-outline text-sm" onclick="showManageActivities()">
+                    <button class="btn-outline text-sm" onclick="showAllActivities()">
                         <i class="fas fa-list mr-2"></i>ทั้งหมด
                     </button>
-                    <button class="btn-outline text-sm" onclick="showManageUsers()">
+                    <button class="btn-outline text-sm" onclick="showAllUsers()">
                         <i class="fas fa-users mr-2"></i>ผู้ใช้
                     </button>
                 </div>
             </div>
 
-            <!-- Recent Activities (Admin) -->
+            <!-- Recent Activities -->
             <div class="admin-section">
                 <h3 class="font-semibold mb-3">กิจกรรมล่าสุด</h3>
-                <div id="admin-activities-list" class="space-y-2">
-                    <!-- Dynamic -->
-                </div>
+                <div id="admin-activities-list" class="space-y-2"></div>
             </div>
         </div>
     </div>
@@ -452,7 +498,7 @@
             <span>แจ้งเตือน</span>
             <span id="notif-badge" class="absolute -top-1 right-4 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
         </div>
-        <div class="nav-item admin-only hidden" data-tab="admin">
+        <div class="nav-item hidden admin-only" data-tab="admin">
             <i class="fas fa-cog"></i>
             <span>จัดการ</span>
         </div>
@@ -463,16 +509,13 @@
         <div class="modal-content">
             <div class="flex justify-between items-center mb-4">
                 <h3 id="modal-title" class="text-xl font-bold"></h3>
-                <button onclick="closeModal()"><i class="fas fa-times text-gray-400"></i></button>
+                <button onclick="closeModal()"><i class="fas fa-times text-gray-400 text-xl"></i></button>
             </div>
-            <div id="modal-body" class="space-y-4">
-                <!-- Dynamic -->
-            </div>
+            <div id="modal-body" class="space-y-4"></div>
             <div class="flex gap-2 mt-4">
                 <button id="modal-register-btn" class="btn-primary" onclick="registerFromModal()">ลงทะเบียน</button>
                 <button class="btn-outline" onclick="closeModal()">ปิด</button>
             </div>
-            <!-- Admin controls in modal -->
             <div id="modal-admin-controls" class="hidden mt-4 pt-4 border-t border-[#2a2e36]">
                 <p class="text-sm text-gray-400 mb-2">จัดการกิจกรรม</p>
                 <div class="flex gap-2">
@@ -492,7 +535,7 @@
         <div class="modal-content">
             <div class="flex justify-between items-center mb-4">
                 <h3 id="create-modal-title" class="text-xl font-bold">สร้างกิจกรรม</h3>
-                <button onclick="closeCreateModal()"><i class="fas fa-times text-gray-400"></i></button>
+                <button onclick="closeCreateModal()"><i class="fas fa-times text-gray-400 text-xl"></i></button>
             </div>
             <form id="activity-form" onsubmit="saveActivity(event)">
                 <input type="hidden" id="edit-activity-id">
@@ -514,12 +557,16 @@
                 
                 <div class="grid grid-cols-2 gap-2">
                     <input type="number" id="activity-max" placeholder="จำนวนสูงสุด" class="input-field" required>
-                    <input type="number" id="activity-price" placeholder="ราคา (0 = ฟรี)" class="input-field" value="0">
+                    <input type="number" id="activity-price" placeholder="ราคา" class="input-field" value="0">
                 </div>
                 
                 <input type="url" id="activity-image" placeholder="รูปภาพ (URL)" class="input-field">
                 
-                <textarea id="activity-tags" placeholder="แท็ก (คั่นด้วยคอมม่า)" class="input-field"></textarea>
+                <input type="text" id="activity-tags" placeholder="แท็ก (คั่นด้วยคอมม่า)" class="input-field">
+                
+                <textarea id="activity-requirements" placeholder="คุณสมบัติ (บรรทัดละ 1)" class="input-field" rows="2"></textarea>
+                
+                <textarea id="activity-benefits" placeholder="สิทธิประโยชน์ (บรรทัดละ 1)" class="input-field" rows="2"></textarea>
                 
                 <div class="flex gap-2">
                     <button type="submit" class="btn-primary">บันทึก</button>
@@ -529,11 +576,41 @@
         </div>
     </div>
 
+    <!-- Profile Settings Modal -->
+    <div class="modal" id="profile-modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">แก้ไขโปรไฟล์</h3>
+                <button onclick="closeProfileModal()"><i class="fas fa-times text-gray-400 text-xl"></i></button>
+            </div>
+            <form id="profile-form" onsubmit="saveProfile(event)">
+                <input type="text" id="profile-phone" placeholder="เบอร์โทรศัพท์" class="input-field">
+                
+                <input type="date" id="profile-birth" class="input-field">
+                
+                <select id="profile-gender" class="input-field">
+                    <option value="ไม่ระบุ">ไม่ระบุ</option>
+                    <option value="ชาย">ชาย</option>
+                    <option value="หญิง">หญิง</option>
+                </select>
+                
+                <input type="text" id="profile-province" placeholder="จังหวัด" class="input-field">
+                
+                <input type="text" id="profile-interests" placeholder="ความสนใจ (คั่นด้วยคอมม่า)" class="input-field">
+                
+                <div class="flex gap-2">
+                    <button type="submit" class="btn-primary">บันทึก</button>
+                    <button type="button" class="btn-outline" onclick="closeProfileModal()">ยกเลิก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // ========== CONFIG ==========
         const CONFIG = {
-            GAS_URL: 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec', // เปลี่ยนเป็น URL ของคุณ
-            LIFF_ID: '2008904120-T7I0VPZf', // เปลี่ยนเป็น LIFF ID ของคุณ
+            GAS_URL: 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec',
+            LIFF_ID: '2008904120-T7I0VPZf',
             PAGE_SIZE: 10
         };
 
@@ -543,7 +620,12 @@
             activities: [],
             myRegistrations: [],
             notifications: [],
-            categories: [],
+            categories: [
+                { id: 'CAT001', name: 'อบรม' },
+                { id: 'CAT002', name: 'สัมมนา' },
+                { id: 'CAT003', name: 'workshop' },
+                { id: 'CAT004', name: 'กีฬา' }
+            ],
             currentFilter: 'all',
             searchTerm: '',
             isAdmin: false,
@@ -553,23 +635,26 @@
 
         // ========== DOM Elements ==========
         const loading = document.getElementById('loading');
-        const tabs = document.querySelectorAll('.nav-item');
-        const tabContents = document.querySelectorAll('.tab-content');
-        const adminNav = document.querySelector('.admin-only');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toast-message');
 
         // ========== UTILS ==========
         function showLoading() { loading.classList.add('active'); }
         function hideLoading() { loading.classList.remove('active'); }
 
         function showToast(msg, type = 'success') {
-            // Simple alert for now, can be replaced with nice toast
-            alert(msg);
+            toastMessage.textContent = msg;
+            toast.style.borderLeftColor = type === 'success' ? '#06c755' : '#ef4444';
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
         function formatDate(dateStr) {
             if (!dateStr) return '-';
-            return new Date(dateStr).toLocaleDateString('th-TH', {
-                year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('th-TH', { 
+                year: 'numeric', month: 'short', day: 'numeric',
+                hour: '2-digit', minute: '2-digit'
             });
         }
 
@@ -633,9 +718,10 @@
             // Profile
             document.getElementById('profile-name').textContent = state.user?.displayName || 'ผู้ใช้';
             document.getElementById('profile-email').textContent = state.user?.email || '';
-            document.getElementById('profile-avatar').src = state.user?.pictureUrl || 'https://via.placeholder.com/100';
+            document.getElementById('profile-avatar').src = state.user?.pictureUrl || 'https://via.placeholder.com/100/06c755/ffffff?text=LINE';
 
             // Admin nav
+            const adminNav = document.querySelector('.admin-only');
             if (state.isAdmin) {
                 adminNav.classList.remove('hidden');
             } else {
@@ -657,6 +743,7 @@
                 search: state.searchTerm,
                 pageSize: CONFIG.PAGE_SIZE
             });
+            
             if (result.success) {
                 state.activities = result.data.activities || [];
                 document.getElementById('stat-total').textContent = result.data.totalActivities || 0;
@@ -668,37 +755,42 @@
         function renderActivities() {
             const list = document.getElementById('activities-list');
             if (state.activities.length === 0) {
-                list.innerHTML = `<div class="empty-state"><i class="fas fa-calendar-times text-4xl text-gray-500 mb-3"></i><p>ไม่มีกิจกรรม</p></div>`;
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-calendar-times text-4xl text-gray-500 mb-3"></i>
+                        <p class="text-gray-400">ไม่มีกิจกรรม</p>
+                    </div>
+                `;
                 return;
             }
 
-            let html = '';
-            state.activities.forEach(act => {
+            list.innerHTML = state.activities.map(act => {
                 const isRegistered = state.myRegistrations.some(r => r.activityId === act.activityId);
                 const statusClass = `badge-${act.status}`;
                 const statusText = { open: 'เปิดรับ', closed: 'ปิด', full: 'เต็ม' }[act.status] || act.status;
                 
-                html += `
-                    <div class="activity-card p-4 cursor-pointer" onclick="showActivityDetail('${act.activityId}')">
+                return `
+                    <div class="activity-card" onclick="showActivityDetail('${act.activityId}')">
                         <div class="flex gap-3">
-                            <img src="${act.imageUrl || 'https://via.placeholder.com/80/06c755/ffffff?text=活动'}" class="w-20 h-20 rounded-xl object-cover">
+                            <img src="${act.imageUrl || 'https://via.placeholder.com/80/06c755/ffffff?text=活动'}" 
+                                 class="w-20 h-20 rounded-xl object-cover" 
+                                 onerror="this.src='https://via.placeholder.com/80/06c755/ffffff?text=活动'">
                             <div class="flex-1">
                                 <div class="flex justify-between items-start">
-                                    <h3 class="font-semibold">${act.title}</h3>
+                                    <h3 class="font-semibold">${act.title || 'กิจกรรม'}</h3>
                                     <span class="badge ${statusClass}">${statusText}</span>
                                 </div>
                                 <p class="text-xs text-gray-400 mt-1 line-clamp-2">${act.description || ''}</p>
                                 <div class="flex items-center gap-2 mt-2 text-xs text-gray-400">
                                     <i class="fas fa-users"></i> ${act.currentParticipants || 0}/${act.maxParticipants}
-                                    <i class="fas fa-map-marker-alt ml-2"></i> ${act.location || ''}
+                                    ${act.price > 0 ? `<i class="fas fa-tag ml-2"></i> ฿${act.price}` : '<i class="fas fa-gift ml-2 text-[#06c755]"></i> ฟรี'}
                                 </div>
                                 ${isRegistered ? '<p class="text-[#06c755] text-xs mt-1"><i class="fas fa-check-circle"></i> ลงทะเบียนแล้ว</p>' : ''}
                             </div>
                         </div>
                     </div>
                 `;
-            });
-            list.innerHTML = html;
+            }).join('');
         }
 
         // ========== MY ACTIVITIES ==========
@@ -713,15 +805,19 @@
         function renderMyActivities() {
             const list = document.getElementById('my-activities-list');
             if (state.myRegistrations.length === 0) {
-                list.innerHTML = `<div class="empty-state"><i class="fas fa-ticket-alt text-4xl text-gray-500 mb-3"></i><p>ยังไม่มีกิจกรรมที่ลงทะเบียน</p></div>`;
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-ticket-alt text-4xl text-gray-500 mb-3"></i>
+                        <p class="text-gray-400">ยังไม่มีกิจกรรมที่ลงทะเบียน</p>
+                    </div>
+                `;
                 return;
             }
 
-            let html = '';
-            state.myRegistrations.forEach(reg => {
+            list.innerHTML = state.myRegistrations.map(reg => {
                 const act = reg.activity || {};
-                html += `
-                    <div class="activity-card p-4">
+                return `
+                    <div class="activity-card">
                         <div class="flex gap-3">
                             <img src="${act.imageUrl || 'https://via.placeholder.com/80'}" class="w-20 h-20 rounded-xl object-cover">
                             <div class="flex-1">
@@ -729,13 +825,14 @@
                                 <p class="text-xs text-gray-400 mt-1">ลงทะเบียน: ${formatDate(reg.registrationDate)}</p>
                                 <p class="text-xs text-gray-400">สถานะ: ${reg.status === 'confirmed' ? '✅ ยืนยัน' : '⏳ รอคิว'}</p>
                                 ${reg.status === 'confirmed' ? 
-                                    `<button class="text-xs text-red-500 mt-2" onclick="cancelRegistration('${reg.regId}')">ยกเลิก</button>` : ''}
+                                    `<button class="text-xs text-red-500 mt-2" onclick="event.stopPropagation(); cancelRegistration('${reg.regId}')">
+                                        <i class="fas fa-times mr-1"></i>ยกเลิก
+                                    </button>` : ''}
                             </div>
                         </div>
                     </div>
                 `;
-            });
-            list.innerHTML = html;
+            }).join('');
         }
 
         async function cancelRegistration(regId) {
@@ -768,45 +865,22 @@
         function renderNotifications() {
             const list = document.getElementById('notifications-list');
             if (state.notifications.length === 0) {
-                list.innerHTML = `<div class="empty-state"><i class="fas fa-bell-slash text-4xl text-gray-500 mb-3"></i><p>ไม่มีการแจ้งเตือน</p></div>`;
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-bell-slash text-4xl text-gray-500 mb-3"></i>
+                        <p class="text-gray-400">ไม่มีการแจ้งเตือน</p>
+                    </div>
+                `;
                 return;
             }
 
-            let html = '';
-            state.notifications.forEach(n => {
-                html += `
-                    <div class="bg-[#1a1d24] p-4 rounded-xl border border-[#2a2e36]">
-                        <p class="font-semibold">${n.title}</p>
-                        <p class="text-sm text-gray-400 mt-1">${n.message}</p>
-                        <p class="text-xs text-gray-500 mt-2">${formatDate(n.createdAt)}</p>
-                    </div>
-                `;
-            });
-            list.innerHTML = html;
-        }
-
-        // ========== ADMIN ==========
-        async function loadAdminData() {
-            const result = await callGAS('admin/stats');
-            if (result.success) {
-                const stats = result.data;
-                document.getElementById('admin-users').textContent = stats.users || 0;
-                document.getElementById('admin-activities').textContent = stats.activities || 0;
-                document.getElementById('admin-registrations').textContent = stats.registrations || 0;
-                document.getElementById('admin-today').textContent = stats.todayRegistrations || 0;
-            }
-
-            // Load recent activities for admin
-            const acts = await callGAS('activities', { page: 1, pageSize: 5 });
-            if (acts.success) {
-                const list = document.getElementById('admin-activities-list');
-                list.innerHTML = acts.data.activities.map(a => `
-                    <div class="flex justify-between items-center p-2 bg-[#111317] rounded-lg">
-                        <span class="text-sm">${a.title}</span>
-                        <span class="badge badge-${a.status} text-xs">${a.status}</span>
-                    </div>
-                `).join('');
-            }
+            list.innerHTML = state.notifications.map(n => `
+                <div class="bg-[#1a1d24] p-4 rounded-xl border border-[#2a2e36]">
+                    <p class="font-semibold">${n.title}</p>
+                    <p class="text-sm text-gray-400 mt-1">${n.message}</p>
+                    <p class="text-xs text-gray-500 mt-2">${formatDate(n.createdAt)}</p>
+                </div>
+            `).join('');
         }
 
         // ========== ACTIVITY DETAIL ==========
@@ -815,48 +889,80 @@
             if (result.success) {
                 state.currentActivity = result.data;
                 const act = result.data;
+                
                 document.getElementById('modal-title').textContent = act.title;
 
                 const isRegistered = state.myRegistrations.some(r => r.activityId === act.activityId);
                 const statusText = { open: 'เปิดรับ', closed: 'ปิด', full: 'เต็ม' }[act.status] || act.status;
                 const statusClass = `badge-${act.status}`;
 
+                // Parse JSON fields
+                let requirements = [], benefits = [], tags = [];
+                try { requirements = JSON.parse(act.requirements || '[]'); } catch { requirements = []; }
+                try { benefits = JSON.parse(act.benefits || '[]'); } catch { benefits = []; }
+                try { tags = JSON.parse(act.tags || '[]'); } catch { tags = []; }
+
                 let html = `
-                    <img src="${act.imageUrl || 'https://via.placeholder.com/400'}" class="w-full h-48 object-cover rounded-xl">
+                    <img src="${act.imageUrl || 'https://via.placeholder.com/400/06c755/ffffff?text=活动'}" 
+                         class="w-full h-48 object-cover rounded-xl"
+                         onerror="this.src='https://via.placeholder.com/400/06c755/ffffff?text=活动'">
+                    
                     <div class="flex justify-between items-center">
                         <span class="badge ${statusClass}">${statusText}</span>
-                        <span class="text-sm text-gray-400"><i class="fas fa-users mr-1"></i>${act.currentParticipants || 0}/${act.maxParticipants}</span>
+                        <span class="text-sm text-gray-400">
+                            <i class="fas fa-users mr-1"></i>${act.currentParticipants || 0}/${act.maxParticipants}
+                        </span>
                     </div>
+                    
+                    <div class="flex flex-wrap gap-1">
+                        ${tags.map(t => `<span class="text-xs bg-[#2a2e36] px-2 py-1 rounded-full">#${t}</span>`).join('')}
+                    </div>
+                    
                     <p class="text-gray-400">${act.description || ''}</p>
+                    
                     <div class="space-y-2 text-sm">
-                        <p><i class="fas fa-calendar w-5 text-[#06c755]"></i> ${formatDate(act.startDate)} - ${formatDate(act.endDate)}</p>
+                        <p><i class="fas fa-calendar w-5 text-[#06c755]"></i> ${formatDate(act.startDate)}</p>
+                        <p><i class="fas fa-calendar-check w-5 text-[#06c755]"></i> ${formatDate(act.endDate)}</p>
                         <p><i class="fas fa-map-marker-alt w-5 text-[#06c755]"></i> ${act.location || ''}</p>
-                        <p><i class="fas fa-tag w-5 text-[#06c755]"></i> ${act.price > 0 ? '฿' + act.price : 'ฟรี'}</p>
+                        <p><i class="fas fa-tag w-5 text-[#06c755]"></i> ${act.price > 0 ? '฿' + act.price.toLocaleString() : 'ฟรี'}</p>
                     </div>
                 `;
 
-                if (act.requirements) {
-                    let reqs = [];
-                    try { reqs = JSON.parse(act.requirements); } catch { reqs = [act.requirements]; }
-                    if (reqs.length) {
-                        html += `<div class="mt-2"><p class="font-semibold mb-1">📋 คุณสมบัติ</p><ul class="text-sm text-gray-400 list-disc pl-4">${reqs.map(r => `<li>${r}</li>`).join('')}</ul></div>`;
-                    }
+                if (requirements.length) {
+                    html += `
+                        <div class="mt-2">
+                            <p class="font-semibold mb-1">📋 คุณสมบัติ</p>
+                            <ul class="text-sm text-gray-400 list-disc pl-4">
+                                ${requirements.map(r => `<li>${r}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
                 }
 
-                if (act.benefits) {
-                    let benefits = [];
-                    try { benefits = JSON.parse(act.benefits); } catch { benefits = [act.benefits]; }
-                    if (benefits.length) {
-                        html += `<div class="mt-2"><p class="font-semibold mb-1">🎁 สิทธิประโยชน์</p><ul class="text-sm text-gray-400 list-disc pl-4">${benefits.map(b => `<li>${b}</li>`).join('')}</ul></div>`;
-                    }
+                if (benefits.length) {
+                    html += `
+                        <div class="mt-2">
+                            <p class="font-semibold mb-1">🎁 สิทธิประโยชน์</p>
+                            <ul class="text-sm text-gray-400 list-disc pl-4">
+                                ${benefits.map(b => `<li>${b}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                }
+
+                if (act.contact) {
+                    html += `<p class="text-sm text-gray-400 mt-2"><i class="fas fa-phone mr-2 text-[#06c755]"></i> ${act.contact}</p>`;
                 }
 
                 document.getElementById('modal-body').innerHTML = html;
 
                 const registerBtn = document.getElementById('modal-register-btn');
-                if (isRegistered || act.status !== 'open') {
+                if (isRegistered) {
                     registerBtn.disabled = true;
-                    registerBtn.textContent = isRegistered ? 'ลงทะเบียนแล้ว' : 'ไม่สามารถลงทะเบียนได้';
+                    registerBtn.textContent = 'ลงทะเบียนแล้ว';
+                } else if (act.status !== 'open') {
+                    registerBtn.disabled = true;
+                    registerBtn.textContent = 'ไม่สามารถลงทะเบียนได้';
                 } else {
                     registerBtn.disabled = false;
                     registerBtn.textContent = 'ลงทะเบียน';
@@ -870,24 +976,58 @@
                     adminControls.classList.add('hidden');
                 }
 
-                document.getElementById('activity-modal').style.display = 'flex';
+                document.getElementById('activity-modal').classList.add('active');
             }
         }
 
         async function registerFromModal() {
             if (!state.currentActivity) return;
             if (!confirm('ต้องการลงทะเบียน?')) return;
-            const result = await callGAS('register', { activityId: state.currentActivity.activityId });
+            
+            const result = await callGAS('register', { 
+                activityId: state.currentActivity.activityId,
+                displayName: state.user.displayName,
+                email: state.user.email,
+                phone: state.user.phone || ''
+            });
+            
             if (result.success) {
                 showToast('ลงทะเบียนสำเร็จ');
                 closeModal();
                 loadMyActivities();
                 loadHomeData();
+                if (result.data.status === 'waiting') {
+                    showToast(`อยู่ในคิวรอ ลำดับที่ ${result.data.queuePosition}`, 'info');
+                }
             }
         }
 
         function closeModal() {
-            document.getElementById('activity-modal').style.display = 'none';
+            document.getElementById('activity-modal').classList.remove('active');
+        }
+
+        // ========== ADMIN ==========
+        async function loadAdminData() {
+            const result = await callGAS('admin/stats');
+            if (result.success) {
+                const stats = result.data;
+                document.getElementById('admin-users').textContent = stats.users || 0;
+                document.getElementById('admin-activities').textContent = stats.activities || 0;
+                document.getElementById('admin-registrations').textContent = stats.registrations || 0;
+                document.getElementById('admin-today').textContent = stats.todayRegistrations || 0;
+            }
+
+            // Load recent activities
+            const acts = await callGAS('activities', { page: 1, pageSize: 5 });
+            if (acts.success) {
+                const list = document.getElementById('admin-activities-list');
+                list.innerHTML = acts.data.activities.map(a => `
+                    <div class="flex justify-between items-center p-2 bg-[#111317] rounded-lg cursor-pointer" onclick="showActivityDetail('${a.activityId}')">
+                        <span class="text-sm">${a.title}</span>
+                        <span class="badge badge-${a.status} text-xs">${a.status}</span>
+                    </div>
+                `).join('');
+            }
         }
 
         // ========== ADMIN: CREATE/EDIT ==========
@@ -903,17 +1043,35 @@
             document.getElementById('activity-price').value = '0';
             document.getElementById('activity-image').value = '';
             document.getElementById('activity-tags').value = '';
-            document.getElementById('create-modal').style.display = 'flex';
+            document.getElementById('activity-requirements').value = '';
+            document.getElementById('activity-benefits').value = '';
+            document.getElementById('create-modal').classList.add('active');
         }
 
         function closeCreateModal() {
-            document.getElementById('create-modal').style.display = 'none';
+            document.getElementById('create-modal').classList.remove('active');
         }
 
         async function saveActivity(e) {
             e.preventDefault();
+            
             const id = document.getElementById('edit-activity-id').value;
             const isEdit = !!id;
+
+            const tags = document.getElementById('activity-tags').value
+                .split(',')
+                .map(t => t.trim())
+                .filter(t => t);
+
+            const requirements = document.getElementById('activity-requirements').value
+                .split('\n')
+                .map(r => r.trim())
+                .filter(r => r);
+
+            const benefits = document.getElementById('activity-benefits').value
+                .split('\n')
+                .map(b => b.trim())
+                .filter(b => b);
 
             const data = {
                 title: document.getElementById('activity-title').value,
@@ -925,7 +1083,9 @@
                 maxParticipants: parseInt(document.getElementById('activity-max').value),
                 price: parseInt(document.getElementById('activity-price').value) || 0,
                 imageUrl: document.getElementById('activity-image').value,
-                tags: document.getElementById('activity-tags').value.split(',').map(t => t.trim()).filter(t => t)
+                tags: JSON.stringify(tags),
+                requirements: JSON.stringify(requirements),
+                benefits: JSON.stringify(benefits)
             };
 
             if (isEdit) {
@@ -943,11 +1103,14 @@
 
         function editCurrentActivity() {
             if (!state.currentActivity) return;
+            
             const act = state.currentActivity;
+            
             document.getElementById('create-modal-title').textContent = 'แก้ไขกิจกรรม';
             document.getElementById('edit-activity-id').value = act.activityId;
             document.getElementById('activity-title').value = act.title || '';
             document.getElementById('activity-desc').value = act.description || '';
+            document.getElementById('activity-category').value = act.category || '';
             document.getElementById('activity-location').value = act.location || '';
             document.getElementById('activity-start').value = act.startDate ? act.startDate.slice(0,16) : '';
             document.getElementById('activity-end').value = act.endDate ? act.endDate.slice(0,16) : '';
@@ -955,17 +1118,32 @@
             document.getElementById('activity-price').value = act.price || 0;
             document.getElementById('activity-image').value = act.imageUrl || '';
 
+            // Parse tags
             let tags = [];
-            try { tags = JSON.parse(act.tags); } catch { tags = act.tags ? act.tags.split(',') : []; }
+            try { tags = JSON.parse(act.tags || '[]'); } catch { tags = []; }
             document.getElementById('activity-tags').value = tags.join(', ');
 
+            // Parse requirements
+            let reqs = [];
+            try { reqs = JSON.parse(act.requirements || '[]'); } catch { reqs = []; }
+            document.getElementById('activity-requirements').value = reqs.join('\n');
+
+            // Parse benefits
+            let benefits = [];
+            try { benefits = JSON.parse(act.benefits || '[]'); } catch { benefits = []; }
+            document.getElementById('activity-benefits').value = benefits.join('\n');
+
             closeModal();
-            document.getElementById('create-modal').style.display = 'flex';
+            document.getElementById('create-modal').classList.add('active');
         }
 
         async function deleteCurrentActivity() {
             if (!state.currentActivity || !confirm('แน่ใจว่าต้องการลบ?')) return;
-            const result = await callGAS('activities/delete', { activityId: state.currentActivity.activityId });
+            
+            const result = await callGAS('activities/delete', { 
+                activityId: state.currentActivity.activityId 
+            });
+            
             if (result.success) {
                 showToast('ลบสำเร็จ');
                 closeModal();
@@ -974,23 +1152,74 @@
             }
         }
 
-        // ========== ADMIN: MANAGE ==========
-        function showManageActivities() {
-            alert('กำลังพัฒนา (จัดการกิจกรรมทั้งหมด)');
+        // ========== PROFILE ==========
+        function toggleProfileMenu() {
+            const menu = document.getElementById('profile-menu');
+            menu.classList.toggle('hidden');
         }
 
-        function showManageUsers() {
-            alert('กำลังพัฒนา (จัดการผู้ใช้)');
+        function showProfileSettings() {
+            document.getElementById('profile-phone').value = state.user?.phone || '';
+            document.getElementById('profile-birth').value = state.user?.birthDate || '';
+            document.getElementById('profile-gender').value = state.user?.gender || 'ไม่ระบุ';
+            document.getElementById('profile-province').value = state.user?.province || '';
+            document.getElementById('profile-interests').value = state.user?.interests || '';
+            
+            document.getElementById('profile-modal').classList.add('active');
+            document.getElementById('profile-menu').classList.add('hidden');
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profile-modal').classList.remove('active');
+        }
+
+        async function saveProfile(e) {
+            e.preventDefault();
+            
+            const data = {
+                phone: document.getElementById('profile-phone').value,
+                birthDate: document.getElementById('profile-birth').value,
+                gender: document.getElementById('profile-gender').value,
+                province: document.getElementById('profile-province').value,
+                interests: document.getElementById('profile-interests').value
+            };
+
+            const result = await callGAS('user/update', data);
+            if (result.success) {
+                showToast('บันทึกสำเร็จ');
+                closeProfileModal();
+                Object.assign(state.user, data);
+            }
+        }
+
+        function logout() {
+            if (confirm('ต้องการออกจากระบบ?')) {
+                liff.logout();
+                location.reload();
+            }
+        }
+
+        // ========== ADMIN UTILS ==========
+        function showAllActivities() {
+            alert('กำลังพัฒนา: จัดการกิจกรรมทั้งหมด');
+        }
+
+        function showAllUsers() {
+            alert('กำลังพัฒนา: จัดการผู้ใช้');
         }
 
         // ========== TAB NAVIGATION ==========
-        tabs.forEach(tab => {
+        document.querySelectorAll('.nav-item').forEach(tab => {
             tab.addEventListener('click', () => {
                 const target = tab.dataset.tab;
-                tabs.forEach(t => t.classList.remove('active'));
+                
+                document.querySelectorAll('.nav-item').forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
-                tabContents.forEach(c => c.classList.remove('active'));
+                
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
                 document.getElementById(`tab-${target}`).classList.add('active');
+                
+                // Load data for tab
                 if (target === 'home') loadHomeData();
                 if (target === 'my') loadMyActivities();
                 if (target === 'notifications') loadNotifications();
@@ -998,21 +1227,22 @@
             });
         });
 
-        // ========== SEARCH & FILTER ==========
+        // ========== SEARCH ==========
+        let searchTimeout;
         document.getElementById('search-input').addEventListener('input', (e) => {
-            state.searchTerm = e.target.value;
-            state.currentPage = 1;
-            loadHomeData();
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                state.searchTerm = e.target.value;
+                state.currentPage = 1;
+                loadHomeData();
+            }, 500);
         });
 
+        // ========== FILTER ==========
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.filter-btn').forEach(b => {
-                    b.classList.remove('active', 'bg-[#06c755]', 'text-white');
-                    b.classList.add('bg-[#1a1d24]', 'text-gray-400');
-                });
-                btn.classList.add('active', 'bg-[#06c755]', 'text-white');
-                btn.classList.remove('bg-[#1a1d24]', 'text-gray-400');
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
                 state.currentFilter = btn.dataset.filter;
                 state.currentPage = 1;
                 loadHomeData();
@@ -1020,37 +1250,35 @@
         });
 
         // ========== LOAD CATEGORIES ==========
-        async function loadCategories() {
-            const cats = [
-                { id: 'CAT001', name: 'อบรม' },
-                { id: 'CAT002', name: 'สัมมนา' },
-                { id: 'CAT003', name: 'workshop' },
-                { id: 'CAT004', name: 'กีฬา' },
-                { id: 'CAT005', name: 'ดนตรี' },
-                { id: 'CAT006', name: 'ศิลปะ' },
-                { id: 'CAT007', name: 'ท่องเที่ยว' }
-            ];
-            state.categories = cats;
+        function loadCategories() {
             const select = document.getElementById('activity-category');
-            select.innerHTML = '<option value="">เลือกหมวดหมู่</option>' + cats.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            select.innerHTML = '<option value="">เลือกหมวดหมู่</option>' + 
+                state.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
         }
+
+        // ========== REFRESH ADMIN ==========
+        document.getElementById('refresh-admin')?.addEventListener('click', loadAdminData);
 
         // ========== INIT ==========
         document.addEventListener('DOMContentLoaded', async () => {
             showLoading();
             try {
                 await initLIFF();
-                await loadCategories();
+                loadCategories();
                 hideLoading();
             } catch (err) {
                 console.error(err);
                 hideLoading();
-                alert('ไม่สามารถเชื่อมต่อกับ LINE ได้ กรุณาลองใหม่');
+                showToast('ไม่สามารถเชื่อมต่อกับ LINE ได้', 'error');
             }
         });
 
-        // Refresh admin
-        document.getElementById('refresh-admin')?.addEventListener('click', loadAdminData);
+        // Close modals on outside click
+        window.onclick = function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('active');
+            }
+        };
     </script>
 </body>
 </html>
