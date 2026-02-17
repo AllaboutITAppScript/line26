@@ -1526,18 +1526,26 @@
                 
                 closeModal();
                 
-                // อัปเดต state
-                const postIndex = state.pendingPosts.findIndex(p => p.postId === id);
-                if (postIndex !== -1) {
-                    state.pendingPosts.splice(postIndex, 1);
+                // อัปเดต state ทันที
+                const pendingIndex = state.pendingPosts.findIndex(p => p.postId === id);
+                if (pendingIndex !== -1) {
+                    const approvedPost = state.pendingPosts[pendingIndex];
+                    approvedPost.status = 'published';
+                    approvedPost.approvalStatus = 'approved';
+                    
+                    // ย้ายจาก pending ไป posts
+                    state.pendingPosts.splice(pendingIndex, 1);
+                    
+                    // เพิ่มหรืออัปเดตใน posts
+                    const postIndex = state.posts.findIndex(p => p.postId === id);
+                    if (postIndex !== -1) {
+                        state.posts[postIndex] = approvedPost;
+                    } else {
+                        state.posts.unshift(approvedPost);
+                    }
                 }
                 
-                const postInPosts = state.posts.find(p => p.postId === id);
-                if (postInPosts) {
-                    postInPosts.status = 'published';
-                }
-                
-                // อัปเดต UI
+                // อัปเดต UI ทันที
                 renderPendingPosts();
                 renderPosts();
                 renderHeroSlider();
@@ -1549,6 +1557,11 @@
                     badge.classList.remove('hidden');
                 } else {
                     badge.classList.add('hidden');
+                }
+                
+                // อัปเดตสถิติแอดมิน
+                if (state.isAdmin) {
+                    await loadAdminStats();
                 }
             }
         }
@@ -1581,14 +1594,22 @@
                 
                 closeModal();
                 
-                // อัปเดต state
-                const postIndex = state.pendingPosts.findIndex(p => p.postId === id);
-                if (postIndex !== -1) {
-                    state.pendingPosts.splice(postIndex, 1);
+                // อัปเดต state ทันที
+                const pendingIndex = state.pendingPosts.findIndex(p => p.postId === id);
+                if (pendingIndex !== -1) {
+                    state.pendingPosts.splice(pendingIndex, 1);
+                    
+                    // ลบออกจาก posts ด้วย (ถ้ามี)
+                    const postIndex = state.posts.findIndex(p => p.postId === id);
+                    if (postIndex !== -1) {
+                        state.posts.splice(postIndex, 1);
+                    }
                 }
                 
-                // อัปเดต UI
+                // อัปเดต UI ทันที
                 renderPendingPosts();
+                renderPosts();
+                renderHeroSlider();
                 
                 // อัปเดต badge
                 const badge = document.getElementById('pending-badge');
@@ -1597,6 +1618,11 @@
                     badge.classList.remove('hidden');
                 } else {
                     badge.classList.add('hidden');
+                }
+                
+                // อัปเดตสถิติแอดมิน
+                if (state.isAdmin) {
+                    await loadAdminStats();
                 }
             }
         }
@@ -1962,44 +1988,13 @@
                 
                 closeCreateModal();
                 
-                // อัปเดต state
-                if (isEdit) {
-                    const postIndex = state.myPosts.findIndex(p => p.postId === id);
-                    if (postIndex !== -1) {
-                        state.myPosts[postIndex] = { ...state.myPosts[postIndex], ...data };
-                    }
-                    
-                    const postInAll = state.posts.findIndex(p => p.postId === id);
-                    if (postInAll !== -1) {
-                        state.posts[postInAll] = { ...state.posts[postInAll], ...data };
-                    }
-                } else {
-                    const newPost = {
-                        postId: result.data.postId,
-                        ...data,
-                        authorId: state.user.lineUserId,
-                        authorName: state.user.displayName,
-                        createdAt: new Date().toISOString(),
-                        viewCount: 0
-                    };
-                    
-                    state.myPosts.unshift(newPost);
-                    if (status === 'published') {
-                        state.posts.unshift(newPost);
-                    } else if (status === 'pending' && state.isAdmin) {
-                        state.pendingPosts.unshift(newPost);
-                    }
-                }
-                
-                // อัปเดต UI
-                renderMyPosts();
-                renderPosts();
-                renderHeroSlider();
-                renderPendingPosts();
-                
-                if (state.isAdmin) {
-                    loadAdminStats();
-                }
+                // โหลดข้อมูลใหม่ทั้งหมดเพื่อให้แน่ใจว่าข้อมูลตรงกัน
+                await Promise.all([
+                    loadPosts(),
+                    loadMyPosts(),
+                    loadPendingPosts(),
+                    state.isAdmin ? loadAdminStats() : Promise.resolve()
+                ]);
             }
         }
 
@@ -2067,21 +2062,30 @@
                 
                 closeModal();
                 
-                // ลบออกจาก state
+                // ลบออกจาก state ทันที
                 const postId = state.currentPost.postId;
                 
                 state.myPosts = state.myPosts.filter(p => p.postId !== postId);
                 state.posts = state.posts.filter(p => p.postId !== postId);
                 state.pendingPosts = state.pendingPosts.filter(p => p.postId !== postId);
                 
-                // อัปเดต UI
+                // อัปเดต UI ทันที
                 renderMyPosts();
                 renderPosts();
                 renderHeroSlider();
                 renderPendingPosts();
                 
+                // อัปเดต badge
+                const badge = document.getElementById('pending-badge');
+                if (state.pendingPosts.length > 0) {
+                    badge.textContent = state.pendingPosts.length > 9 ? '9+' : state.pendingPosts.length;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+                
                 if (state.isAdmin) {
-                    loadAdminStats();
+                    await loadAdminStats();
                 }
             }
         }
@@ -2187,13 +2191,24 @@
                 
                 closeRoleModal();
                 
-                // อัปเดต state
+                // อัปเดต state ทันที
                 const userIndex = state.users.findIndex(u => u.lineUserId === userId);
                 if (userIndex !== -1) {
                     state.users[userIndex].role = role;
                 }
                 
+                // ถ้าเป็นผู้ใช้ปัจจุบัน ให้อัปเดตด้วย
+                if (state.user?.lineUserId === userId) {
+                    state.user.role = role;
+                    state.isAdmin = role === 'admin';
+                    state.isEditor = role === 'admin' || role === 'editor';
+                    updateUI();
+                }
+                
                 renderUsers();
+                
+                // โหลดข้อมูลใหม่เพื่อความถูกต้อง
+                await loadUsers();
             }
         }
 
