@@ -1453,38 +1453,37 @@
         }
 
         async function markNotificationAsRead(notificationId) {
-            showLoading();
-            try {
-                const result = await callGAS('user/notification/read', { notificationId });
-                if (result.success) {
-                    // หา index ของการแจ้งเตือนที่ถูกอ่าน
-                    const index = state.notifications.findIndex(n => n.notificationId === notificationId);
-                    if (index !== -1) {
-                        // ลบการแจ้งเตือนนั้นออกจาก state
-                        state.notifications.splice(index, 1);
-                    }
-                    
-                    // นับจำนวนที่ยังไม่อ่านใหม่
-                    const unreadCount = state.notifications.filter(n => n.isRead !== 'TRUE').length;
-                    const badge = document.getElementById('notif-badge');
-                    if (unreadCount > 0) {
-                        badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
-                        badge.classList.remove('hidden');
-                    } else {
-                        badge.classList.add('hidden');
-                    }
-                    
-                    // อัปเดตการแสดงผล
-                    renderNotifications();
-                    showToast('ทำเครื่องหมายว่าอ่านแล้ว');
-                }
-            } catch (error) {
-                console.error('Mark as read error:', error);
-                showToast('เกิดข้อผิดพลาด', 'error');
-            } finally {
-                hideLoading();
+    showLoading();
+    try {
+        const result = await callGAS('user/notification/read', { notificationId });
+        if (result.success) {
+            // ลบการแจ้งเตือนนั้นออกจาก state ทันที
+            const index = state.notifications.findIndex(n => n.notificationId === notificationId);
+            if (index !== -1) {
+                state.notifications.splice(index, 1);
             }
+            
+            // นับจำนวนที่ยังไม่อ่านใหม่
+            const unreadCount = state.notifications.filter(n => n.isRead !== 'TRUE').length;
+            const badge = document.getElementById('notif-badge');
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+            
+            // อัปเดตการแสดงผล
+            renderNotifications();
+            showToast('ทำเครื่องหมายว่าอ่านแล้ว');
         }
+    } catch (error) {
+        console.error('Mark as read error:', error);
+        showToast('เกิดข้อผิดพลาด', 'error');
+    } finally {
+        hideLoading();
+    }
+}
 
         function renderNotifications() {
             const list = document.getElementById('notifications-list');
