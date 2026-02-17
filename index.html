@@ -806,7 +806,7 @@
             <div id="my-posts-list" class="space-y-3"></div>
         </div>
 
-        <!-- Tab: Admin (แทนที่แท็บแจ้งเตือน) -->
+        <!-- Tab: Admin -->
         <div id="tab-admin" class="tab-content">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-bold">จัดการระบบ</h2>
@@ -865,7 +865,7 @@
                 <div id="admin-posts-list" class="space-y-2"></div>
             </div>
 
-            <!-- Admin: Pending Posts -->
+            <!-- Admin: Pending Posts (ที่เดียวที่มีปุ่มอนุมัติ/ปฏิเสธ) -->
             <div id="admin-pending-tab" class="admin-tab hidden">
                 <h3 class="font-semibold mb-3">โพสต์ที่รออนุมัติ</h3>
                 <div id="pending-posts-list" class="space-y-3"></div>
@@ -921,7 +921,7 @@
         </div>
     </div>
 
-    <!-- Post Detail Modal -->
+    <!-- Post Detail Modal (ไม่มีปุ่มอนุมัติ/ปฏิเสธแล้ว) -->
     <div class="modal" id="post-modal">
         <div class="modal-content">
             <div class="flex justify-between items-center mb-4">
@@ -943,14 +943,6 @@
                     </button>
                     <button id="modal-delete-btn" class="btn-danger flex-1 text-sm" onclick="deleteCurrentPost()">
                         <i class="fas fa-trash mr-2"></i>ลบ
-                    </button>
-                </div>
-                <div id="modal-approval-controls" class="flex gap-2 mt-2 hidden">
-                    <button id="modal-approve-btn" class="btn-success flex-1 text-sm" onclick="approvePost()">
-                        <i class="fas fa-check mr-2"></i>อนุมัติ
-                    </button>
-                    <button id="modal-reject-btn" class="btn-danger flex-1 text-sm" onclick="rejectPost()">
-                        <i class="fas fa-times mr-2"></i>ปฏิเสธ
                     </button>
                 </div>
             </div>
@@ -1296,7 +1288,7 @@
                 filter: state.currentFilter,
                 search: state.searchTerm,
                 pageSize: CONFIG.PAGE_SIZE,
-                includePending: state.isAdmin // Admin เห็นโพสต์ที่รออนุมัติด้วย
+                includePending: state.isAdmin
             });
             
             if (result.success) {
@@ -1316,9 +1308,9 @@
             const wrapper = document.getElementById('hero-slider-wrapper');
             if (!wrapper) return;
             
-            // กรองเอาเฉพาะโพสต์ประเภท 'urgent' ที่เผยแพร่แล้ว
+            // กรองเอาเฉพาะโพสต์ประเภท 'urgent' ที่เผยแพร่แล้ว (approvalStatus = 'approved')
             const urgentPosts = state.posts
-                .filter(post => post.type === 'urgent' && post.status === 'published')
+                .filter(post => post.type === 'urgent' && post.approvalStatus === 'approved')
                 .slice(0, 5);
             
             if (urgentPosts.length === 0) {
@@ -1368,10 +1360,10 @@
         function renderPosts() {
             const list = document.getElementById('posts-list');
             
-            // กรองตามสถานะ - ผู้ใช้ทั่วไปเห็นเฉพาะ published, admin เห็นหมด
+            // กรองตามสถานะ - ผู้ใช้ทั่วไปเห็นเฉพาะ approved, admin เห็นหมด
             let filteredPosts = state.posts;
             if (!state.isAdmin) {
-                filteredPosts = state.posts.filter(p => p.status === 'published');
+                filteredPosts = state.posts.filter(p => p.approvalStatus === 'approved');
             }
             
             if (filteredPosts.length === 0) {
@@ -1397,8 +1389,11 @@
                     'urgent': '⚠️ ประกาศด่วน'
                 }[post.type] || post.type;
                 
-                const statusBadge = post.status !== 'published' ? 
+                const statusBadge = post.approvalStatus !== 'approved' ? 
                     `<span class="badge badge-pending ml-2">⏳ รออนุมัติ</span>` : '';
+                
+                const statusText = post.approvalStatus === 'approved' ? 'เผยแพร่' : 
+                                  post.approvalStatus === 'pending' ? 'รออนุมัติ' : 'ปฏิเสธ';
                 
                 return `
                     <div class="news-card relative" onclick="showPostDetail('${post.postId}')">
@@ -1424,6 +1419,7 @@
                             <div class="flex items-center justify-between mt-3 text-xs text-gray-500">
                                 <span><i class="fas fa-user mr-1"></i> ${post.authorName || 'ผู้ดูแล'}</span>
                                 <span><i class="fas fa-eye mr-1"></i> ${post.viewCount || 0}</span>
+                                ${state.isAdmin ? `<span class="text-${post.approvalStatus === 'approved' ? 'green-500' : post.approvalStatus === 'pending' ? 'yellow-500' : 'red-500'}">${statusText}</span>` : ''}
                             </div>
                         </div>
                     </div>
@@ -1497,10 +1493,9 @@
             }).join('');
         }
 
-        // ========== APPROVE/REJECT POST with SweetAlert ==========
+        // ========== APPROVE/REJECT POST (เฉพาะใน Tab รออนุมัติ) ==========
         async function approvePost(postId) {
-            const id = postId || state.currentPost?.postId;
-            if (!id) return;
+            if (!state.isAdmin) return;
             
             const result = await Swal.fire({
                 title: 'อนุมัติโพสต์',
@@ -1515,7 +1510,7 @@
             
             if (!result.isConfirmed) return;
             
-            const apiResult = await callGAS('admin/post/approve', { postId: id });
+            const apiResult = await callGAS('admin/post/approve', { postId });
             if (apiResult.success) {
                 await Swal.fire({
                     title: 'อนุมัติสำเร็จ',
@@ -1524,20 +1519,16 @@
                     confirmButtonColor: '#06c755'
                 });
                 
-                closeModal();
-                
-                // อัปเดต state ทันที
-                const pendingIndex = state.pendingPosts.findIndex(p => p.postId === id);
-                if (pendingIndex !== -1) {
-                    const approvedPost = state.pendingPosts[pendingIndex];
-                    approvedPost.status = 'published';
+                // ลบออกจาก pending และเพิ่มเข้า posts
+                const approvedPost = state.pendingPosts.find(p => p.postId === postId);
+                if (approvedPost) {
                     approvedPost.approvalStatus = 'approved';
                     
-                    // ย้ายจาก pending ไป posts
-                    state.pendingPosts.splice(pendingIndex, 1);
+                    // ลบจาก pending
+                    state.pendingPosts = state.pendingPosts.filter(p => p.postId !== postId);
                     
                     // เพิ่มหรืออัปเดตใน posts
-                    const postIndex = state.posts.findIndex(p => p.postId === id);
+                    const postIndex = state.posts.findIndex(p => p.postId === postId);
                     if (postIndex !== -1) {
                         state.posts[postIndex] = approvedPost;
                     } else {
@@ -1559,16 +1550,13 @@
                     badge.classList.add('hidden');
                 }
                 
-                // อัปเดตสถิติแอดมิน
-                if (state.isAdmin) {
-                    await loadAdminStats();
-                }
+                // อัปเดตสถิติ
+                await loadAdminStats();
             }
         }
 
         async function rejectPost(postId) {
-            const id = postId || state.currentPost?.postId;
-            if (!id) return;
+            if (!state.isAdmin) return;
             
             const result = await Swal.fire({
                 title: 'ปฏิเสธโพสต์',
@@ -1583,7 +1571,7 @@
             
             if (!result.isConfirmed) return;
             
-            const apiResult = await callGAS('admin/post/reject', { postId: id });
+            const apiResult = await callGAS('admin/post/reject', { postId });
             if (apiResult.success) {
                 await Swal.fire({
                     title: 'ปฏิเสธสำเร็จ',
@@ -1592,19 +1580,9 @@
                     confirmButtonColor: '#06c755'
                 });
                 
-                closeModal();
-                
-                // อัปเดต state ทันที
-                const pendingIndex = state.pendingPosts.findIndex(p => p.postId === id);
-                if (pendingIndex !== -1) {
-                    state.pendingPosts.splice(pendingIndex, 1);
-                    
-                    // ลบออกจาก posts ด้วย (ถ้ามี)
-                    const postIndex = state.posts.findIndex(p => p.postId === id);
-                    if (postIndex !== -1) {
-                        state.posts.splice(postIndex, 1);
-                    }
-                }
+                // ลบออกจาก pending และ posts
+                state.pendingPosts = state.pendingPosts.filter(p => p.postId !== postId);
+                state.posts = state.posts.filter(p => p.postId !== postId);
                 
                 // อัปเดต UI ทันที
                 renderPendingPosts();
@@ -1620,10 +1598,8 @@
                     badge.classList.add('hidden');
                 }
                 
-                // อัปเดตสถิติแอดมิน
-                if (state.isAdmin) {
-                    await loadAdminStats();
-                }
+                // อัปเดตสถิติ
+                await loadAdminStats();
             }
         }
 
@@ -1654,10 +1630,10 @@
             }
 
             list.innerHTML = state.myPosts.map(post => {
-                const statusClass = post.status === 'published' ? 'text-[#06c755]' : 
-                                   post.status === 'pending' ? 'text-yellow-500' : 'text-gray-500';
-                const statusText = post.status === 'published' ? 'เผยแพร่' : 
-                                  post.status === 'pending' ? 'รออนุมัติ' : 'ฉบับร่าง';
+                const statusClass = post.approvalStatus === 'approved' ? 'text-[#06c755]' : 
+                                   post.approvalStatus === 'pending' ? 'text-yellow-500' : 'text-red-500';
+                const statusText = post.approvalStatus === 'approved' ? 'เผยแพร่' : 
+                                  post.approvalStatus === 'pending' ? 'รออนุมัติ' : 'ปฏิเสธ';
                 
                 const typeIcon = {
                     'news': '📰',
@@ -1671,7 +1647,7 @@
                             <div class="flex justify-between items-start mb-2">
                                 <div>
                                     <span class="badge badge-news">${typeIcon}</span>
-                                    ${post.status === 'pending' ? 
+                                    ${post.approvalStatus === 'pending' ? 
                                         '<span class="badge badge-pending ml-2">⏳ รออนุมัติ</span>' : ''}
                                 </div>
                                 <span class="text-xs ${statusClass}">${statusText}</span>
@@ -1826,6 +1802,12 @@
                     'urgent': '⚠️ ประกาศด่วน'
                 }[post.type] || post.type;
 
+                const statusText = post.approvalStatus === 'approved' ? 'เผยแพร่' : 
+                                  post.approvalStatus === 'pending' ? 'รออนุมัติ' : 'ปฏิเสธ';
+                
+                const statusClass = post.approvalStatus === 'approved' ? 'text-[#06c755]' : 
+                                   post.approvalStatus === 'pending' ? 'text-yellow-500' : 'text-red-500';
+
                 let html = `
                     ${post.imageUrl ? `
                         <img src="${post.imageUrl}" class="w-full h-48 object-cover rounded-xl" loading="lazy">
@@ -1834,8 +1816,8 @@
                     <div class="flex justify-between items-center">
                         <div>
                             <span class="badge badge-${post.type}">${typeText}</span>
-                            ${post.status !== 'published' ? 
-                                '<span class="badge badge-pending ml-2">⏳ รออนุมัติ</span>' : ''}
+                            ${post.approvalStatus !== 'approved' ? 
+                                `<span class="badge badge-pending ml-2">⏳ ${statusText}</span>` : ''}
                         </div>
                         <span class="text-sm text-gray-400">
                             <i class="fas fa-eye mr-1"></i>${post.viewCount || 0}
@@ -1847,6 +1829,7 @@
                     <div class="text-sm text-gray-500 border-t border-[#2a2e36] pt-4">
                         <p><i class="fas fa-user mr-2"></i> โพสต์โดย: ${post.authorName || 'ผู้ดูแล'}</p>
                         <p><i class="fas fa-calendar mr-2 mt-2"></i> ${formatDate(post.createdAt)}</p>
+                        <p class="mt-1"><span class="${statusClass}">สถานะ: ${statusText}</span></p>
                         ${post.link ? `<p><i class="fas fa-link mr-2 mt-2"></i> <a href="${post.link}" target="_blank" class="text-[#06c755]">ลิงก์เพิ่มเติม</a></p>` : ''}
                     </div>
                 `;
@@ -1855,30 +1838,16 @@
 
                 const canEdit = canEditPost(post);
                 const canDelete = canDeletePost(post);
-                const canApprove = state.isAdmin && post.status === 'pending';
                 
                 const adminControls = document.getElementById('modal-admin-controls');
-                const editDeleteDiv = document.getElementById('modal-edit-btn').parentNode;
-                const approvalDiv = document.getElementById('modal-approval-controls');
                 
-                if (canEdit || canDelete || canApprove) {
+                if (canEdit || canDelete) {
                     adminControls.classList.remove('hidden');
                     
-                    // แสดง/ซ่อน ปุ่มแก้ไข/ลบ
-                    if (canEdit || canDelete) {
-                        editDeleteDiv.classList.remove('hidden');
-                        document.getElementById('modal-edit-btn').style.display = canEdit ? 'block' : 'none';
-                        document.getElementById('modal-delete-btn').style.display = canDelete ? 'block' : 'none';
-                    } else {
-                        editDeleteDiv.classList.add('hidden');
-                    }
-                    
-                    // แสดง/ซ่อน ปุ่มอนุมัติ/ปฏิเสธ
-                    if (canApprove) {
-                        approvalDiv.classList.remove('hidden');
-                    } else {
-                        approvalDiv.classList.add('hidden');
-                    }
+                    const editDeleteDiv = document.getElementById('modal-edit-btn').parentNode;
+                    editDeleteDiv.classList.remove('hidden');
+                    document.getElementById('modal-edit-btn').style.display = canEdit ? 'block' : 'none';
+                    document.getElementById('modal-delete-btn').style.display = canDelete ? 'block' : 'none';
                 } else {
                     adminControls.classList.add('hidden');
                 }
@@ -1901,7 +1870,7 @@
             return state.isAdmin || 
                    (state.user?.role === 'editor' && 
                     post.authorId === state.user?.lineUserId && 
-                    post.status !== 'published');
+                    post.approvalStatus !== 'approved');
         }
 
         function canDeletePost(post) {
@@ -1954,19 +1923,12 @@
                 }
             }
 
-            // กำหนดสถานะเริ่มต้น
-            let status = 'published';
-            if (!state.isAdmin && state.settings.requireApproval) {
-                status = 'pending'; // รออนุมัติถ้าตั้งค่าไว้
-            }
-
             const data = {
                 type: document.getElementById('post-type').value,
                 title: document.getElementById('post-title').value,
                 content: document.getElementById('post-content').value,
                 imageUrl: imageUrl,
-                link: document.getElementById('post-link').value,
-                status: status
+                link: document.getElementById('post-link').value
             };
 
             if (isEdit) {
@@ -1975,7 +1937,7 @@
 
             const result = await callGAS(isEdit ? 'post/update' : 'post/create', data);
             if (result.success) {
-                if (status === 'pending' && !isEdit) {
+                if (!isEdit && result.data.approvalStatus === 'pending') {
                     await Swal.fire({
                         title: 'ส่งขออนุมัติแล้ว',
                         text: 'โพสต์ของคุณถูกส่งให้ผู้ดูแลตรวจสอบแล้ว',
@@ -1988,7 +1950,7 @@
                 
                 closeCreateModal();
                 
-                // โหลดข้อมูลใหม่ทั้งหมดเพื่อให้แน่ใจว่าข้อมูลตรงกัน
+                // โหลดข้อมูลใหม่
                 await Promise.all([
                     loadPosts(),
                     loadMyPosts(),
@@ -2069,7 +2031,7 @@
                 state.posts = state.posts.filter(p => p.postId !== postId);
                 state.pendingPosts = state.pendingPosts.filter(p => p.postId !== postId);
                 
-                // อัปเดต UI ทันที
+                // อัปเดต UI
                 renderMyPosts();
                 renderPosts();
                 renderHeroSlider();
@@ -2206,8 +2168,6 @@
                 }
                 
                 renderUsers();
-                
-                // โหลดข้อมูลใหม่เพื่อความถูกต้อง
                 await loadUsers();
             }
         }
@@ -2235,6 +2195,9 @@
                         'urgent': '⚠️'
                     }[p.type] || '📄';
                     
+                    const statusText = p.approvalStatus === 'approved' ? 'เผยแพร่' : 
+                                      p.approvalStatus === 'pending' ? 'รออนุมัติ' : 'ปฏิเสธ';
+                    
                     return `
                         <div class="flex justify-between items-center p-3 bg-[#111317] rounded-lg cursor-pointer" onclick="showPostDetail('${p.postId}')">
                             <div class="flex-1">
@@ -2242,7 +2205,7 @@
                                 <p class="text-xs text-gray-400">${formatDateShort(p.createdAt)}</p>
                             </div>
                             <span class="badge badge-${p.type} text-xs mr-2">${typeIcon}</span>
-                            <span class="text-xs ${p.status === 'published' ? 'text-[#06c755]' : p.status === 'pending' ? 'text-yellow-500' : 'text-gray-500'}">${p.status === 'published' ? 'เผยแพร่' : p.status === 'pending' ? 'รออนุมัติ' : 'ร่าง'}</span>
+                            <span class="text-xs ${p.approvalStatus === 'approved' ? 'text-[#06c755]' : p.approvalStatus === 'pending' ? 'text-yellow-500' : 'text-red-500'}">${statusText}</span>
                         </div>
                     `;
                 }).join('');
