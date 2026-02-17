@@ -1,28 +1,30 @@
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LINE ข่าวสาร · กิจกรรม</title>
-    <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/653/653021.png">
-    <!-- Tailwind -->
+    
+    <!-- Tailwind (โหลดเร็วขึ้นด้วย CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Fonts -->
+    <!-- Fonts Preload -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- LINE LIFF -->
+    <!-- LINE LIFF (โหลดแบบ async) -->
     <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js" async></script>
     
-    <!-- Font Awesome -->
+    <!-- Font Awesome (โหลดเร็วขึ้น) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Swiper CSS -->
+    <!-- Swiper CSS สำหรับ Carousel Slide -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     
     <style>
+        /* CSS เหมือนเดิม - คัดลอกจากโค้ดก่อนหน้า */
         * {
             font-family: 'IBM Plex Sans Thai', sans-serif;
             margin: 0;
@@ -71,7 +73,6 @@
             font-size: 12px;
             cursor: pointer;
             transition: color 0.2s;
-            position: relative;
         }
         
         .nav-item.active {
@@ -97,6 +98,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
+        /* Swiper Slider */
         .swiper {
             width: 100%;
             height: 220px;
@@ -145,6 +147,7 @@
             opacity: 1;
         }
         
+        /* News Card Modern */
         .news-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -600,6 +603,7 @@
             overflow: hidden;
         }
         
+        /* Loading Skeleton */
         .skeleton {
             background: linear-gradient(90deg, var(--bg-card) 25%, #252930 50%, var(--bg-card) 75%);
             background-size: 200% 100%;
@@ -611,6 +615,7 @@
             100% { background-position: -200% 0; }
         }
         
+        /* Lazy Loading */
         .lazy-image {
             opacity: 0;
             transition: opacity 0.3s;
@@ -620,6 +625,7 @@
             opacity: 1;
         }
         
+        /* Share Button */
         .share-button {
             position: absolute;
             top: 12px;
@@ -645,25 +651,6 @@
         
         .share-button i {
             font-size: 18px;
-        }
-
-        .mark-read-btn {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-left: 8px;
-            white-space: nowrap;
-        }
-        
-        .mark-read-btn:hover {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
         }
     </style>
 </head>
@@ -719,7 +706,7 @@
                 </div>
             </div>
 
-            <!-- Hero Slider (แสดงเฉพาะประกาศด่วน) -->
+            <!-- Hero Slider -->
             <div class="swiper hero-swiper mb-4">
                 <div class="swiper-wrapper" id="hero-slider-wrapper"></div>
                 <div class="swiper-pagination"></div>
@@ -742,7 +729,7 @@
             <!-- Posts List -->
             <div id="posts-list" class="space-y-3"></div>
             
-            <!-- Loading Skeleton -->
+            <!-- Loading Skeleton (แสดงระหว่างโหลด) -->
             <div id="loading-skeleton" class="hidden">
                 <div class="skeleton h-[200px] rounded-2xl mb-4"></div>
                 <div class="skeleton h-[200px] rounded-2xl mb-4"></div>
@@ -839,6 +826,12 @@
                         
                         <label class="block text-sm text-gray-400 mb-1">Google Drive Folder ID</label>
                         <input type="text" id="setting-drive-folder" class="input-field" required>
+                        
+                        <label class="block text-sm text-gray-400 mb-1">อนุญาตให้ผู้ใช้ทั่วไปสร้างโพสต์</label>
+                        <select id="setting-allow-user-posts" class="input-field">
+                            <option value="true">ใช่</option>
+                            <option value="false">ไม่ (เฉพาะแอดมิน)</option>
+                        </select>
                         
                         <button type="submit" class="btn-primary">บันทึก</button>
                     </form>
@@ -991,8 +984,8 @@
     <script>
         // ========== CONFIG ==========
         const CONFIG = {
-            GAS_URL: 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec',
-            LIFF_ID: '2008904120-T7I0VPZf',
+            GAS_URL: 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec', // <<< เปลี่ยนเป็น URL ของคุณ
+            LIFF_ID: '2008904120-T7I0VPZf', // <<< เปลี่ยนเป็น LIFF ID ของคุณ
             PAGE_SIZE: 20,
             DRIVE_FOLDER_ID: '18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE'
         };
@@ -1099,6 +1092,21 @@
             }
         }
 
+        // ========== TEST CONNECTION ==========
+        async function testConnection() {
+            try {
+                const result = await callGAS('testConnection');
+                if (result.success) {
+                    showToast('✅ เชื่อมต่อสำเร็จ: ' + result.data.spreadsheetName);
+                    console.log('Connection test:', result.data);
+                } else {
+                    showToast('❌ ' + result.message, 'error');
+                }
+            } catch (err) {
+                showToast('❌ ไม่สามารถเชื่อมต่อได้', 'error');
+            }
+        }
+
         // ========== IMAGE UPLOAD ==========
         async function uploadImageToDrive(file) {
             showLoading();
@@ -1158,6 +1166,7 @@
                 const profile = await liff.getProfile();
                 const idToken = liff.getDecodedIDToken();
                 
+                // โหลดข้อมูลผู้ใช้
                 const result = await callGAS('user/profile', {
                     lineUserId: profile.userId,
                     displayName: profile.displayName,
@@ -1170,6 +1179,7 @@
                     state.isAdmin = state.user.role === 'admin';
                     state.isEditor = state.isAdmin || state.user.role === 'editor';
                     
+                    // โหลดข้อมูลพร้อมกันแบบขนานเพื่อความเร็ว
                     await Promise.all([
                         loadSettings(),
                         loadPosts(),
@@ -1227,6 +1237,7 @@
                 state.settings = result.data || {};
                 document.getElementById('setting-app-name').value = state.settings.appName || 'LINE ข่าวสาร';
                 document.getElementById('setting-drive-folder').value = state.settings.driveFolderId || CONFIG.DRIVE_FOLDER_ID;
+                document.getElementById('setting-allow-user-posts').value = state.settings.allowUserPosts || 'true';
             }
         }
 
@@ -1246,36 +1257,42 @@
                 document.getElementById('stat-events').textContent = result.data.stats?.events || 0;
                 document.getElementById('stat-urgent').textContent = result.data.stats?.urgent || 0;
                 
-                renderHeroSlider(); // แก้ไขให้แสดงเฉพาะประกาศด่วน
+                renderHeroSlider();
                 renderPosts();
             }
         }
 
-        // ========== RENDER HERO SLIDER (เฉพาะประกาศด่วน) ==========
         function renderHeroSlider() {
             const wrapper = document.getElementById('hero-slider-wrapper');
             if (!wrapper) return;
             
-            // กรองเอาเฉพาะโพสต์ประเภท 'urgent' แล้วเอา 5 อันดับล่าสุด
-            const urgentPosts = state.posts
-                .filter(post => post.type === 'urgent')
-                .slice(0, 5);
+            // เลือกโพสต์เด่น 5 อันดับล่าสุด
+            const featured = state.posts.slice(0, 5);
             
-            if (urgentPosts.length === 0) {
+            if (featured.length === 0) {
                 wrapper.innerHTML = '';
                 return;
             }
 
-            wrapper.innerHTML = urgentPosts.map(post => {
-                const typeText = '⚠️ ประกาศด่วน';
-                const badgeClass = 'urgent';
+            wrapper.innerHTML = featured.map(post => {
+                const typeText = {
+                    'news': '📰 ข่าวสาร',
+                    'event': '🎉 กิจกรรม',
+                    'urgent': '⚠️ ประกาศด่วน'
+                }[post.type] || post.type;
+                
+                const badgeClass = {
+                    'news': 'news',
+                    'event': 'event',
+                    'urgent': 'urgent'
+                }[post.type] || 'news';
                 
                 return `
                     <div class="swiper-slide cursor-pointer" onclick="showPostDetail('${post.postId}')">
-                        <img src="${post.imageUrl || 'https://via.placeholder.com/400/2a2e36/ffffff?text=URGENT'}" 
+                        <img src="${post.imageUrl || 'https://via.placeholder.com/400/2a2e36/ffffff?text=LINE'}" 
                              class="w-full h-full object-cover" 
                              loading="lazy"
-                             onerror="this.src='https://via.placeholder.com/400/2a2e36/ffffff?text=URGENT'">
+                             onerror="this.src='https://via.placeholder.com/400/2a2e36/ffffff?text=IMAGE'">
                         <span class="slide-badge ${badgeClass}">${typeText}</span>
                         <div class="slide-content">
                             <h3 class="font-bold text-lg line-clamp-2">${post.title}</h3>
@@ -1285,12 +1302,7 @@
                 `;
             }).join('');
 
-            // Initialize Swiper (ถ้ามี Swiper อยู่แล้วให้ destroy ก่อน)
-            const swiperEl = document.querySelector('.hero-swiper');
-            if (swiperEl.swiper) {
-                swiperEl.swiper.destroy(true, true);
-            }
-            
+            // Initialize Swiper
             new Swiper('.hero-swiper', {
                 autoplay: {
                     delay: 3000,
@@ -1300,7 +1312,7 @@
                     el: '.swiper-pagination',
                     clickable: true,
                 },
-                loop: urgentPosts.length > 1,
+                loop: true,
                 speed: 500,
             });
         }
@@ -1410,89 +1422,6 @@
             }).join('');
         }
 
-        // ========== NOTIFICATIONS ==========
-        async function loadNotifications() {
-            const result = await callGAS('user/notifications', { unreadOnly: 'true' });
-            if (result.success) {
-                state.notifications = result.data.notifications || [];
-                const unread = result.data.unreadCount || 0;
-                const badge = document.getElementById('notif-badge');
-                if (unread > 0) {
-                    badge.textContent = unread > 9 ? '9+' : unread;
-                    badge.classList.remove('hidden');
-                } else {
-                    badge.classList.add('hidden');
-                }
-                renderNotifications();
-            }
-        }
-
-        // ========== MARK NOTIFICATION AS READ (แก้ไขแล้ว) ==========
-        async function markNotificationAsRead(notificationId) {
-            showLoading();
-            try {
-                const result = await callGAS('user/notification/read', { notificationId });
-                if (result.success) {
-                    // อัปเดต state โดยเปลี่ยน isRead เป็น TRUE
-                    const notification = state.notifications.find(n => n.notificationId === notificationId);
-                    if (notification) {
-                        notification.isRead = 'TRUE';
-                    }
-                    
-                    // กรองเฉพาะที่ยังไม่อ่านเพื่อนับจำนวนใหม่
-                    const unreadCount = state.notifications.filter(n => n.isRead !== 'TRUE').length;
-                    
-                    // อัปเดต badge
-                    const badge = document.getElementById('notif-badge');
-                    if (unreadCount > 0) {
-                        badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
-                        badge.classList.remove('hidden');
-                    } else {
-                        badge.classList.add('hidden');
-                    }
-                    
-                    // Render ใหม่
-                    renderNotifications();
-                    showToast('ทำเครื่องหมายว่าอ่านแล้ว');
-                }
-            } catch (error) {
-                console.error('Mark as read error:', error);
-                showToast('เกิดข้อผิดพลาด', 'error');
-            } finally {
-                hideLoading();
-            }
-        }
-
-        function renderNotifications() {
-            const list = document.getElementById('notifications-list');
-            if (state.notifications.length === 0) {
-                list.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-bell-slash text-4xl text-gray-500 mb-3"></i>
-                        <p class="text-gray-400">ไม่มีการแจ้งเตือน</p>
-                    </div>
-                `;
-                return;
-            }
-
-            list.innerHTML = state.notifications.map(n => `
-                <div class="bg-[#1a1d24] p-4 rounded-xl border border-[#2a2e36] ${n.isRead !== 'TRUE' ? 'border-l-4 border-l-[#06c755]' : ''}">
-                    <div class="flex justify-between items-start">
-                        <div class="flex-1">
-                            <p class="font-semibold">${n.title}</p>
-                            <p class="text-sm text-gray-400 mt-1">${n.message}</p>
-                            <p class="text-xs text-gray-500 mt-2">${formatDate(n.createdAt)}</p>
-                        </div>
-                        ${n.isRead !== 'TRUE' ? `
-                            <button class="mark-read-btn" onclick="event.stopPropagation(); markNotificationAsRead('${n.notificationId}')">
-                                <i class="fas fa-check-circle mr-1"></i>อ่านแล้ว
-                            </button>
-                        ` : ''}
-                    </div>
-                </div>
-            `).join('');
-        }
-
         // ========== SHARE ==========
         async function sharePost(postId) {
             if (!liff.isInClient()) {
@@ -1508,6 +1437,7 @@
 
             const post = result.data;
             
+            // สร้าง Flex Message
             const flexMessage = {
                 type: 'flex',
                 altText: post.title,
@@ -1657,6 +1587,7 @@
 
                 document.getElementById('modal-body').innerHTML = html;
 
+                // ตรวจสอบสิทธิ์
                 const canEdit = canEditPost(post);
                 const canDelete = canDeletePost(post);
                 const adminControls = document.getElementById('modal-admin-controls');
@@ -1814,6 +1745,44 @@
             }
         }
 
+        // ========== NOTIFICATIONS ==========
+        async function loadNotifications() {
+            const result = await callGAS('user/notifications', { unreadOnly: 'true' });
+            if (result.success) {
+                state.notifications = result.data.notifications || [];
+                const unread = result.data.unreadCount || 0;
+                const badge = document.getElementById('notif-badge');
+                if (unread > 0) {
+                    badge.textContent = unread > 9 ? '9+' : unread;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+                renderNotifications();
+            }
+        }
+
+        function renderNotifications() {
+            const list = document.getElementById('notifications-list');
+            if (state.notifications.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-bell-slash text-4xl text-gray-500 mb-3"></i>
+                        <p class="text-gray-400">ไม่มีการแจ้งเตือน</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = state.notifications.map(n => `
+                <div class="bg-[#1a1d24] p-4 rounded-xl border border-[#2a2e36] ${n.isRead !== 'TRUE' ? 'border-l-4 border-l-[#06c755]' : ''}">
+                    <p class="font-semibold">${n.title}</p>
+                    <p class="text-sm text-gray-400 mt-1">${n.message}</p>
+                    <p class="text-xs text-gray-500 mt-2">${formatDate(n.createdAt)}</p>
+                </div>
+            `).join('');
+        }
+
         // ========== ADMIN: USERS ==========
         async function loadUsers() {
             if (!state.isAdmin) return;
@@ -1947,7 +1916,8 @@
             
             const data = {
                 appName: document.getElementById('setting-app-name').value,
-                driveFolderId: document.getElementById('setting-drive-folder').value
+                driveFolderId: document.getElementById('setting-drive-folder').value,
+                allowUserPosts: document.getElementById('setting-allow-user-posts').value
             };
             
             const result = await callGAS('admin/settings/update', data);
@@ -2074,9 +2044,11 @@
         document.addEventListener('DOMContentLoaded', async () => {
             showLoading();
             try {
+                // ตรวจสอบว่า LIFF พร้อมใช้งานหรือยัง
                 if (typeof liff !== 'undefined') {
                     await initLIFF();
                 } else {
+                    // รอให้ LIFF โหลด
                     window.addEventListener('load', async () => {
                         await initLIFF();
                     });
