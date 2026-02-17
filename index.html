@@ -169,11 +169,16 @@
         
         .news-card.pending {
             border-left: 4px solid var(--warning);
+            opacity: 0.9;
         }
         
         .news-card.rejected {
             border-left: 4px solid var(--danger);
             opacity: 0.7;
+        }
+        
+        .news-card.approved {
+            border-left: 4px solid var(--primary);
         }
         
         .news-image {
@@ -727,21 +732,25 @@
             border-radius: 20px;
             font-size: 11px;
             font-weight: 500;
+            display: inline-block;
         }
         
         .status-pending {
             background: rgba(245,158,11,0.2);
             color: #f59e0b;
+            border: 1px solid rgba(245,158,11,0.3);
         }
         
         .status-approved {
             background: rgba(6,199,85,0.2);
             color: var(--primary);
+            border: 1px solid rgba(6,199,85,0.3);
         }
         
         .status-rejected {
             background: rgba(239,68,68,0.2);
             color: #ef4444;
+            border: 1px solid rgba(239,68,68,0.3);
         }
         
         /* Action Buttons */
@@ -752,6 +761,7 @@
             font-weight: 500;
             cursor: pointer;
             transition: opacity 0.2s;
+            border: none;
         }
         
         .action-btn.approve {
@@ -764,8 +774,40 @@
             color: white;
         }
         
+        .action-btn.view {
+            background: var(--bg-card);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        
         .action-btn:active {
             opacity: 0.8;
+        }
+        
+        /* Approval Status in Detail */
+        .approval-banner {
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+        
+        .approval-banner.pending {
+            background: rgba(245,158,11,0.15);
+            border: 1px solid rgba(245,158,11,0.3);
+            color: #f59e0b;
+        }
+        
+        .approval-banner.approved {
+            background: rgba(6,199,85,0.15);
+            border: 1px solid rgba(6,199,85,0.3);
+            color: var(--primary);
+        }
+        
+        .approval-banner.rejected {
+            background: rgba(239,68,68,0.15);
+            border: 1px solid rgba(239,68,68,0.3);
+            color: #ef4444;
         }
     </style>
 </head>
@@ -821,7 +863,7 @@
                 </div>
             </div>
 
-            <!-- Hero Slider -->
+            <!-- Hero Slider - เฉพาะโพสต์ที่อนุมัติแล้ว -->
             <div class="swiper hero-swiper mb-4">
                 <div class="swiper-wrapper" id="hero-slider-wrapper"></div>
                 <div class="swiper-pagination"></div>
@@ -841,7 +883,7 @@
                 <button class="filter-btn" data-filter="urgent">⚠️ ประกาศด่วน</button>
             </div>
 
-            <!-- Posts List -->
+            <!-- Posts List - เฉพาะโพสต์ที่อนุมัติแล้ว -->
             <div id="posts-list" class="space-y-3"></div>
             
             <!-- Loading Skeleton (แสดงระหว่างโหลด) -->
@@ -852,7 +894,7 @@
             </div>
         </div>
 
-        <!-- Tab: My Posts -->
+        <!-- Tab: My Posts - แสดงโพสต์ทั้งหมดของฉัน (รวมที่รออนุมัติ) -->
         <div id="tab-my" class="tab-content">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-bold">โพสต์ของฉัน</h2>
@@ -901,14 +943,14 @@
                 </div>
             </div>
 
-            <!-- Pending Posts Section -->
+            <!-- Pending Posts Section - เฉพาะแอดมิน -->
             <div id="pending-posts-section" class="pending-section hidden">
                 <h3 class="font-semibold mb-3 flex items-center">
                     <i class="fas fa-clock text-yellow-500 mr-2"></i>
                     โพสต์รออนุมัติ
                     <span id="pending-count" class="ml-2 bg-yellow-500 text-white text-xs px-2 py-1 rounded-full">0</span>
                 </h3>
-                <div id="pending-posts-list" class="space-y-2"></div>
+                <div id="pending-posts-list" class="space-y-3"></div>
             </div>
 
             <!-- Admin Tabs -->
@@ -955,7 +997,7 @@
                         <label class="block text-sm text-gray-400 mb-1">อนุญาตให้ผู้ใช้ทั่วไปสร้างโพสต์</label>
                         <select id="setting-allow-user-posts" class="input-field">
                             <option value="true">ใช่</option>
-                            <option value="false">ไม่ (เฉพาะแอดมิน)</option>
+                            <option value="false">ไม่ (เฉพาะแอดมิน/ผู้เขียน)</option>
                         </select>
                         
                         <button type="submit" class="btn-primary">บันทึก</button>
@@ -997,10 +1039,10 @@
             </div>
             <div id="modal-body" class="space-y-4"></div>
             
-            <!-- Approval Status -->
-            <div id="modal-approval-status" class="hidden mt-4 p-3 rounded-lg border"></div>
+            <!-- Approval Status Banner -->
+            <div id="modal-approval-banner" class="hidden approval-banner"></div>
             
-            <!-- Share Button -->
+            <!-- Share Button - เฉพาะโพสต์ที่อนุมัติแล้ว -->
             <div class="flex gap-2 mt-4">
                 <button class="btn-share flex-1" onclick="shareAsFlexMessage()" id="modal-share-btn">
                     <i class="fab fa-line"></i> แชร์ไป LINE
@@ -1028,7 +1070,7 @@
                 <!-- Approval buttons สำหรับโพสต์รออนุมัติ -->
                 <div id="modal-approval-buttons" class="hidden mb-3">
                     <div class="flex gap-2">
-                        <button class="btn-primary flex-1 text-sm" onclick="approvePost()">
+                        <button class="btn-primary flex-1 text-sm" onclick="approveCurrentPost()">
                             <i class="fas fa-check mr-2"></i>อนุมัติ
                         </button>
                         <button class="btn-danger flex-1 text-sm" onclick="showRejectModal()">
@@ -1075,10 +1117,10 @@
                 <button onclick="closeCreateModal()"><i class="fas fa-times text-gray-400 text-xl"></i></button>
             </div>
             
-            <!-- Warning for non-editor -->
+            <!-- Warning for non-editor/non-admin -->
             <div id="pending-warning" class="hidden bg-yellow-500/10 border border-yellow-500 rounded-lg p-3 mb-4 text-sm text-yellow-500">
                 <i class="fas fa-info-circle mr-2"></i>
-                โพสต์ของคุณจะต้องรอการอนุมัติจากแอดมินก่อนเผยแพร่
+                <span id="pending-warning-text">โพสต์ของคุณจะต้องรอการอนุมัติจากแอดมินก่อนเผยแพร่</span>
             </div>
             
             <form id="post-form" onsubmit="savePost(event)">
@@ -1106,15 +1148,16 @@
                 
                 <input type="text" id="post-link" placeholder="ลิงก์เพิ่มเติม (ถ้ามี)" class="input-field">
                 
-                <!-- Status เฉพาะ Admin/Editor -->
+                <!-- Status - เฉพาะ Admin/Editor -->
                 <div id="post-status-container" class="hidden">
+                    <label class="block text-sm text-gray-400 mb-1">สถานะ</label>
                     <select id="post-status" class="input-field">
                         <option value="published">เผยแพร่</option>
                         <option value="draft">ฉบับร่าง</option>
                     </select>
                 </div>
                 
-                <div class="flex gap-2">
+                <div class="flex gap-2 mt-4">
                     <button type="submit" class="btn-primary">บันทึก</button>
                     <button type="button" class="btn-outline" onclick="closeCreateModal()">ยกเลิก</button>
                 </div>
@@ -1133,7 +1176,7 @@
                 <input type="text" id="profile-phone" placeholder="เบอร์โทรศัพท์" class="input-field" maxlength="10">
                 <input type="text" id="profile-department" placeholder="แผนก/หน่วยงาน" class="input-field" maxlength="50">
                 
-                <div class="flex gap-2">
+                <div class="flex gap-2 mt-4">
                     <button type="submit" class="btn-primary">บันทึก</button>
                     <button type="button" class="btn-outline" onclick="closeProfileModal()">ยกเลิก</button>
                 </div>
@@ -1158,7 +1201,7 @@
                     <option value="admin">👑 ผู้ดูแลระบบ</option>
                 </select>
                 
-                <div class="flex gap-2">
+                <div class="flex gap-2 mt-4">
                     <button type="submit" class="btn-primary">บันทึก</button>
                     <button type="button" class="btn-outline" onclick="closeRoleModal()">ยกเลิก</button>
                 </div>
@@ -1181,9 +1224,10 @@
         // ========== STATE ==========
         const state = {
             user: null,
-            posts: [],
-            myPosts: [],
-            pendingPosts: [],
+            posts: [], // เฉพาะโพสต์ที่อนุมัติแล้วสำหรับหน้าแรก
+            allPosts: [], // โพสต์ทั้งหมด (สำหรับ admin)
+            myPosts: [], // โพสต์ของฉันทั้งหมด
+            pendingPosts: [], // โพสต์รออนุมัติ
             notifications: [],
             users: [],
             currentFilter: 'all',
@@ -1299,21 +1343,6 @@
             }
         }
 
-        // ========== TEST CONNECTION ==========
-        async function testConnection() {
-            try {
-                const result = await callGAS('testConnection');
-                if (result.success) {
-                    showToast('✅ เชื่อมต่อสำเร็จ: ' + result.data.spreadsheetName);
-                    console.log('Connection test:', result.data);
-                } else {
-                    showToast('❌ ' + result.message, 'error');
-                }
-            } catch (err) {
-                showToast('❌ ไม่สามารถเชื่อมต่อได้', 'error');
-            }
-        }
-
         // ========== IMAGE UPLOAD ==========
         async function uploadImageToDrive(file) {
             showLoading();
@@ -1386,13 +1415,14 @@
                     state.isAdmin = state.user.role === 'admin';
                     state.isEditor = state.isAdmin || state.user.role === 'editor';
                     
-                    // โหลดข้อมูลพร้อมกันแบบขนานเพื่อความเร็ว
+                    // โหลดข้อมูลทั้งหมด
+                    await loadSettings();
                     await Promise.all([
-                        loadSettings(),
-                        loadPosts(),
-                        loadMyPosts(),
+                        loadPosts(), // โหลดเฉพาะโพสต์ที่อนุมัติแล้วสำหรับหน้าแรก
+                        loadMyPosts(), // โหลดโพสต์ทั้งหมดของฉัน
                         loadNotifications(),
                         state.isAdmin ? loadPendingPosts() : Promise.resolve(),
+                        state.isAdmin ? loadAllPosts() : Promise.resolve(),
                         state.isAdmin ? loadUsers() : Promise.resolve(),
                         state.isAdmin ? loadAdminStats() : Promise.resolve()
                     ]);
@@ -1446,9 +1476,13 @@
             
             // แสดงคำเตือนสำหรับผู้ใช้ทั่วไปใน modal สร้างโพสต์
             const pendingWarning = document.getElementById('pending-warning');
+            const pendingWarningText = document.getElementById('pending-warning-text');
             if (pendingWarning) {
                 if (!state.isEditor) {
                     pendingWarning.classList.remove('hidden');
+                    pendingWarningText.textContent = state.isAdmin ? 
+                        'คุณเป็นแอดมิน โพสต์จะเผยแพร่ทันที' : 
+                        'โพสต์ของคุณจะต้องรอการอนุมัติจากแอดมินก่อนเผยแพร่';
                 } else {
                     pendingWarning.classList.add('hidden');
                 }
@@ -1492,6 +1526,7 @@
 
         // ========== POSTS ==========
         async function loadPosts() {
+            // โหลดเฉพาะโพสต์ที่อนุมัติแล้วสำหรับหน้าแรก
             const result = await callGAS('posts', {
                 page: state.currentPage,
                 filter: state.currentFilter,
@@ -1511,11 +1546,21 @@
             }
         }
 
+        async function loadAllPosts() {
+            if (!state.isAdmin) return;
+            
+            const result = await callGAS('admin/posts', { pageSize: 50 });
+            if (result.success) {
+                state.allPosts = result.data || [];
+                renderAdminPosts();
+            }
+        }
+
         function renderHeroSlider() {
             const wrapper = document.getElementById('hero-slider-wrapper');
             if (!wrapper) return;
             
-            // เลือกเฉพาะโพสต์ที่อนุมัติแล้วสำหรับ slider
+            // เฉพาะโพสต์ที่อนุมัติแล้วสำหรับ slider
             const featured = state.posts
                 .filter(p => p.approvalStatus === 'approved')
                 .slice(0, 5);
@@ -1571,10 +1616,8 @@
         function renderPosts() {
             const list = document.getElementById('posts-list');
             
-            // กรองเฉพาะโพสต์ที่อนุมัติแล้วสำหรับหน้าแรก
-            const publishedPosts = state.posts.filter(p => p.approvalStatus === 'approved');
-            
-            if (publishedPosts.length === 0) {
+            // state.posts มาจาก GAS แล้วซึ่งส่งเฉพาะโพสต์ที่อนุมัติแล้ว
+            if (state.posts.length === 0) {
                 list.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-newspaper text-4xl text-gray-500 mb-3"></i>
@@ -1584,7 +1627,7 @@
                 return;
             }
 
-            list.innerHTML = publishedPosts.map(post => {
+            list.innerHTML = state.posts.map(post => {
                 const typeClass = {
                     'news': 'badge-news',
                     'event': 'badge-event',
@@ -1598,7 +1641,7 @@
                 }[post.type] || post.type;
                 
                 return `
-                    <div class="news-card relative" onclick="showPostDetail('${post.postId}')">
+                    <div class="news-card relative approved" onclick="showPostDetail('${post.postId}')">
                         <button class="share-button" onclick="event.stopPropagation(); sharePost('${post.postId}')">
                             <i class="fab fa-line"></i>
                         </button>
@@ -1619,6 +1662,43 @@
                                 <span><i class="fas fa-user mr-1"></i> ${post.authorName || 'ผู้ดูแล'}</span>
                                 <span><i class="fas fa-eye mr-1"></i> ${post.viewCount || 0}</span>
                             </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderAdminPosts() {
+            const list = document.getElementById('admin-posts-list');
+            if (!list) return;
+            
+            if (state.allPosts.length === 0) {
+                list.innerHTML = '<p class="text-gray-400 text-center py-4">ไม่มีโพสต์</p>';
+                return;
+            }
+
+            list.innerHTML = state.allPosts.map(post => {
+                const typeIcon = {
+                    'news': '📰',
+                    'event': '🎉',
+                    'urgent': '⚠️'
+                }[post.type] || '📄';
+                
+                const approvalClass = getApprovalStatusClass(post.approvalStatus);
+                const approvalText = getApprovalStatusText(post.approvalStatus);
+                
+                return `
+                    <div class="flex justify-between items-center p-3 bg-[#111317] rounded-lg cursor-pointer hover:bg-[#1a1d24] transition" onclick="showPostDetail('${post.postId}')">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-sm">${typeIcon}</span>
+                                <span class="font-semibold">${post.title}</span>
+                            </div>
+                            <p class="text-xs text-gray-400">${formatDateShort(post.createdAt)} • โดย ${post.authorName || 'ผู้ใช้'}</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="status-badge ${approvalClass} text-xs">${approvalText}</span>
+                            <span class="text-xs ${post.status === 'published' ? 'text-[#06c755]' : 'text-gray-500'}">${post.status}</span>
                         </div>
                     </div>
                 `;
@@ -1666,7 +1746,8 @@
                 }[post.type] || '📄';
                 
                 const cardClass = post.approvalStatus === 'pending' ? 'news-card pending' : 
-                                 post.approvalStatus === 'rejected' ? 'news-card rejected' : 'news-card';
+                                 post.approvalStatus === 'rejected' ? 'news-card rejected' : 
+                                 post.approvalStatus === 'approved' ? 'news-card approved' : 'news-card';
                 
                 return `
                     <div class="${cardClass}" onclick="showPostDetail('${post.postId}')">
@@ -1704,6 +1785,8 @@
             const list = document.getElementById('pending-posts-list');
             const countSpan = document.getElementById('pending-count');
             
+            if (!section || !list) return;
+            
             if (state.pendingPosts.length === 0) {
                 section.classList.add('hidden');
                 return;
@@ -1735,7 +1818,7 @@
                             <button class="action-btn reject flex-1" onclick="showRejectModal('${post.postId}')">
                                 <i class="fas fa-times mr-1"></i> ปฏิเสธ
                             </button>
-                            <button class="action-btn bg-gray-700 flex-1" onclick="showPostDetail('${post.postId}')">
+                            <button class="action-btn view flex-1" onclick="showPostDetail('${post.postId}')">
                                 <i class="fas fa-eye mr-1"></i> ดู
                             </button>
                         </div>
@@ -1771,21 +1854,34 @@
                 showToast('อนุมัติโพสต์สำเร็จ', 'success');
                 closeModal();
                 closeRejectModal();
+                
+                // โหลดข้อมูลทั้งหมดใหม่
                 await Promise.all([
                     loadPosts(),
                     loadMyPosts(),
                     loadPendingPosts(),
+                    loadAllPosts(),
                     loadAdminStats()
                 ]);
             }
         }
 
+        function approveCurrentPost() {
+            approvePost(state.currentPost?.postId);
+        }
+
         function showRejectModal(postId) {
             if (postId) {
-                // ถ้ามีการส่ง postId มา ให้เก็บไว้ใน currentPost ชั่วคราว
-                state.currentPost = { postId };
+                // ดึงข้อมูลโพสต์ก่อน
+                callGAS('post', { postId }).then(result => {
+                    if (result.success) {
+                        state.currentPost = result.data;
+                        document.getElementById('reject-modal').classList.add('active');
+                    }
+                });
+            } else {
+                document.getElementById('reject-modal').classList.add('active');
             }
-            document.getElementById('reject-modal').classList.add('active');
         }
 
         function closeRejectModal() {
@@ -1815,10 +1911,13 @@
                 showToast('ปฏิเสธโพสต์สำเร็จ', 'warning');
                 closeRejectModal();
                 closeModal();
+                
+                // โหลดข้อมูลทั้งหมดใหม่
                 await Promise.all([
                     loadPosts(),
                     loadMyPosts(),
                     loadPendingPosts(),
+                    loadAllPosts(),
                     loadAdminStats()
                 ]);
             }
@@ -1975,18 +2074,24 @@
                 // แสดงสถานะการอนุมัติ
                 const approvalStatus = post.approvalStatus || 'approved';
                 const approvalText = getApprovalStatusText(approvalStatus);
-                const approvalClass = getApprovalStatusClass(approvalStatus);
+                const approvalClass = approvalStatus === 'pending' ? 'pending' : 
+                                     approvalStatus === 'approved' ? 'approved' : 'rejected';
                 
-                let approvalHtml = '';
+                const approvalBanner = document.getElementById('modal-approval-banner');
                 if (approvalStatus !== 'approved') {
-                    approvalHtml = `
-                        <div class="p-3 rounded-lg ${approvalClass} bg-opacity-10 border border-current">
-                            <p class="text-sm font-medium">สถานะ: ${approvalText}</p>
+                    approvalBanner.className = `approval-banner ${approvalClass}`;
+                    approvalBanner.innerHTML = `
+                        <div class="flex items-center">
+                            <i class="fas ${approvalStatus === 'pending' ? 'fa-clock' : 'fa-exclamation-circle'} mr-2"></i>
+                            <span class="font-medium">${approvalText}</span>
                             ${approvalStatus === 'rejected' && post.rejectReason ? `
-                                <p class="text-xs mt-1">เหตุผล: ${post.rejectReason}</p>
+                                <span class="ml-2 text-sm">: ${post.rejectReason}</span>
                             ` : ''}
                         </div>
                     `;
+                    approvalBanner.classList.remove('hidden');
+                } else {
+                    approvalBanner.classList.add('hidden');
                 }
 
                 let html = `
@@ -2001,8 +2106,6 @@
                         </span>
                     </div>
                     
-                    ${approvalHtml}
-                    
                     <p class="text-gray-400 whitespace-pre-wrap">${post.content}</p>
                     
                     <div class="text-sm text-gray-500 border-t border-[#2a2e36] pt-4">
@@ -2013,8 +2116,6 @@
                 `;
 
                 document.getElementById('modal-body').innerHTML = html;
-                document.getElementById('modal-approval-status').innerHTML = approvalHtml;
-                document.getElementById('modal-approval-status').classList.toggle('hidden', approvalStatus === 'approved');
 
                 // จัดการปุ่มแชร์
                 const shareBtn = document.getElementById('modal-share-btn');
@@ -2066,11 +2167,13 @@
 
         function canEditPost(post) {
             if (!post) return false;
+            // เจ้าของโพสต์สามารถแก้ไขได้เสมอ (แต่จะกลายเป็นรออนุมัติใหม่)
             return state.isAdmin || (post.authorId === state.user?.lineUserId);
         }
 
         function canDeletePost(post) {
             if (!post) return false;
+            // เจ้าของโพสต์สามารถลบได้
             return state.isAdmin || (post.authorId === state.user?.lineUserId);
         }
 
@@ -2145,10 +2248,13 @@
                 showToast(message, result.data?.approvalStatus === 'pending' ? 'warning' : 'success');
                 
                 closeCreateModal();
+                
+                // โหลดข้อมูลทั้งหมดใหม่
                 await Promise.all([
                     loadPosts(),
                     loadMyPosts(),
                     state.isAdmin ? loadPendingPosts() : Promise.resolve(),
+                    state.isAdmin ? loadAllPosts() : Promise.resolve(),
                     state.isAdmin ? loadAdminStats() : Promise.resolve()
                 ]);
             }
@@ -2201,10 +2307,13 @@
             if (result.success) {
                 showToast('ลบสำเร็จ');
                 closeModal();
+                
+                // โหลดข้อมูลทั้งหมดใหม่
                 await Promise.all([
                     loadPosts(),
                     loadMyPosts(),
                     state.isAdmin ? loadPendingPosts() : Promise.resolve(),
+                    state.isAdmin ? loadAllPosts() : Promise.resolve(),
                     state.isAdmin ? loadAdminStats() : Promise.resolve()
                 ]);
             }
@@ -2354,35 +2463,6 @@
                 document.getElementById('admin-today').textContent = stats.today || 0;
                 document.getElementById('admin-pending').textContent = stats.pending || 0;
             }
-
-            const posts = await callGAS('admin/posts', { pageSize: 10 });
-            if (posts.success) {
-                const list = document.getElementById('admin-posts-list');
-                list.innerHTML = posts.data.map(p => {
-                    const typeIcon = {
-                        'news': '📰',
-                        'event': '🎉',
-                        'urgent': '⚠️'
-                    }[p.type] || '📄';
-                    
-                    const approvalClass = getApprovalStatusClass(p.approvalStatus);
-                    const approvalText = getApprovalStatusText(p.approvalStatus);
-                    
-                    return `
-                        <div class="flex justify-between items-center p-3 bg-[#111317] rounded-lg cursor-pointer" onclick="showPostDetail('${p.postId}')">
-                            <div class="flex-1">
-                                <p class="font-semibold">${p.title}</p>
-                                <p class="text-xs text-gray-400">${formatDateShort(p.createdAt)}</p>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="badge badge-${p.type} text-xs">${typeIcon}</span>
-                                <span class="status-badge ${approvalClass} text-xs">${approvalText}</span>
-                                <span class="text-xs ${p.status === 'published' ? 'text-[#06c755]' : 'text-gray-500'}">${p.status}</span>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            }
         }
 
         // ========== SETTINGS ==========
@@ -2470,6 +2550,7 @@
                 if (target === 'admin' && state.isAdmin) {
                     loadAdminStats();
                     loadPendingPosts();
+                    loadAllPosts();
                     loadUsers();
                 }
             });
@@ -2519,6 +2600,7 @@
             if (state.isAdmin) {
                 loadAdminStats();
                 loadPendingPosts();
+                loadAllPosts();
                 loadUsers();
             }
         });
