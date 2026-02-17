@@ -5,25 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LINE ข่าวสาร · กิจกรรม</title>
     <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/653/653021.png">
-    <!-- Tailwind (โหลดเร็วขึ้นด้วย CDN) -->
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Fonts Preload -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- LINE LIFF (โหลดแบบ async) -->
+    <!-- LINE LIFF -->
     <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js" async></script>
     
-    <!-- Font Awesome (โหลดเร็วขึ้น) -->
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Swiper CSS สำหรับ Carousel Slide -->
+    <!-- Swiper CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     
     <style>
-        /* CSS เหมือนเดิมทุกประการ */
         * {
             font-family: 'IBM Plex Sans Thai', sans-serif;
             margin: 0;
@@ -98,7 +97,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        /* Swiper Slider */
         .swiper {
             width: 100%;
             height: 220px;
@@ -147,7 +145,6 @@
             opacity: 1;
         }
         
-        /* News Card Modern */
         .news-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -603,7 +600,6 @@
             overflow: hidden;
         }
         
-        /* Loading Skeleton */
         .skeleton {
             background: linear-gradient(90deg, var(--bg-card) 25%, #252930 50%, var(--bg-card) 75%);
             background-size: 200% 100%;
@@ -615,7 +611,6 @@
             100% { background-position: -200% 0; }
         }
         
-        /* Lazy Loading */
         .lazy-image {
             opacity: 0;
             transition: opacity 0.3s;
@@ -625,7 +620,6 @@
             opacity: 1;
         }
         
-        /* Share Button */
         .share-button {
             position: absolute;
             top: 12px;
@@ -653,7 +647,6 @@
             font-size: 18px;
         }
 
-        /* ปุ่มอ่านแล้ว */
         .mark-read-btn {
             background: transparent;
             border: 1px solid var(--border);
@@ -726,7 +719,7 @@
                 </div>
             </div>
 
-            <!-- Hero Slider -->
+            <!-- Hero Slider (แสดงเฉพาะประกาศด่วน) -->
             <div class="swiper hero-swiper mb-4">
                 <div class="swiper-wrapper" id="hero-slider-wrapper"></div>
                 <div class="swiper-pagination"></div>
@@ -749,7 +742,7 @@
             <!-- Posts List -->
             <div id="posts-list" class="space-y-3"></div>
             
-            <!-- Loading Skeleton (แสดงระหว่างโหลด) -->
+            <!-- Loading Skeleton -->
             <div id="loading-skeleton" class="hidden">
                 <div class="skeleton h-[200px] rounded-2xl mb-4"></div>
                 <div class="skeleton h-[200px] rounded-2xl mb-4"></div>
@@ -998,8 +991,8 @@
     <script>
         // ========== CONFIG ==========
         const CONFIG = {
-            GAS_URL: 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec', // <<< เปลี่ยนเป็น URL ของคุณ
-            LIFF_ID: '2008904120-T7I0VPZf', // <<< เปลี่ยนเป็น LIFF ID ของคุณ
+            GAS_URL: 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec',
+            LIFF_ID: '2008904120-T7I0VPZf',
             PAGE_SIZE: 20,
             DRIVE_FOLDER_ID: '18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE'
         };
@@ -1106,21 +1099,6 @@
             }
         }
 
-        // ========== TEST CONNECTION ==========
-        async function testConnection() {
-            try {
-                const result = await callGAS('testConnection');
-                if (result.success) {
-                    showToast('✅ เชื่อมต่อสำเร็จ: ' + result.data.spreadsheetName);
-                    console.log('Connection test:', result.data);
-                } else {
-                    showToast('❌ ' + result.message, 'error');
-                }
-            } catch (err) {
-                showToast('❌ ไม่สามารถเชื่อมต่อได้', 'error');
-            }
-        }
-
         // ========== IMAGE UPLOAD ==========
         async function uploadImageToDrive(file) {
             showLoading();
@@ -1180,7 +1158,6 @@
                 const profile = await liff.getProfile();
                 const idToken = liff.getDecodedIDToken();
                 
-                // โหลดข้อมูลผู้ใช้
                 const result = await callGAS('user/profile', {
                     lineUserId: profile.userId,
                     displayName: profile.displayName,
@@ -1193,7 +1170,6 @@
                     state.isAdmin = state.user.role === 'admin';
                     state.isEditor = state.isAdmin || state.user.role === 'editor';
                     
-                    // โหลดข้อมูลพร้อมกันแบบขนานเพื่อความเร็ว
                     await Promise.all([
                         loadSettings(),
                         loadPosts(),
@@ -1270,42 +1246,36 @@
                 document.getElementById('stat-events').textContent = result.data.stats?.events || 0;
                 document.getElementById('stat-urgent').textContent = result.data.stats?.urgent || 0;
                 
-                renderHeroSlider();
+                renderHeroSlider(); // แก้ไขให้แสดงเฉพาะประกาศด่วน
                 renderPosts();
             }
         }
 
+        // ========== RENDER HERO SLIDER (เฉพาะประกาศด่วน) ==========
         function renderHeroSlider() {
             const wrapper = document.getElementById('hero-slider-wrapper');
             if (!wrapper) return;
             
-            // เลือกโพสต์เด่น 5 อันดับล่าสุด
-            const featured = state.posts.slice(0, 5);
+            // กรองเอาเฉพาะโพสต์ประเภท 'urgent' แล้วเอา 5 อันดับล่าสุด
+            const urgentPosts = state.posts
+                .filter(post => post.type === 'urgent')
+                .slice(0, 5);
             
-            if (featured.length === 0) {
+            if (urgentPosts.length === 0) {
                 wrapper.innerHTML = '';
                 return;
             }
 
-            wrapper.innerHTML = featured.map(post => {
-                const typeText = {
-                    'news': '📰 ข่าวสาร',
-                    'event': '🎉 กิจกรรม',
-                    'urgent': '⚠️ ประกาศด่วน'
-                }[post.type] || post.type;
-                
-                const badgeClass = {
-                    'news': 'news',
-                    'event': 'event',
-                    'urgent': 'urgent'
-                }[post.type] || 'news';
+            wrapper.innerHTML = urgentPosts.map(post => {
+                const typeText = '⚠️ ประกาศด่วน';
+                const badgeClass = 'urgent';
                 
                 return `
                     <div class="swiper-slide cursor-pointer" onclick="showPostDetail('${post.postId}')">
-                        <img src="${post.imageUrl || 'https://via.placeholder.com/400/2a2e36/ffffff?text=LINE'}" 
+                        <img src="${post.imageUrl || 'https://via.placeholder.com/400/2a2e36/ffffff?text=URGENT'}" 
                              class="w-full h-full object-cover" 
                              loading="lazy"
-                             onerror="this.src='https://via.placeholder.com/400/2a2e36/ffffff?text=IMAGE'">
+                             onerror="this.src='https://via.placeholder.com/400/2a2e36/ffffff?text=URGENT'">
                         <span class="slide-badge ${badgeClass}">${typeText}</span>
                         <div class="slide-content">
                             <h3 class="font-bold text-lg line-clamp-2">${post.title}</h3>
@@ -1315,7 +1285,12 @@
                 `;
             }).join('');
 
-            // Initialize Swiper
+            // Initialize Swiper (ถ้ามี Swiper อยู่แล้วให้ destroy ก่อน)
+            const swiperEl = document.querySelector('.hero-swiper');
+            if (swiperEl.swiper) {
+                swiperEl.swiper.destroy(true, true);
+            }
+            
             new Swiper('.hero-swiper', {
                 autoplay: {
                     delay: 3000,
@@ -1325,7 +1300,7 @@
                     el: '.swiper-pagination',
                     clickable: true,
                 },
-                loop: true,
+                loop: urgentPosts.length > 1,
                 speed: 500,
             });
         }
@@ -1452,38 +1427,41 @@
             }
         }
 
+        // ========== MARK NOTIFICATION AS READ (แก้ไขแล้ว) ==========
         async function markNotificationAsRead(notificationId) {
-    showLoading();
-    try {
-        const result = await callGAS('user/notification/read', { notificationId });
-        if (result.success) {
-            // ลบการแจ้งเตือนนั้นออกจาก state ทันที
-            const index = state.notifications.findIndex(n => n.notificationId === notificationId);
-            if (index !== -1) {
-                state.notifications.splice(index, 1);
+            showLoading();
+            try {
+                const result = await callGAS('user/notification/read', { notificationId });
+                if (result.success) {
+                    // อัปเดต state โดยเปลี่ยน isRead เป็น TRUE
+                    const notification = state.notifications.find(n => n.notificationId === notificationId);
+                    if (notification) {
+                        notification.isRead = 'TRUE';
+                    }
+                    
+                    // กรองเฉพาะที่ยังไม่อ่านเพื่อนับจำนวนใหม่
+                    const unreadCount = state.notifications.filter(n => n.isRead !== 'TRUE').length;
+                    
+                    // อัปเดต badge
+                    const badge = document.getElementById('notif-badge');
+                    if (unreadCount > 0) {
+                        badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+                        badge.classList.remove('hidden');
+                    } else {
+                        badge.classList.add('hidden');
+                    }
+                    
+                    // Render ใหม่
+                    renderNotifications();
+                    showToast('ทำเครื่องหมายว่าอ่านแล้ว');
+                }
+            } catch (error) {
+                console.error('Mark as read error:', error);
+                showToast('เกิดข้อผิดพลาด', 'error');
+            } finally {
+                hideLoading();
             }
-            
-            // นับจำนวนที่ยังไม่อ่านใหม่
-            const unreadCount = state.notifications.filter(n => n.isRead !== 'TRUE').length;
-            const badge = document.getElementById('notif-badge');
-            if (unreadCount > 0) {
-                badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
-                badge.classList.remove('hidden');
-            } else {
-                badge.classList.add('hidden');
-            }
-            
-            // อัปเดตการแสดงผล
-            renderNotifications();
-            showToast('ทำเครื่องหมายว่าอ่านแล้ว');
         }
-    } catch (error) {
-        console.error('Mark as read error:', error);
-        showToast('เกิดข้อผิดพลาด', 'error');
-    } finally {
-        hideLoading();
-    }
-}
 
         function renderNotifications() {
             const list = document.getElementById('notifications-list');
@@ -1530,7 +1508,6 @@
 
             const post = result.data;
             
-            // สร้าง Flex Message
             const flexMessage = {
                 type: 'flex',
                 altText: post.title,
@@ -1680,7 +1657,6 @@
 
                 document.getElementById('modal-body').innerHTML = html;
 
-                // ตรวจสอบสิทธิ์
                 const canEdit = canEditPost(post);
                 const canDelete = canDeletePost(post);
                 const adminControls = document.getElementById('modal-admin-controls');
@@ -2098,11 +2074,9 @@
         document.addEventListener('DOMContentLoaded', async () => {
             showLoading();
             try {
-                // ตรวจสอบว่า LIFF พร้อมใช้งานหรือยัง
                 if (typeof liff !== 'undefined') {
                     await initLIFF();
                 } else {
-                    // รอให้ LIFF โหลด
                     window.addEventListener('load', async () => {
                         await initLIFF();
                     });
