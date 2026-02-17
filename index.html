@@ -1,30 +1,28 @@
-
 <!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LINE ข่าวสาร · กิจกรรม</title>
-    
-    <!-- Tailwind (โหลดเร็วขึ้นด้วย CDN) -->
+    <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/653/653021.png">
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Fonts Preload -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- LINE LIFF (โหลดแบบ async) -->
+    <!-- LINE LIFF -->
     <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js" async></script>
     
-    <!-- Font Awesome (โหลดเร็วขึ้น) -->
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Swiper CSS สำหรับ Carousel Slide -->
+    <!-- Swiper CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     
     <style>
-        /* CSS เหมือนเดิม - คัดลอกจากโค้ดก่อนหน้า */
         * {
             font-family: 'IBM Plex Sans Thai', sans-serif;
             margin: 0;
@@ -73,6 +71,7 @@
             font-size: 12px;
             cursor: pointer;
             transition: color 0.2s;
+            position: relative;
         }
         
         .nav-item.active {
@@ -98,7 +97,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        /* Swiper Slider */
         .swiper {
             width: 100%;
             height: 220px;
@@ -147,7 +145,6 @@
             opacity: 1;
         }
         
-        /* News Card Modern */
         .news-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -205,6 +202,12 @@
             border: 1px solid rgba(239,68,68,0.3);
         }
         
+        .badge-pending {
+            background: rgba(255,193,7,0.15);
+            color: #ffc107;
+            border: 1px solid rgba(255,193,7,0.3);
+        }
+        
         .btn-primary {
             background: var(--primary);
             color: white;
@@ -254,6 +257,38 @@
         }
         
         .btn-danger:active {
+            opacity: 0.8;
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: black;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            border: none;
+            width: 100%;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        .btn-warning:active {
+            opacity: 0.8;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            border: none;
+            width: 100%;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        .btn-success:active {
             opacity: 0.8;
         }
         
@@ -603,7 +638,6 @@
             overflow: hidden;
         }
         
-        /* Loading Skeleton */
         .skeleton {
             background: linear-gradient(90deg, var(--bg-card) 25%, #252930 50%, var(--bg-card) 75%);
             background-size: 200% 100%;
@@ -615,7 +649,6 @@
             100% { background-position: -200% 0; }
         }
         
-        /* Lazy Loading */
         .lazy-image {
             opacity: 0;
             transition: opacity 0.3s;
@@ -625,7 +658,6 @@
             opacity: 1;
         }
         
-        /* Share Button */
         .share-button {
             position: absolute;
             top: 12px;
@@ -651,6 +683,25 @@
         
         .share-button i {
             font-size: 18px;
+        }
+
+        .mark-read-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-left: 8px;
+            white-space: nowrap;
+        }
+        
+        .mark-read-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
         }
     </style>
 </head>
@@ -706,7 +757,7 @@
                 </div>
             </div>
 
-            <!-- Hero Slider -->
+            <!-- Hero Slider (แสดงเฉพาะประกาศด่วน) -->
             <div class="swiper hero-swiper mb-4">
                 <div class="swiper-wrapper" id="hero-slider-wrapper"></div>
                 <div class="swiper-pagination"></div>
@@ -724,12 +775,13 @@
                 <button class="filter-btn" data-filter="news">📰 ข่าวสาร</button>
                 <button class="filter-btn" data-filter="event">🎉 กิจกรรม</button>
                 <button class="filter-btn" data-filter="urgent">⚠️ ประกาศด่วน</button>
+                <button class="filter-btn" data-filter="pending">⏳ รออนุมัติ</button>
             </div>
 
             <!-- Posts List -->
             <div id="posts-list" class="space-y-3"></div>
             
-            <!-- Loading Skeleton (แสดงระหว่างโหลด) -->
+            <!-- Loading Skeleton -->
             <div id="loading-skeleton" class="hidden">
                 <div class="skeleton h-[200px] rounded-2xl mb-4"></div>
                 <div class="skeleton h-[200px] rounded-2xl mb-4"></div>
@@ -780,8 +832,8 @@
                         <p id="admin-today" class="text-xl font-bold">-</p>
                     </div>
                     <div class="admin-stat">
-                        <p class="text-xs text-gray-400">แอดมิน</p>
-                        <p id="admin-admins" class="text-xl font-bold">-</p>
+                        <p class="text-xs text-gray-400">รออนุมัติ</p>
+                        <p id="admin-pending" class="text-xl font-bold text-yellow-500">-</p>
                     </div>
                 </div>
             </div>
@@ -790,6 +842,12 @@
             <div class="flex border-b border-[#2a2e36] mb-4">
                 <button class="admin-tab-btn flex-1 py-2 text-center active" data-admin-tab="posts">
                     จัดการโพสต์
+                </button>
+                <button class="admin-tab-btn flex-1 py-2 text-center" data-admin-tab="pending">
+                    <span class="relative">
+                        รออนุมัติ
+                        <span id="pending-badge" class="absolute -top-2 -right-4 bg-yellow-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
+                    </span>
                 </button>
                 <button class="admin-tab-btn flex-1 py-2 text-center" data-admin-tab="users">
                     จัดการผู้ใช้
@@ -805,6 +863,12 @@
                     <i class="fas fa-plus mr-2"></i>สร้างโพสต์ใหม่
                 </button>
                 <div id="admin-posts-list" class="space-y-2"></div>
+            </div>
+
+            <!-- Admin: Pending Posts -->
+            <div id="admin-pending-tab" class="admin-tab hidden">
+                <h3 class="font-semibold mb-3">โพสต์ที่รออนุมัติ</h3>
+                <div id="pending-posts-list" class="space-y-3"></div>
             </div>
 
             <!-- Admin: Users Management -->
@@ -827,11 +891,12 @@
                         <label class="block text-sm text-gray-400 mb-1">Google Drive Folder ID</label>
                         <input type="text" id="setting-drive-folder" class="input-field" required>
                         
-                        <label class="block text-sm text-gray-400 mb-1">อนุญาตให้ผู้ใช้ทั่วไปสร้างโพสต์</label>
-                        <select id="setting-allow-user-posts" class="input-field">
-                            <option value="true">ใช่</option>
-                            <option value="false">ไม่ (เฉพาะแอดมิน)</option>
-                        </select>
+                        <div class="mb-4">
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" id="setting-require-approval" class="w-4 h-4">
+                                <span class="text-sm text-gray-400">ต้องอนุมัติโพสต์ก่อนเผยแพร่</span>
+                            </label>
+                        </div>
                         
                         <button type="submit" class="btn-primary">บันทึก</button>
                     </form>
@@ -885,6 +950,14 @@
                         <i class="fas fa-trash mr-2"></i>ลบ
                     </button>
                 </div>
+                <div id="modal-approval-controls" class="flex gap-2 mt-2 hidden">
+                    <button id="modal-approve-btn" class="btn-success flex-1 text-sm" onclick="approvePost()">
+                        <i class="fas fa-check mr-2"></i>อนุมัติ
+                    </button>
+                    <button id="modal-reject-btn" class="btn-danger flex-1 text-sm" onclick="rejectPost()">
+                        <i class="fas fa-times mr-2"></i>ปฏิเสธ
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -920,11 +993,6 @@
                 <input type="hidden" id="post-image" value="">
                 
                 <input type="text" id="post-link" placeholder="ลิงก์เพิ่มเติม (ถ้ามี)" class="input-field">
-                
-                <select id="post-status" class="input-field">
-                    <option value="published">เผยแพร่</option>
-                    <option value="draft">ฉบับร่าง</option>
-                </select>
                 
                 <div class="flex gap-2">
                     <button type="submit" class="btn-primary">บันทึก</button>
@@ -984,8 +1052,8 @@
     <script>
         // ========== CONFIG ==========
         const CONFIG = {
-            GAS_URL: 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec', // <<< เปลี่ยนเป็น URL ของคุณ
-            LIFF_ID: '2008904120-T7I0VPZf', // <<< เปลี่ยนเป็น LIFF ID ของคุณ
+            GAS_URL: 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec',
+            LIFF_ID: '2008904120-T7I0VPZf',
             PAGE_SIZE: 20,
             DRIVE_FOLDER_ID: '18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE'
         };
@@ -995,6 +1063,7 @@
             user: null,
             posts: [],
             myPosts: [],
+            pendingPosts: [],
             notifications: [],
             users: [],
             currentFilter: 'all',
@@ -1003,7 +1072,9 @@
             isEditor: false,
             currentPage: 1,
             currentPost: null,
-            settings: {},
+            settings: {
+                requireApproval: false
+            },
             isLoading: false
         };
 
@@ -1092,21 +1163,6 @@
             }
         }
 
-        // ========== TEST CONNECTION ==========
-        async function testConnection() {
-            try {
-                const result = await callGAS('testConnection');
-                if (result.success) {
-                    showToast('✅ เชื่อมต่อสำเร็จ: ' + result.data.spreadsheetName);
-                    console.log('Connection test:', result.data);
-                } else {
-                    showToast('❌ ' + result.message, 'error');
-                }
-            } catch (err) {
-                showToast('❌ ไม่สามารถเชื่อมต่อได้', 'error');
-            }
-        }
-
         // ========== IMAGE UPLOAD ==========
         async function uploadImageToDrive(file) {
             showLoading();
@@ -1166,7 +1222,6 @@
                 const profile = await liff.getProfile();
                 const idToken = liff.getDecodedIDToken();
                 
-                // โหลดข้อมูลผู้ใช้
                 const result = await callGAS('user/profile', {
                     lineUserId: profile.userId,
                     displayName: profile.displayName,
@@ -1179,12 +1234,12 @@
                     state.isAdmin = state.user.role === 'admin';
                     state.isEditor = state.isAdmin || state.user.role === 'editor';
                     
-                    // โหลดข้อมูลพร้อมกันแบบขนานเพื่อความเร็ว
                     await Promise.all([
                         loadSettings(),
                         loadPosts(),
                         loadMyPosts(),
                         loadNotifications(),
+                        loadPendingPosts(),
                         state.isAdmin ? loadUsers() : Promise.resolve(),
                         state.isAdmin ? loadAdminStats() : Promise.resolve()
                     ]);
@@ -1237,7 +1292,7 @@
                 state.settings = result.data || {};
                 document.getElementById('setting-app-name').value = state.settings.appName || 'LINE ข่าวสาร';
                 document.getElementById('setting-drive-folder').value = state.settings.driveFolderId || CONFIG.DRIVE_FOLDER_ID;
-                document.getElementById('setting-allow-user-posts').value = state.settings.allowUserPosts || 'true';
+                document.getElementById('setting-require-approval').checked = state.settings.requireApproval || false;
             }
         }
 
@@ -1247,7 +1302,8 @@
                 page: state.currentPage,
                 filter: state.currentFilter,
                 search: state.searchTerm,
-                pageSize: CONFIG.PAGE_SIZE
+                pageSize: CONFIG.PAGE_SIZE,
+                includePending: state.isAdmin // Admin เห็นโพสต์ที่รออนุมัติด้วย
             });
             
             if (result.success) {
@@ -1262,37 +1318,31 @@
             }
         }
 
+        // ========== RENDER HERO SLIDER (เฉพาะประกาศด่วน) ==========
         function renderHeroSlider() {
             const wrapper = document.getElementById('hero-slider-wrapper');
             if (!wrapper) return;
             
-            // เลือกโพสต์เด่น 5 อันดับล่าสุด
-            const featured = state.posts.slice(0, 5);
+            // กรองเอาเฉพาะโพสต์ประเภท 'urgent' ที่เผยแพร่แล้ว
+            const urgentPosts = state.posts
+                .filter(post => post.type === 'urgent' && post.status === 'published')
+                .slice(0, 5);
             
-            if (featured.length === 0) {
+            if (urgentPosts.length === 0) {
                 wrapper.innerHTML = '';
                 return;
             }
 
-            wrapper.innerHTML = featured.map(post => {
-                const typeText = {
-                    'news': '📰 ข่าวสาร',
-                    'event': '🎉 กิจกรรม',
-                    'urgent': '⚠️ ประกาศด่วน'
-                }[post.type] || post.type;
-                
-                const badgeClass = {
-                    'news': 'news',
-                    'event': 'event',
-                    'urgent': 'urgent'
-                }[post.type] || 'news';
+            wrapper.innerHTML = urgentPosts.map(post => {
+                const typeText = '⚠️ ประกาศด่วน';
+                const badgeClass = 'urgent';
                 
                 return `
                     <div class="swiper-slide cursor-pointer" onclick="showPostDetail('${post.postId}')">
-                        <img src="${post.imageUrl || 'https://via.placeholder.com/400/2a2e36/ffffff?text=LINE'}" 
+                        <img src="${post.imageUrl || 'https://via.placeholder.com/400/2a2e36/ffffff?text=URGENT'}" 
                              class="w-full h-full object-cover" 
                              loading="lazy"
-                             onerror="this.src='https://via.placeholder.com/400/2a2e36/ffffff?text=IMAGE'">
+                             onerror="this.src='https://via.placeholder.com/400/2a2e36/ffffff?text=URGENT'">
                         <span class="slide-badge ${badgeClass}">${typeText}</span>
                         <div class="slide-content">
                             <h3 class="font-bold text-lg line-clamp-2">${post.title}</h3>
@@ -1303,6 +1353,11 @@
             }).join('');
 
             // Initialize Swiper
+            const swiperEl = document.querySelector('.hero-swiper');
+            if (swiperEl.swiper) {
+                swiperEl.swiper.destroy(true, true);
+            }
+            
             new Swiper('.hero-swiper', {
                 autoplay: {
                     delay: 3000,
@@ -1312,14 +1367,21 @@
                     el: '.swiper-pagination',
                     clickable: true,
                 },
-                loop: true,
+                loop: urgentPosts.length > 1,
                 speed: 500,
             });
         }
 
         function renderPosts() {
             const list = document.getElementById('posts-list');
-            if (state.posts.length === 0) {
+            
+            // กรองตามสถานะ - ผู้ใช้ทั่วไปเห็นเฉพาะ published, admin เห็นหมด
+            let filteredPosts = state.posts;
+            if (!state.isAdmin) {
+                filteredPosts = state.posts.filter(p => p.status === 'published');
+            }
+            
+            if (filteredPosts.length === 0) {
                 list.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-newspaper text-4xl text-gray-500 mb-3"></i>
@@ -1329,7 +1391,7 @@
                 return;
             }
 
-            list.innerHTML = state.posts.map(post => {
+            list.innerHTML = filteredPosts.map(post => {
                 const typeClass = {
                     'news': 'badge-news',
                     'event': 'badge-event',
@@ -1341,6 +1403,9 @@
                     'event': '🎉 กิจกรรม',
                     'urgent': '⚠️ ประกาศด่วน'
                 }[post.type] || post.type;
+                
+                const statusBadge = post.status !== 'published' ? 
+                    `<span class="badge badge-pending ml-2">⏳ รออนุมัติ</span>` : '';
                 
                 return `
                     <div class="news-card relative" onclick="showPostDetail('${post.postId}')">
@@ -1355,7 +1420,10 @@
                         ` : ''}
                         <div class="news-content">
                             <div class="flex justify-between items-start mb-2">
-                                <span class="badge ${typeClass}">${typeText}</span>
+                                <div>
+                                    <span class="badge ${typeClass}">${typeText}</span>
+                                    ${statusBadge}
+                                </div>
                                 <span class="text-xs text-gray-500">${formatDateShort(post.createdAt)}</span>
                             </div>
                             <h3 class="font-semibold text-lg mb-2">${post.title}</h3>
@@ -1368,6 +1436,140 @@
                     </div>
                 `;
             }).join('');
+        }
+
+        // ========== PENDING POSTS ==========
+        async function loadPendingPosts() {
+            if (!state.isAdmin) return;
+            
+            const result = await callGAS('admin/posts/pending');
+            if (result.success) {
+                state.pendingPosts = result.data || [];
+                renderPendingPosts();
+                
+                const badge = document.getElementById('pending-badge');
+                const pendingCount = state.pendingPosts.length;
+                if (pendingCount > 0) {
+                    badge.textContent = pendingCount > 9 ? '9+' : pendingCount;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            }
+        }
+
+        function renderPendingPosts() {
+            const list = document.getElementById('pending-posts-list');
+            if (state.pendingPosts.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-check-circle text-4xl text-gray-500 mb-3"></i>
+                        <p class="text-gray-400">ไม่มีโพสต์รออนุมัติ</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = state.pendingPosts.map(post => {
+                const typeIcon = {
+                    'news': '📰',
+                    'event': '🎉',
+                    'urgent': '⚠️'
+                }[post.type] || '📄';
+                
+                return `
+                    <div class="bg-[#1a1d24] p-4 rounded-xl border border-yellow-500/30">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <span class="badge badge-pending">⏳ รออนุมัติ</span>
+                                <span class="badge badge-${post.type} ml-2">${typeIcon}</span>
+                            </div>
+                            <span class="text-xs text-gray-500">${formatDateShort(post.createdAt)}</span>
+                        </div>
+                        <h3 class="font-semibold text-lg mb-2">${post.title}</h3>
+                        <p class="text-sm text-gray-400 mb-3 line-clamp-2">${post.content}</p>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-500">โดย: ${post.authorName || 'ผู้ใช้'}</span>
+                            <div class="flex gap-2">
+                                <button class="btn-success text-sm py-2 px-4" onclick="approvePost('${post.postId}')">
+                                    <i class="fas fa-check mr-1"></i>อนุมัติ
+                                </button>
+                                <button class="btn-danger text-sm py-2 px-4" onclick="rejectPost('${post.postId}')">
+                                    <i class="fas fa-times mr-1"></i>ปฏิเสธ
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ========== APPROVE/REJECT POST ==========
+        async function approvePost(postId) {
+            const id = postId || state.currentPost?.postId;
+            if (!id) return;
+            
+            const result = await callGAS('admin/post/approve', { postId: id });
+            if (result.success) {
+                showToast('อนุมัติโพสต์สำเร็จ');
+                closeModal();
+                
+                // อัปเดต state ทันทีโดยไม่ต้องโหลดใหม่
+                const postIndex = state.pendingPosts.findIndex(p => p.postId === id);
+                if (postIndex !== -1) {
+                    state.pendingPosts.splice(postIndex, 1);
+                }
+                
+                const postInPosts = state.posts.find(p => p.postId === id);
+                if (postInPosts) {
+                    postInPosts.status = 'published';
+                }
+                
+                // อัปเดต UI ทันที
+                renderPendingPosts();
+                renderPosts();
+                renderHeroSlider();
+                
+                // อัปเดต badge
+                const badge = document.getElementById('pending-badge');
+                if (state.pendingPosts.length > 0) {
+                    badge.textContent = state.pendingPosts.length > 9 ? '9+' : state.pendingPosts.length;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            }
+        }
+
+        async function rejectPost(postId) {
+            const id = postId || state.currentPost?.postId;
+            if (!id) return;
+            
+            if (!confirm('ต้องการปฏิเสธโพสต์นี้?')) return;
+            
+            const result = await callGAS('admin/post/reject', { postId: id });
+            if (result.success) {
+                showToast('ปฏิเสธโพสต์สำเร็จ');
+                closeModal();
+                
+                // อัปเดต state ทันที
+                const postIndex = state.pendingPosts.findIndex(p => p.postId === id);
+                if (postIndex !== -1) {
+                    state.pendingPosts.splice(postIndex, 1);
+                }
+                
+                // อัปเดต UI ทันที
+                renderPendingPosts();
+                
+                // อัปเดต badge
+                const badge = document.getElementById('pending-badge');
+                if (state.pendingPosts.length > 0) {
+                    badge.textContent = state.pendingPosts.length > 9 ? '9+' : state.pendingPosts.length;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            }
         }
 
         // ========== MY POSTS ==========
@@ -1397,8 +1599,10 @@
             }
 
             list.innerHTML = state.myPosts.map(post => {
-                const statusClass = post.status === 'published' ? 'text-[#06c755]' : 'text-gray-500';
-                const statusText = post.status === 'published' ? 'เผยแพร่' : 'ฉบับร่าง';
+                const statusClass = post.status === 'published' ? 'text-[#06c755]' : 
+                                   post.status === 'pending' ? 'text-yellow-500' : 'text-gray-500';
+                const statusText = post.status === 'published' ? 'เผยแพร่' : 
+                                  post.status === 'pending' ? 'รออนุมัติ' : 'ฉบับร่าง';
                 
                 const typeIcon = {
                     'news': '📰',
@@ -1410,7 +1614,11 @@
                     <div class="news-card" onclick="showPostDetail('${post.postId}')">
                         <div class="news-content">
                             <div class="flex justify-between items-start mb-2">
-                                <span class="badge badge-news">${typeIcon}</span>
+                                <div>
+                                    <span class="badge badge-news">${typeIcon}</span>
+                                    ${post.status === 'pending' ? 
+                                        '<span class="badge badge-pending ml-2">⏳ รออนุมัติ</span>' : ''}
+                                </div>
                                 <span class="text-xs ${statusClass}">${statusText}</span>
                             </div>
                             <h3 class="font-semibold">${post.title}</h3>
@@ -1420,6 +1628,84 @@
                     </div>
                 `;
             }).join('');
+        }
+
+        // ========== NOTIFICATIONS ==========
+        async function loadNotifications() {
+            const result = await callGAS('user/notifications', { unreadOnly: 'true' });
+            if (result.success) {
+                state.notifications = result.data.notifications || [];
+                const unread = result.data.unreadCount || 0;
+                const badge = document.getElementById('notif-badge');
+                if (unread > 0) {
+                    badge.textContent = unread > 9 ? '9+' : unread;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+                renderNotifications();
+            }
+        }
+
+        async function markNotificationAsRead(notificationId) {
+            showLoading();
+            try {
+                const result = await callGAS('user/notification/read', { notificationId });
+                if (result.success) {
+                    const notification = state.notifications.find(n => n.notificationId === notificationId);
+                    if (notification) {
+                        notification.isRead = 'TRUE';
+                    }
+                    
+                    const unreadCount = state.notifications.filter(n => n.isRead !== 'TRUE').length;
+                    
+                    const badge = document.getElementById('notif-badge');
+                    if (unreadCount > 0) {
+                        badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+                        badge.classList.remove('hidden');
+                    } else {
+                        badge.classList.add('hidden');
+                    }
+                    
+                    renderNotifications();
+                    showToast('ทำเครื่องหมายว่าอ่านแล้ว');
+                }
+            } catch (error) {
+                console.error('Mark as read error:', error);
+                showToast('เกิดข้อผิดพลาด', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function renderNotifications() {
+            const list = document.getElementById('notifications-list');
+            if (state.notifications.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-bell-slash text-4xl text-gray-500 mb-3"></i>
+                        <p class="text-gray-400">ไม่มีการแจ้งเตือน</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = state.notifications.map(n => `
+                <div class="bg-[#1a1d24] p-4 rounded-xl border border-[#2a2e36] ${n.isRead !== 'TRUE' ? 'border-l-4 border-l-[#06c755]' : ''}">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <p class="font-semibold">${n.title}</p>
+                            <p class="text-sm text-gray-400 mt-1">${n.message}</p>
+                            <p class="text-xs text-gray-500 mt-2">${formatDate(n.createdAt)}</p>
+                        </div>
+                        ${n.isRead !== 'TRUE' ? `
+                            <button class="mark-read-btn" onclick="event.stopPropagation(); markNotificationAsRead('${n.notificationId}')">
+                                <i class="fas fa-check-circle mr-1"></i>อ่านแล้ว
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
         }
 
         // ========== SHARE ==========
@@ -1437,7 +1723,6 @@
 
             const post = result.data;
             
-            // สร้าง Flex Message
             const flexMessage = {
                 type: 'flex',
                 altText: post.title,
@@ -1570,7 +1855,11 @@
                     ` : ''}
                     
                     <div class="flex justify-between items-center">
-                        <span class="badge badge-${post.type}">${typeText}</span>
+                        <div>
+                            <span class="badge badge-${post.type}">${typeText}</span>
+                            ${post.status !== 'published' ? 
+                                '<span class="badge badge-pending ml-2">⏳ รออนุมัติ</span>' : ''}
+                        </div>
                         <span class="text-sm text-gray-400">
                             <i class="fas fa-eye mr-1"></i>${post.viewCount || 0}
                         </span>
@@ -1587,15 +1876,32 @@
 
                 document.getElementById('modal-body').innerHTML = html;
 
-                // ตรวจสอบสิทธิ์
                 const canEdit = canEditPost(post);
                 const canDelete = canDeletePost(post);
-                const adminControls = document.getElementById('modal-admin-controls');
+                const canApprove = state.isAdmin && post.status === 'pending';
                 
-                if (canEdit || canDelete) {
+                const adminControls = document.getElementById('modal-admin-controls');
+                const editDeleteDiv = document.getElementById('modal-edit-btn').parentNode;
+                const approvalDiv = document.getElementById('modal-approval-controls');
+                
+                if (canEdit || canDelete || canApprove) {
                     adminControls.classList.remove('hidden');
-                    document.getElementById('modal-edit-btn').style.display = canEdit ? 'block' : 'none';
-                    document.getElementById('modal-delete-btn').style.display = canDelete ? 'block' : 'none';
+                    
+                    // แสดง/ซ่อน ปุ่มแก้ไข/ลบ
+                    if (canEdit || canDelete) {
+                        editDeleteDiv.classList.remove('hidden');
+                        document.getElementById('modal-edit-btn').style.display = canEdit ? 'block' : 'none';
+                        document.getElementById('modal-delete-btn').style.display = canDelete ? 'block' : 'none';
+                    } else {
+                        editDeleteDiv.classList.add('hidden');
+                    }
+                    
+                    // แสดง/ซ่อน ปุ่มอนุมัติ/ปฏิเสธ
+                    if (canApprove) {
+                        approvalDiv.classList.remove('hidden');
+                    } else {
+                        approvalDiv.classList.add('hidden');
+                    }
                 } else {
                     adminControls.classList.add('hidden');
                 }
@@ -1615,7 +1921,13 @@
 
         function canEditPost(post) {
             if (!post) return false;
-            return state.isAdmin || (state.user?.role === 'editor' && post.authorId === state.user?.lineUserId);
+            // แก้ไขได้ถ้า:
+            // 1. เป็น admin หรือ
+            // 2. เป็นเจ้าของโพสต์ (editor) และโพสต์ยังไม่ถูกเผยแพร่ (pending/draft)
+            return state.isAdmin || 
+                   (state.user?.role === 'editor' && 
+                    post.authorId === state.user?.lineUserId && 
+                    post.status !== 'published');
         }
 
         function canDeletePost(post) {
@@ -1637,7 +1949,6 @@
             document.getElementById('post-content').value = '';
             document.getElementById('post-image').value = '';
             document.getElementById('post-link').value = '';
-            document.getElementById('post-status').value = 'published';
             document.getElementById('image-preview').style.display = 'none';
             document.getElementById('post-image-file').value = '';
             
@@ -1669,13 +1980,19 @@
                 }
             }
 
+            // กำหนดสถานะเริ่มต้น
+            let status = 'published';
+            if (!state.isAdmin && state.settings.requireApproval) {
+                status = 'pending'; // รออนุมัติถ้าตั้งค่าไว้
+            }
+
             const data = {
                 type: document.getElementById('post-type').value,
                 title: document.getElementById('post-title').value,
                 content: document.getElementById('post-content').value,
                 imageUrl: imageUrl,
                 link: document.getElementById('post-link').value,
-                status: document.getElementById('post-status').value
+                status: status
             };
 
             if (isEdit) {
@@ -1686,9 +2003,47 @@
             if (result.success) {
                 showToast(isEdit ? 'แก้ไขสำเร็จ' : 'สร้างสำเร็จ');
                 closeCreateModal();
-                await loadPosts();
-                await loadMyPosts();
-                if (state.isAdmin) await loadAdminStats();
+                
+                // อัปเดต state ทันทีโดยไม่ต้องโหลดใหม่
+                if (isEdit) {
+                    // แก้ไข: อัปเดตโพสต์ใน state
+                    const postIndex = state.myPosts.findIndex(p => p.postId === id);
+                    if (postIndex !== -1) {
+                        state.myPosts[postIndex] = { ...state.myPosts[postIndex], ...data };
+                    }
+                    
+                    const postInAll = state.posts.findIndex(p => p.postId === id);
+                    if (postInAll !== -1) {
+                        state.posts[postInAll] = { ...state.posts[postInAll], ...data };
+                    }
+                } else {
+                    // สร้างใหม่: เพิ่มโพสต์เข้า state
+                    const newPost = {
+                        postId: result.data.postId,
+                        ...data,
+                        authorId: state.user.lineUserId,
+                        authorName: state.user.displayName,
+                        createdAt: new Date().toISOString(),
+                        viewCount: 0
+                    };
+                    
+                    state.myPosts.unshift(newPost);
+                    if (status === 'published') {
+                        state.posts.unshift(newPost);
+                    } else if (status === 'pending' && state.isAdmin) {
+                        state.pendingPosts.unshift(newPost);
+                    }
+                }
+                
+                // อัปเดต UI ทันที
+                renderMyPosts();
+                renderPosts();
+                renderHeroSlider();
+                renderPendingPosts();
+                
+                if (state.isAdmin) {
+                    loadAdminStats(); // โหลดสถิติใหม่
+                }
             }
         }
 
@@ -1709,7 +2064,6 @@
             document.getElementById('post-content').value = post.content || '';
             document.getElementById('post-image').value = post.imageUrl || '';
             document.getElementById('post-link').value = post.link || '';
-            document.getElementById('post-status').value = post.status || 'published';
             
             if (post.imageUrl) {
                 document.getElementById('image-preview').src = post.imageUrl;
@@ -1739,48 +2093,24 @@
             if (result.success) {
                 showToast('ลบสำเร็จ');
                 closeModal();
-                await loadPosts();
-                await loadMyPosts();
-                if (state.isAdmin) await loadAdminStats();
-            }
-        }
-
-        // ========== NOTIFICATIONS ==========
-        async function loadNotifications() {
-            const result = await callGAS('user/notifications', { unreadOnly: 'true' });
-            if (result.success) {
-                state.notifications = result.data.notifications || [];
-                const unread = result.data.unreadCount || 0;
-                const badge = document.getElementById('notif-badge');
-                if (unread > 0) {
-                    badge.textContent = unread > 9 ? '9+' : unread;
-                    badge.classList.remove('hidden');
-                } else {
-                    badge.classList.add('hidden');
+                
+                // ลบออกจาก state ทันที
+                const postId = state.currentPost.postId;
+                
+                state.myPosts = state.myPosts.filter(p => p.postId !== postId);
+                state.posts = state.posts.filter(p => p.postId !== postId);
+                state.pendingPosts = state.pendingPosts.filter(p => p.postId !== postId);
+                
+                // อัปเดต UI
+                renderMyPosts();
+                renderPosts();
+                renderHeroSlider();
+                renderPendingPosts();
+                
+                if (state.isAdmin) {
+                    loadAdminStats(); // โหลดสถิติใหม่
                 }
-                renderNotifications();
             }
-        }
-
-        function renderNotifications() {
-            const list = document.getElementById('notifications-list');
-            if (state.notifications.length === 0) {
-                list.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-bell-slash text-4xl text-gray-500 mb-3"></i>
-                        <p class="text-gray-400">ไม่มีการแจ้งเตือน</p>
-                    </div>
-                `;
-                return;
-            }
-
-            list.innerHTML = state.notifications.map(n => `
-                <div class="bg-[#1a1d24] p-4 rounded-xl border border-[#2a2e36] ${n.isRead !== 'TRUE' ? 'border-l-4 border-l-[#06c755]' : ''}">
-                    <p class="font-semibold">${n.title}</p>
-                    <p class="text-sm text-gray-400 mt-1">${n.message}</p>
-                    <p class="text-xs text-gray-500 mt-2">${formatDate(n.createdAt)}</p>
-                </div>
-            `).join('');
         }
 
         // ========== ADMIN: USERS ==========
@@ -1864,7 +2194,14 @@
             if (result.success) {
                 showToast('อัปเดตสิทธิ์สำเร็จ');
                 closeRoleModal();
-                await loadUsers();
+                
+                // อัปเดต state ทันที
+                const userIndex = state.users.findIndex(u => u.lineUserId === userId);
+                if (userIndex !== -1) {
+                    state.users[userIndex].role = role;
+                }
+                
+                renderUsers(); // อัปเดต UI ทันที
             }
         }
 
@@ -1878,7 +2215,7 @@
                 document.getElementById('admin-users').textContent = stats.users || 0;
                 document.getElementById('admin-posts').textContent = stats.posts || 0;
                 document.getElementById('admin-today').textContent = stats.today || 0;
-                document.getElementById('admin-admins').textContent = stats.admins || 0;
+                document.getElementById('admin-pending').textContent = stats.pending || 0;
             }
 
             const posts = await callGAS('admin/posts', { pageSize: 10 });
@@ -1898,7 +2235,7 @@
                                 <p class="text-xs text-gray-400">${formatDateShort(p.createdAt)}</p>
                             </div>
                             <span class="badge badge-${p.type} text-xs mr-2">${typeIcon}</span>
-                            <span class="text-xs ${p.status === 'published' ? 'text-[#06c755]' : 'text-gray-500'}">${p.status}</span>
+                            <span class="text-xs ${p.status === 'published' ? 'text-[#06c755]' : p.status === 'pending' ? 'text-yellow-500' : 'text-gray-500'}">${p.status === 'published' ? 'เผยแพร่' : p.status === 'pending' ? 'รออนุมัติ' : 'ร่าง'}</span>
                         </div>
                     `;
                 }).join('');
@@ -1917,7 +2254,7 @@
             const data = {
                 appName: document.getElementById('setting-app-name').value,
                 driveFolderId: document.getElementById('setting-drive-folder').value,
-                allowUserPosts: document.getElementById('setting-allow-user-posts').value
+                requireApproval: document.getElementById('setting-require-approval').checked
             };
             
             const result = await callGAS('admin/settings/update', data);
@@ -1983,12 +2320,19 @@
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
                 document.getElementById(`tab-${target}`).classList.add('active');
                 
-                if (target === 'home') loadPosts();
-                if (target === 'my') loadMyPosts();
-                if (target === 'notifications') loadNotifications();
+                if (target === 'home') {
+                    loadPosts(); // โหลดใหม่ถ้าต้องการ
+                }
+                if (target === 'my') {
+                    loadMyPosts(); // โหลดใหม่ถ้าต้องการ
+                }
+                if (target === 'notifications') {
+                    loadNotifications(); // โหลดใหม่ถ้าต้องการ
+                }
                 if (target === 'admin' && state.isAdmin) {
                     loadAdminStats();
                     loadUsers();
+                    loadPendingPosts();
                 }
             });
         });
@@ -2003,6 +2347,10 @@
                 
                 document.querySelectorAll('.admin-tab').forEach(t => t.classList.add('hidden'));
                 document.getElementById(`admin-${target}-tab`).classList.remove('hidden');
+                
+                if (target === 'pending') {
+                    loadPendingPosts();
+                }
             });
         });
 
@@ -2037,6 +2385,7 @@
             if (state.isAdmin) {
                 loadAdminStats();
                 loadUsers();
+                loadPendingPosts();
             }
         });
 
@@ -2044,11 +2393,9 @@
         document.addEventListener('DOMContentLoaded', async () => {
             showLoading();
             try {
-                // ตรวจสอบว่า LIFF พร้อมใช้งานหรือยัง
                 if (typeof liff !== 'undefined') {
                     await initLIFF();
                 } else {
-                    // รอให้ LIFF โหลด
                     window.addEventListener('load', async () => {
                         await initLIFF();
                     });
