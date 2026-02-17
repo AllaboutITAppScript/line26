@@ -526,7 +526,7 @@
         <div id="tab-home" class="tab-content active">
             <!-- Profile Header -->
             <div class="profile-header" id="profile-header">
-                <img id="profile-avatar" src="" alt="avatar" class="profile-avatar">
+                <img id="profile-avatar" src="https://via.placeholder.com/100/06c755/ffffff?text=LINE" alt="avatar" class="profile-avatar">
                 <div class="flex-1">
                     <h2 id="profile-name" class="text-lg font-bold">กำลังโหลด...</h2>
                     <p id="profile-email" class="text-sm text-gray-400"></p>
@@ -583,7 +583,7 @@
         <div id="tab-my" class="tab-content">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-bold">โพสต์ของฉัน</h2>
-                <button id="create-post-btn" class="bg-[#06c755] text-white px-4 py-2 rounded-xl text-sm hidden" onclick="showCreatePostModal()">
+                <button id="create-post-btn" class="bg-[#06c755] text-white px-4 py-2 rounded-xl text-sm" onclick="showCreatePostModal()">
                     <i class="fas fa-plus mr-1"></i>สร้าง
                 </button>
             </div>
@@ -664,10 +664,10 @@
                     <h3 class="font-semibold mb-3">ตั้งค่าระบบ</h3>
                     <form id="settings-form" onsubmit="saveSettings(event)">
                         <label class="block text-sm text-gray-400 mb-1">ชื่อระบบ</label>
-                        <input type="text" id="setting-app-name" class="input-field" required>
+                        <input type="text" id="setting-app-name" class="input-field" value="LINE ข่าวสาร" required>
                         
                         <label class="block text-sm text-gray-400 mb-1">Google Drive Folder ID</label>
-                        <input type="text" id="setting-drive-folder" class="input-field" required>
+                        <input type="text" id="setting-drive-folder" class="input-field" value="18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE" required>
                         
                         <label class="block text-sm text-gray-400 mb-1">อนุญาตให้ผู้ใช้ทั่วไปสร้างโพสต์</label>
                         <select id="setting-allow-user-posts" class="input-field">
@@ -697,7 +697,7 @@
             <span>แจ้งเตือน</span>
             <span id="notif-badge" class="absolute -top-1 right-4 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
         </div>
-        <div class="nav-item hidden admin-only" data-tab="admin">
+        <div class="nav-item admin-only hidden" data-tab="admin">
             <i class="fas fa-cog"></i>
             <span>จัดการ</span>
         </div>
@@ -819,27 +819,124 @@
 
     <script>
         // ========== CONFIG ==========
+        // แก้ไขตรงนี้ให้ถูกต้องก่อนใช้งานจริง
         const CONFIG = {
-            GAS_URL: 'https://script.google.com/macros/s/AKfycbz-KrVasPjihWtxCJc1w7VrF3-gc-NW5WJQ8eGqTIN3vXu3N1q9lM6aJz7WHVQbmtWp/exec', // <<< เปลี่ยนเป็น URL ของคุณ
-            LIFF_ID: '2008904120-T7I0VPZf', // <<< เปลี่ยนเป็น LIFF ID ของคุณ
+            // โหมดการทำงาน: 'mock' = ใช้ข้อมูลจำลอง, 'real' = ใช้ GAS จริง
+            MODE: 'mock',
+            
+            // ใช้เมื่อ MODE = 'real' เท่านั้น
+            GAS_URL: 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec',
+            LIFF_ID: '2008904120-T7I0VPZf',
+            
             PAGE_SIZE: 20,
             DRIVE_FOLDER_ID: '18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE'
         };
 
         // ========== STATE ==========
         const state = {
-            user: null,
+            user: {
+                lineUserId: 'U' + Math.random().toString(36).substring(2, 15),
+                displayName: 'ผู้ใช้ทดสอบ',
+                pictureUrl: 'https://via.placeholder.com/100/06c755/ffffff?text=USER',
+                email: 'user@example.com',
+                role: 'admin', // เปลี่ยนเป็น 'admin' เพื่อทดสอบสิทธิ์แอดมิน
+                phone: '0812345678',
+                department: 'ไอที'
+            },
             posts: [],
             myPosts: [],
             notifications: [],
             users: [],
             currentFilter: 'all',
             searchTerm: '',
-            isAdmin: false,
-            isEditor: false,
+            isAdmin: true, // เปลี่ยนเป็น true เพื่อทดสอบแอดมิน
+            isEditor: true,
             currentPage: 1,
             currentPost: null,
-            settings: {}
+            settings: {
+                appName: 'LINE ข่าวสาร',
+                driveFolderId: '18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE',
+                allowUserPosts: 'true'
+            }
+        };
+
+        // ========== ข้อมูลจำลอง ==========
+        const MOCK_DATA = {
+            posts: [
+                {
+                    postId: 'POST001',
+                    type: 'news',
+                    title: '📰 ประกาศวันหยุดสงกรานต์',
+                    content: 'บริษัทฯ กำหนดวันหยุดสงกรานต์ ระหว่างวันที่ 13-17 เมษายน นี้',
+                    imageUrl: 'https://images.unsplash.com/photo-1558401391-7895-6c9a0c1f6069?w=400',
+                    authorName: 'ผู้ดูแลระบบ',
+                    authorId: 'admin',
+                    viewCount: 125,
+                    status: 'published',
+                    createdAt: new Date(Date.now() - 86400000).toISOString()
+                },
+                {
+                    postId: 'POST002',
+                    type: 'event',
+                    title: '🎉 กิจกรรมปีใหม่บริษัท',
+                    content: 'พบกับงานเลี้ยงปีใหม่ พร้อมของรางวัลมากมาย',
+                    imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400',
+                    authorName: 'ผู้ดูแลระบบ',
+                    authorId: 'admin',
+                    viewCount: 89,
+                    status: 'published',
+                    createdAt: new Date(Date.now() - 172800000).toISOString()
+                },
+                {
+                    postId: 'POST003',
+                    type: 'urgent',
+                    title: '⚠️ แจ้งเปลี่ยนสถานที่อบรม',
+                    content: 'เปลี่ยนสถานที่อบรมเป็นห้องประชุมใหญ่ ชั้น 5',
+                    imageUrl: '',
+                    authorName: 'ผู้ดูแลระบบ',
+                    authorId: 'admin',
+                    viewCount: 45,
+                    status: 'published',
+                    createdAt: new Date(Date.now() - 259200000).toISOString()
+                }
+            ],
+            users: [
+                {
+                    lineUserId: 'Uadmin',
+                    displayName: 'แอดมิน',
+                    pictureUrl: 'https://via.placeholder.com/40/06c755/ffffff?text=A',
+                    email: 'admin@example.com',
+                    role: 'admin'
+                },
+                {
+                    lineUserId: 'Ueditor',
+                    displayName: 'ผู้เขียน',
+                    pictureUrl: 'https://via.placeholder.com/40/f59e0b/ffffff?text=E',
+                    email: 'editor@example.com',
+                    role: 'editor'
+                },
+                {
+                    lineUserId: 'Uuser',
+                    displayName: 'ผู้ใช้ทั่วไป',
+                    pictureUrl: 'https://via.placeholder.com/40/9ca3af/ffffff?text=U',
+                    email: 'user@example.com',
+                    role: 'user'
+                }
+            ],
+            notifications: [
+                {
+                    title: 'ยินดีต้อนรับ',
+                    message: 'ยินดีต้อนรับสู่ระบบ LINE ข่าวสาร',
+                    isRead: 'FALSE',
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    title: 'มีโพสต์ใหม่',
+                    message: 'ผู้ดูแลระบบโพสต์: ประกาศวันหยุดสงกรานต์',
+                    isRead: 'TRUE',
+                    createdAt: new Date(Date.now() - 86400000).toISOString()
+                }
+            ]
         };
 
         // ========== DOM Elements ==========
@@ -875,8 +972,117 @@
             });
         }
 
-        // ========== API CALL ==========
+        // ========== API CALL (เลือกโหมด mock/real) ==========
         async function callGAS(path, data = {}) {
+            if (CONFIG.MODE === 'mock') {
+                // โหมดทดสอบ - ใช้ข้อมูลจำลอง
+                return mockAPI(path, data);
+            } else {
+                // โหมดจริง - เรียก GAS จริง
+                return realGAS(path, data);
+            }
+        }
+
+        async function mockAPI(path, data) {
+            showLoading();
+            await new Promise(resolve => setTimeout(resolve, 500)); // จำลองดีเลย์
+            
+            try {
+                let result = { success: true, data: null, message: 'Success' };
+                
+                switch(path) {
+                    case 'user/profile':
+                        result.data = state.user;
+                        break;
+                        
+                    case 'posts':
+                        result.data = {
+                            posts: MOCK_DATA.posts.filter(p => p.status === 'published'),
+                            stats: {
+                                news: MOCK_DATA.posts.filter(p => p.type === 'news').length,
+                                events: MOCK_DATA.posts.filter(p => p.type === 'event').length,
+                                urgent: MOCK_DATA.posts.filter(p => p.type === 'urgent').length
+                            },
+                            totalPages: 1
+                        };
+                        break;
+                        
+                    case 'user/posts':
+                        result.data = MOCK_DATA.posts.filter(p => p.authorId === state.user.lineUserId);
+                        break;
+                        
+                    case 'post':
+                        result.data = MOCK_DATA.posts.find(p => p.postId === data.postId);
+                        break;
+                        
+                    case 'post/create':
+                        const newPost = {
+                            postId: 'POST' + Math.random().toString(36).substring(2, 10).toUpperCase(),
+                            type: data.type,
+                            title: data.title,
+                            content: data.content,
+                            imageUrl: data.imageUrl,
+                            link: data.link,
+                            status: data.status,
+                            authorId: state.user.lineUserId,
+                            authorName: state.user.displayName,
+                            viewCount: 0,
+                            createdAt: new Date().toISOString()
+                        };
+                        MOCK_DATA.posts.unshift(newPost);
+                        result.data = { postId: newPost.postId };
+                        break;
+                        
+                    case 'post/update':
+                        const postIndex = MOCK_DATA.posts.findIndex(p => p.postId === data.postId);
+                        if (postIndex >= 0) {
+                            MOCK_DATA.posts[postIndex] = { ...MOCK_DATA.posts[postIndex], ...data };
+                        }
+                        break;
+                        
+                    case 'post/delete':
+                        const deleteIndex = MOCK_DATA.posts.findIndex(p => p.postId === data.postId);
+                        if (deleteIndex >= 0) {
+                            MOCK_DATA.posts.splice(deleteIndex, 1);
+                        }
+                        break;
+                        
+                    case 'user/notifications':
+                        result.data = {
+                            notifications: MOCK_DATA.notifications,
+                            unreadCount: MOCK_DATA.notifications.filter(n => n.isRead !== 'TRUE').length
+                        };
+                        break;
+                        
+                    case 'admin/users':
+                        result.data = MOCK_DATA.users;
+                        break;
+                        
+                    case 'admin/stats':
+                        result.data = {
+                            users: MOCK_DATA.users.length,
+                            posts: MOCK_DATA.posts.length,
+                            today: 1,
+                            admins: MOCK_DATA.users.filter(u => u.role === 'admin').length
+                        };
+                        break;
+                        
+                    case 'settings':
+                        result.data = state.settings;
+                        break;
+                        
+                    default:
+                        result = { success: true, data: {}, message: 'Mock success' };
+                }
+                
+                return result;
+                
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function realGAS(path, data = {}) {
             showLoading();
             
             try {
@@ -919,10 +1125,15 @@
 
         // ========== IMAGE UPLOAD ==========
         async function uploadImageToDrive(file) {
+            if (CONFIG.MODE === 'mock') {
+                // โหมดทดสอบ - คืนค่า URL จำลอง
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                return `https://via.placeholder.com/400/06c755/ffffff?text=${encodeURIComponent(file.name)}`;
+            }
+            
             showLoading();
             
             try {
-                // แปลง File เป็น Base64
                 const base64 = await new Promise((resolve, reject) => {
                     const reader = new FileReader();
                     reader.onload = () => resolve(reader.result.split(',')[1]);
@@ -938,10 +1149,8 @@
                 });
 
                 if (result.success) {
-                    // แปลงเป็น lh5.google.com URL
                     const fileId = result.data.fileId;
-                    const lh5Url = `https://lh5.googleusercontent.com/d/${fileId}=s0`;
-                    return lh5Url;
+                    return `https://lh5.googleusercontent.com/d/${fileId}=s0`;
                 } else {
                     throw new Error(result.message);
                 }
@@ -966,63 +1175,86 @@
             }
         }
 
-        // ========== LIFF INIT ==========
-        async function initLIFF() {
-            return new Promise((resolve, reject) => {
-                liff.init({ liffId: CONFIG.LIFF_ID }, async () => {
+        // ========== INIT ==========
+        async function initApp() {
+            showLoading();
+            
+            try {
+                if (CONFIG.MODE === 'real') {
+                    // โหมดจริง - เรียก LIFF และ GAS
+                    await liff.init({ liffId: CONFIG.LIFF_ID });
+                    
                     if (!liff.isLoggedIn()) {
                         liff.login();
                         return;
                     }
                     
-                    try {
-                        const profile = await liff.getProfile();
-                        const idToken = liff.getDecodedIDToken();
-                        
-                        const result = await callGAS('user/profile', {
-                            lineUserId: profile.userId,
-                            displayName: profile.displayName,
-                            pictureUrl: profile.pictureUrl || '',
-                            email: idToken?.email || ''
-                        });
-                        
-                        if (result.success) {
-                            state.user = result.data;
-                            state.isAdmin = state.user.role === 'admin';
-                            state.isEditor = state.isAdmin || state.user.role === 'editor';
-                            
-                            await loadSettings();
-                            await loadPosts();
-                            await loadMyPosts();
-                            await loadNotifications();
-                            if (state.isAdmin) {
-                                await loadUsers();
-                                await loadAdminStats();
-                            }
-                            
-                            updateUI();
-                            resolve();
-                        } else {
-                            throw new Error(result.message);
-                        }
-                        
-                    } catch (err) {
-                        console.error('LIFF init error:', err);
-                        showToast('ไม่สามารถเชื่อมต่อกับระบบได้', 'error');
-                        reject(err);
+                    const profile = await liff.getProfile();
+                    const idToken = liff.getDecodedIDToken();
+                    
+                    const result = await callGAS('user/profile', {
+                        lineUserId: profile.userId,
+                        displayName: profile.displayName,
+                        pictureUrl: profile.pictureUrl || '',
+                        email: idToken?.email || ''
+                    });
+                    
+                    if (result.success) {
+                        state.user = result.data;
+                        state.isAdmin = state.user.role === 'admin';
+                        state.isEditor = state.isAdmin || state.user.role === 'editor';
                     }
-                }, reject);
-            });
+                } else {
+                    // โหมดทดสอบ - ใช้ข้อมูลจำลอง
+                    console.log('🔧 โหมดทดสอบ: ใช้ข้อมูลจำลอง');
+                }
+                
+                // โหลดข้อมูลเริ่มต้น
+                await loadPosts();
+                await loadMyPosts();
+                await loadNotifications();
+                if (state.isAdmin) {
+                    await loadUsers();
+                    await loadAdminStats();
+                }
+                
+                updateUI();
+                
+            } catch (err) {
+                console.error('Init error:', err);
+                showToast('ไม่สามารถเชื่อมต่อกับระบบได้', 'error');
+            } finally {
+                hideLoading();
+            }
         }
 
-        // ========== LOAD SETTINGS ==========
-        async function loadSettings() {
-            const result = await callGAS('settings');
-            if (result.success) {
-                state.settings = result.data || {};
-                document.getElementById('setting-app-name').value = state.settings.appName || 'LINE ข่าวสาร';
-                document.getElementById('setting-drive-folder').value = state.settings.driveFolderId || CONFIG.DRIVE_FOLDER_ID;
-                document.getElementById('setting-allow-user-posts').value = state.settings.allowUserPosts || 'true';
+        // ========== UPDATE UI ==========
+        function updateUI() {
+            document.getElementById('profile-name').textContent = state.user?.displayName || 'ผู้ใช้';
+            document.getElementById('profile-email').textContent = state.user?.email || '';
+            document.getElementById('profile-avatar').src = state.user?.pictureUrl || 'https://via.placeholder.com/100/06c755/ffffff?text=LINE';
+            
+            const roleText = {
+                'admin': '👑 ผู้ดูแลระบบ',
+                'editor': '✏️ ผู้เขียน',
+                'user': '👤 ผู้ใช้ทั่วไป'
+            }[state.user?.role] || '';
+            document.getElementById('profile-role').textContent = roleText;
+
+            const adminNav = document.querySelector('.admin-only');
+            if (state.isAdmin) {
+                adminNav.classList.remove('hidden');
+            } else {
+                adminNav.classList.add('hidden');
+            }
+            
+            const createPostBtn = document.getElementById('create-post-btn');
+            if (createPostBtn) {
+                if (state.isEditor) {
+                    createPostBtn.classList.remove('hidden');
+                } else {
+                    createPostBtn.classList.add('hidden');
+                }
             }
         }
 
@@ -1038,11 +1270,9 @@
             if (result.success) {
                 state.posts = result.data.posts || [];
                 
-                // Update stats
-                const stats = result.data.stats || {};
-                document.getElementById('stat-news').textContent = stats.news || 0;
-                document.getElementById('stat-events').textContent = stats.events || 0;
-                document.getElementById('stat-urgent').textContent = stats.urgent || 0;
+                document.getElementById('stat-news').textContent = result.data.stats?.news || 0;
+                document.getElementById('stat-events').textContent = result.data.stats?.events || 0;
+                document.getElementById('stat-urgent').textContent = result.data.stats?.urgent || 0;
                 
                 renderPosts();
             }
@@ -1185,7 +1415,7 @@
 
                 document.getElementById('modal-body').innerHTML = html;
 
-                // Check permissions for edit/delete buttons
+                // Check permissions
                 const canEdit = canEditPost(post);
                 const canDelete = canDeletePost(post);
                 const adminControls = document.getElementById('modal-admin-controls');
@@ -1218,7 +1448,7 @@
 
         function canDeletePost(post) {
             if (!post) return false;
-            return state.isAdmin; // Only admin can delete
+            return state.isAdmin;
         }
 
         // ========== CREATE/EDIT POST ==========
@@ -1257,7 +1487,6 @@
             const id = document.getElementById('edit-post-id').value;
             const isEdit = !!id;
 
-            // Upload image if selected
             let imageUrl = document.getElementById('post-image').value;
             const fileInput = document.getElementById('post-image-file');
             
@@ -1480,7 +1709,6 @@
                 document.getElementById('admin-admins').textContent = stats.admins || 0;
             }
 
-            // Load posts for admin
             const posts = await callGAS('admin/posts', { pageSize: 10 });
             if (posts.success) {
                 const list = document.getElementById('admin-posts-list');
@@ -1523,7 +1751,7 @@
             const result = await callGAS('admin/settings/update', data);
             if (result.success) {
                 showToast('บันทึกสำเร็จ');
-                await loadSettings();
+                Object.assign(state.settings, data);
             }
         }
 
@@ -1565,38 +1793,10 @@
 
         function logout() {
             if (confirm('ต้องการออกจากระบบ?')) {
-                liff.logout();
-                location.reload();
-            }
-        }
-
-        // ========== UPDATE UI ==========
-        function updateUI() {
-            document.getElementById('profile-name').textContent = state.user?.displayName || 'ผู้ใช้';
-            document.getElementById('profile-email').textContent = state.user?.email || '';
-            document.getElementById('profile-avatar').src = state.user?.pictureUrl || 'https://via.placeholder.com/100/06c755/ffffff?text=LINE';
-            
-            const roleText = {
-                'admin': '👑 ผู้ดูแลระบบ',
-                'editor': '✏️ ผู้เขียน',
-                'user': '👤 ผู้ใช้ทั่วไป'
-            }[state.user?.role] || '';
-            document.getElementById('profile-role').textContent = roleText;
-
-            const adminNav = document.querySelector('.admin-only');
-            if (state.isAdmin) {
-                adminNav.classList.remove('hidden');
-            } else {
-                adminNav.classList.add('hidden');
-            }
-            
-            const createPostBtn = document.getElementById('create-post-btn');
-            if (createPostBtn) {
-                if (canCreatePost()) {
-                    createPostBtn.classList.remove('hidden');
-                } else {
-                    createPostBtn.classList.add('hidden');
+                if (CONFIG.MODE === 'real' && liff.isLoggedIn()) {
+                    liff.logout();
                 }
+                location.reload();
             }
         }
 
@@ -1611,7 +1811,6 @@
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
                 document.getElementById(`tab-${target}`).classList.add('active');
                 
-                // Load data
                 if (target === 'home') loadPosts();
                 if (target === 'my') loadMyPosts();
                 if (target === 'notifications') loadNotifications();
@@ -1669,18 +1868,8 @@
             }
         });
 
-        // ========== INIT ==========
-        document.addEventListener('DOMContentLoaded', async () => {
-            showLoading();
-            try {
-                await initLIFF();
-                hideLoading();
-            } catch (err) {
-                console.error(err);
-                hideLoading();
-                showToast('ไม่สามารถเชื่อมต่อกับ LINE ได้', 'error');
-            }
-        });
+        // ========== START ==========
+        document.addEventListener('DOMContentLoaded', initApp);
 
         // Close modals on outside click
         window.onclick = function(e) {
