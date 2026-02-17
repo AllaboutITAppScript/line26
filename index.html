@@ -709,6 +709,16 @@
         ::-webkit-scrollbar-thumb:hover {
             background: var(--primary-dark);
         }
+
+        /* Auto-refresh animation */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .refreshing {
+            animation: pulse 1s ease-in-out;
+        }
     </style>
 </head>
 <body>
@@ -781,7 +791,6 @@
                 <button class="filter-btn" data-filter="news">📰 ข่าวสาร</button>
                 <button class="filter-btn" data-filter="event">🎉 กิจกรรม</button>
                 <button class="filter-btn" data-filter="urgent">⚠️ ประกาศด่วน</button>
-                <button class="filter-btn" data-filter="pending">⏳ รออนุมัติ</button>
             </div>
 
             <!-- Posts List -->
@@ -795,7 +804,7 @@
             </div>
         </div>
 
-        <!-- Tab: My Posts -->
+        <!-- Tab: My Posts (สำหรับ Editor และ Admin) -->
         <div id="tab-my" class="tab-content">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-bold">โพสต์ของฉัน</h2>
@@ -1042,7 +1051,8 @@
             GAS_URL: 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec',
             LIFF_ID: '2008904120-T7I0VPZf',
             PAGE_SIZE: 20,
-            DRIVE_FOLDER_ID: '18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE'
+            DRIVE_FOLDER_ID: '18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE',
+            AUTO_REFRESH_INTERVAL: 30000 // 30 วินาที
         };
 
         // ========== STATE ==========
@@ -1061,7 +1071,9 @@
             settings: {
                 requireApproval: false
             },
-            isLoading: false
+            isLoading: false,
+            refreshTimer: null,
+            activeTab: 'home'
         };
 
         // ========== DOM Elements ==========
@@ -1102,6 +1114,34 @@
             return d.toLocaleDateString('th-TH', { 
                 year: 'numeric', month: 'short', day: 'numeric'
             });
+        }
+
+        // ========== AUTO REFRESH ==========
+        function startAutoRefresh() {
+            if (state.refreshTimer) {
+                clearInterval(state.refreshTimer);
+            }
+            
+            state.refreshTimer = setInterval(async () => {
+                if (state.activeTab === 'home') {
+                    await loadPosts(true);
+                } else if (state.activeTab === 'my') {
+                    await loadMyPosts(true);
+                } else if (state.activeTab === 'admin' && state.isAdmin) {
+                    await Promise.all([
+                        loadAdminStats(true),
+                        loadPendingPosts(true),
+                        loadUsers(true)
+                    ]);
+                }
+            }, CONFIG.AUTO_REFRESH_INTERVAL);
+        }
+
+        function stopAutoRefresh() {
+            if (state.refreshTimer) {
+                clearInterval(state.refreshTimer);
+                state.refreshTimer = null;
+            }
         }
 
         // ========== API CALL ==========
@@ -1230,6 +1270,7 @@
                     ]);
                     
                     updateUI();
+                    startAutoRefresh();
                 } else {
                     showToast(result.message, 'error');
                 }
@@ -1282,7 +1323,9 @@
         }
 
         // ========== POSTS ==========
-        async function loadPosts() {
+        async function loadPosts(silent = false) {
+            if (!silent) showLoading();
+            
             const result = await callGAS('posts', {
                 page: state.currentPage,
                 filter: state.currentFilter,
@@ -1301,6 +1344,8 @@
                 renderHeroSlider();
                 renderPosts();
             }
+            
+            if (!silent) hideLoading();
         }
 
         // ========== RENDER HERO SLIDER (เฉพาะประกาศด่วน) ==========
@@ -1428,8 +1473,10 @@
         }
 
         // ========== PENDING POSTS ==========
-        async function loadPendingPosts() {
+        async function loadPendingPosts(silent = false) {
             if (!state.isAdmin) return;
+            
+            if (!silent) showLoading();
             
             const result = await callGAS('admin/posts/pending');
             if (result.success) {
@@ -1445,6 +1492,8 @@
                     badge.classList.add('hidden');
                 }
             }
+            
+            if (!silent) hideLoading();
         }
 
         function renderPendingPosts() {
@@ -1516,42 +1565,17 @@
                     title: 'อนุมัติสำเร็จ',
                     text: 'โพสต์ได้รับการอนุมัติและเผยแพร่แล้ว',
                     icon: 'success',
-                    confirmButtonColor: '#06c755'
+                    confirmButtonColor: '#06c755',
+                    timer: 1500
                 });
                 
-                // ลบออกจาก pending และเพิ่มเข้า posts
-                const approvedPost = state.pendingPosts.find(p => p.postId === postId);
-                if (approvedPost) {
-                    approvedPost.approvalStatus = 'approved';
-                    
-                    // ลบจาก pending
-                    state.pendingPosts = state.pendingPosts.filter(p => p.postId !== postId);
-                    
-                    // เพิ่มหรืออัปเดตใน posts
-                    const postIndex = state.posts.findIndex(p => p.postId === postId);
-                    if (postIndex !== -1) {
-                        state.posts[postIndex] = approvedPost;
-                    } else {
-                        state.posts.unshift(approvedPost);
-                    }
-                }
-                
-                // อัปเดต UI ทันที
-                renderPendingPosts();
-                renderPosts();
-                renderHeroSlider();
-                
-                // อัปเดต badge
-                const badge = document.getElementById('pending-badge');
-                if (state.pendingPosts.length > 0) {
-                    badge.textContent = state.pendingPosts.length > 9 ? '9+' : state.pendingPosts.length;
-                    badge.classList.remove('hidden');
-                } else {
-                    badge.classList.add('hidden');
-                }
-                
-                // อัปเดตสถิติ
-                await loadAdminStats();
+                // อัปเดตทันทีโดยไม่ต้องรอ Auto Refresh
+                await Promise.all([
+                    loadPosts(true),
+                    loadPendingPosts(true),
+                    loadMyPosts(true),
+                    loadAdminStats(true)
+                ]);
             }
         }
 
@@ -1577,39 +1601,31 @@
                     title: 'ปฏิเสธสำเร็จ',
                     text: 'โพสต์ถูกปฏิเสธเรียบร้อย',
                     icon: 'success',
-                    confirmButtonColor: '#06c755'
+                    confirmButtonColor: '#06c755',
+                    timer: 1500
                 });
                 
-                // ลบออกจาก pending และ posts
-                state.pendingPosts = state.pendingPosts.filter(p => p.postId !== postId);
-                state.posts = state.posts.filter(p => p.postId !== postId);
-                
-                // อัปเดต UI ทันที
-                renderPendingPosts();
-                renderPosts();
-                renderHeroSlider();
-                
-                // อัปเดต badge
-                const badge = document.getElementById('pending-badge');
-                if (state.pendingPosts.length > 0) {
-                    badge.textContent = state.pendingPosts.length > 9 ? '9+' : state.pendingPosts.length;
-                    badge.classList.remove('hidden');
-                } else {
-                    badge.classList.add('hidden');
-                }
-                
-                // อัปเดตสถิติ
-                await loadAdminStats();
+                // อัปเดตทันทีโดยไม่ต้องรอ Auto Refresh
+                await Promise.all([
+                    loadPosts(true),
+                    loadPendingPosts(true),
+                    loadMyPosts(true),
+                    loadAdminStats(true)
+                ]);
             }
         }
 
         // ========== MY POSTS ==========
-        async function loadMyPosts() {
+        async function loadMyPosts(silent = false) {
+            if (!silent) showLoading();
+            
             const result = await callGAS('user/posts');
             if (result.success) {
                 state.myPosts = result.data || [];
                 renderMyPosts();
             }
+            
+            if (!silent) hideLoading();
         }
 
         function renderMyPosts() {
@@ -1942,7 +1958,8 @@
                         title: 'ส่งขออนุมัติแล้ว',
                         text: 'โพสต์ของคุณถูกส่งให้ผู้ดูแลตรวจสอบแล้ว',
                         icon: 'success',
-                        confirmButtonColor: '#06c755'
+                        confirmButtonColor: '#06c755',
+                        timer: 1500
                     });
                 } else {
                     showToast(isEdit ? 'แก้ไขสำเร็จ' : 'สร้างสำเร็จ');
@@ -1950,12 +1967,12 @@
                 
                 closeCreateModal();
                 
-                // โหลดข้อมูลใหม่
+                // อัปเดตทันที
                 await Promise.all([
-                    loadPosts(),
-                    loadMyPosts(),
-                    loadPendingPosts(),
-                    state.isAdmin ? loadAdminStats() : Promise.resolve()
+                    loadPosts(true),
+                    loadMyPosts(true),
+                    loadPendingPosts(true),
+                    state.isAdmin ? loadAdminStats(true) : Promise.resolve()
                 ]);
             }
         }
@@ -2019,48 +2036,35 @@
                     title: 'ลบสำเร็จ',
                     text: 'โพสต์ถูกลบเรียบร้อย',
                     icon: 'success',
-                    confirmButtonColor: '#06c755'
+                    confirmButtonColor: '#06c755',
+                    timer: 1500
                 });
                 
                 closeModal();
                 
-                // ลบออกจาก state ทันที
-                const postId = state.currentPost.postId;
-                
-                state.myPosts = state.myPosts.filter(p => p.postId !== postId);
-                state.posts = state.posts.filter(p => p.postId !== postId);
-                state.pendingPosts = state.pendingPosts.filter(p => p.postId !== postId);
-                
-                // อัปเดต UI
-                renderMyPosts();
-                renderPosts();
-                renderHeroSlider();
-                renderPendingPosts();
-                
-                // อัปเดต badge
-                const badge = document.getElementById('pending-badge');
-                if (state.pendingPosts.length > 0) {
-                    badge.textContent = state.pendingPosts.length > 9 ? '9+' : state.pendingPosts.length;
-                    badge.classList.remove('hidden');
-                } else {
-                    badge.classList.add('hidden');
-                }
-                
-                if (state.isAdmin) {
-                    await loadAdminStats();
-                }
+                // อัปเดตทันที
+                await Promise.all([
+                    loadPosts(true),
+                    loadMyPosts(true),
+                    loadPendingPosts(true),
+                    state.isAdmin ? loadAdminStats(true) : Promise.resolve()
+                ]);
             }
         }
 
         // ========== ADMIN: USERS ==========
-        async function loadUsers() {
+        async function loadUsers(silent = false) {
             if (!state.isAdmin) return;
+            
+            if (!silent) showLoading();
             
             const result = await callGAS('admin/users');
             if (result.success) {
                 state.users = result.data || [];
                 renderUsers();
             }
+            
+            if (!silent) hideLoading();
         }
 
         function renderUsers() {
@@ -2148,16 +2152,17 @@
                     title: 'บันทึกสำเร็จ',
                     text: 'อัปเดตสิทธิ์ผู้ใช้เรียบร้อย',
                     icon: 'success',
-                    confirmButtonColor: '#06c755'
+                    confirmButtonColor: '#06c755',
+                    timer: 1500
                 });
                 
                 closeRoleModal();
                 
-                // อัปเดต state ทันที
-                const userIndex = state.users.findIndex(u => u.lineUserId === userId);
-                if (userIndex !== -1) {
-                    state.users[userIndex].role = role;
-                }
+                // อัปเดตทันที
+                await Promise.all([
+                    loadUsers(true),
+                    loadAdminStats(true)
+                ]);
                 
                 // ถ้าเป็นผู้ใช้ปัจจุบัน ให้อัปเดตด้วย
                 if (state.user?.lineUserId === userId) {
@@ -2166,15 +2171,14 @@
                     state.isEditor = role === 'admin' || role === 'editor';
                     updateUI();
                 }
-                
-                renderUsers();
-                await loadUsers();
             }
         }
 
         // ========== ADMIN: STATS ==========
-        async function loadAdminStats() {
+        async function loadAdminStats(silent = false) {
             if (!state.isAdmin) return;
+            
+            if (!silent) showLoading();
             
             const result = await callGAS('admin/stats');
             if (result.success) {
@@ -2210,6 +2214,8 @@
                     `;
                 }).join('');
             }
+            
+            if (!silent) hideLoading();
         }
 
         // ========== SETTINGS ==========
@@ -2233,7 +2239,8 @@
                     title: 'บันทึกสำเร็จ',
                     text: 'ตั้งค่าระบบถูกอัปเดตเรียบร้อย',
                     icon: 'success',
-                    confirmButtonColor: '#06c755'
+                    confirmButtonColor: '#06c755',
+                    timer: 1500
                 });
                 
                 Object.assign(state.settings, data);
@@ -2295,6 +2302,7 @@
                 cancelButtonText: 'ยกเลิก'
             }).then((result) => {
                 if (result.isConfirmed) {
+                    stopAutoRefresh();
                     if (liff.isLoggedIn()) {
                         liff.logout();
                     }
@@ -2307,6 +2315,7 @@
         document.querySelectorAll('.nav-item').forEach(tab => {
             tab.addEventListener('click', () => {
                 const target = tab.dataset.tab;
+                state.activeTab = target;
                 
                 document.querySelectorAll('.nav-item').forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
@@ -2372,11 +2381,18 @@
         });
 
         // ========== REFRESH ADMIN ==========
-        document.getElementById('refresh-admin')?.addEventListener('click', () => {
+        document.getElementById('refresh-admin')?.addEventListener('click', async () => {
             if (state.isAdmin) {
-                loadAdminStats();
-                loadUsers();
-                loadPendingPosts();
+                const btn = document.getElementById('refresh-admin');
+                btn.classList.add('refreshing');
+                
+                await Promise.all([
+                    loadAdminStats(true),
+                    loadUsers(true),
+                    loadPendingPosts(true)
+                ]);
+                
+                setTimeout(() => btn.classList.remove('refreshing'), 500);
             }
         });
 
@@ -2424,6 +2440,11 @@
         document.querySelectorAll('img[loading="lazy"]').forEach(img => {
             img.classList.add('lazy-image');
             imageObserver.observe(img);
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            stopAutoRefresh();
         });
     </script>
 </body>
