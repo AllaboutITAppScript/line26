@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LINE MiniApp · กิจกรรม</title>
+    <title>LINE ข่าวสาร · กิจกรรม</title>
     
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -18,7 +18,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* (CSS เดิม - คงไว้เหมือนเดิม) */
         * {
             font-family: 'IBM Plex Sans Thai', sans-serif;
             margin: 0;
@@ -42,6 +41,7 @@
             padding-bottom: 70px;
         }
         
+        /* Bottom Navigation */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -83,19 +83,31 @@
             display: block;
         }
         
-        .activity-card {
+        /* Cards */
+        .news-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
+            overflow: hidden;
+            margin-bottom: 16px;
             cursor: pointer;
             transition: all 0.2s;
         }
         
-        .activity-card:active {
+        .news-card:active {
             transform: scale(0.98);
             border-color: var(--primary);
+        }
+        
+        .news-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background: #2a2e36;
+        }
+        
+        .news-content {
+            padding: 16px;
         }
         
         .badge {
@@ -105,22 +117,28 @@
             font-weight: 500;
         }
         
-        .badge-open {
+        .badge-news {
             background: rgba(6,199,85,0.15);
             color: var(--primary);
             border: 1px solid rgba(6,199,85,0.3);
         }
         
-        .badge-closed {
+        .badge-event {
+            background: rgba(245,158,11,0.15);
+            color: #f59e0b;
+            border: 1px solid rgba(245,158,11,0.3);
+        }
+        
+        .badge-urgent {
             background: rgba(239,68,68,0.15);
             color: #ef4444;
             border: 1px solid rgba(239,68,68,0.3);
         }
         
-        .badge-full {
-            background: rgba(245,158,11,0.15);
-            color: #f59e0b;
-            border: 1px solid rgba(245,158,11,0.3);
+        .badge-draft {
+            background: rgba(107,114,128,0.15);
+            color: #9ca3af;
+            border: 1px solid rgba(107,114,128,0.3);
         }
         
         .btn-primary {
@@ -149,6 +167,17 @@
             cursor: pointer;
         }
         
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            border: none;
+            width: 100%;
+            cursor: pointer;
+        }
+        
         .modal {
             position: fixed;
             inset: 0;
@@ -170,7 +199,7 @@
             border-radius: 24px;
             max-width: 500px;
             width: 100%;
-            max-height: 80vh;
+            max-height: 90vh;
             overflow-y: auto;
             padding: 20px;
         }
@@ -352,7 +381,71 @@
         }
         
         .profile-menu-item:hover {
-            background: var(--bg-hover, #252930);
+            background: #252930;
+        }
+        
+        /* File Upload */
+        .upload-area {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--primary);
+        }
+        
+        .image-preview {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-top: 12px;
+            display: none;
+        }
+        
+        /* User Management */
+        .user-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .user-avatar-sm {
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            object-fit: cover;
+        }
+        
+        .role-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        
+        .role-admin {
+            background: rgba(239,68,68,0.2);
+            color: #ef4444;
+        }
+        
+        .role-editor {
+            background: rgba(245,158,11,0.2);
+            color: #f59e0b;
+        }
+        
+        .role-user {
+            background: rgba(107,114,128,0.2);
+            color: #9ca3af;
         }
     </style>
 </head>
@@ -377,11 +470,12 @@
                 <div class="flex-1">
                     <h2 id="profile-name" class="text-lg font-bold">กำลังโหลด...</h2>
                     <p id="profile-email" class="text-sm text-gray-400"></p>
+                    <p id="profile-role" class="text-xs text-[#06c755] mt-1"></p>
                 </div>
                 <i class="fas fa-chevron-down text-gray-400" id="profile-chevron"></i>
             </div>
             
-            <!-- Profile Menu (Dropdown) -->
+            <!-- Profile Menu -->
             <div id="profile-menu" class="profile-menu hidden">
                 <div class="profile-menu-item" onclick="showProfileSettings()">
                     <i class="fas fa-user mr-2 text-[#06c755]"></i> แก้ไขโปรไฟล์
@@ -392,39 +486,43 @@
             </div>
 
             <!-- Stats -->
-            <div class="grid grid-cols-2 gap-3 mb-4">
+            <div class="grid grid-cols-3 gap-2 mb-4">
                 <div class="stat-card">
-                    <p class="text-xs text-gray-400">กิจกรรมทั้งหมด</p>
-                    <p id="stat-total" class="text-2xl font-bold">-</p>
+                    <p class="text-xs text-gray-400">ข่าวสาร</p>
+                    <p id="stat-news" class="text-xl font-bold">-</p>
                 </div>
                 <div class="stat-card">
-                    <p class="text-xs text-gray-400">เปิดรับสมัคร</p>
-                    <p id="stat-open" class="text-2xl font-bold text-[#06c755]">-</p>
+                    <p class="text-xs text-gray-400">กิจกรรม</p>
+                    <p id="stat-events" class="text-xl font-bold">-</p>
+                </div>
+                <div class="stat-card">
+                    <p class="text-xs text-gray-400">ด่วน</p>
+                    <p id="stat-urgent" class="text-xl font-bold">-</p>
                 </div>
             </div>
 
             <!-- Search -->
             <div class="search-box">
                 <i class="fas fa-search"></i>
-                <input type="text" id="search-input" placeholder="ค้นหากิจกรรม...">
+                <input type="text" id="search-input" placeholder="ค้นหาข่าวสาร กิจกรรม...">
             </div>
 
             <!-- Filter -->
             <div class="filter-container">
                 <button class="filter-btn active" data-filter="all">ทั้งหมด</button>
-                <button class="filter-btn" data-filter="open">🟢 เปิดรับ</button>
-                <button class="filter-btn" data-filter="full">🟡 เต็ม</button>
-                <button class="filter-btn" data-filter="closed">🔴 ปิด</button>
+                <button class="filter-btn" data-filter="news">📰 ข่าวสาร</button>
+                <button class="filter-btn" data-filter="event">🎉 กิจกรรม</button>
+                <button class="filter-btn" data-filter="urgent">⚠️ ประกาศด่วน</button>
             </div>
 
-            <!-- Activities List -->
-            <div id="activities-list" class="space-y-3"></div>
+            <!-- Posts List -->
+            <div id="posts-list" class="space-y-3"></div>
         </div>
 
-        <!-- Tab: My Activities -->
+        <!-- Tab: My Posts -->
         <div id="tab-my" class="tab-content">
-            <h2 class="text-xl font-bold mb-4">กิจกรรมของฉัน</h2>
-            <div id="my-activities-list" class="space-y-3"></div>
+            <h2 class="text-xl font-bold mb-4">โพสต์ของฉัน</h2>
+            <div id="my-posts-list" class="space-y-3"></div>
         </div>
 
         <!-- Tab: Notifications -->
@@ -451,40 +549,70 @@
                         <p id="admin-users" class="text-xl font-bold">-</p>
                     </div>
                     <div class="admin-stat">
-                        <p class="text-xs text-gray-400">กิจกรรม</p>
-                        <p id="admin-activities" class="text-xl font-bold">-</p>
-                    </div>
-                    <div class="admin-stat">
-                        <p class="text-xs text-gray-400">ลงทะเบียน</p>
-                        <p id="admin-registrations" class="text-xl font-bold">-</p>
+                        <p class="text-xs text-gray-400">โพสต์</p>
+                        <p id="admin-posts" class="text-xl font-bold">-</p>
                     </div>
                     <div class="admin-stat">
                         <p class="text-xs text-gray-400">วันนี้</p>
                         <p id="admin-today" class="text-xl font-bold">-</p>
                     </div>
+                    <div class="admin-stat">
+                        <p class="text-xs text-gray-400">ผู้ดูแล</p>
+                        <p id="admin-admins" class="text-xl font-bold">-</p>
+                    </div>
                 </div>
             </div>
 
-            <!-- Admin Actions -->
-            <div class="admin-section">
-                <h3 class="font-semibold mb-3">จัดการ</h3>
-                <button class="btn-primary mb-2" onclick="showCreateActivityModal()">
-                    <i class="fas fa-plus mr-2"></i>สร้างกิจกรรม
+            <!-- Admin Tabs -->
+            <div class="flex border-b border-[#2a2e36] mb-4">
+                <button class="admin-tab-btn flex-1 py-2 text-center active" data-admin-tab="posts">
+                    จัดการโพสต์
                 </button>
-                <div class="grid grid-cols-2 gap-2">
-                    <button class="btn-outline text-sm" onclick="showAllActivities()">
-                        <i class="fas fa-list mr-2"></i>ทั้งหมด
-                    </button>
-                    <button class="btn-outline text-sm" onclick="showAllUsers()">
-                        <i class="fas fa-users mr-2"></i>ผู้ใช้
-                    </button>
-                </div>
+                <button class="admin-tab-btn flex-1 py-2 text-center" data-admin-tab="users">
+                    จัดการผู้ใช้
+                </button>
+                <button class="admin-tab-btn flex-1 py-2 text-center" data-admin-tab="settings">
+                    ตั้งค่า
+                </button>
             </div>
 
-            <!-- Recent Activities -->
-            <div class="admin-section">
-                <h3 class="font-semibold mb-3">กิจกรรมล่าสุด</h3>
-                <div id="admin-activities-list" class="space-y-2"></div>
+            <!-- Admin: Posts Management -->
+            <div id="admin-posts-tab" class="admin-tab">
+                <button class="btn-primary mb-4" onclick="showCreatePostModal()">
+                    <i class="fas fa-plus mr-2"></i>สร้างโพสต์ใหม่
+                </button>
+                <div id="admin-posts-list" class="space-y-2"></div>
+            </div>
+
+            <!-- Admin: Users Management -->
+            <div id="admin-users-tab" class="admin-tab hidden">
+                <div class="search-box mb-4">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="user-search" placeholder="ค้นหาผู้ใช้...">
+                </div>
+                <div id="users-list" class="space-y-2"></div>
+            </div>
+
+            <!-- Admin: Settings -->
+            <div id="admin-settings-tab" class="admin-tab hidden">
+                <div class="admin-section">
+                    <h3 class="font-semibold mb-3">ตั้งค่าระบบ</h3>
+                    <form id="settings-form" onsubmit="saveSettings(event)">
+                        <label class="block text-sm text-gray-400 mb-1">ชื่อระบบ</label>
+                        <input type="text" id="setting-app-name" class="input-field" value="LINE ข่าวสาร">
+                        
+                        <label class="block text-sm text-gray-400 mb-1">Google Drive Folder ID</label>
+                        <input type="text" id="setting-drive-folder" class="input-field" value="18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE">
+                        
+                        <label class="block text-sm text-gray-400 mb-1">อนุญาตให้ผู้ใช้สร้างโพสต์</label>
+                        <select id="setting-allow-user-posts" class="input-field">
+                            <option value="true">ใช่</option>
+                            <option value="false">ไม่ (เฉพาะแอดมิน)</option>
+                        </select>
+                        
+                        <button type="submit" class="btn-primary">บันทึก</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -496,8 +624,8 @@
             <span>หน้าแรก</span>
         </div>
         <div class="nav-item" data-tab="my">
-            <i class="fas fa-ticket-alt"></i>
-            <span>ของฉัน</span>
+            <i class="fas fa-pen-fancy"></i>
+            <span>โพสต์ของฉัน</span>
         </div>
         <div class="nav-item" data-tab="notifications">
             <i class="fas fa-bell"></i>
@@ -510,8 +638,8 @@
         </div>
     </div>
 
-    <!-- Activity Detail Modal -->
-    <div class="modal" id="activity-modal">
+    <!-- Post Detail Modal -->
+    <div class="modal" id="post-modal">
         <div class="modal-content">
             <div class="flex justify-between items-center mb-4">
                 <h3 id="modal-title" class="text-xl font-bold"></h3>
@@ -519,16 +647,15 @@
             </div>
             <div id="modal-body" class="space-y-4"></div>
             <div class="flex gap-2 mt-4">
-                <button id="modal-register-btn" class="btn-primary" onclick="registerFromModal()">ลงทะเบียน</button>
                 <button class="btn-outline" onclick="closeModal()">ปิด</button>
             </div>
             <div id="modal-admin-controls" class="hidden mt-4 pt-4 border-t border-[#2a2e36]">
-                <p class="text-sm text-gray-400 mb-2">จัดการกิจกรรม</p>
+                <p class="text-sm text-gray-400 mb-2">จัดการโพสต์</p>
                 <div class="flex gap-2">
-                    <button class="btn-outline flex-1 text-sm" onclick="editCurrentActivity()">
+                    <button class="btn-outline flex-1 text-sm" onclick="editCurrentPost()">
                         <i class="fas fa-edit mr-2"></i>แก้ไข
                     </button>
-                    <button class="bg-red-500 text-white flex-1 text-sm py-2 rounded-lg" onclick="deleteCurrentActivity()">
+                    <button class="btn-danger flex-1 text-sm" onclick="deleteCurrentPost()">
                         <i class="fas fa-trash mr-2"></i>ลบ
                     </button>
                 </div>
@@ -536,45 +663,42 @@
         </div>
     </div>
 
-    <!-- Create/Edit Activity Modal -->
+    <!-- Create/Edit Post Modal -->
     <div class="modal" id="create-modal">
         <div class="modal-content">
             <div class="flex justify-between items-center mb-4">
-                <h3 id="create-modal-title" class="text-xl font-bold">สร้างกิจกรรม</h3>
+                <h3 id="create-modal-title" class="text-xl font-bold">สร้างโพสต์ใหม่</h3>
                 <button onclick="closeCreateModal()"><i class="fas fa-times text-gray-400 text-xl"></i></button>
             </div>
-            <form id="activity-form" onsubmit="saveActivity(event)">
-                <input type="hidden" id="edit-activity-id">
+            <form id="post-form" onsubmit="savePost(event)">
+                <input type="hidden" id="edit-post-id">
                 
-                <input type="text" id="activity-title" placeholder="ชื่อกิจกรรม" class="input-field" required>
-                
-                <textarea id="activity-desc" placeholder="รายละเอียด" class="input-field" rows="3" required></textarea>
-                
-                <select id="activity-category" class="input-field" required>
-                    <option value="">เลือกหมวดหมู่</option>
+                <select id="post-type" class="input-field" required>
+                    <option value="news">📰 ข่าวสาร</option>
+                    <option value="event">🎉 กิจกรรม</option>
+                    <option value="urgent">⚠️ ประกาศด่วน</option>
                 </select>
                 
-                <input type="text" id="activity-location" placeholder="สถานที่" class="input-field" required>
+                <input type="text" id="post-title" placeholder="หัวข้อ" class="input-field" required>
                 
-                <div class="grid grid-cols-2 gap-2">
-                    <input type="datetime-local" id="activity-start" class="input-field" required>
-                    <input type="datetime-local" id="activity-end" class="input-field" required>
+                <textarea id="post-content" placeholder="เนื้อหา" class="input-field" rows="5" required></textarea>
+                
+                <!-- Image Upload -->
+                <div class="upload-area" onclick="document.getElementById('post-image-file').click()">
+                    <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                    <p class="text-sm text-gray-400">คลิกเพื่ออัปโหลดรูปภาพ</p>
+                    <p class="text-xs text-gray-500 mt-1">รองรับ JPG, PNG, GIF</p>
                 </div>
+                <input type="file" id="post-image-file" accept="image/*" style="display: none" onchange="previewImage(this)">
+                <img id="image-preview" class="image-preview" src="">
+                <input type="hidden" id="post-image" value="">
                 
-                <div class="grid grid-cols-2 gap-2">
-                    <input type="number" id="activity-max" placeholder="จำนวนสูงสุด" class="input-field" required>
-                    <input type="number" id="activity-price" placeholder="ราคา (0=ฟรี)" class="input-field" value="0">
-                </div>
+                <input type="text" id="post-link" placeholder="ลิงก์เพิ่มเติม (ถ้ามี)" class="input-field">
                 
-                <input type="url" id="activity-image" placeholder="รูปภาพ (URL)" class="input-field">
-                
-                <input type="text" id="activity-tags" placeholder="แท็ก (คั่นด้วยคอมม่า)" class="input-field">
-                
-                <textarea id="activity-requirements" placeholder="คุณสมบัติ (บรรทัดละ 1)" class="input-field" rows="2"></textarea>
-                
-                <textarea id="activity-benefits" placeholder="สิทธิประโยชน์ (บรรทัดละ 1)" class="input-field" rows="2"></textarea>
-                
-                <input type="text" id="activity-contact" placeholder="ข้อมูลติดต่อ" class="input-field">
+                <select id="post-status" class="input-field">
+                    <option value="published">เผยแพร่</option>
+                    <option value="draft">ฉบับร่าง</option>
+                </select>
                 
                 <div class="flex gap-2">
                     <button type="submit" class="btn-primary">บันทึก</button>
@@ -593,18 +717,7 @@
             </div>
             <form id="profile-form" onsubmit="saveProfile(event)">
                 <input type="text" id="profile-phone" placeholder="เบอร์โทรศัพท์" class="input-field">
-                
-                <input type="date" id="profile-birth" class="input-field">
-                
-                <select id="profile-gender" class="input-field">
-                    <option value="ไม่ระบุ">ไม่ระบุ</option>
-                    <option value="ชาย">ชาย</option>
-                    <option value="หญิง">หญิง</option>
-                </select>
-                
-                <input type="text" id="profile-province" placeholder="จังหวัด" class="input-field">
-                
-                <input type="text" id="profile-interests" placeholder="ความสนใจ (คั่นด้วยคอมม่า)" class="input-field">
+                <input type="text" id="profile-department" placeholder="แผนก/หน่วยงาน" class="input-field">
                 
                 <div class="flex gap-2">
                     <button type="submit" class="btn-primary">บันทึก</button>
@@ -614,26 +727,54 @@
         </div>
     </div>
 
+    <!-- User Role Modal -->
+    <div class="modal" id="role-modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">จัดการสิทธิ์ผู้ใช้</h3>
+                <button onclick="closeRoleModal()"><i class="fas fa-times text-gray-400 text-xl"></i></button>
+            </div>
+            <form id="role-form" onsubmit="saveUserRole(event)">
+                <input type="hidden" id="role-user-id">
+                <p id="role-user-name" class="text-white mb-4"></p>
+                
+                <select id="user-role" class="input-field">
+                    <option value="user">👤 ผู้ใช้ทั่วไป</option>
+                    <option value="editor">✏️ ผู้เขียน (สร้างโพสต์ได้)</option>
+                    <option value="admin">👑 ผู้ดูแลระบบ</option>
+                </select>
+                
+                <div class="flex gap-2">
+                    <button type="submit" class="btn-primary">บันทึก</button>
+                    <button type="button" class="btn-outline" onclick="closeRoleModal()">ยกเลิก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // ========== CONFIG ==========
         const CONFIG = {
-            GAS_URL: 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec', // เปลี่ยนเป็น URL ของคุณ
-            LIFF_ID: '2008904120-T7I0VPZf', // เปลี่ยนเป็น LIFF ID ของคุณ
-            PAGE_SIZE: 10
+            GAS_URL: 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec',
+            LIFF_ID: '2008904120-T7I0VPZf',
+            PAGE_SIZE: 20,
+            DRIVE_FOLDER_ID: '18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE' // โฟลเดอร์ที่กำหนด
         };
 
         // ========== STATE ==========
         const state = {
             user: null,
-            activities: [],
-            myRegistrations: [],
+            posts: [],
+            myPosts: [],
             notifications: [],
-            categories: [],
+            users: [],
             currentFilter: 'all',
             searchTerm: '',
             isAdmin: false,
+            isEditor: false,
             currentPage: 1,
-            currentActivity: null
+            currentPost: null,
+            settings: {}
         };
 
         // ========== DOM Elements ==========
@@ -669,48 +810,38 @@
             });
         }
 
-        // ========== API CALL - แก้ไขให้ทำงานกับ GAS จริง ==========
+        // ========== API CALL ==========
         async function callGAS(path, data = {}) {
             showLoading();
             
             try {
-                // เตรียม FormData
                 const formData = new FormData();
                 formData.append('path', path);
                 
-                // เพิ่ม lineUserId ถ้ามี
                 if (state.user?.lineUserId) {
                     formData.append('lineUserId', state.user.lineUserId);
                 }
                 
-                // เพิ่มข้อมูลอื่นๆ
                 Object.keys(data).forEach(key => {
                     if (data[key] !== undefined && data[key] !== null) {
                         formData.append(key, data[key]);
                     }
                 });
 
-                // ใช้ fetch แบบปกติ (GAS รองรับ CORS บางกรณี)
                 const response = await fetch(CONFIG.GAS_URL, {
                     method: 'POST',
-                    body: formData,
-                    mode: 'cors', // เปลี่ยนเป็น 'no-cors' ถ้าเจอปัญหา
-                    credentials: 'omit'
+                    body: formData
                 });
 
-                // อ่าน response เป็น text ก่อน (เผื่อ GAS ส่ง JSON ไม่ตรง format)
                 const text = await response.text();
                 
-                // ลอง parse JSON
-                let result;
                 try {
-                    result = JSON.parse(text);
+                    const result = JSON.parse(text);
+                    return result;
                 } catch (e) {
                     console.error('JSON parse error:', text);
                     throw new Error('รูปแบบข้อมูลไม่ถูกต้อง');
                 }
-
-                return result;
 
             } catch (error) {
                 console.error('API call error:', error);
@@ -718,6 +849,55 @@
                 return { success: false, message: error.message };
             } finally {
                 hideLoading();
+            }
+        }
+
+        // ========== IMAGE UPLOAD ==========
+        async function uploadImageToDrive(file) {
+            showLoading();
+            
+            try {
+                // แปลง File เป็น Base64
+                const base64 = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result.split(',')[1]);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+
+                const result = await callGAS('uploadImage', {
+                    fileName: file.name,
+                    fileType: file.type,
+                    fileData: base64,
+                    folderId: CONFIG.DRIVE_FOLDER_ID
+                });
+
+                if (result.success) {
+                    // แปลงเป็น lh5.google.com URL
+                    const fileId = result.data.fileId;
+                    const lh5Url = `https://lh5.googleusercontent.com/d/${fileId}=s0`;
+                    return lh5Url;
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                console.error('Upload error:', error);
+                showToast('อัปโหลดรูปไม่สำเร็จ', 'error');
+                return null;
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function previewImage(input) {
+            const preview = document.getElementById('image-preview');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
             }
         }
 
@@ -734,7 +914,6 @@
                         const profile = await liff.getProfile();
                         const idToken = liff.getDecodedIDToken();
                         
-                        // เรียก API จริง
                         const result = await callGAS('user/profile', {
                             lineUserId: profile.userId,
                             displayName: profile.displayName,
@@ -744,18 +923,22 @@
                         
                         if (result.success) {
                             state.user = result.data;
-                            state.isAdmin = state.user.role === 'admin' || state.user.role === 'org';
+                            state.isAdmin = state.user.role === 'admin';
+                            state.isEditor = state.isAdmin || state.user.role === 'editor';
                             
-                            // โหลดข้อมูลอื่นๆ
-                            await loadCategories();
-                            await loadHomeData();
-                            await loadMyActivities();
+                            await loadSettings();
+                            await loadPosts();
+                            await loadMyPosts();
                             await loadNotifications();
+                            if (state.isAdmin) {
+                                await loadUsers();
+                                await loadAdminStats();
+                            }
                             
                             updateUI();
                             resolve();
                         } else {
-                            throw new Error(result.message || 'ไม่สามารถโหลดโปรไฟล์ได้');
+                            throw new Error(result.message);
                         }
                         
                     } catch (err) {
@@ -767,219 +950,320 @@
             });
         }
 
-        // ========== LOAD CATEGORIES ==========
-        async function loadCategories() {
-            try {
-                // ถ้ามี API categories ให้เรียก
-                // แต่ถ้าไม่มี ใช้ข้อมูลเริ่มต้น
-                state.categories = [
-                    { id: 'CAT001', name: 'อบรม' },
-                    { id: 'CAT002', name: 'สัมมนา' },
-                    { id: 'CAT003', name: 'workshop' },
-                    { id: 'CAT004', name: 'กีฬา' },
-                    { id: 'CAT005', name: 'ดนตรี' },
-                    { id: 'CAT006', name: 'ศิลปะ' },
-                    { id: 'CAT007', name: 'ท่องเที่ยว' }
-                ];
-                
-                const select = document.getElementById('activity-category');
-                if (select) {
-                    select.innerHTML = '<option value="">เลือกหมวดหมู่</option>' + 
-                        state.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-                }
-            } catch (error) {
-                console.error('Load categories error:', error);
-            }
-        }
-
-        // ========== UPDATE UI ==========
-        function updateUI() {
-            // Profile
-            document.getElementById('profile-name').textContent = state.user?.displayName || 'ผู้ใช้';
-            document.getElementById('profile-email').textContent = state.user?.email || '';
-            document.getElementById('profile-avatar').src = state.user?.pictureUrl || 'https://via.placeholder.com/100/06c755/ffffff?text=LINE';
-
-            // Admin nav
-            const adminNav = document.querySelector('.admin-only');
-            if (state.isAdmin) {
-                adminNav.classList.remove('hidden');
-                loadAdminData(); // โหลดข้อมูล admin
-            } else {
-                adminNav.classList.add('hidden');
-            }
-        }
-
-        // ========== HOME ==========
-        async function loadHomeData() {
-            try {
-                const result = await callGAS('activities', {
-                    page: state.currentPage,
-                    status: state.currentFilter,
-                    search: state.searchTerm,
-                    pageSize: CONFIG.PAGE_SIZE
-                });
-                
-                if (result.success) {
-                    state.activities = result.data.activities || [];
-                    document.getElementById('stat-total').textContent = result.data.totalActivities || 0;
-                    document.getElementById('stat-open').textContent = result.data.openActivities || 0;
-                    renderActivities();
-                }
-            } catch (error) {
-                console.error('Load home error:', error);
-            }
-        }
-
-        function renderActivities() {
-            const list = document.getElementById('activities-list');
-            if (!state.activities || state.activities.length === 0) {
-                list.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-calendar-times text-4xl text-gray-500 mb-3"></i>
-                        <p class="text-gray-400">ไม่มีกิจกรรม</p>
-                    </div>
-                `;
-                return;
-            }
-
-            list.innerHTML = state.activities.map(act => {
-                const isRegistered = state.myRegistrations?.some(r => r.activityId === act.activityId);
-                const statusClass = `badge-${act.status}`;
-                const statusText = { 
-                    'open': 'เปิดรับ', 
-                    'closed': 'ปิด', 
-                    'full': 'เต็ม',
-                    'cancelled': 'ยกเลิก',
-                    'draft': 'ร่าง'
-                }[act.status] || act.status;
-                
-                // Parse tags
-                let tags = [];
-                try { tags = JSON.parse(act.tags || '[]'); } catch { tags = []; }
-                
-                return `
-                    <div class="activity-card" onclick="showActivityDetail('${act.activityId}')">
-                        <div class="flex gap-3">
-                            <img src="${act.imageUrl || 'https://via.placeholder.com/80/06c755/ffffff?text=活动'}" 
-                                 class="w-20 h-20 rounded-xl object-cover" 
-                                 onerror="this.src='https://via.placeholder.com/80/06c755/ffffff?text=活动'">
-                            <div class="flex-1">
-                                <div class="flex justify-between items-start">
-                                    <h3 class="font-semibold">${act.title || 'กิจกรรม'}</h3>
-                                    <span class="badge ${statusClass}">${statusText}</span>
-                                </div>
-                                <p class="text-xs text-gray-400 mt-1 line-clamp-2">${act.description || ''}</p>
-                                <div class="flex items-center gap-2 mt-2 text-xs text-gray-400">
-                                    <i class="fas fa-users"></i> ${act.currentParticipants || 0}/${act.maxParticipants}
-                                    <i class="fas fa-map-marker-alt ml-2"></i> ${act.location || ''}
-                                </div>
-                                <div class="flex items-center gap-2 mt-1 text-xs">
-                                    ${act.price > 0 ? 
-                                        `<span class="text-yellow-500"><i class="fas fa-tag"></i> ฿${act.price}</span>` : 
-                                        `<span class="text-[#06c755]"><i class="fas fa-gift"></i> ฟรี</span>`
-                                    }
-                                    ${isRegistered ? 
-                                        '<span class="text-[#06c755] ml-2"><i class="fas fa-check-circle"></i> ลงทะเบียนแล้ว</span>' : ''
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // ========== MY ACTIVITIES ==========
-        async function loadMyActivities() {
-            try {
-                const result = await callGAS('user/registrations');
-                if (result.success) {
-                    state.myRegistrations = result.data || [];
-                    renderMyActivities();
-                }
-            } catch (error) {
-                console.error('Load my activities error:', error);
-            }
-        }
-
-        function renderMyActivities() {
-            const list = document.getElementById('my-activities-list');
-            if (!state.myRegistrations || state.myRegistrations.length === 0) {
-                list.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-ticket-alt text-4xl text-gray-500 mb-3"></i>
-                        <p class="text-gray-400">ยังไม่มีกิจกรรมที่ลงทะเบียน</p>
-                    </div>
-                `;
-                return;
-            }
-
-            list.innerHTML = state.myRegistrations.map(reg => {
-                const act = reg.activity || {};
-                const statusText = {
-                    'confirmed': '✅ ยืนยันแล้ว',
-                    'waiting': '⏳ รอคิว',
-                    'cancelled': '❌ ยกเลิก',
-                    'attended': '🎉 เข้าร่วมแล้ว'
-                }[reg.status] || reg.status;
-                
-                return `
-                    <div class="activity-card" onclick="showActivityDetail('${act.activityId}')">
-                        <div class="flex gap-3">
-                            <img src="${act.imageUrl || 'https://via.placeholder.com/80'}" 
-                                 class="w-20 h-20 rounded-xl object-cover">
-                            <div class="flex-1">
-                                <h3 class="font-semibold">${act.title || 'กิจกรรม'}</h3>
-                                <p class="text-xs text-gray-400 mt-1">ลงทะเบียน: ${formatDateShort(reg.registrationDate)}</p>
-                                <p class="text-xs text-gray-400">สถานะ: ${statusText}</p>
-                                ${reg.status === 'confirmed' ? 
-                                    `<button class="text-xs text-red-500 mt-2" onclick="event.stopPropagation(); cancelRegistration('${reg.regId}')">
-                                        <i class="fas fa-times mr-1"></i>ยกเลิก
-                                    </button>` : ''}
-                                ${reg.status === 'waiting' && reg.remark ? 
-                                    `<p class="text-xs text-yellow-500 mt-1">${reg.remark}</p>` : ''}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        async function cancelRegistration(regId) {
-            if (!confirm('ต้องการยกเลิกการลงทะเบียน?')) return;
-            
-            const result = await callGAS('cancel', { registrationId: regId });
+        // ========== LOAD SETTINGS ==========
+        async function loadSettings() {
+            const result = await callGAS('settings');
             if (result.success) {
-                showToast('ยกเลิกสำเร็จ');
-                await loadMyActivities();
-                await loadHomeData();
+                state.settings = result.data || {};
+                document.getElementById('setting-app-name').value = state.settings.appName || 'LINE ข่าวสาร';
+                document.getElementById('setting-drive-folder').value = state.settings.driveFolderId || CONFIG.DRIVE_FOLDER_ID;
+                document.getElementById('setting-allow-user-posts').value = state.settings.allowUserPosts || 'true';
+            }
+        }
+
+        // ========== POSTS ==========
+        async function loadPosts() {
+            const result = await callGAS('posts', {
+                page: state.currentPage,
+                filter: state.currentFilter,
+                search: state.searchTerm,
+                pageSize: CONFIG.PAGE_SIZE
+            });
+            
+            if (result.success) {
+                state.posts = result.data.posts || [];
+                
+                // Update stats
+                const stats = result.data.stats || {};
+                document.getElementById('stat-news').textContent = stats.news || 0;
+                document.getElementById('stat-events').textContent = stats.events || 0;
+                document.getElementById('stat-urgent').textContent = stats.urgent || 0;
+                
+                renderPosts();
+            }
+        }
+
+        function renderPosts() {
+            const list = document.getElementById('posts-list');
+            if (state.posts.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-newspaper text-4xl text-gray-500 mb-3"></i>
+                        <p class="text-gray-400">ไม่มีโพสต์</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = state.posts.map(post => {
+                const typeClass = {
+                    'news': 'badge-news',
+                    'event': 'badge-event',
+                    'urgent': 'badge-urgent'
+                }[post.type] || 'badge-news';
+                
+                const typeText = {
+                    'news': '📰 ข่าวสาร',
+                    'event': '🎉 กิจกรรม',
+                    'urgent': '⚠️ ประกาศด่วน'
+                }[post.type] || post.type;
+                
+                return `
+                    <div class="news-card" onclick="showPostDetail('${post.postId}')">
+                        ${post.imageUrl ? `
+                            <img src="${post.imageUrl}" class="news-image" onerror="this.src='https://via.placeholder.com/400/2a2e36/ffffff?text=IMAGE'">
+                        ` : ''}
+                        <div class="news-content">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="badge ${typeClass}">${typeText}</span>
+                                <span class="text-xs text-gray-500">${formatDateShort(post.createdAt)}</span>
+                            </div>
+                            <h3 class="font-semibold text-lg mb-2">${post.title}</h3>
+                            <p class="text-sm text-gray-400 line-clamp-2">${post.content}</p>
+                            <div class="flex items-center justify-between mt-3 text-xs text-gray-500">
+                                <span><i class="fas fa-user mr-1"></i> ${post.authorName || 'ผู้ดูแล'}</span>
+                                <span><i class="fas fa-eye mr-1"></i> ${post.viewCount || 0}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ========== MY POSTS ==========
+        async function loadMyPosts() {
+            const result = await callGAS('user/posts');
+            if (result.success) {
+                state.myPosts = result.data || [];
+                renderMyPosts();
+            }
+        }
+
+        function renderMyPosts() {
+            const list = document.getElementById('my-posts-list');
+            if (state.myPosts.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-pen-fancy text-4xl text-gray-500 mb-3"></i>
+                        <p class="text-gray-400">ยังไม่มีโพสต์</p>
+                        ${state.isEditor ? `
+                            <button class="btn-primary mt-4" onclick="showCreatePostModal()">
+                                <i class="fas fa-plus mr-2"></i>สร้างโพสต์แรก
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = state.myPosts.map(post => {
+                const statusClass = post.status === 'published' ? 'text-[#06c755]' : 'text-gray-500';
+                const statusText = post.status === 'published' ? 'เผยแพร่' : 'ฉบับร่าง';
+                
+                return `
+                    <div class="news-card" onclick="showPostDetail('${post.postId}')">
+                        <div class="news-content">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="badge badge-news">${post.type === 'news' ? '📰' : post.type === 'event' ? '🎉' : '⚠️'}</span>
+                                <span class="text-xs ${statusClass}">${statusText}</span>
+                            </div>
+                            <h3 class="font-semibold">${post.title}</h3>
+                            <p class="text-sm text-gray-400 mt-1 line-clamp-2">${post.content}</p>
+                            <p class="text-xs text-gray-500 mt-2">${formatDate(post.createdAt)}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ========== POST DETAIL ==========
+        async function showPostDetail(postId) {
+            const result = await callGAS('post', { postId });
+            if (result.success) {
+                state.currentPost = result.data;
+                const post = result.data;
+                
+                document.getElementById('modal-title').textContent = post.title;
+
+                const typeText = {
+                    'news': '📰 ข่าวสาร',
+                    'event': '🎉 กิจกรรม',
+                    'urgent': '⚠️ ประกาศด่วน'
+                }[post.type] || post.type;
+
+                let html = `
+                    ${post.imageUrl ? `
+                        <img src="${post.imageUrl}" class="w-full h-48 object-cover rounded-xl">
+                    ` : ''}
+                    
+                    <div class="flex justify-between items-center">
+                        <span class="badge badge-${post.type}">${typeText}</span>
+                        <span class="text-sm text-gray-400">
+                            <i class="fas fa-eye mr-1"></i>${post.viewCount || 0}
+                        </span>
+                    </div>
+                    
+                    <p class="text-gray-400 whitespace-pre-wrap">${post.content}</p>
+                    
+                    <div class="text-sm text-gray-500 border-t border-[#2a2e36] pt-4">
+                        <p><i class="fas fa-user mr-2"></i> โพสต์โดย: ${post.authorName || 'ผู้ดูแล'}</p>
+                        <p><i class="fas fa-calendar mr-2 mt-2"></i> ${formatDate(post.createdAt)}</p>
+                        ${post.link ? `<p><i class="fas fa-link mr-2 mt-2"></i> <a href="${post.link}" target="_blank" class="text-[#06c755]">ลิงก์เพิ่มเติม</a></p>` : ''}
+                    </div>
+                `;
+
+                document.getElementById('modal-body').innerHTML = html;
+
+                // Admin/Editor controls
+                const canEdit = state.isAdmin || (state.isEditor && post.authorId === state.user?.lineUserId);
+                const adminControls = document.getElementById('modal-admin-controls');
+                
+                if (canEdit) {
+                    adminControls.classList.remove('hidden');
+                } else {
+                    adminControls.classList.add('hidden');
+                }
+
+                document.getElementById('post-modal').classList.add('active');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('post-modal').classList.remove('active');
+        }
+
+        // ========== CREATE/EDIT POST ==========
+        function showCreatePostModal() {
+            if (!state.isEditor) {
+                showToast('คุณไม่มีสิทธิ์สร้างโพสต์', 'error');
+                return;
+            }
+            
+            document.getElementById('create-modal-title').textContent = 'สร้างโพสต์ใหม่';
+            document.getElementById('edit-post-id').value = '';
+            document.getElementById('post-type').value = 'news';
+            document.getElementById('post-title').value = '';
+            document.getElementById('post-content').value = '';
+            document.getElementById('post-image').value = '';
+            document.getElementById('post-link').value = '';
+            document.getElementById('post-status').value = 'published';
+            document.getElementById('image-preview').style.display = 'none';
+            document.getElementById('post-image-file').value = '';
+            
+            document.getElementById('create-modal').classList.add('active');
+        }
+
+        function closeCreateModal() {
+            document.getElementById('create-modal').classList.remove('active');
+        }
+
+        async function savePost(e) {
+            e.preventDefault();
+            
+            if (!state.isEditor) {
+                showToast('ไม่มีสิทธิ์', 'error');
+                return;
+            }
+            
+            const id = document.getElementById('edit-post-id').value;
+            const isEdit = !!id;
+
+            // Upload image if selected
+            let imageUrl = document.getElementById('post-image').value;
+            const fileInput = document.getElementById('post-image-file');
+            
+            if (fileInput.files && fileInput.files[0]) {
+                const uploadedUrl = await uploadImageToDrive(fileInput.files[0]);
+                if (uploadedUrl) {
+                    imageUrl = uploadedUrl;
+                }
+            }
+
+            const data = {
+                type: document.getElementById('post-type').value,
+                title: document.getElementById('post-title').value,
+                content: document.getElementById('post-content').value,
+                imageUrl: imageUrl,
+                link: document.getElementById('post-link').value,
+                status: document.getElementById('post-status').value
+            };
+
+            if (isEdit) {
+                data.postId = id;
+            }
+
+            const result = await callGAS(isEdit ? 'post/update' : 'post/create', data);
+            if (result.success) {
+                showToast(isEdit ? 'แก้ไขสำเร็จ' : 'สร้างสำเร็จ');
+                closeCreateModal();
+                await loadPosts();
+                await loadMyPosts();
+                if (state.isAdmin) await loadAdminStats();
+            }
+        }
+
+        function editCurrentPost() {
+            if (!state.currentPost) return;
+            
+            const post = state.currentPost;
+            
+            document.getElementById('create-modal-title').textContent = 'แก้ไขโพสต์';
+            document.getElementById('edit-post-id').value = post.postId;
+            document.getElementById('post-type').value = post.type || 'news';
+            document.getElementById('post-title').value = post.title || '';
+            document.getElementById('post-content').value = post.content || '';
+            document.getElementById('post-image').value = post.imageUrl || '';
+            document.getElementById('post-link').value = post.link || '';
+            document.getElementById('post-status').value = post.status || 'published';
+            
+            if (post.imageUrl) {
+                document.getElementById('image-preview').src = post.imageUrl;
+                document.getElementById('image-preview').style.display = 'block';
+            } else {
+                document.getElementById('image-preview').style.display = 'none';
+            }
+            
+            closeModal();
+            document.getElementById('create-modal').classList.add('active');
+        }
+
+        async function deleteCurrentPost() {
+            if (!state.currentPost) return;
+            if (!confirm('แน่ใจว่าต้องการลบ?')) return;
+            
+            const result = await callGAS('post/delete', { 
+                postId: state.currentPost.postId 
+            });
+            
+            if (result.success) {
+                showToast('ลบสำเร็จ');
+                closeModal();
+                await loadPosts();
+                await loadMyPosts();
+                if (state.isAdmin) await loadAdminStats();
             }
         }
 
         // ========== NOTIFICATIONS ==========
         async function loadNotifications() {
-            try {
-                const result = await callGAS('user/notifications', { unreadOnly: 'true' });
-                if (result.success) {
-                    state.notifications = result.data.notifications || [];
-                    const unread = result.data.unreadCount || 0;
-                    const badge = document.getElementById('notif-badge');
-                    if (unread > 0) {
-                        badge.textContent = unread > 9 ? '9+' : unread;
-                        badge.classList.remove('hidden');
-                    } else {
-                        badge.classList.add('hidden');
-                    }
-                    renderNotifications();
+            const result = await callGAS('user/notifications', { unreadOnly: 'true' });
+            if (result.success) {
+                state.notifications = result.data.notifications || [];
+                const unread = result.data.unreadCount || 0;
+                const badge = document.getElementById('notif-badge');
+                if (unread > 0) {
+                    badge.textContent = unread > 9 ? '9+' : unread;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
                 }
-            } catch (error) {
-                console.error('Load notifications error:', error);
+                renderNotifications();
             }
         }
 
         function renderNotifications() {
             const list = document.getElementById('notifications-list');
-            if (!state.notifications || state.notifications.length === 0) {
+            if (state.notifications.length === 0) {
                 list.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-bell-slash text-4xl text-gray-500 mb-3"></i>
@@ -990,7 +1274,7 @@
             }
 
             list.innerHTML = state.notifications.map(n => `
-                <div class="bg-[#1a1d24] p-4 rounded-xl border border-[#2a2e36] ${n.isRead !== 'TRUE' ? 'border-l-4 border-l-[#06c755]' : ''}">
+                <div class="bg-[#1a1d24] p-4 rounded-xl border border-[#2a2e36]">
                     <p class="font-semibold">${n.title}</p>
                     <p class="text-sm text-gray-400 mt-1">${n.message}</p>
                     <p class="text-xs text-gray-500 mt-2">${formatDate(n.createdAt)}</p>
@@ -998,323 +1282,144 @@
             `).join('');
         }
 
-        // ========== ACTIVITY DETAIL ==========
-        async function showActivityDetail(activityId) {
-            try {
-                const result = await callGAS('activity', { activityId });
-                if (result.success) {
-                    state.currentActivity = result.data;
-                    const act = result.data;
-                    
-                    document.getElementById('modal-title').textContent = act.title;
-
-                    const isRegistered = state.myRegistrations?.some(r => r.activityId === act.activityId);
-                    const statusText = { 
-                        'open': 'เปิดรับ', 
-                        'closed': 'ปิด', 
-                        'full': 'เต็ม',
-                        'cancelled': 'ยกเลิก',
-                        'draft': 'ร่าง'
-                    }[act.status] || act.status;
-                    const statusClass = `badge-${act.status}`;
-
-                    // Parse JSON fields
-                    let requirements = [], benefits = [], tags = [];
-                    try { requirements = JSON.parse(act.requirements || '[]'); } catch { requirements = []; }
-                    try { benefits = JSON.parse(act.benefits || '[]'); } catch { benefits = []; }
-                    try { tags = JSON.parse(act.tags || '[]'); } catch { tags = []; }
-
-                    let html = `
-                        <img src="${act.imageUrl || 'https://via.placeholder.com/400/06c755/ffffff?text=活动'}" 
-                             class="w-full h-48 object-cover rounded-xl"
-                             onerror="this.src='https://via.placeholder.com/400/06c755/ffffff?text=活动'">
-                        
-                        <div class="flex justify-between items-center">
-                            <span class="badge ${statusClass}">${statusText}</span>
-                            <span class="text-sm text-gray-400">
-                                <i class="fas fa-users mr-1"></i>${act.currentParticipants || 0}/${act.maxParticipants}
-                            </span>
-                        </div>
-                        
-                        <div class="flex flex-wrap gap-1">
-                            ${tags.map(t => `<span class="text-xs bg-[#2a2e36] px-2 py-1 rounded-full">#${t}</span>`).join('')}
-                        </div>
-                        
-                        <p class="text-gray-400">${act.description || ''}</p>
-                        
-                        <div class="space-y-2 text-sm">
-                            <p><i class="fas fa-calendar w-5 text-[#06c755]"></i> ${formatDate(act.startDate)}</p>
-                            <p><i class="fas fa-calendar-check w-5 text-[#06c755]"></i> ${formatDate(act.endDate)}</p>
-                            <p><i class="fas fa-map-marker-alt w-5 text-[#06c755]"></i> ${act.location || ''}</p>
-                            <p><i class="fas fa-tag w-5 text-[#06c755]"></i> ${act.price > 0 ? '฿' + Number(act.price).toLocaleString() : 'ฟรี'}</p>
-                        </div>
-                    `;
-
-                    if (requirements.length > 0) {
-                        html += `
-                            <div class="mt-2">
-                                <p class="font-semibold mb-1">📋 คุณสมบัติ</p>
-                                <ul class="text-sm text-gray-400 list-disc pl-4">
-                                    ${requirements.map(r => `<li>${r}</li>`).join('')}
-                                </ul>
-                            </div>
-                        `;
-                    }
-
-                    if (benefits.length > 0) {
-                        html += `
-                            <div class="mt-2">
-                                <p class="font-semibold mb-1">🎁 สิทธิประโยชน์</p>
-                                <ul class="text-sm text-gray-400 list-disc pl-4">
-                                    ${benefits.map(b => `<li>${b}</li>`).join('')}
-                                </ul>
-                            </div>
-                        `;
-                    }
-
-                    if (act.contact) {
-                        html += `<p class="text-sm text-gray-400 mt-2"><i class="fas fa-phone mr-2 text-[#06c755]"></i> ${act.contact}</p>`;
-                    }
-
-                    document.getElementById('modal-body').innerHTML = html;
-
-                    const registerBtn = document.getElementById('modal-register-btn');
-                    if (isRegistered) {
-                        registerBtn.disabled = true;
-                        registerBtn.textContent = 'ลงทะเบียนแล้ว';
-                    } else if (act.status !== 'open') {
-                        registerBtn.disabled = true;
-                        registerBtn.textContent = 'ไม่สามารถลงทะเบียนได้';
-                    } else {
-                        registerBtn.disabled = false;
-                        registerBtn.textContent = 'ลงทะเบียน';
-                    }
-
-                    // Admin controls
-                    const adminControls = document.getElementById('modal-admin-controls');
-                    if (state.isAdmin) {
-                        adminControls.classList.remove('hidden');
-                    } else {
-                        adminControls.classList.add('hidden');
-                    }
-
-                    document.getElementById('activity-modal').classList.add('active');
-                }
-            } catch (error) {
-                console.error('Show activity detail error:', error);
-                showToast('ไม่สามารถโหลดรายละเอียดได้', 'error');
-            }
-        }
-
-        async function registerFromModal() {
-            if (!state.currentActivity) return;
-            if (!confirm('ต้องการลงทะเบียน?')) return;
-            
-            const result = await callGAS('register', { 
-                activityId: state.currentActivity.activityId,
-                displayName: state.user?.displayName || '',
-                email: state.user?.email || '',
-                phone: state.user?.phone || ''
-            });
-            
+        // ========== ADMIN: USERS ==========
+        async function loadUsers() {
+            const result = await callGAS('admin/users');
             if (result.success) {
-                showToast('ลงทะเบียนสำเร็จ');
-                closeModal();
-                await loadMyActivities();
-                await loadHomeData();
-                
-                if (result.data?.status === 'waiting') {
-                    showToast(`อยู่ในคิวรอ ลำดับที่ ${result.data.queuePosition}`, 'info');
-                }
+                state.users = result.data || [];
+                renderUsers();
             }
         }
 
-        function closeModal() {
-            document.getElementById('activity-modal').classList.remove('active');
-        }
-
-        // ========== ADMIN ==========
-        async function loadAdminData() {
-            try {
-                const result = await callGAS('admin/stats');
-                if (result.success) {
-                    const stats = result.data;
-                    document.getElementById('admin-users').textContent = stats.users || 0;
-                    document.getElementById('admin-activities').textContent = stats.activities || 0;
-                    document.getElementById('admin-registrations').textContent = stats.registrations || 0;
-                    document.getElementById('admin-today').textContent = stats.todayRegistrations || 0;
-                }
-
-                // Load recent activities
-                const acts = await callGAS('activities', { page: 1, pageSize: 5 });
-                if (acts.success) {
-                    const list = document.getElementById('admin-activities-list');
-                    list.innerHTML = acts.data.activities.map(a => `
-                        <div class="flex justify-between items-center p-2 bg-[#111317] rounded-lg cursor-pointer" onclick="showActivityDetail('${a.activityId}')">
-                            <span class="text-sm">${a.title}</span>
-                            <span class="badge badge-${a.status} text-xs">${a.status}</span>
-                        </div>
-                    `).join('');
-                }
-            } catch (error) {
-                console.error('Load admin data error:', error);
-            }
-        }
-
-        // ========== ADMIN: CREATE/EDIT ==========
-        function showCreateActivityModal() {
-            if (!state.isAdmin) {
-                showToast('ไม่มีสิทธิ์เข้าถึง', 'error');
+        function renderUsers() {
+            const list = document.getElementById('users-list');
+            const search = document.getElementById('user-search')?.value?.toLowerCase() || '';
+            
+            const filtered = state.users.filter(u => 
+                u.displayName?.toLowerCase().includes(search) || 
+                u.email?.toLowerCase().includes(search)
+            );
+            
+            if (filtered.length === 0) {
+                list.innerHTML = '<p class="text-gray-400 text-center py-8">ไม่พบผู้ใช้</p>';
                 return;
             }
-            
-            document.getElementById('create-modal-title').textContent = 'สร้างกิจกรรม';
-            document.getElementById('edit-activity-id').value = '';
-            document.getElementById('activity-title').value = '';
-            document.getElementById('activity-desc').value = '';
-            document.getElementById('activity-category').value = '';
-            document.getElementById('activity-location').value = '';
-            document.getElementById('activity-start').value = '';
-            document.getElementById('activity-end').value = '';
-            document.getElementById('activity-max').value = '100';
-            document.getElementById('activity-price').value = '0';
-            document.getElementById('activity-image').value = '';
-            document.getElementById('activity-tags').value = '';
-            document.getElementById('activity-requirements').value = '';
-            document.getElementById('activity-benefits').value = '';
-            document.getElementById('activity-contact').value = '';
-            
-            document.getElementById('create-modal').classList.add('active');
+
+            list.innerHTML = filtered.map(user => {
+                const roleClass = {
+                    'admin': 'role-admin',
+                    'editor': 'role-editor',
+                    'user': 'role-user'
+                }[user.role] || 'role-user';
+                
+                const roleText = {
+                    'admin': 'ผู้ดูแล',
+                    'editor': 'ผู้เขียน',
+                    'user': 'ผู้ใช้'
+                }[user.role] || 'ผู้ใช้';
+                
+                return `
+                    <div class="user-row">
+                        <img src="${user.pictureUrl || 'https://via.placeholder.com/40'}" class="user-avatar-sm">
+                        <div class="flex-1">
+                            <p class="font-semibold">${user.displayName || 'ไม่ระบุชื่อ'}</p>
+                            <p class="text-xs text-gray-400">${user.email || ''}</p>
+                        </div>
+                        <span class="role-badge ${roleClass}">${roleText}</span>
+                        ${state.isAdmin ? `
+                            <button class="text-[#06c755] text-sm" onclick="showRoleModal('${user.lineUserId}', '${user.displayName}', '${user.role}')">
+                                <i class="fas fa-cog"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
         }
 
-        function closeCreateModal() {
-            document.getElementById('create-modal').classList.remove('active');
+        function showRoleModal(userId, userName, currentRole) {
+            document.getElementById('role-user-id').value = userId;
+            document.getElementById('role-user-name').textContent = `จัดการสิทธิ์: ${userName}`;
+            document.getElementById('user-role').value = currentRole || 'user';
+            document.getElementById('role-modal').classList.add('active');
         }
 
-        async function saveActivity(e) {
+        function closeRoleModal() {
+            document.getElementById('role-modal').classList.remove('active');
+        }
+
+        async function saveUserRole(e) {
             e.preventDefault();
             
-            if (!state.isAdmin) {
-                showToast('ไม่มีสิทธิ์', 'error');
-                return;
-            }
+            const userId = document.getElementById('role-user-id').value;
+            const role = document.getElementById('user-role').value;
             
-            const id = document.getElementById('edit-activity-id').value;
-            const isEdit = !!id;
-
-            // แปลงข้อมูล
-            const tags = document.getElementById('activity-tags').value
-                .split(',')
-                .map(t => t.trim())
-                .filter(t => t);
-
-            const requirements = document.getElementById('activity-requirements').value
-                .split('\n')
-                .map(r => r.trim())
-                .filter(r => r);
-
-            const benefits = document.getElementById('activity-benefits').value
-                .split('\n')
-                .map(b => b.trim())
-                .filter(b => b);
-
-            const data = {
-                title: document.getElementById('activity-title').value,
-                description: document.getElementById('activity-desc').value,
-                category: document.getElementById('activity-category').value,
-                location: document.getElementById('activity-location').value,
-                startDate: document.getElementById('activity-start').value,
-                endDate: document.getElementById('activity-end').value,
-                maxParticipants: parseInt(document.getElementById('activity-max').value) || 100,
-                price: parseInt(document.getElementById('activity-price').value) || 0,
-                imageUrl: document.getElementById('activity-image').value,
-                tags: JSON.stringify(tags),
-                requirements: JSON.stringify(requirements),
-                benefits: JSON.stringify(benefits),
-                contact: document.getElementById('activity-contact').value
-            };
-
-            if (isEdit) {
-                data.activityId = id;
-            }
-
-            const result = await callGAS(isEdit ? 'activities/update' : 'activities/create', data);
-            if (result.success) {
-                showToast(isEdit ? 'แก้ไขสำเร็จ' : 'สร้างสำเร็จ');
-                closeCreateModal();
-                await loadHomeData();
-                if (state.isAdmin) await loadAdminData();
-            }
-        }
-
-        function editCurrentActivity() {
-            if (!state.isAdmin || !state.currentActivity) return;
-            
-            const act = state.currentActivity;
-            
-            document.getElementById('create-modal-title').textContent = 'แก้ไขกิจกรรม';
-            document.getElementById('edit-activity-id').value = act.activityId;
-            document.getElementById('activity-title').value = act.title || '';
-            document.getElementById('activity-desc').value = act.description || '';
-            document.getElementById('activity-category').value = act.category || '';
-            document.getElementById('activity-location').value = act.location || '';
-            document.getElementById('activity-start').value = act.startDate ? act.startDate.slice(0,16) : '';
-            document.getElementById('activity-end').value = act.endDate ? act.endDate.slice(0,16) : '';
-            document.getElementById('activity-max').value = act.maxParticipants || 100;
-            document.getElementById('activity-price').value = act.price || 0;
-            document.getElementById('activity-image').value = act.imageUrl || '';
-
-            // Parse tags
-            let tags = [];
-            try { tags = JSON.parse(act.tags || '[]'); } catch { tags = []; }
-            document.getElementById('activity-tags').value = tags.join(', ');
-
-            // Parse requirements
-            let reqs = [];
-            try { reqs = JSON.parse(act.requirements || '[]'); } catch { reqs = []; }
-            document.getElementById('activity-requirements').value = reqs.join('\n');
-
-            // Parse benefits
-            let benefits = [];
-            try { benefits = JSON.parse(act.benefits || '[]'); } catch { benefits = []; }
-            document.getElementById('activity-benefits').value = benefits.join('\n');
-
-            document.getElementById('activity-contact').value = act.contact || '';
-
-            closeModal();
-            document.getElementById('create-modal').classList.add('active');
-        }
-
-        async function deleteCurrentActivity() {
-            if (!state.isAdmin || !state.currentActivity) return;
-            if (!confirm('แน่ใจว่าต้องการลบ?')) return;
-            
-            const result = await callGAS('activities/delete', { 
-                activityId: state.currentActivity.activityId 
+            const result = await callGAS('admin/user/role', {
+                targetUserId: userId,
+                role: role
             });
             
             if (result.success) {
-                showToast('ลบสำเร็จ');
-                closeModal();
-                await loadHomeData();
-                if (state.isAdmin) await loadAdminData();
+                showToast('อัปเดตสิทธิ์สำเร็จ');
+                closeRoleModal();
+                await loadUsers();
+            }
+        }
+
+        // ========== ADMIN: STATS ==========
+        async function loadAdminStats() {
+            const result = await callGAS('admin/stats');
+            if (result.success) {
+                const stats = result.data;
+                document.getElementById('admin-users').textContent = stats.users || 0;
+                document.getElementById('admin-posts').textContent = stats.posts || 0;
+                document.getElementById('admin-today').textContent = stats.today || 0;
+                document.getElementById('admin-admins').textContent = stats.admins || 0;
+            }
+
+            // Load posts for admin
+            const posts = await callGAS('admin/posts', { pageSize: 10 });
+            if (posts.success) {
+                const list = document.getElementById('admin-posts-list');
+                list.innerHTML = posts.data.map(p => `
+                    <div class="flex justify-between items-center p-3 bg-[#111317] rounded-lg">
+                        <div class="flex-1" onclick="showPostDetail('${p.postId}')">
+                            <p class="font-semibold">${p.title}</p>
+                            <p class="text-xs text-gray-400">${formatDateShort(p.createdAt)}</p>
+                        </div>
+                        <span class="badge badge-${p.type} text-xs mr-2">${p.type}</span>
+                        <span class="text-xs ${p.status === 'published' ? 'text-[#06c755]' : 'text-gray-500'}">${p.status}</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // ========== SETTINGS ==========
+        async function saveSettings(e) {
+            e.preventDefault();
+            
+            const data = {
+                appName: document.getElementById('setting-app-name').value,
+                driveFolderId: document.getElementById('setting-drive-folder').value,
+                allowUserPosts: document.getElementById('setting-allow-user-posts').value
+            };
+            
+            const result = await callGAS('admin/settings/update', data);
+            if (result.success) {
+                showToast('บันทึกสำเร็จ');
+                await loadSettings();
             }
         }
 
         // ========== PROFILE ==========
         function toggleProfileMenu() {
-            const menu = document.getElementById('profile-menu');
-            menu.classList.toggle('hidden');
+            document.getElementById('profile-menu').classList.toggle('hidden');
         }
 
         document.getElementById('profile-header').addEventListener('click', toggleProfileMenu);
 
         function showProfileSettings() {
             document.getElementById('profile-phone').value = state.user?.phone || '';
-            document.getElementById('profile-birth').value = state.user?.birthDate || '';
-            document.getElementById('profile-gender').value = state.user?.gender || 'ไม่ระบุ';
-            document.getElementById('profile-province').value = state.user?.province || '';
-            document.getElementById('profile-interests').value = state.user?.interests || '';
+            document.getElementById('profile-department').value = state.user?.department || '';
             
             document.getElementById('profile-modal').classList.add('active');
             document.getElementById('profile-menu').classList.add('hidden');
@@ -1329,19 +1434,15 @@
             
             const data = {
                 phone: document.getElementById('profile-phone').value,
-                birthDate: document.getElementById('profile-birth').value,
-                gender: document.getElementById('profile-gender').value,
-                province: document.getElementById('profile-province').value,
-                interests: document.getElementById('profile-interests').value
+                department: document.getElementById('profile-department').value
             };
 
             const result = await callGAS('user/update', data);
             if (result.success) {
                 showToast('บันทึกสำเร็จ');
                 closeProfileModal();
-                if (state.user) {
-                    Object.assign(state.user, data);
-                }
+                Object.assign(state.user, data);
+                updateUI();
             }
         }
 
@@ -1352,13 +1453,25 @@
             }
         }
 
-        // ========== ADMIN UTILS ==========
-        function showAllActivities() {
-            alert('กำลังพัฒนา: จัดการกิจกรรมทั้งหมด');
-        }
+        // ========== UPDATE UI ==========
+        function updateUI() {
+            document.getElementById('profile-name').textContent = state.user?.displayName || 'ผู้ใช้';
+            document.getElementById('profile-email').textContent = state.user?.email || '';
+            document.getElementById('profile-avatar').src = state.user?.pictureUrl || 'https://via.placeholder.com/100/06c755/ffffff?text=LINE';
+            
+            const roleText = {
+                'admin': '👑 ผู้ดูแลระบบ',
+                'editor': '✏️ ผู้เขียน',
+                'user': '👤 ผู้ใช้ทั่วไป'
+            }[state.user?.role] || '';
+            document.getElementById('profile-role').textContent = roleText;
 
-        function showAllUsers() {
-            alert('กำลังพัฒนา: จัดการผู้ใช้');
+            const adminNav = document.querySelector('.admin-only');
+            if (state.isAdmin) {
+                adminNav.classList.remove('hidden');
+            } else {
+                adminNav.classList.add('hidden');
+            }
         }
 
         // ========== TAB NAVIGATION ==========
@@ -1372,11 +1485,27 @@
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
                 document.getElementById(`tab-${target}`).classList.add('active');
                 
-                // Load data for tab
-                if (target === 'home') loadHomeData();
-                if (target === 'my') loadMyActivities();
+                // Load data
+                if (target === 'home') loadPosts();
+                if (target === 'my') loadMyPosts();
                 if (target === 'notifications') loadNotifications();
-                if (target === 'admin' && state.isAdmin) loadAdminData();
+                if (target === 'admin' && state.isAdmin) {
+                    loadAdminStats();
+                    loadUsers();
+                }
+            });
+        });
+
+        // ========== ADMIN TABS ==========
+        document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const target = btn.dataset.adminTab;
+                
+                document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                document.querySelectorAll('.admin-tab').forEach(t => t.classList.add('hidden'));
+                document.getElementById(`admin-${target}-tab`).classList.remove('hidden');
             });
         });
 
@@ -1387,8 +1516,12 @@
             searchTimeout = setTimeout(() => {
                 state.searchTerm = e.target.value;
                 state.currentPage = 1;
-                loadHomeData();
+                loadPosts();
             }, 500);
+        });
+
+        document.getElementById('user-search')?.addEventListener('input', () => {
+            renderUsers();
         });
 
         // ========== FILTER ==========
@@ -1398,12 +1531,15 @@
                 btn.classList.add('active');
                 state.currentFilter = btn.dataset.filter;
                 state.currentPage = 1;
-                loadHomeData();
+                loadPosts();
             });
         });
 
         // ========== REFRESH ADMIN ==========
-        document.getElementById('refresh-admin')?.addEventListener('click', loadAdminData);
+        document.getElementById('refresh-admin')?.addEventListener('click', () => {
+            loadAdminStats();
+            loadUsers();
+        });
 
         // ========== INIT ==========
         document.addEventListener('DOMContentLoaded', async () => {
@@ -1415,16 +1551,6 @@
                 console.error(err);
                 hideLoading();
                 showToast('ไม่สามารถเชื่อมต่อกับ LINE ได้', 'error');
-                
-                // แสดง UI เบื้องต้น
-                document.getElementById('profile-name').textContent = 'กรุณาเข้าสู่ระบบ';
-                document.getElementById('activities-list').innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-exclamation-triangle text-4xl text-yellow-500 mb-3"></i>
-                        <p class="text-gray-400">ไม่สามารถเชื่อมต่อกับระบบได้</p>
-                        <button class="btn-primary mt-4" onclick="location.reload()">ลองอีกครั้ง</button>
-                    </div>
-                `;
             }
         });
 
@@ -1434,7 +1560,6 @@
                 e.target.classList.remove('active');
             }
             
-            // Close profile menu when clicking outside
             if (!e.target.closest('#profile-header') && !e.target.closest('#profile-menu')) {
                 document.getElementById('profile-menu')?.classList.add('hidden');
             }
