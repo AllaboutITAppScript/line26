@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* (CSS เหมือนเดิม) */
+        /* (CSS เดิม - คงไว้เหมือนเดิม) */
         * {
             font-family: 'IBM Plex Sans Thai', sans-serif;
             margin: 0;
@@ -42,7 +42,6 @@
             padding-bottom: 70px;
         }
         
-        /* Bottom Navigation */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -75,7 +74,6 @@
             font-size: 20px;
         }
         
-        /* Tab Content */
         .tab-content {
             display: none;
             padding: 16px;
@@ -85,7 +83,6 @@
             display: block;
         }
         
-        /* Cards */
         .activity-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -126,7 +123,6 @@
             border: 1px solid rgba(245,158,11,0.3);
         }
         
-        /* Buttons */
         .btn-primary {
             background: var(--primary);
             color: white;
@@ -153,7 +149,6 @@
             cursor: pointer;
         }
         
-        /* Modal */
         .modal {
             position: fixed;
             inset: 0;
@@ -180,7 +175,6 @@
             padding: 20px;
         }
         
-        /* Loading */
         .loading {
             position: fixed;
             inset: 0;
@@ -208,7 +202,6 @@
             to { transform: rotate(360deg); }
         }
         
-        /* Profile */
         .profile-header {
             background: var(--bg-card);
             border-radius: 20px;
@@ -218,6 +211,7 @@
             align-items: center;
             gap: 16px;
             border: 1px solid var(--border);
+            cursor: pointer;
         }
         
         .profile-avatar {
@@ -228,7 +222,6 @@
             object-fit: cover;
         }
         
-        /* Stats */
         .stat-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -237,7 +230,6 @@
             text-align: center;
         }
         
-        /* Search */
         .search-box {
             position: relative;
             margin-bottom: 16px;
@@ -260,7 +252,6 @@
             color: var(--text-secondary);
         }
         
-        /* Filter */
         .filter-container {
             display: flex;
             gap: 8px;
@@ -285,7 +276,6 @@
             border-color: var(--primary);
         }
         
-        /* Input */
         .input-field {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -301,7 +291,6 @@
             border-color: var(--primary);
         }
         
-        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 40px 20px;
@@ -310,7 +299,6 @@
             border: 1px solid var(--border);
         }
         
-        /* Admin Section */
         .admin-section {
             background: linear-gradient(135deg, rgba(6,199,85,0.1), transparent);
             border: 1px solid var(--primary);
@@ -326,7 +314,6 @@
             text-align: center;
         }
         
-        /* Toast */
         .toast {
             position: fixed;
             bottom: 80px;
@@ -349,6 +336,24 @@
             from { transform: translateY(100%); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
+        
+        .profile-menu {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .profile-menu-item {
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .profile-menu-item:hover {
+            background: var(--bg-hover, #252930);
+        }
     </style>
 </head>
 <body>
@@ -367,21 +372,21 @@
         <!-- Tab: Home -->
         <div id="tab-home" class="tab-content active">
             <!-- Profile Header -->
-            <div class="profile-header" onclick="toggleProfileMenu()">
+            <div class="profile-header" id="profile-header">
                 <img id="profile-avatar" src="" alt="avatar" class="profile-avatar">
                 <div class="flex-1">
                     <h2 id="profile-name" class="text-lg font-bold">กำลังโหลด...</h2>
                     <p id="profile-email" class="text-sm text-gray-400"></p>
                 </div>
-                <i class="fas fa-chevron-down text-gray-400"></i>
+                <i class="fas fa-chevron-down text-gray-400" id="profile-chevron"></i>
             </div>
             
             <!-- Profile Menu (Dropdown) -->
-            <div id="profile-menu" class="hidden bg-[#1a1d24] border border-[#2a2e36] rounded-xl p-2 mb-4">
-                <div class="p-3 hover:bg-[#252930] rounded-lg cursor-pointer" onclick="showProfileSettings()">
+            <div id="profile-menu" class="profile-menu hidden">
+                <div class="profile-menu-item" onclick="showProfileSettings()">
                     <i class="fas fa-user mr-2 text-[#06c755]"></i> แก้ไขโปรไฟล์
                 </div>
-                <div class="p-3 hover:bg-[#252930] rounded-lg cursor-pointer" onclick="logout()">
+                <div class="profile-menu-item" onclick="logout()">
                     <i class="fas fa-sign-out-alt mr-2 text-red-500"></i> ออกจากระบบ
                 </div>
             </div>
@@ -558,7 +563,7 @@
                 
                 <div class="grid grid-cols-2 gap-2">
                     <input type="number" id="activity-max" placeholder="จำนวนสูงสุด" class="input-field" required>
-                    <input type="number" id="activity-price" placeholder="ราคา" class="input-field" value="0">
+                    <input type="number" id="activity-price" placeholder="ราคา (0=ฟรี)" class="input-field" value="0">
                 </div>
                 
                 <input type="url" id="activity-image" placeholder="รูปภาพ (URL)" class="input-field">
@@ -568,6 +573,8 @@
                 <textarea id="activity-requirements" placeholder="คุณสมบัติ (บรรทัดละ 1)" class="input-field" rows="2"></textarea>
                 
                 <textarea id="activity-benefits" placeholder="สิทธิประโยชน์ (บรรทัดละ 1)" class="input-field" rows="2"></textarea>
+                
+                <input type="text" id="activity-contact" placeholder="ข้อมูลติดต่อ" class="input-field">
                 
                 <div class="flex gap-2">
                     <button type="submit" class="btn-primary">บันทึก</button>
@@ -607,16 +614,12 @@
         </div>
     </div>
 
-    <!-- IFrame for Google Apps Script Proxy (ทางออกสำหรับ CORS) -->
-    <iframe id="gas-proxy" style="display: none;"></iframe>
-
     <script>
         // ========== CONFIG ==========
         const CONFIG = {
             GAS_URL: 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec', // เปลี่ยนเป็น URL ของคุณ
             LIFF_ID: '2008904120-T7I0VPZf', // เปลี่ยนเป็น LIFF ID ของคุณ
-            PAGE_SIZE: 10,
-            USE_PROXY: true // ใช้ iframe proxy เพื่อเลี่ยง CORS
+            PAGE_SIZE: 10
         };
 
         // ========== STATE ==========
@@ -625,25 +628,18 @@
             activities: [],
             myRegistrations: [],
             notifications: [],
-            categories: [
-                { id: 'CAT001', name: 'อบรม' },
-                { id: 'CAT002', name: 'สัมมนา' },
-                { id: 'CAT003', name: 'workshop' },
-                { id: 'CAT004', name: 'กีฬา' }
-            ],
+            categories: [],
             currentFilter: 'all',
             searchTerm: '',
             isAdmin: false,
             currentPage: 1,
-            currentActivity: null,
-            pendingCallbacks: {}
+            currentActivity: null
         };
 
         // ========== DOM Elements ==========
         const loading = document.getElementById('loading');
         const toast = document.getElementById('toast');
         const toastMessage = document.getElementById('toast-message');
-        const gasProxy = document.getElementById('gas-proxy');
 
         // ========== UTILS ==========
         function showLoading() { loading.classList.add('active'); }
@@ -665,105 +661,64 @@
             });
         }
 
-        // ========== API CALL (แก้ไขให้ทำงานกับ GAS) ==========
-        async function callGAS(path, data = {}) {
-            return new Promise((resolve, reject) => {
-                try {
-                    showLoading();
-                    
-                    // สร้าง callback ID
-                    const callbackId = 'cb_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-                    
-                    // เก็บ callback ไว้รอรับ response
-                    state.pendingCallbacks[callbackId] = {
-                        resolve: (result) => {
-                            hideLoading();
-                            resolve(result);
-                        },
-                        reject: (err) => {
-                            hideLoading();
-                            reject(err);
-                        }
-                    };
-                    
-                    // เตรียม data
-                    const formData = new FormData();
-                    formData.append('path', path);
-                    if (state.user?.lineUserId) {
-                        formData.append('lineUserId', state.user.lineUserId);
-                    }
-                    Object.keys(data).forEach(k => {
-                        if (data[k] !== undefined) formData.append(k, data[k]);
-                    });
-                    
-                    // สร้าง iframe form สำหรับ POST (วิธีแก้ CORS สำหรับ GAS)
-                    const iframe = document.createElement('iframe');
-                    iframe.style.display = 'none';
-                    iframe.name = callbackId;
-                    document.body.appendChild(iframe);
-                    
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = CONFIG.GAS_URL + '?callbackId=' + callbackId;
-                    form.target = callbackId;
-                    form.style.display = 'none';
-                    
-                    // เพิ่ม parameters
-                    formData.forEach((value, key) => {
-                        const input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = key;
-                        input.value = value;
-                        form.appendChild(input);
-                    });
-                    
-                    document.body.appendChild(form);
-                    
-                    // รอให้ iframe โหลดเสร็จ
-                    iframe.onload = function() {
-                        try {
-                            // ดึง response จาก iframe
-                            const responseText = iframe.contentDocument?.body?.textContent;
-                            if (responseText) {
-                                const result = JSON.parse(responseText);
-                                if (state.pendingCallbacks[callbackId]) {
-                                    state.pendingCallbacks[callbackId].resolve(result);
-                                }
-                            }
-                        } catch (e) {
-                            console.error('Iframe response error:', e);
-                        } finally {
-                            // ลบ iframe และ form
-                            setTimeout(() => {
-                                document.body.removeChild(iframe);
-                                document.body.removeChild(form);
-                                delete state.pendingCallbacks[callbackId];
-                            }, 100);
-                        }
-                    };
-                    
-                    // ส่งฟอร์ม
-                    form.submit();
-                    
-                    // Fallback timeout
-                    setTimeout(() => {
-                        if (state.pendingCallbacks[callbackId]) {
-                            state.pendingCallbacks[callbackId].reject(new Error('Request timeout'));
-                            delete state.pendingCallbacks[callbackId];
-                            document.body.removeChild(iframe);
-                            document.body.removeChild(form);
-                            hideLoading();
-                            showToast('การเชื่อมต่อล้มเหลว (timeout)', 'error');
-                        }
-                    }, 30000); // 30 วินาที
-                    
-                } catch (err) {
-                    console.error(err);
-                    hideLoading();
-                    showToast('การเชื่อมต่อล้มเหลว', 'error');
-                    reject(err);
-                }
+        function formatDateShort(dateStr) {
+            if (!dateStr) return '-';
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('th-TH', { 
+                year: 'numeric', month: 'short', day: 'numeric'
             });
+        }
+
+        // ========== API CALL - แก้ไขให้ทำงานกับ GAS จริง ==========
+        async function callGAS(path, data = {}) {
+            showLoading();
+            
+            try {
+                // เตรียม FormData
+                const formData = new FormData();
+                formData.append('path', path);
+                
+                // เพิ่ม lineUserId ถ้ามี
+                if (state.user?.lineUserId) {
+                    formData.append('lineUserId', state.user.lineUserId);
+                }
+                
+                // เพิ่มข้อมูลอื่นๆ
+                Object.keys(data).forEach(key => {
+                    if (data[key] !== undefined && data[key] !== null) {
+                        formData.append(key, data[key]);
+                    }
+                });
+
+                // ใช้ fetch แบบปกติ (GAS รองรับ CORS บางกรณี)
+                const response = await fetch(CONFIG.GAS_URL, {
+                    method: 'POST',
+                    body: formData,
+                    mode: 'cors', // เปลี่ยนเป็น 'no-cors' ถ้าเจอปัญหา
+                    credentials: 'omit'
+                });
+
+                // อ่าน response เป็น text ก่อน (เผื่อ GAS ส่ง JSON ไม่ตรง format)
+                const text = await response.text();
+                
+                // ลอง parse JSON
+                let result;
+                try {
+                    result = JSON.parse(text);
+                } catch (e) {
+                    console.error('JSON parse error:', text);
+                    throw new Error('รูปแบบข้อมูลไม่ถูกต้อง');
+                }
+
+                return result;
+
+            } catch (error) {
+                console.error('API call error:', error);
+                showToast('การเชื่อมต่อล้มเหลว: ' + error.message, 'error');
+                return { success: false, message: error.message };
+            } finally {
+                hideLoading();
+            }
         }
 
         // ========== LIFF INIT ==========
@@ -774,117 +729,67 @@
                         liff.login();
                         return;
                     }
+                    
                     try {
                         const profile = await liff.getProfile();
                         const idToken = liff.getDecodedIDToken();
                         
-                        // ใช้ข้อมูลจำลองเพื่อทดสอบ (ถ้า GAS ยังไม่ทำงาน)
-                        // กรณี GAS ใช้งานได้จริง ให้ใช้ callGAS
-                        state.user = {
-                            lineUserId: profile.userId,
-                            displayName: profile.displayName,
-                            pictureUrl: profile.pictureUrl || '',
-                            email: idToken?.email || '',
-                            role: 'user',
-                            phone: '',
-                            birthDate: '',
-                            gender: 'ไม่ระบุ',
-                            province: '',
-                            interests: ''
-                        };
-                        
-                        // ทดสอบว่าเป็น admin หรือไม่ (ตัวอย่าง: admin ที่ userId เฉพาะ)
-                        state.isAdmin = profile.userId === 'U1234567890abcdef'; // เปลี่ยนเป็น userId จริง
-                        
-                        updateUI();
-                        resolve();
-                        
-                        /* 
-                        // เมื่อ GAS พร้อมใช้งานจริง ให้ใช้โค้ดนี้แทน
+                        // เรียก API จริง
                         const result = await callGAS('user/profile', {
                             lineUserId: profile.userId,
                             displayName: profile.displayName,
                             pictureUrl: profile.pictureUrl || '',
                             email: idToken?.email || ''
                         });
+                        
                         if (result.success) {
                             state.user = result.data;
                             state.isAdmin = state.user.role === 'admin' || state.user.role === 'org';
+                            
+                            // โหลดข้อมูลอื่นๆ
+                            await loadCategories();
+                            await loadHomeData();
+                            await loadMyActivities();
+                            await loadNotifications();
+                            
                             updateUI();
                             resolve();
+                        } else {
+                            throw new Error(result.message || 'ไม่สามารถโหลดโปรไฟล์ได้');
                         }
-                        */
+                        
                     } catch (err) {
+                        console.error('LIFF init error:', err);
+                        showToast('ไม่สามารถเชื่อมต่อกับระบบได้', 'error');
                         reject(err);
                     }
                 }, reject);
             });
         }
 
-        // ========== ข้อมูลจำลองสำหรับทดสอบ (เมื่อ GAS ยังไม่พร้อม) ==========
-        function loadMockData() {
-            // จำลองกิจกรรม
-            state.activities = [
-                {
-                    activityId: 'ACT001',
-                    title: 'อบรมการใช้งาน LINE MiniApp',
-                    description: 'เรียนรู้การสร้าง MiniApp บน LINE พร้อม workshop',
-                    category: 'CAT001',
-                    location: 'ออนไลน์ (Zoom)',
-                    startDate: new Date(Date.now() + 86400000).toISOString(),
-                    endDate: new Date(Date.now() + 172800000).toISOString(),
-                    maxParticipants: 50,
-                    currentParticipants: 23,
-                    status: 'open',
-                    imageUrl: 'https://via.placeholder.com/400/06c755/ffffff?text=LINE+MiniApp',
-                    price: 0,
-                    tags: JSON.stringify(['LINE', 'MiniApp', 'พัฒนา']),
-                    requirements: JSON.stringify(['มีพื้นฐาน JavaScript', 'มีคอมพิวเตอร์']),
-                    benefits: JSON.stringify(['ได้ความรู้', 'ประกาศนียบัตร'])
-                },
-                {
-                    activityId: 'ACT002',
-                    title: 'สัมมนา AI for Business',
-                    description: 'การใช้ AI ในธุรกิจยุคใหม่',
-                    category: 'CAT002',
-                    location: 'โรงแรม Centara Grand',
-                    startDate: new Date(Date.now() + 259200000).toISOString(),
-                    endDate: new Date(Date.now() + 345600000).toISOString(),
-                    maxParticipants: 100,
-                    currentParticipants: 100,
-                    status: 'full',
-                    imageUrl: 'https://via.placeholder.com/400/00a344/ffffff?text=AI',
-                    price: 1500,
-                    tags: JSON.stringify(['AI', 'Business', 'เทคโนโลยี']),
-                    requirements: JSON.stringify(['สนใจด้าน AI']),
-                    benefits: JSON.stringify(['อาหารว่าง', 'เอกสาร'])
+        // ========== LOAD CATEGORIES ==========
+        async function loadCategories() {
+            try {
+                // ถ้ามี API categories ให้เรียก
+                // แต่ถ้าไม่มี ใช้ข้อมูลเริ่มต้น
+                state.categories = [
+                    { id: 'CAT001', name: 'อบรม' },
+                    { id: 'CAT002', name: 'สัมมนา' },
+                    { id: 'CAT003', name: 'workshop' },
+                    { id: 'CAT004', name: 'กีฬา' },
+                    { id: 'CAT005', name: 'ดนตรี' },
+                    { id: 'CAT006', name: 'ศิลปะ' },
+                    { id: 'CAT007', name: 'ท่องเที่ยว' }
+                ];
+                
+                const select = document.getElementById('activity-category');
+                if (select) {
+                    select.innerHTML = '<option value="">เลือกหมวดหมู่</option>' + 
+                        state.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
                 }
-            ];
-            
-            state.myRegistrations = [
-                {
-                    regId: 'REG001',
-                    activityId: 'ACT001',
-                    status: 'confirmed',
-                    registrationDate: new Date().toISOString(),
-                    activity: state.activities[0]
-                }
-            ];
-            
-            state.notifications = [
-                {
-                    title: 'ยินดีต้อนรับ',
-                    message: 'ยินดีต้อนรับสู่ LINE MiniApp กิจกรรม',
-                    createdAt: new Date().toISOString()
-                }
-            ];
-            
-            document.getElementById('stat-total').textContent = '2';
-            document.getElementById('stat-open').textContent = '1';
-            
-            renderActivities();
-            renderMyActivities();
-            renderNotifications();
+            } catch (error) {
+                console.error('Load categories error:', error);
+            }
         }
 
         // ========== UPDATE UI ==========
@@ -898,23 +803,36 @@
             const adminNav = document.querySelector('.admin-only');
             if (state.isAdmin) {
                 adminNav.classList.remove('hidden');
+                loadAdminData(); // โหลดข้อมูล admin
             } else {
                 adminNav.classList.add('hidden');
             }
-
-            // ใช้ข้อมูลจำลองสำหรับทดสอบ
-            loadMockData();
         }
 
         // ========== HOME ==========
         async function loadHomeData() {
-            // ใช้ข้อมูลจำลองจาก state แล้ว
-            renderActivities();
+            try {
+                const result = await callGAS('activities', {
+                    page: state.currentPage,
+                    status: state.currentFilter,
+                    search: state.searchTerm,
+                    pageSize: CONFIG.PAGE_SIZE
+                });
+                
+                if (result.success) {
+                    state.activities = result.data.activities || [];
+                    document.getElementById('stat-total').textContent = result.data.totalActivities || 0;
+                    document.getElementById('stat-open').textContent = result.data.openActivities || 0;
+                    renderActivities();
+                }
+            } catch (error) {
+                console.error('Load home error:', error);
+            }
         }
 
         function renderActivities() {
             const list = document.getElementById('activities-list');
-            if (state.activities.length === 0) {
+            if (!state.activities || state.activities.length === 0) {
                 list.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-calendar-times text-4xl text-gray-500 mb-3"></i>
@@ -925,9 +843,15 @@
             }
 
             list.innerHTML = state.activities.map(act => {
-                const isRegistered = state.myRegistrations.some(r => r.activityId === act.activityId);
+                const isRegistered = state.myRegistrations?.some(r => r.activityId === act.activityId);
                 const statusClass = `badge-${act.status}`;
-                const statusText = { open: 'เปิดรับ', closed: 'ปิด', full: 'เต็ม' }[act.status] || act.status;
+                const statusText = { 
+                    'open': 'เปิดรับ', 
+                    'closed': 'ปิด', 
+                    'full': 'เต็ม',
+                    'cancelled': 'ยกเลิก',
+                    'draft': 'ร่าง'
+                }[act.status] || act.status;
                 
                 // Parse tags
                 let tags = [];
@@ -947,9 +871,17 @@
                                 <p class="text-xs text-gray-400 mt-1 line-clamp-2">${act.description || ''}</p>
                                 <div class="flex items-center gap-2 mt-2 text-xs text-gray-400">
                                     <i class="fas fa-users"></i> ${act.currentParticipants || 0}/${act.maxParticipants}
-                                    ${act.price > 0 ? `<i class="fas fa-tag ml-2"></i> ฿${act.price}` : '<i class="fas fa-gift ml-2 text-[#06c755]"></i> ฟรี'}
+                                    <i class="fas fa-map-marker-alt ml-2"></i> ${act.location || ''}
                                 </div>
-                                ${isRegistered ? '<p class="text-[#06c755] text-xs mt-1"><i class="fas fa-check-circle"></i> ลงทะเบียนแล้ว</p>' : ''}
+                                <div class="flex items-center gap-2 mt-1 text-xs">
+                                    ${act.price > 0 ? 
+                                        `<span class="text-yellow-500"><i class="fas fa-tag"></i> ฿${act.price}</span>` : 
+                                        `<span class="text-[#06c755]"><i class="fas fa-gift"></i> ฟรี</span>`
+                                    }
+                                    ${isRegistered ? 
+                                        '<span class="text-[#06c755] ml-2"><i class="fas fa-check-circle"></i> ลงทะเบียนแล้ว</span>' : ''
+                                    }
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -959,12 +891,20 @@
 
         // ========== MY ACTIVITIES ==========
         async function loadMyActivities() {
-            renderMyActivities();
+            try {
+                const result = await callGAS('user/registrations');
+                if (result.success) {
+                    state.myRegistrations = result.data || [];
+                    renderMyActivities();
+                }
+            } catch (error) {
+                console.error('Load my activities error:', error);
+            }
         }
 
         function renderMyActivities() {
             const list = document.getElementById('my-activities-list');
-            if (state.myRegistrations.length === 0) {
+            if (!state.myRegistrations || state.myRegistrations.length === 0) {
                 list.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-ticket-alt text-4xl text-gray-500 mb-3"></i>
@@ -976,18 +916,28 @@
 
             list.innerHTML = state.myRegistrations.map(reg => {
                 const act = reg.activity || {};
+                const statusText = {
+                    'confirmed': '✅ ยืนยันแล้ว',
+                    'waiting': '⏳ รอคิว',
+                    'cancelled': '❌ ยกเลิก',
+                    'attended': '🎉 เข้าร่วมแล้ว'
+                }[reg.status] || reg.status;
+                
                 return `
-                    <div class="activity-card">
+                    <div class="activity-card" onclick="showActivityDetail('${act.activityId}')">
                         <div class="flex gap-3">
-                            <img src="${act.imageUrl || 'https://via.placeholder.com/80'}" class="w-20 h-20 rounded-xl object-cover">
+                            <img src="${act.imageUrl || 'https://via.placeholder.com/80'}" 
+                                 class="w-20 h-20 rounded-xl object-cover">
                             <div class="flex-1">
                                 <h3 class="font-semibold">${act.title || 'กิจกรรม'}</h3>
-                                <p class="text-xs text-gray-400 mt-1">ลงทะเบียน: ${formatDate(reg.registrationDate)}</p>
-                                <p class="text-xs text-gray-400">สถานะ: ${reg.status === 'confirmed' ? '✅ ยืนยัน' : '⏳ รอคิว'}</p>
+                                <p class="text-xs text-gray-400 mt-1">ลงทะเบียน: ${formatDateShort(reg.registrationDate)}</p>
+                                <p class="text-xs text-gray-400">สถานะ: ${statusText}</p>
                                 ${reg.status === 'confirmed' ? 
                                     `<button class="text-xs text-red-500 mt-2" onclick="event.stopPropagation(); cancelRegistration('${reg.regId}')">
                                         <i class="fas fa-times mr-1"></i>ยกเลิก
                                     </button>` : ''}
+                                ${reg.status === 'waiting' && reg.remark ? 
+                                    `<p class="text-xs text-yellow-500 mt-1">${reg.remark}</p>` : ''}
                             </div>
                         </div>
                     </div>
@@ -997,18 +947,39 @@
 
         async function cancelRegistration(regId) {
             if (!confirm('ต้องการยกเลิกการลงทะเบียน?')) return;
-            showToast('ยกเลิกสำเร็จ (ทดสอบ)');
-            // เมื่อ GAS พร้อมใช้งาน ให้ใช้ callGAS
+            
+            const result = await callGAS('cancel', { registrationId: regId });
+            if (result.success) {
+                showToast('ยกเลิกสำเร็จ');
+                await loadMyActivities();
+                await loadHomeData();
+            }
         }
 
         // ========== NOTIFICATIONS ==========
         async function loadNotifications() {
-            renderNotifications();
+            try {
+                const result = await callGAS('user/notifications', { unreadOnly: 'true' });
+                if (result.success) {
+                    state.notifications = result.data.notifications || [];
+                    const unread = result.data.unreadCount || 0;
+                    const badge = document.getElementById('notif-badge');
+                    if (unread > 0) {
+                        badge.textContent = unread > 9 ? '9+' : unread;
+                        badge.classList.remove('hidden');
+                    } else {
+                        badge.classList.add('hidden');
+                    }
+                    renderNotifications();
+                }
+            } catch (error) {
+                console.error('Load notifications error:', error);
+            }
         }
 
         function renderNotifications() {
             const list = document.getElementById('notifications-list');
-            if (state.notifications.length === 0) {
+            if (!state.notifications || state.notifications.length === 0) {
                 list.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-bell-slash text-4xl text-gray-500 mb-3"></i>
@@ -1019,7 +990,7 @@
             }
 
             list.innerHTML = state.notifications.map(n => `
-                <div class="bg-[#1a1d24] p-4 rounded-xl border border-[#2a2e36]">
+                <div class="bg-[#1a1d24] p-4 rounded-xl border border-[#2a2e36] ${n.isRead !== 'TRUE' ? 'border-l-4 border-l-[#06c755]' : ''}">
                     <p class="font-semibold">${n.title}</p>
                     <p class="text-sm text-gray-400 mt-1">${n.message}</p>
                     <p class="text-xs text-gray-500 mt-2">${formatDate(n.createdAt)}</p>
@@ -1029,102 +1000,133 @@
 
         // ========== ACTIVITY DETAIL ==========
         async function showActivityDetail(activityId) {
-            const act = state.activities.find(a => a.activityId === activityId);
-            if (!act) return;
-            
-            state.currentActivity = act;
-            
-            document.getElementById('modal-title').textContent = act.title;
+            try {
+                const result = await callGAS('activity', { activityId });
+                if (result.success) {
+                    state.currentActivity = result.data;
+                    const act = result.data;
+                    
+                    document.getElementById('modal-title').textContent = act.title;
 
-            const isRegistered = state.myRegistrations.some(r => r.activityId === act.activityId);
-            const statusText = { open: 'เปิดรับ', closed: 'ปิด', full: 'เต็ม' }[act.status] || act.status;
-            const statusClass = `badge-${act.status}`;
+                    const isRegistered = state.myRegistrations?.some(r => r.activityId === act.activityId);
+                    const statusText = { 
+                        'open': 'เปิดรับ', 
+                        'closed': 'ปิด', 
+                        'full': 'เต็ม',
+                        'cancelled': 'ยกเลิก',
+                        'draft': 'ร่าง'
+                    }[act.status] || act.status;
+                    const statusClass = `badge-${act.status}`;
 
-            // Parse JSON fields
-            let requirements = [], benefits = [], tags = [];
-            try { requirements = JSON.parse(act.requirements || '[]'); } catch { requirements = []; }
-            try { benefits = JSON.parse(act.benefits || '[]'); } catch { benefits = []; }
-            try { tags = JSON.parse(act.tags || '[]'); } catch { tags = []; }
+                    // Parse JSON fields
+                    let requirements = [], benefits = [], tags = [];
+                    try { requirements = JSON.parse(act.requirements || '[]'); } catch { requirements = []; }
+                    try { benefits = JSON.parse(act.benefits || '[]'); } catch { benefits = []; }
+                    try { tags = JSON.parse(act.tags || '[]'); } catch { tags = []; }
 
-            let html = `
-                <img src="${act.imageUrl || 'https://via.placeholder.com/400/06c755/ffffff?text=活动'}" 
-                     class="w-full h-48 object-cover rounded-xl"
-                     onerror="this.src='https://via.placeholder.com/400/06c755/ffffff?text=活动'">
-                
-                <div class="flex justify-between items-center">
-                    <span class="badge ${statusClass}">${statusText}</span>
-                    <span class="text-sm text-gray-400">
-                        <i class="fas fa-users mr-1"></i>${act.currentParticipants || 0}/${act.maxParticipants}
-                    </span>
-                </div>
-                
-                <div class="flex flex-wrap gap-1">
-                    ${tags.map(t => `<span class="text-xs bg-[#2a2e36] px-2 py-1 rounded-full">#${t}</span>`).join('')}
-                </div>
-                
-                <p class="text-gray-400">${act.description || ''}</p>
-                
-                <div class="space-y-2 text-sm">
-                    <p><i class="fas fa-calendar w-5 text-[#06c755]"></i> ${formatDate(act.startDate)}</p>
-                    <p><i class="fas fa-calendar-check w-5 text-[#06c755]"></i> ${formatDate(act.endDate)}</p>
-                    <p><i class="fas fa-map-marker-alt w-5 text-[#06c755]"></i> ${act.location || ''}</p>
-                    <p><i class="fas fa-tag w-5 text-[#06c755]"></i> ${act.price > 0 ? '฿' + act.price.toLocaleString() : 'ฟรี'}</p>
-                </div>
-            `;
+                    let html = `
+                        <img src="${act.imageUrl || 'https://via.placeholder.com/400/06c755/ffffff?text=活动'}" 
+                             class="w-full h-48 object-cover rounded-xl"
+                             onerror="this.src='https://via.placeholder.com/400/06c755/ffffff?text=活动'">
+                        
+                        <div class="flex justify-between items-center">
+                            <span class="badge ${statusClass}">${statusText}</span>
+                            <span class="text-sm text-gray-400">
+                                <i class="fas fa-users mr-1"></i>${act.currentParticipants || 0}/${act.maxParticipants}
+                            </span>
+                        </div>
+                        
+                        <div class="flex flex-wrap gap-1">
+                            ${tags.map(t => `<span class="text-xs bg-[#2a2e36] px-2 py-1 rounded-full">#${t}</span>`).join('')}
+                        </div>
+                        
+                        <p class="text-gray-400">${act.description || ''}</p>
+                        
+                        <div class="space-y-2 text-sm">
+                            <p><i class="fas fa-calendar w-5 text-[#06c755]"></i> ${formatDate(act.startDate)}</p>
+                            <p><i class="fas fa-calendar-check w-5 text-[#06c755]"></i> ${formatDate(act.endDate)}</p>
+                            <p><i class="fas fa-map-marker-alt w-5 text-[#06c755]"></i> ${act.location || ''}</p>
+                            <p><i class="fas fa-tag w-5 text-[#06c755]"></i> ${act.price > 0 ? '฿' + Number(act.price).toLocaleString() : 'ฟรี'}</p>
+                        </div>
+                    `;
 
-            if (requirements.length) {
-                html += `
-                    <div class="mt-2">
-                        <p class="font-semibold mb-1">📋 คุณสมบัติ</p>
-                        <ul class="text-sm text-gray-400 list-disc pl-4">
-                            ${requirements.map(r => `<li>${r}</li>`).join('')}
-                        </ul>
-                    </div>
-                `;
+                    if (requirements.length > 0) {
+                        html += `
+                            <div class="mt-2">
+                                <p class="font-semibold mb-1">📋 คุณสมบัติ</p>
+                                <ul class="text-sm text-gray-400 list-disc pl-4">
+                                    ${requirements.map(r => `<li>${r}</li>`).join('')}
+                                </ul>
+                            </div>
+                        `;
+                    }
+
+                    if (benefits.length > 0) {
+                        html += `
+                            <div class="mt-2">
+                                <p class="font-semibold mb-1">🎁 สิทธิประโยชน์</p>
+                                <ul class="text-sm text-gray-400 list-disc pl-4">
+                                    ${benefits.map(b => `<li>${b}</li>`).join('')}
+                                </ul>
+                            </div>
+                        `;
+                    }
+
+                    if (act.contact) {
+                        html += `<p class="text-sm text-gray-400 mt-2"><i class="fas fa-phone mr-2 text-[#06c755]"></i> ${act.contact}</p>`;
+                    }
+
+                    document.getElementById('modal-body').innerHTML = html;
+
+                    const registerBtn = document.getElementById('modal-register-btn');
+                    if (isRegistered) {
+                        registerBtn.disabled = true;
+                        registerBtn.textContent = 'ลงทะเบียนแล้ว';
+                    } else if (act.status !== 'open') {
+                        registerBtn.disabled = true;
+                        registerBtn.textContent = 'ไม่สามารถลงทะเบียนได้';
+                    } else {
+                        registerBtn.disabled = false;
+                        registerBtn.textContent = 'ลงทะเบียน';
+                    }
+
+                    // Admin controls
+                    const adminControls = document.getElementById('modal-admin-controls');
+                    if (state.isAdmin) {
+                        adminControls.classList.remove('hidden');
+                    } else {
+                        adminControls.classList.add('hidden');
+                    }
+
+                    document.getElementById('activity-modal').classList.add('active');
+                }
+            } catch (error) {
+                console.error('Show activity detail error:', error);
+                showToast('ไม่สามารถโหลดรายละเอียดได้', 'error');
             }
-
-            if (benefits.length) {
-                html += `
-                    <div class="mt-2">
-                        <p class="font-semibold mb-1">🎁 สิทธิประโยชน์</p>
-                        <ul class="text-sm text-gray-400 list-disc pl-4">
-                            ${benefits.map(b => `<li>${b}</li>`).join('')}
-                        </ul>
-                    </div>
-                `;
-            }
-
-            document.getElementById('modal-body').innerHTML = html;
-
-            const registerBtn = document.getElementById('modal-register-btn');
-            if (isRegistered) {
-                registerBtn.disabled = true;
-                registerBtn.textContent = 'ลงทะเบียนแล้ว';
-            } else if (act.status !== 'open') {
-                registerBtn.disabled = true;
-                registerBtn.textContent = 'ไม่สามารถลงทะเบียนได้';
-            } else {
-                registerBtn.disabled = false;
-                registerBtn.textContent = 'ลงทะเบียน';
-            }
-
-            // Admin controls
-            const adminControls = document.getElementById('modal-admin-controls');
-            if (state.isAdmin) {
-                adminControls.classList.remove('hidden');
-            } else {
-                adminControls.classList.add('hidden');
-            }
-
-            document.getElementById('activity-modal').classList.add('active');
         }
 
         async function registerFromModal() {
             if (!state.currentActivity) return;
             if (!confirm('ต้องการลงทะเบียน?')) return;
             
-            showToast('ลงทะเบียนสำเร็จ (ทดสอบ)');
-            closeModal();
+            const result = await callGAS('register', { 
+                activityId: state.currentActivity.activityId,
+                displayName: state.user?.displayName || '',
+                email: state.user?.email || '',
+                phone: state.user?.phone || ''
+            });
+            
+            if (result.success) {
+                showToast('ลงทะเบียนสำเร็จ');
+                closeModal();
+                await loadMyActivities();
+                await loadHomeData();
+                
+                if (result.data?.status === 'waiting') {
+                    showToast(`อยู่ในคิวรอ ลำดับที่ ${result.data.queuePosition}`, 'info');
+                }
+            }
         }
 
         function closeModal() {
@@ -1133,22 +1135,39 @@
 
         // ========== ADMIN ==========
         async function loadAdminData() {
-            document.getElementById('admin-users').textContent = '4';
-            document.getElementById('admin-activities').textContent = '2';
-            document.getElementById('admin-registrations').textContent = '1';
-            document.getElementById('admin-today').textContent = '0';
+            try {
+                const result = await callGAS('admin/stats');
+                if (result.success) {
+                    const stats = result.data;
+                    document.getElementById('admin-users').textContent = stats.users || 0;
+                    document.getElementById('admin-activities').textContent = stats.activities || 0;
+                    document.getElementById('admin-registrations').textContent = stats.registrations || 0;
+                    document.getElementById('admin-today').textContent = stats.todayRegistrations || 0;
+                }
 
-            const list = document.getElementById('admin-activities-list');
-            list.innerHTML = state.activities.map(a => `
-                <div class="flex justify-between items-center p-2 bg-[#111317] rounded-lg cursor-pointer" onclick="showActivityDetail('${a.activityId}')">
-                    <span class="text-sm">${a.title}</span>
-                    <span class="badge badge-${a.status} text-xs">${a.status}</span>
-                </div>
-            `).join('');
+                // Load recent activities
+                const acts = await callGAS('activities', { page: 1, pageSize: 5 });
+                if (acts.success) {
+                    const list = document.getElementById('admin-activities-list');
+                    list.innerHTML = acts.data.activities.map(a => `
+                        <div class="flex justify-between items-center p-2 bg-[#111317] rounded-lg cursor-pointer" onclick="showActivityDetail('${a.activityId}')">
+                            <span class="text-sm">${a.title}</span>
+                            <span class="badge badge-${a.status} text-xs">${a.status}</span>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Load admin data error:', error);
+            }
         }
 
         // ========== ADMIN: CREATE/EDIT ==========
         function showCreateActivityModal() {
+            if (!state.isAdmin) {
+                showToast('ไม่มีสิทธิ์เข้าถึง', 'error');
+                return;
+            }
+            
             document.getElementById('create-modal-title').textContent = 'สร้างกิจกรรม';
             document.getElementById('edit-activity-id').value = '';
             document.getElementById('activity-title').value = '';
@@ -1163,6 +1182,8 @@
             document.getElementById('activity-tags').value = '';
             document.getElementById('activity-requirements').value = '';
             document.getElementById('activity-benefits').value = '';
+            document.getElementById('activity-contact').value = '';
+            
             document.getElementById('create-modal').classList.add('active');
         }
 
@@ -1172,12 +1193,62 @@
 
         async function saveActivity(e) {
             e.preventDefault();
-            showToast('บันทึกสำเร็จ (ทดสอบ)');
-            closeCreateModal();
+            
+            if (!state.isAdmin) {
+                showToast('ไม่มีสิทธิ์', 'error');
+                return;
+            }
+            
+            const id = document.getElementById('edit-activity-id').value;
+            const isEdit = !!id;
+
+            // แปลงข้อมูล
+            const tags = document.getElementById('activity-tags').value
+                .split(',')
+                .map(t => t.trim())
+                .filter(t => t);
+
+            const requirements = document.getElementById('activity-requirements').value
+                .split('\n')
+                .map(r => r.trim())
+                .filter(r => r);
+
+            const benefits = document.getElementById('activity-benefits').value
+                .split('\n')
+                .map(b => b.trim())
+                .filter(b => b);
+
+            const data = {
+                title: document.getElementById('activity-title').value,
+                description: document.getElementById('activity-desc').value,
+                category: document.getElementById('activity-category').value,
+                location: document.getElementById('activity-location').value,
+                startDate: document.getElementById('activity-start').value,
+                endDate: document.getElementById('activity-end').value,
+                maxParticipants: parseInt(document.getElementById('activity-max').value) || 100,
+                price: parseInt(document.getElementById('activity-price').value) || 0,
+                imageUrl: document.getElementById('activity-image').value,
+                tags: JSON.stringify(tags),
+                requirements: JSON.stringify(requirements),
+                benefits: JSON.stringify(benefits),
+                contact: document.getElementById('activity-contact').value
+            };
+
+            if (isEdit) {
+                data.activityId = id;
+            }
+
+            const result = await callGAS(isEdit ? 'activities/update' : 'activities/create', data);
+            if (result.success) {
+                showToast(isEdit ? 'แก้ไขสำเร็จ' : 'สร้างสำเร็จ');
+                closeCreateModal();
+                await loadHomeData();
+                if (state.isAdmin) await loadAdminData();
+            }
         }
 
         function editCurrentActivity() {
-            if (!state.currentActivity) return;
+            if (!state.isAdmin || !state.currentActivity) return;
             
             const act = state.currentActivity;
             
@@ -1193,26 +1264,41 @@
             document.getElementById('activity-price').value = act.price || 0;
             document.getElementById('activity-image').value = act.imageUrl || '';
 
+            // Parse tags
             let tags = [];
             try { tags = JSON.parse(act.tags || '[]'); } catch { tags = []; }
             document.getElementById('activity-tags').value = tags.join(', ');
 
+            // Parse requirements
             let reqs = [];
             try { reqs = JSON.parse(act.requirements || '[]'); } catch { reqs = []; }
             document.getElementById('activity-requirements').value = reqs.join('\n');
 
+            // Parse benefits
             let benefits = [];
             try { benefits = JSON.parse(act.benefits || '[]'); } catch { benefits = []; }
             document.getElementById('activity-benefits').value = benefits.join('\n');
+
+            document.getElementById('activity-contact').value = act.contact || '';
 
             closeModal();
             document.getElementById('create-modal').classList.add('active');
         }
 
         async function deleteCurrentActivity() {
-            if (!state.currentActivity || !confirm('แน่ใจว่าต้องการลบ?')) return;
-            showToast('ลบสำเร็จ (ทดสอบ)');
-            closeModal();
+            if (!state.isAdmin || !state.currentActivity) return;
+            if (!confirm('แน่ใจว่าต้องการลบ?')) return;
+            
+            const result = await callGAS('activities/delete', { 
+                activityId: state.currentActivity.activityId 
+            });
+            
+            if (result.success) {
+                showToast('ลบสำเร็จ');
+                closeModal();
+                await loadHomeData();
+                if (state.isAdmin) await loadAdminData();
+            }
         }
 
         // ========== PROFILE ==========
@@ -1220,6 +1306,8 @@
             const menu = document.getElementById('profile-menu');
             menu.classList.toggle('hidden');
         }
+
+        document.getElementById('profile-header').addEventListener('click', toggleProfileMenu);
 
         function showProfileSettings() {
             document.getElementById('profile-phone').value = state.user?.phone || '';
@@ -1238,8 +1326,23 @@
 
         async function saveProfile(e) {
             e.preventDefault();
-            showToast('บันทึกสำเร็จ (ทดสอบ)');
-            closeProfileModal();
+            
+            const data = {
+                phone: document.getElementById('profile-phone').value,
+                birthDate: document.getElementById('profile-birth').value,
+                gender: document.getElementById('profile-gender').value,
+                province: document.getElementById('profile-province').value,
+                interests: document.getElementById('profile-interests').value
+            };
+
+            const result = await callGAS('user/update', data);
+            if (result.success) {
+                showToast('บันทึกสำเร็จ');
+                closeProfileModal();
+                if (state.user) {
+                    Object.assign(state.user, data);
+                }
+            }
         }
 
         function logout() {
@@ -1299,13 +1402,6 @@
             });
         });
 
-        // ========== LOAD CATEGORIES ==========
-        function loadCategories() {
-            const select = document.getElementById('activity-category');
-            select.innerHTML = '<option value="">เลือกหมวดหมู่</option>' + 
-                state.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-        }
-
         // ========== REFRESH ADMIN ==========
         document.getElementById('refresh-admin')?.addEventListener('click', loadAdminData);
 
@@ -1314,12 +1410,21 @@
             showLoading();
             try {
                 await initLIFF();
-                loadCategories();
                 hideLoading();
             } catch (err) {
                 console.error(err);
                 hideLoading();
                 showToast('ไม่สามารถเชื่อมต่อกับ LINE ได้', 'error');
+                
+                // แสดง UI เบื้องต้น
+                document.getElementById('profile-name').textContent = 'กรุณาเข้าสู่ระบบ';
+                document.getElementById('activities-list').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle text-4xl text-yellow-500 mb-3"></i>
+                        <p class="text-gray-400">ไม่สามารถเชื่อมต่อกับระบบได้</p>
+                        <button class="btn-primary mt-4" onclick="location.reload()">ลองอีกครั้ง</button>
+                    </div>
+                `;
             }
         });
 
@@ -1327,6 +1432,11 @@
         window.onclick = function(e) {
             if (e.target.classList.contains('modal')) {
                 e.target.classList.remove('active');
+            }
+            
+            // Close profile menu when clicking outside
+            if (!e.target.closest('#profile-header') && !e.target.closest('#profile-menu')) {
+                document.getElementById('profile-menu')?.classList.add('hidden');
             }
         };
     </script>
