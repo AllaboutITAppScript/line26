@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -827,12 +826,6 @@
                         <label class="block text-sm text-gray-400 mb-1">Google Drive Folder ID</label>
                         <input type="text" id="setting-drive-folder" class="input-field" required>
                         
-                        <label class="block text-sm text-gray-400 mb-1">อนุญาตให้ผู้ใช้ทั่วไปสร้างโพสต์</label>
-                        <select id="setting-allow-user-posts" class="input-field">
-                            <option value="true">ใช่</option>
-                            <option value="false">ไม่ (เฉพาะแอดมิน)</option>
-                        </select>
-                        
                         <button type="submit" class="btn-primary">บันทึก</button>
                     </form>
                 </div>
@@ -1237,7 +1230,6 @@
                 state.settings = result.data || {};
                 document.getElementById('setting-app-name').value = state.settings.appName || 'LINE ข่าวสาร';
                 document.getElementById('setting-drive-folder').value = state.settings.driveFolderId || CONFIG.DRIVE_FOLDER_ID;
-                document.getElementById('setting-allow-user-posts').value = state.settings.allowUserPosts || 'true';
             }
         }
 
@@ -1420,6 +1412,53 @@
                     </div>
                 `;
             }).join('');
+        }
+
+        // ========== NOTIFICATIONS ==========
+        async function loadNotifications() {
+            const result = await callGAS('user/notifications', { unreadOnly: 'true' });
+            if (result.success) {
+                state.notifications = result.data.notifications || [];
+                const unread = result.data.unreadCount || 0;
+                const badge = document.getElementById('notif-badge');
+                if (unread > 0) {
+                    badge.textContent = unread > 9 ? '9+' : unread;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+                renderNotifications();
+            }
+        }
+
+        async function markNotificationAsRead(notificationId) {
+            const result = await callGAS('user/notification/read', { notificationId });
+            if (result.success) {
+                // โหลดการแจ้งเตือนใหม่เพื่ออัปเดต badge
+                await loadNotifications();
+            }
+        }
+
+        function renderNotifications() {
+            const list = document.getElementById('notifications-list');
+            if (state.notifications.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-bell-slash text-4xl text-gray-500 mb-3"></i>
+                        <p class="text-gray-400">ไม่มีการแจ้งเตือน</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = state.notifications.map(n => `
+                <div class="bg-[#1a1d24] p-4 rounded-xl border border-[#2a2e36] ${n.isRead !== 'TRUE' ? 'border-l-4 border-l-[#06c755] cursor-pointer' : ''}" 
+                     onclick="${n.isRead !== 'TRUE' ? `markNotificationAsRead('${n.notificationId}')` : ''}">
+                    <p class="font-semibold">${n.title}</p>
+                    <p class="text-sm text-gray-400 mt-1">${n.message}</p>
+                    <p class="text-xs text-gray-500 mt-2">${formatDate(n.createdAt)}</p>
+                </div>
+            `).join('');
         }
 
         // ========== SHARE ==========
@@ -1745,44 +1784,6 @@
             }
         }
 
-        // ========== NOTIFICATIONS ==========
-        async function loadNotifications() {
-            const result = await callGAS('user/notifications', { unreadOnly: 'true' });
-            if (result.success) {
-                state.notifications = result.data.notifications || [];
-                const unread = result.data.unreadCount || 0;
-                const badge = document.getElementById('notif-badge');
-                if (unread > 0) {
-                    badge.textContent = unread > 9 ? '9+' : unread;
-                    badge.classList.remove('hidden');
-                } else {
-                    badge.classList.add('hidden');
-                }
-                renderNotifications();
-            }
-        }
-
-        function renderNotifications() {
-            const list = document.getElementById('notifications-list');
-            if (state.notifications.length === 0) {
-                list.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-bell-slash text-4xl text-gray-500 mb-3"></i>
-                        <p class="text-gray-400">ไม่มีการแจ้งเตือน</p>
-                    </div>
-                `;
-                return;
-            }
-
-            list.innerHTML = state.notifications.map(n => `
-                <div class="bg-[#1a1d24] p-4 rounded-xl border border-[#2a2e36] ${n.isRead !== 'TRUE' ? 'border-l-4 border-l-[#06c755]' : ''}">
-                    <p class="font-semibold">${n.title}</p>
-                    <p class="text-sm text-gray-400 mt-1">${n.message}</p>
-                    <p class="text-xs text-gray-500 mt-2">${formatDate(n.createdAt)}</p>
-                </div>
-            `).join('');
-        }
-
         // ========== ADMIN: USERS ==========
         async function loadUsers() {
             if (!state.isAdmin) return;
@@ -1916,8 +1917,7 @@
             
             const data = {
                 appName: document.getElementById('setting-app-name').value,
-                driveFolderId: document.getElementById('setting-drive-folder').value,
-                allowUserPosts: document.getElementById('setting-allow-user-posts').value
+                driveFolderId: document.getElementById('setting-drive-folder').value
             };
             
             const result = await callGAS('admin/settings/update', data);
