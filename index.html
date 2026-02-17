@@ -5,26 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LINE ข่าวสาร · กิจกรรม</title>
     
-    <!-- Preload Critical Resources -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdn.tailwindcss.com">
-    <link rel="preconnect" href="https://static.line-scdn.net">
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Tailwind (โหลดแบบ async) -->
-    <script src="https://cdn.tailwindcss.com" async></script>
-    
-    <!-- Fonts (โหลดแบบ critical) -->
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- LINE LIFF (โหลดแบบ async) -->
-    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js" async></script>
+    <!-- LINE LIFF -->
+    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
     
-    <!-- Font Awesome (โหลดแบบ async) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* Critical CSS - โหลดก่อน */
+        /* CSS เหมือนเดิม - คัดลอกจากโค้ดก่อนหน้า */
         * {
             font-family: 'IBM Plex Sans Thai', sans-serif;
             margin: 0;
@@ -46,15 +40,8 @@
             background-color: var(--bg);
             color: var(--text);
             padding-bottom: 70px;
-            opacity: 0;
-            animation: fadeIn 0.3s ease forwards;
         }
         
-        @keyframes fadeIn {
-            to { opacity: 1; }
-        }
-        
-        /* Bottom Navigation */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -66,7 +53,6 @@
             justify-content: space-around;
             padding: 8px 0;
             z-index: 50;
-            backdrop-filter: blur(10px);
         }
         
         .nav-item {
@@ -78,7 +64,6 @@
             color: var(--text-secondary);
             font-size: 12px;
             cursor: pointer;
-            transition: color 0.2s;
         }
         
         .nav-item.active {
@@ -98,85 +83,28 @@
             display: block;
         }
         
-        /* Horizontal Scroll Cards */
-        .scroll-container {
-            overflow-x: auto;
-            overflow-y: hidden;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-            display: flex;
-            gap: 16px;
-            padding: 4px 16px 16px 16px;
-            margin: 0 -16px;
-            scrollbar-width: thin;
-            scrollbar-color: var(--primary) var(--bg-card);
-        }
-        
-        .scroll-container::-webkit-scrollbar {
-            height: 4px;
-        }
-        
-        .scroll-container::-webkit-scrollbar-track {
-            background: var(--bg-card);
-            border-radius: 10px;
-        }
-        
-        .scroll-container::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 10px;
-        }
-        
-        .slide-card {
-            flex: 0 0 280px;
-            scroll-snap-align: start;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: transform 0.2s, border-color 0.2s;
-        }
-        
-        .slide-card:active {
-            transform: scale(0.98);
-            border-color: var(--primary);
-        }
-        
-        .slide-card-image {
-            width: 100%;
-            height: 160px;
-            object-fit: cover;
-            background: #2a2e36;
-        }
-        
-        .slide-card-content {
-            padding: 16px;
-        }
-        
-        /* Grid Cards (สำหรับแท็บอื่น) */
-        .grid-card {
+        .news-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 16px;
             overflow: hidden;
             margin-bottom: 16px;
             cursor: pointer;
-            transition: transform 0.2s, border-color 0.2s;
         }
         
-        .grid-card:active {
+        .news-card:active {
             transform: scale(0.98);
             border-color: var(--primary);
         }
         
-        .grid-card-image {
+        .news-image {
             width: 100%;
             height: 180px;
             object-fit: cover;
             background: #2a2e36;
         }
         
-        .grid-card-content {
+        .news-content {
             padding: 16px;
         }
         
@@ -215,11 +143,6 @@
             border: none;
             width: 100%;
             cursor: pointer;
-            transition: background 0.2s;
-        }
-        
-        .btn-primary:active {
-            background: var(--primary-dark);
         }
         
         .btn-primary:disabled {
@@ -235,12 +158,6 @@
             border-radius: 12px;
             width: 100%;
             cursor: pointer;
-            transition: border-color 0.2s, color 0.2s;
-        }
-        
-        .btn-outline:active {
-            border-color: var(--primary);
-            color: var(--primary);
         }
         
         .btn-danger {
@@ -295,12 +212,12 @@
         }
         
         .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--border);
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border);
             border-top-color: var(--primary);
             border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+            animation: spin 1s linear infinite;
         }
         
         @keyframes spin {
@@ -320,9 +237,9 @@
         }
         
         .profile-avatar {
-            width: 56px;
-            height: 56px;
-            border-radius: 28px;
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
             border: 3px solid var(--primary);
             object-fit: cover;
         }
@@ -331,7 +248,7 @@
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 12px;
+            padding: 16px;
             text-align: center;
         }
         
@@ -347,12 +264,6 @@
             border: 1px solid var(--border);
             border-radius: 30px;
             color: var(--text);
-            font-size: 14px;
-        }
-        
-        .search-box input:focus {
-            outline: none;
-            border-color: var(--primary);
         }
         
         .search-box i {
@@ -369,7 +280,6 @@
             overflow-x: auto;
             padding-bottom: 8px;
             margin-bottom: 16px;
-            scrollbar-width: thin;
         }
         
         .filter-btn {
@@ -381,7 +291,6 @@
             border: 1px solid var(--border);
             color: var(--text-secondary);
             cursor: pointer;
-            transition: all 0.2s;
         }
         
         .filter-btn.active {
@@ -398,7 +307,6 @@
             padding: 12px;
             width: 100%;
             margin-bottom: 12px;
-            font-size: 14px;
         }
         
         .input-field:focus {
@@ -441,7 +349,6 @@
             z-index: 1000;
             display: none;
             animation: slideUp 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
         
         .toast.show {
@@ -465,10 +372,9 @@
             padding: 12px;
             border-radius: 8px;
             cursor: pointer;
-            transition: background 0.2s;
         }
         
-        .profile-menu-item:active {
+        .profile-menu-item:hover {
             background: #252930;
         }
         
@@ -479,10 +385,9 @@
             text-align: center;
             margin-bottom: 12px;
             cursor: pointer;
-            transition: border-color 0.2s;
         }
         
-        .upload-area:active {
+        .upload-area:hover {
             border-color: var(--primary);
         }
         
@@ -539,7 +444,6 @@
             padding: 12px;
             border-bottom: 2px solid transparent;
             cursor: pointer;
-            transition: all 0.2s;
         }
         
         .admin-tab-btn.active {
@@ -549,7 +453,7 @@
         }
         
         .hidden {
-            display: none !important;
+            display: none;
         }
         
         .line-clamp-2 {
@@ -557,46 +461,6 @@
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
-        }
-        
-        /* Share button */
-        .share-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 30px;
-            padding: 8px 16px;
-            font-size: 13px;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            margin-top: 12px;
-        }
-        
-        .share-btn i {
-            font-size: 14px;
-        }
-        
-        /* Skeleton loading */
-        .skeleton {
-            background: linear-gradient(90deg, var(--bg-card) 25%, var(--border) 50%, var(--bg-card) 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-            border-radius: 16px;
-        }
-        
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-        
-        .skeleton-card {
-            flex: 0 0 280px;
-            height: 280px;
-            background: var(--bg-card);
-            border-radius: 20px;
         }
     </style>
 </head>
@@ -617,7 +481,7 @@
         <div id="tab-home" class="tab-content active">
             <!-- Profile Header -->
             <div class="profile-header" id="profile-header">
-                <img id="profile-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Crect width='56' height='56' fill='%232a2e36'/%3E%3Ctext x='28' y='38' font-size='24' text-anchor='middle' fill='%239ca3af' font-family='Arial'%3ELINE%3C/text%3E%3C/svg%3E" alt="avatar" class="profile-avatar" loading="lazy">
+                <img id="profile-avatar" src="" alt="avatar" class="profile-avatar">
                 <div class="flex-1">
                     <h2 id="profile-name" class="text-lg font-bold">กำลังโหลด...</h2>
                     <p id="profile-email" class="text-sm text-gray-400"></p>
@@ -655,7 +519,7 @@
             <!-- Search -->
             <div class="search-box">
                 <i class="fas fa-search"></i>
-                <input type="text" id="search-input" placeholder="ค้นหาข่าวสาร กิจกรรม..." autocomplete="off">
+                <input type="text" id="search-input" placeholder="ค้นหาข่าวสาร กิจกรรม...">
             </div>
 
             <!-- Filter -->
@@ -666,13 +530,8 @@
                 <button class="filter-btn" data-filter="urgent">⚠️ ประกาศด่วน</button>
             </div>
 
-            <!-- Horizontal Scroll Posts -->
-            <div id="posts-scroll" class="scroll-container">
-                <!-- Skeleton Loading -->
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-            </div>
+            <!-- Posts List -->
+            <div id="posts-list" class="space-y-3"></div>
         </div>
 
         <!-- Tab: My Posts -->
@@ -749,7 +608,7 @@
             <div id="admin-users-tab" class="admin-tab hidden">
                 <div class="search-box mb-4">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="user-search" placeholder="ค้นหาผู้ใช้..." autocomplete="off">
+                    <input type="text" id="user-search" placeholder="ค้นหาผู้ใช้...">
                 </div>
                 <div id="users-list" class="space-y-2"></div>
             </div>
@@ -808,9 +667,6 @@
             </div>
             <div id="modal-body" class="space-y-4"></div>
             <div class="flex gap-2 mt-4">
-                <button class="share-btn" onclick="shareAsFlexMessage()">
-                    <i class="fab fa-line"></i> แชร์เป็น Flex Message
-                </button>
                 <button class="btn-outline" onclick="closeModal()">ปิด</button>
             </div>
             <div id="modal-admin-controls" class="hidden mt-4 pt-4 border-t border-[#2a2e36]">
@@ -843,9 +699,9 @@
                     <option value="urgent">⚠️ ประกาศด่วน</option>
                 </select>
                 
-                <input type="text" id="post-title" placeholder="หัวข้อ" class="input-field" required maxlength="100">
+                <input type="text" id="post-title" placeholder="หัวข้อ" class="input-field" required>
                 
-                <textarea id="post-content" placeholder="เนื้อหา" class="input-field" rows="5" required maxlength="5000"></textarea>
+                <textarea id="post-content" placeholder="เนื้อหา" class="input-field" rows="5" required></textarea>
                 
                 <!-- Image Upload -->
                 <div class="upload-area" onclick="document.getElementById('post-image-file').click()">
@@ -854,10 +710,10 @@
                     <p class="text-xs text-gray-500 mt-1">รองรับ JPG, PNG, GIF (สูงสุด 5MB)</p>
                 </div>
                 <input type="file" id="post-image-file" accept="image/*" style="display: none" onchange="previewImage(this)">
-                <img id="image-preview" class="image-preview" src="" loading="lazy">
+                <img id="image-preview" class="image-preview" src="">
                 <input type="hidden" id="post-image" value="">
                 
-                <input type="url" id="post-link" placeholder="ลิงก์เพิ่มเติม (ถ้ามี)" class="input-field">
+                <input type="text" id="post-link" placeholder="ลิงก์เพิ่มเติม (ถ้ามี)" class="input-field">
                 
                 <select id="post-status" class="input-field">
                     <option value="published">เผยแพร่</option>
@@ -880,8 +736,8 @@
                 <button onclick="closeProfileModal()"><i class="fas fa-times text-gray-400 text-xl"></i></button>
             </div>
             <form id="profile-form" onsubmit="saveProfile(event)">
-                <input type="text" id="profile-phone" placeholder="เบอร์โทรศัพท์" class="input-field" maxlength="10">
-                <input type="text" id="profile-department" placeholder="แผนก/หน่วยงาน" class="input-field" maxlength="50">
+                <input type="text" id="profile-phone" placeholder="เบอร์โทรศัพท์" class="input-field">
+                <input type="text" id="profile-department" placeholder="แผนก/หน่วยงาน" class="input-field">
                 
                 <div class="flex gap-2">
                     <button type="submit" class="btn-primary">บันทึก</button>
@@ -918,12 +774,12 @@
 
     <script>
         // ========== CONFIG ==========
+        // แก้ไขตรงนี้ให้ถูกต้องก่อนใช้งาน
         const CONFIG = {
-            GAS_URL: 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec',
-            LIFF_ID: '2008904120-T7I0VPZf',
+            GAS_URL: 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec', // <<< เปลี่ยนเป็น URL ของคุณ
+            LIFF_ID: '2008904120-T7I0VPZf', // <<< เปลี่ยนเป็น LIFF ID ของคุณ
             PAGE_SIZE: 20,
-            DRIVE_FOLDER_ID: '18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE',
-            CACHE_TIME: 5 * 60 * 1000 // 5 นาที
+            DRIVE_FOLDER_ID: '18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE'
         };
 
         // ========== STATE ==========
@@ -939,9 +795,7 @@
             isEditor: false,
             currentPage: 1,
             currentPost: null,
-            settings: {},
-            cache: {},
-            lastFetch: 0
+            settings: {}
         };
 
         // ========== DOM Elements ==========
@@ -972,47 +826,13 @@
         function formatDateShort(dateStr) {
             if (!dateStr) return '-';
             const d = new Date(dateStr);
-            const now = new Date();
-            const diff = now - d;
-            
-            // ถ้าเป็นวันนี้
-            if (diff < 24 * 60 * 60 * 1000 && d.getDate() === now.getDate()) {
-                return 'วันนี้ ' + d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
-            }
-            // เมื่อวาน
-            if (diff < 48 * 60 * 60 * 1000 && d.getDate() === now.getDate() - 1) {
-                return 'เมื่อวาน';
-            }
-            
             return d.toLocaleDateString('th-TH', { 
                 year: 'numeric', month: 'short', day: 'numeric'
             });
         }
 
-        // ========== CACHE MANAGEMENT ==========
-        function getCached(key) {
-            const cached = state.cache[key];
-            if (cached && Date.now() - cached.timestamp < CONFIG.CACHE_TIME) {
-                return cached.data;
-            }
-            return null;
-        }
-
-        function setCache(key, data) {
-            state.cache[key] = {
-                data: data,
-                timestamp: Date.now()
-            };
-        }
-
-        // ========== API CALL (Optimized) ==========
-        async function callGAS(path, data = {}, useCache = false) {
-            // Check cache
-            if (useCache) {
-                const cached = getCached(path + JSON.stringify(data));
-                if (cached) return cached;
-            }
-            
+        // ========== API CALL ==========
+        async function callGAS(path, data = {}) {
             showLoading();
             
             try {
@@ -1029,24 +849,18 @@
                     }
                 });
 
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 วินาที timeout
+                console.log('Calling GAS:', path, data);
 
                 const response = await fetch(CONFIG.GAS_URL, {
                     method: 'POST',
-                    body: formData,
-                    signal: controller.signal
+                    body: formData
                 });
 
-                clearTimeout(timeoutId);
-
                 const text = await response.text();
+                console.log('GAS Response:', text);
                 
                 try {
                     const result = JSON.parse(text);
-                    if (useCache && result.success) {
-                        setCache(path + JSON.stringify(data), result);
-                    }
                     return result;
                 } catch (e) {
                     console.error('JSON parse error:', text);
@@ -1054,127 +868,34 @@
                 }
 
             } catch (error) {
-                if (error.name === 'AbortError') {
-                    showToast('การเชื่อมต่อหมดเวลา', 'error');
-                } else {
-                    console.error('API call error:', error);
-                    showToast('การเชื่อมต่อล้มเหลว', 'error');
-                }
+                console.error('API call error:', error);
+                showToast('การเชื่อมต่อล้มเหลว: ' + error.message, 'error');
                 return { success: false, message: error.message };
             } finally {
                 hideLoading();
             }
         }
 
-        // ========== SHARE AS FLEX MESSAGE ==========
-        async function shareAsFlexMessage() {
-            if (!state.currentPost) return;
-            
-            const post = state.currentPost;
-            
-            // สร้าง Flex Message
-            const flexMessage = {
-                type: "flex",
-                altText: post.title,
-                contents: {
-                    type: "bubble",
-                    hero: post.imageUrl ? {
-                        type: "image",
-                        url: post.imageUrl,
-                        size: "full",
-                        aspectRatio: "20:13",
-                        aspectMode: "cover",
-                        action: {
-                            type: "uri",
-                            uri: post.link || window.location.href
-                        }
-                    } : null,
-                    body: {
-                        type: "box",
-                        layout: "vertical",
-                        contents: [
-                            {
-                                type: "text",
-                                text: post.title,
-                                weight: "bold",
-                                size: "xl",
-                                wrap: true
-                            },
-                            {
-                                type: "box",
-                                layout: "baseline",
-                                contents: [
-                                    {
-                                        type: "text",
-                                        text: post.type === 'news' ? '📰 ข่าวสาร' : 
-                                              post.type === 'event' ? '🎉 กิจกรรม' : '⚠️ ประกาศด่วน',
-                                        size: "sm",
-                                        color: "#06c755"
-                                    },
-                                    {
-                                        type: "text",
-                                        text: formatDateShort(post.createdAt),
-                                        size: "sm",
-                                        color: "#aaaaaa",
-                                        align: "end"
-                                    }
-                                ],
-                                margin: "md"
-                            },
-                            {
-                                type: "text",
-                                text: post.content.substring(0, 200) + (post.content.length > 200 ? '...' : ''),
-                                wrap: true,
-                                size: "sm",
-                                color: "#666666",
-                                margin: "md"
-                            }
-                        ]
-                    },
-                    footer: {
-                        type: "box",
-                        layout: "vertical",
-                        contents: [
-                            {
-                                type: "button",
-                                action: {
-                                    type: "uri",
-                                    label: "อ่านเพิ่มเติม",
-                                    uri: post.link || window.location.href
-                                },
-                                style: "primary"
-                            }
-                        ]
-                    }
-                }
-            };
-            
-            // ลบ hero ถ้าไม่มีรูป
-            if (!post.imageUrl) {
-                delete flexMessage.contents.hero;
-            }
-            
+        // ========== TEST CONNECTION ==========
+        async function testConnection() {
             try {
-                await liff.sendMessages([flexMessage]);
-                showToast('✅ แชร์สำเร็จ');
-            } catch (error) {
-                console.error('Share error:', error);
-                showToast('ไม่สามารถแชร์ได้', 'error');
+                const result = await callGAS('testConnection');
+                if (result.success) {
+                    showToast('✅ เชื่อมต่อสำเร็จ: ' + result.data.spreadsheetName);
+                    console.log('Connection test:', result.data);
+                } else {
+                    showToast('❌ ' + result.message, 'error');
+                }
+            } catch (err) {
+                showToast('❌ ไม่สามารถเชื่อมต่อได้', 'error');
             }
         }
 
-        // ========== IMAGE UPLOAD (Optimized) ==========
+        // ========== IMAGE UPLOAD ==========
         async function uploadImageToDrive(file) {
-            // ตรวจสอบขนาดไฟล์ (5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                showToast('ไฟล์ใหญ่เกิน 5MB', 'error');
-                return null;
-            }
-            
             showLoading();
             
             try {
-                // ใช้ FileReader แบบ Promise
                 const base64 = await new Promise((resolve, reject) => {
                     const reader = new FileReader();
                     reader.onload = () => resolve(reader.result.split(',')[1]);
@@ -1207,13 +928,6 @@
         function previewImage(input) {
             const preview = document.getElementById('image-preview');
             if (input.files && input.files[0]) {
-                // ตรวจสอบขนาด
-                if (input.files[0].size > 5 * 1024 * 1024) {
-                    showToast('ไฟล์ใหญ่เกิน 5MB', 'error');
-                    input.value = '';
-                    return;
-                }
-                
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     preview.src = e.target.result;
@@ -1223,17 +937,9 @@
             }
         }
 
-        // ========== LIFF INIT (Optimized) ==========
+        // ========== LIFF INIT ==========
         async function initLIFF() {
             try {
-                // ตรวจสอบว่า liff โหลดหรือยัง
-                if (typeof liff === 'undefined') {
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                    if (typeof liff === 'undefined') {
-                        throw new Error('LIFF ไม่สามารถโหลดได้');
-                    }
-                }
-                
                 await liff.init({ liffId: CONFIG.LIFF_ID });
                 
                 if (!liff.isLoggedIn()) {
@@ -1241,11 +947,11 @@
                     return;
                 }
                 
-                // โหลดแบบ parallel
-                const [profile, idToken] = await Promise.all([
-                    liff.getProfile(),
-                    liff.getDecodedIDToken().catch(() => ({}))
-                ]);
+                const profile = await liff.getProfile();
+                const idToken = liff.getDecodedIDToken();
+                
+                // ทดสอบการเชื่อมต่อก่อน
+                await testConnection();
                 
                 const result = await callGAS('user/profile', {
                     lineUserId: profile.userId,
@@ -1259,15 +965,14 @@
                     state.isAdmin = state.user.role === 'admin';
                     state.isEditor = state.isAdmin || state.user.role === 'editor';
                     
-                    // โหลดข้อมูลพร้อมกัน
-                    await Promise.all([
-                        loadSettings(),
-                        loadPosts(),
-                        loadMyPosts(),
-                        loadNotifications(),
-                        state.isAdmin ? loadUsers() : Promise.resolve(),
-                        state.isAdmin ? loadAdminStats() : Promise.resolve()
-                    ]);
+                    await loadSettings();
+                    await loadPosts();
+                    await loadMyPosts();
+                    await loadNotifications();
+                    if (state.isAdmin) {
+                        await loadUsers();
+                        await loadAdminStats();
+                    }
                     
                     updateUI();
                 } else {
@@ -1277,16 +982,6 @@
             } catch (err) {
                 console.error('LIFF init error:', err);
                 showToast('ไม่สามารถเชื่อมต่อกับ LINE ได้', 'error');
-                
-                // แสดง UI สำรอง
-                document.getElementById('profile-name').textContent = 'กรุณาเข้าสู่ระบบ';
-                document.getElementById('posts-scroll').innerHTML = `
-                    <div class="empty-state" style="flex: 0 0 100%;">
-                        <i class="fas fa-exclamation-triangle text-4xl text-yellow-500 mb-3"></i>
-                        <p class="text-gray-400">ไม่สามารถเชื่อมต่อได้</p>
-                        <button class="btn-primary mt-4" onclick="location.reload()">ลองอีกครั้ง</button>
-                    </div>
-                `;
             }
         }
 
@@ -1294,7 +989,7 @@
         function updateUI() {
             document.getElementById('profile-name').textContent = state.user?.displayName || 'ผู้ใช้';
             document.getElementById('profile-email').textContent = state.user?.email || '';
-            document.getElementById('profile-avatar').src = state.user?.pictureUrl || 'https://via.placeholder.com/56/06c755/ffffff?text=LINE';
+            document.getElementById('profile-avatar').src = state.user?.pictureUrl || 'https://via.placeholder.com/100/06c755/ffffff?text=LINE';
             
             const roleText = {
                 'admin': '👑 ผู้ดูแลระบบ',
@@ -1322,7 +1017,7 @@
 
         // ========== LOAD SETTINGS ==========
         async function loadSettings() {
-            const result = await callGAS('settings', {}, true);
+            const result = await callGAS('settings');
             if (result.success) {
                 state.settings = result.data || {};
                 document.getElementById('setting-app-name').value = state.settings.appName || 'LINE ข่าวสาร';
@@ -1331,17 +1026,14 @@
             }
         }
 
-        // ========== POSTS (Horizontal Scroll) ==========
+        // ========== POSTS ==========
         async function loadPosts() {
-            // แสดง skeleton ก่อน
-            const scrollContainer = document.getElementById('posts-scroll');
-            
             const result = await callGAS('posts', {
                 page: state.currentPage,
                 filter: state.currentFilter,
                 search: state.searchTerm,
-                pageSize: 10 // ดึงน้อยลงเพื่อความเร็ว
-            }, true);
+                pageSize: CONFIG.PAGE_SIZE
+            });
             
             if (result.success) {
                 state.posts = result.data.posts || [];
@@ -1355,10 +1047,10 @@
         }
 
         function renderPosts() {
-            const scrollContainer = document.getElementById('posts-scroll');
+            const list = document.getElementById('posts-list');
             if (state.posts.length === 0) {
-                scrollContainer.innerHTML = `
-                    <div class="empty-state" style="flex: 0 0 100%;">
+                list.innerHTML = `
+                    <div class="empty-state">
                         <i class="fas fa-newspaper text-4xl text-gray-500 mb-3"></i>
                         <p class="text-gray-400">ไม่มีโพสต์</p>
                     </div>
@@ -1366,7 +1058,7 @@
                 return;
             }
 
-            scrollContainer.innerHTML = state.posts.map(post => {
+            list.innerHTML = state.posts.map(post => {
                 const typeClass = {
                     'news': 'badge-news',
                     'event': 'badge-event',
@@ -1380,18 +1072,17 @@
                 }[post.type] || post.type;
                 
                 return `
-                    <div class="slide-card" onclick="showPostDetail('${post.postId}')">
-                        <img src="${post.imageUrl || 'https://via.placeholder.com/280x160/2a2e36/ffffff?text=LINE'}" 
-                             class="slide-card-image" 
-                             loading="lazy"
-                             onerror="this.src='https://via.placeholder.com/280x160/2a2e36/ffffff?text=IMAGE'">
-                        <div class="slide-card-content">
+                    <div class="news-card" onclick="showPostDetail('${post.postId}')">
+                        ${post.imageUrl ? `
+                            <img src="${post.imageUrl}" class="news-image" onerror="this.src='https://via.placeholder.com/400/2a2e36/ffffff?text=IMAGE'">
+                        ` : ''}
+                        <div class="news-content">
                             <div class="flex justify-between items-start mb-2">
                                 <span class="badge ${typeClass}">${typeText}</span>
                                 <span class="text-xs text-gray-500">${formatDateShort(post.createdAt)}</span>
                             </div>
-                            <h3 class="font-semibold text-base mb-2 line-clamp-2">${post.title}</h3>
-                            <p class="text-xs text-gray-400 line-clamp-2">${post.content}</p>
+                            <h3 class="font-semibold text-lg mb-2">${post.title}</h3>
+                            <p class="text-sm text-gray-400 line-clamp-2">${post.content}</p>
                             <div class="flex items-center justify-between mt-3 text-xs text-gray-500">
                                 <span><i class="fas fa-user mr-1"></i> ${post.authorName || 'ผู้ดูแล'}</span>
                                 <span><i class="fas fa-eye mr-1"></i> ${post.viewCount || 0}</span>
@@ -1402,9 +1093,9 @@
             }).join('');
         }
 
-        // ========== MY POSTS (Grid) ==========
+        // ========== MY POSTS ==========
         async function loadMyPosts() {
-            const result = await callGAS('user/posts', {}, true);
+            const result = await callGAS('user/posts');
             if (result.success) {
                 state.myPosts = result.data || [];
                 renderMyPosts();
@@ -1432,14 +1123,17 @@
                 const statusClass = post.status === 'published' ? 'text-[#06c755]' : 'text-gray-500';
                 const statusText = post.status === 'published' ? 'เผยแพร่' : 'ฉบับร่าง';
                 
+                const typeIcon = {
+                    'news': '📰',
+                    'event': '🎉',
+                    'urgent': '⚠️'
+                }[post.type] || '📄';
+                
                 return `
-                    <div class="grid-card" onclick="showPostDetail('${post.postId}')">
-                        ${post.imageUrl ? `
-                            <img src="${post.imageUrl}" class="grid-card-image" loading="lazy" onerror="this.style.display='none'">
-                        ` : ''}
-                        <div class="grid-card-content">
+                    <div class="news-card" onclick="showPostDetail('${post.postId}')">
+                        <div class="news-content">
                             <div class="flex justify-between items-start mb-2">
-                                <span class="badge badge-news">${post.type === 'news' ? '📰' : post.type === 'event' ? '🎉' : '⚠️'}</span>
+                                <span class="badge badge-news">${typeIcon}</span>
                                 <span class="text-xs ${statusClass}">${statusText}</span>
                             </div>
                             <h3 class="font-semibold">${post.title}</h3>
@@ -1468,7 +1162,7 @@
 
                 let html = `
                     ${post.imageUrl ? `
-                        <img src="${post.imageUrl}" class="w-full h-48 object-cover rounded-xl" loading="lazy">
+                        <img src="${post.imageUrl}" class="w-full h-48 object-cover rounded-xl">
                     ` : ''}
                     
                     <div class="flex justify-between items-center">
@@ -1541,7 +1235,6 @@
             document.getElementById('post-link').value = '';
             document.getElementById('post-status').value = 'published';
             document.getElementById('image-preview').style.display = 'none';
-            document.getElementById('image-preview').src = '';
             document.getElementById('post-image-file').value = '';
             
             document.getElementById('create-modal').classList.add('active');
@@ -1569,29 +1262,17 @@
                 const uploadedUrl = await uploadImageToDrive(fileInput.files[0]);
                 if (uploadedUrl) {
                     imageUrl = uploadedUrl;
-                } else {
-                    return; // อัปโหลดไม่สำเร็จ
                 }
             }
 
             const data = {
                 type: document.getElementById('post-type').value,
-                title: document.getElementById('post-title').value.trim(),
-                content: document.getElementById('post-content').value.trim(),
+                title: document.getElementById('post-title').value,
+                content: document.getElementById('post-content').value,
                 imageUrl: imageUrl,
-                link: document.getElementById('post-link').value.trim(),
+                link: document.getElementById('post-link').value,
                 status: document.getElementById('post-status').value
             };
-
-            // ตรวจสอบข้อมูล
-            if (!data.title) {
-                showToast('กรุณากรอกหัวข้อ', 'error');
-                return;
-            }
-            if (!data.content) {
-                showToast('กรุณากรอกเนื้อหา', 'error');
-                return;
-            }
 
             if (isEdit) {
                 data.postId = id;
@@ -1601,15 +1282,9 @@
             if (result.success) {
                 showToast(isEdit ? 'แก้ไขสำเร็จ' : 'สร้างสำเร็จ');
                 closeCreateModal();
-                
-                // เคลียร์ cache
-                state.cache = {};
-                
-                await Promise.all([
-                    loadPosts(),
-                    loadMyPosts(),
-                    state.isAdmin ? loadAdminStats() : Promise.resolve()
-                ]);
+                await loadPosts();
+                await loadMyPosts();
+                if (state.isAdmin) await loadAdminStats();
             }
         }
 
@@ -1637,7 +1312,6 @@
                 document.getElementById('image-preview').style.display = 'block';
             } else {
                 document.getElementById('image-preview').style.display = 'none';
-                document.getElementById('image-preview').src = '';
             }
             
             closeModal();
@@ -1661,21 +1335,15 @@
             if (result.success) {
                 showToast('ลบสำเร็จ');
                 closeModal();
-                
-                // เคลียร์ cache
-                state.cache = {};
-                
-                await Promise.all([
-                    loadPosts(),
-                    loadMyPosts(),
-                    state.isAdmin ? loadAdminStats() : Promise.resolve()
-                ]);
+                await loadPosts();
+                await loadMyPosts();
+                if (state.isAdmin) await loadAdminStats();
             }
         }
 
         // ========== NOTIFICATIONS ==========
         async function loadNotifications() {
-            const result = await callGAS('user/notifications', { unreadOnly: 'true' }, true);
+            const result = await callGAS('user/notifications', { unreadOnly: 'true' });
             if (result.success) {
                 state.notifications = result.data.notifications || [];
                 const unread = result.data.unreadCount || 0;
@@ -1715,7 +1383,7 @@
         async function loadUsers() {
             if (!state.isAdmin) return;
             
-            const result = await callGAS('admin/users', {}, true);
+            const result = await callGAS('admin/users');
             if (result.success) {
                 state.users = result.data || [];
                 renderUsers();
@@ -1751,7 +1419,7 @@
                 
                 return `
                     <div class="user-row">
-                        <img src="${user.pictureUrl || 'https://via.placeholder.com/40'}" class="user-avatar-sm" loading="lazy">
+                        <img src="${user.pictureUrl || 'https://via.placeholder.com/40'}" class="user-avatar-sm">
                         <div class="flex-1">
                             <p class="font-semibold">${user.displayName || 'ไม่ระบุชื่อ'}</p>
                             <p class="text-xs text-gray-400">${user.email || ''}</p>
@@ -1800,7 +1468,7 @@
         async function loadAdminStats() {
             if (!state.isAdmin) return;
             
-            const result = await callGAS('admin/stats', {}, true);
+            const result = await callGAS('admin/stats');
             if (result.success) {
                 const stats = result.data;
                 document.getElementById('admin-users').textContent = stats.users || 0;
@@ -1809,7 +1477,7 @@
                 document.getElementById('admin-admins').textContent = stats.admins || 0;
             }
 
-            const posts = await callGAS('admin/posts', { pageSize: 10 }, true);
+            const posts = await callGAS('admin/posts', { pageSize: 10 });
             if (posts.success) {
                 const list = document.getElementById('admin-posts-list');
                 list.innerHTML = posts.data.map(p => {
@@ -1843,8 +1511,8 @@
             }
             
             const data = {
-                appName: document.getElementById('setting-app-name').value.trim(),
-                driveFolderId: document.getElementById('setting-drive-folder').value.trim(),
+                appName: document.getElementById('setting-app-name').value,
+                driveFolderId: document.getElementById('setting-drive-folder').value,
                 allowUserPosts: document.getElementById('setting-allow-user-posts').value
             };
             
@@ -1852,7 +1520,6 @@
             if (result.success) {
                 showToast('บันทึกสำเร็จ');
                 Object.assign(state.settings, data);
-                state.cache = {}; // เคลียร์ cache
             }
         }
 
@@ -1879,8 +1546,8 @@
             e.preventDefault();
             
             const data = {
-                phone: document.getElementById('profile-phone').value.trim(),
-                department: document.getElementById('profile-department').value.trim()
+                phone: document.getElementById('profile-phone').value,
+                department: document.getElementById('profile-department').value
             };
 
             const result = await callGAS('user/update', data);
@@ -1912,7 +1579,6 @@
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
                 document.getElementById(`tab-${target}`).classList.add('active');
                 
-                // โหลดข้อมูลตามแท็บ
                 if (target === 'home') loadPosts();
                 if (target === 'my') loadMyPosts();
                 if (target === 'notifications') loadNotifications();
@@ -1936,7 +1602,7 @@
             });
         });
 
-        // ========== SEARCH (Debounced) ==========
+        // ========== SEARCH ==========
         let searchTimeout;
         document.getElementById('search-input').addEventListener('input', (e) => {
             clearTimeout(searchTimeout);
@@ -1944,7 +1610,7 @@
                 state.searchTerm = e.target.value;
                 state.currentPage = 1;
                 loadPosts();
-            }, 500); // Debounce 500ms
+            }, 500);
         });
 
         document.getElementById('user-search')?.addEventListener('input', () => {
@@ -1965,16 +1631,22 @@
         // ========== REFRESH ADMIN ==========
         document.getElementById('refresh-admin')?.addEventListener('click', () => {
             if (state.isAdmin) {
-                state.cache = {}; // เคลียร์ cache
                 loadAdminStats();
                 loadUsers();
             }
         });
 
         // ========== INIT ==========
-        document.addEventListener('DOMContentLoaded', () => {
-            // เริ่มโหลดทันที
-            initLIFF();
+        document.addEventListener('DOMContentLoaded', async () => {
+            showLoading();
+            try {
+                await initLIFF();
+            } catch (err) {
+                console.error(err);
+                showToast('ไม่สามารถเชื่อมต่อกับระบบได้', 'error');
+            } finally {
+                hideLoading();
+            }
         });
 
         // Close modals on outside click
@@ -1987,23 +1659,6 @@
                 document.getElementById('profile-menu')?.classList.add('hidden');
             }
         };
-
-        // Export functions
-        window.shareAsFlexMessage = shareAsFlexMessage;
-        window.showPostDetail = showPostDetail;
-        window.closeModal = closeModal;
-        window.showCreatePostModal = showCreatePostModal;
-        window.closeCreateModal = closeCreateModal;
-        window.editCurrentPost = editCurrentPost;
-        window.deleteCurrentPost = deleteCurrentPost;
-        window.showProfileSettings = showProfileSettings;
-        window.closeProfileModal = closeProfileModal;
-        window.saveProfile = saveProfile;
-        window.showRoleModal = showRoleModal;
-        window.closeRoleModal = closeRoleModal;
-        window.saveUserRole = saveUserRole;
-        window.saveSettings = saveSettings;
-        window.logout = logout;
     </script>
 </body>
 </html>
