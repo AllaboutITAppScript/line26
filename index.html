@@ -23,7 +23,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     
     <style>
-        /* CSS เหมือนเดิม - คัดลอกจากโค้ดก่อนหน้า */
+        /* CSS เหมือนเดิมทุกประการ */
         * {
             font-family: 'IBM Plex Sans Thai', sans-serif;
             margin: 0;
@@ -72,7 +72,6 @@
             font-size: 12px;
             cursor: pointer;
             transition: color 0.2s;
-            position: relative;
         }
         
         .nav-item.active {
@@ -275,23 +274,6 @@
         
         .btn-share:active {
             opacity: 0.8;
-        }
-        
-        .btn-small {
-            padding: 6px 12px;
-            font-size: 12px;
-            border-radius: 20px;
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .btn-small:hover {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
         }
         
         .modal {
@@ -669,26 +651,8 @@
         .share-button i {
             font-size: 18px;
         }
-        
-        /* Notification Card */
-        .notification-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-            transition: all 0.2s;
-        }
-        
-        .notification-card.unread {
-            border-left: 4px solid var(--primary);
-            background: linear-gradient(90deg, rgba(6,199,85,0.05), var(--bg-card));
-        }
-        
-        .notification-card.read {
-            opacity: 0.8;
-        }
-        
+
+        /* ปุ่มอ่านแล้ว - เพิ่มเล็กน้อย */
         .mark-read-btn {
             background: transparent;
             border: 1px solid var(--border);
@@ -698,17 +662,14 @@
             font-size: 11px;
             cursor: pointer;
             transition: all 0.2s;
-            margin-top: 8px;
+            margin-left: 8px;
+            white-space: nowrap;
         }
         
         .mark-read-btn:hover {
             background: var(--primary);
             color: white;
             border-color: var(--primary);
-        }
-        
-        .mark-read-btn:active {
-            transform: scale(0.95);
         }
     </style>
 </head>
@@ -1536,7 +1497,7 @@
             }
 
             list.innerHTML = state.notifications.map(n => `
-                <div class="notification-card ${n.isRead !== 'TRUE' ? 'unread' : 'read'}">
+                <div class="bg-[#1a1d24] p-4 rounded-xl border border-[#2a2e36] ${n.isRead !== 'TRUE' ? 'border-l-4 border-l-[#06c755]' : ''}">
                     <div class="flex justify-between items-start">
                         <div class="flex-1">
                             <p class="font-semibold">${n.title}</p>
