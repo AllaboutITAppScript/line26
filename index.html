@@ -5,21 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LINE ข่าวสาร · กิจกรรม</title>
     
-    <!-- Tailwind (โหลดเร็วขึ้นด้วย CDN) -->
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Fonts Preload -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- LINE LIFF (โหลดแบบ async) -->
+    <!-- LINE LIFF -->
     <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js" async></script>
     
-    <!-- Font Awesome (โหลดเร็วขึ้น) -->
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Swiper CSS สำหรับ Carousel Slide -->
+    <!-- Swiper CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     
     <style>
@@ -930,7 +930,7 @@
                 </div>
             </div>
 
-            <!-- Hero Slider - เฉพาะโพสต์ที่อนุมัติแล้ว -->
+            <!-- Hero Slider -->
             <div class="swiper hero-swiper mb-4">
                 <div class="swiper-wrapper" id="hero-slider-wrapper"></div>
                 <div class="swiper-pagination"></div>
@@ -950,10 +950,10 @@
                 <button class="filter-btn" data-filter="urgent">⚠️ ประกาศด่วน</button>
             </div>
 
-            <!-- Posts List - เฉพาะโพสต์ที่อนุมัติแล้ว -->
+            <!-- Posts List -->
             <div id="posts-list" class="space-y-3"></div>
             
-            <!-- Loading Skeleton (แสดงระหว่างโหลด) -->
+            <!-- Loading Skeleton -->
             <div id="loading-skeleton" class="hidden">
                 <div class="skeleton h-[200px] rounded-2xl mb-4"></div>
                 <div class="skeleton h-[200px] rounded-2xl mb-4"></div>
@@ -961,7 +961,7 @@
             </div>
         </div>
 
-        <!-- Tab: My Posts - แสดงโพสต์ทั้งหมดของฉัน (รวมที่รออนุมัติ) -->
+        <!-- Tab: My Posts -->
         <div id="tab-my" class="tab-content">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-bold">โพสต์ของฉัน</h2>
@@ -1016,11 +1016,11 @@
                 </div>
             </div>
 
-            <!-- Pending Posts Section - เฉพาะแอดมิน -->
+            <!-- Pending Posts Section -->
             <div id="pending-posts-section" class="pending-section hidden">
                 <h3 class="font-semibold mb-3 flex items-center">
                     <i class="fas fa-clock text-yellow-500 mr-2"></i>
-                    โพสต์รออนุมัติ
+                    โพสต์รออนุมัติ (จาก Editor)
                     <span id="pending-count" class="ml-2 bg-yellow-500 text-white text-xs px-2 py-1 rounded-full">0</span>
                 </h3>
                 <div id="pending-posts-list" class="space-y-3"></div>
@@ -1070,7 +1070,7 @@
                         <label class="block text-sm text-gray-400 mb-1">อนุญาตให้ผู้ใช้ทั่วไปสร้างโพสต์</label>
                         <select id="setting-allow-user-posts" class="input-field">
                             <option value="true">ใช่</option>
-                            <option value="false">ไม่ (เฉพาะแอดมิน/ผู้เขียน)</option>
+                            <option value="false">ไม่ (เฉพาะ Admin/Editor)</option>
                         </select>
                         
                         <button type="submit" class="btn-primary">บันทึก</button>
@@ -1115,7 +1115,7 @@
             <!-- Approval Status Banner -->
             <div id="modal-approval-banner" class="hidden approval-banner"></div>
             
-            <!-- Share Button - เฉพาะโพสต์ที่อนุมัติแล้ว -->
+            <!-- Share Button -->
             <div class="flex gap-2 mt-4">
                 <button class="btn-share flex-1" onclick="shareAsFlexMessage()" id="modal-share-btn">
                     <i class="fab fa-line"></i> แชร์ไป LINE
@@ -1270,7 +1270,7 @@
                 
                 <select id="user-role" class="input-field">
                     <option value="user">👤 ผู้ใช้ทั่วไป</option>
-                    <option value="editor">✏️ ผู้เขียน (สร้างโพสต์ได้)</option>
+                    <option value="editor">✏️ ผู้เขียน (ต้องรออนุมัติ)</option>
                     <option value="admin">👑 ผู้ดูแลระบบ</option>
                 </select>
                 
@@ -1288,8 +1288,8 @@
     <script>
         // ========== CONFIG ==========
         const CONFIG = {
-            GAS_URL: 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec', // <<< เปลี่ยนเป็น URL ของคุณ
-            LIFF_ID: '2008904120-T7I0VPZf', // <<< เปลี่ยนเป็น LIFF ID ของคุณ
+            GAS_URL: 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec',
+            LIFF_ID: '2008904120-T7I0VPZf',
             PAGE_SIZE: 20,
             DRIVE_FOLDER_ID: '18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE'
         };
@@ -1297,10 +1297,10 @@
         // ========== STATE ==========
         const state = {
             user: null,
-            posts: [], // เฉพาะโพสต์ที่อนุมัติแล้วสำหรับหน้าแรก
-            allPosts: [], // โพสต์ทั้งหมด (สำหรับ admin)
-            myPosts: [], // โพสต์ของฉันทั้งหมด
-            pendingPosts: [], // โพสต์รออนุมัติ
+            posts: [],
+            allPosts: [],
+            myPosts: [],
+            pendingPosts: [],
             notifications: [],
             users: [],
             currentFilter: 'all',
@@ -1475,7 +1475,6 @@
                 const profile = await liff.getProfile();
                 const idToken = liff.getDecodedIDToken();
                 
-                // โหลดข้อมูลผู้ใช้
                 const result = await callGAS('user/profile', {
                     lineUserId: profile.userId,
                     displayName: profile.displayName,
@@ -1486,13 +1485,12 @@
                 if (result.success) {
                     state.user = result.data;
                     state.isAdmin = state.user.role === 'admin';
-                    state.isEditor = state.isAdmin || state.user.role === 'editor';
+                    state.isEditor = state.user.role === 'editor'; // Editor ไม่ใช่ Admin
                     
-                    // โหลดข้อมูลทั้งหมด
                     await loadSettings();
                     await Promise.all([
-                        loadPosts(), // โหลดเฉพาะโพสต์ที่อนุมัติแล้วสำหรับหน้าแรก
-                        loadMyPosts(), // โหลดโพสต์ทั้งหมดของฉัน
+                        loadPosts(),
+                        loadMyPosts(),
                         loadNotifications(),
                         state.isAdmin ? loadPendingPosts() : Promise.resolve(),
                         state.isAdmin ? loadAllPosts() : Promise.resolve(),
@@ -1502,7 +1500,6 @@
                     
                     updateUI();
                     
-                    // ตรวจสอบว่าเป็นโหมดพรีวิวจากแชร์หรือไม่
                     const urlParams = new URLSearchParams(window.location.search);
                     const postId = urlParams.get('post');
                     if (postId) {
@@ -1540,7 +1537,8 @@
             
             const createPostBtn = document.getElementById('create-post-btn');
             if (createPostBtn) {
-                if (state.isEditor || state.settings.allowUserPosts === 'true') {
+                // User ทั่วไป ไม่เห็นปุ่มสร้างโพสต์
+                if (state.isAdmin || state.isEditor) {
                     createPostBtn.classList.remove('hidden');
                 } else {
                     createPostBtn.classList.add('hidden');
@@ -1555,16 +1553,17 @@
                 if (state.isAdmin) {
                     statusInfo.className = 'mb-4 p-3 rounded-lg bg-[#06c755]/10 border border-[#06c755] text-[#06c755]';
                     statusText.innerHTML = 'คุณเป็นแอดมิน โพสต์จะเผยแพร่ทันที <i class="fas fa-check-circle ml-1"></i>';
+                    statusInfo.classList.remove('hidden');
                 } else if (state.isEditor) {
-                    statusInfo.className = 'mb-4 p-3 rounded-lg bg-[#06c755]/10 border border-[#06c755] text-[#06c755]';
-                    statusText.innerHTML = 'คุณเป็นผู้เขียน โพสต์จะเผยแพร่ทันที <i class="fas fa-check-circle ml-1"></i>';
-                } else {
                     statusInfo.className = 'mb-4 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500 text-yellow-500';
-                    statusText.innerHTML = 'โพสต์ของคุณจะต้องรอการอนุมัติจากแอดมินก่อน <i class="fas fa-clock ml-1"></i>';
+                    statusText.innerHTML = 'คุณเป็นผู้เขียน โพสต์ต้องรอแอดมินอนุมัติ <i class="fas fa-clock ml-1"></i>';
+                    statusInfo.classList.remove('hidden');
+                } else {
+                    statusInfo.classList.add('hidden');
                 }
             }
             
-            // ซ่อน status dropdown สำหรับผู้ใช้ทั่วไป
+            // ซ่อน status dropdown สำหรับ Editor และ User
             const statusContainer = document.getElementById('post-status-container');
             if (statusContainer) {
                 if (state.isAdmin) {
@@ -1574,7 +1573,6 @@
                 }
             }
             
-            // อัปเดต badge โพสต์ของฉัน
             updateMyPostsBadge();
         }
 
@@ -1602,7 +1600,6 @@
 
         // ========== POSTS ==========
         async function loadPosts() {
-            // โหลดเฉพาะโพสต์ที่อนุมัติแล้วสำหรับหน้าแรก
             const result = await callGAS('posts', {
                 page: state.currentPage,
                 filter: state.currentFilter,
@@ -1636,7 +1633,6 @@
             const wrapper = document.getElementById('hero-slider-wrapper');
             if (!wrapper) return;
             
-            // เฉพาะโพสต์ที่อนุมัติแล้วสำหรับ slider
             const featured = state.posts
                 .filter(p => p.approvalStatus === 'approved')
                 .slice(0, 5);
@@ -1674,7 +1670,6 @@
                 `;
             }).join('');
 
-            // Initialize Swiper
             new Swiper('.hero-swiper', {
                 autoplay: {
                     delay: 3000,
@@ -1692,7 +1687,6 @@
         function renderPosts() {
             const list = document.getElementById('posts-list');
             
-            // state.posts มาจาก GAS แล้วซึ่งส่งเฉพาะโพสต์ที่อนุมัติแล้ว
             if (state.posts.length === 0) {
                 list.innerHTML = `
                     <div class="empty-state">
@@ -1798,7 +1792,7 @@
                     <div class="empty-state">
                         <i class="fas fa-pen-fancy text-4xl text-gray-500 mb-3"></i>
                         <p class="text-gray-400">ยังไม่มีโพสต์</p>
-                        ${state.isEditor || state.settings.allowUserPosts === 'true' ? `
+                        ${state.isAdmin || state.isEditor ? `
                             <button class="btn-primary mt-4" onclick="showCreatePostModal()">
                                 <i class="fas fa-plus mr-2"></i>สร้างโพสต์แรก
                             </button>
@@ -1815,7 +1809,6 @@
                 const approvalClass = getApprovalStatusClass(post.approvalStatus);
                 const approvalText = getApprovalStatusText(post.approvalStatus);
                 
-                // เพิ่มคำอธิบายสถานะ
                 let statusDescription = '';
                 if (post.approvalStatus === 'pending') {
                     statusDescription = '<span class="text-xs text-yellow-500 block mt-1">⏳ รอแอดมินอนุมัติ</span>';
@@ -1940,7 +1933,6 @@
                 closeModal();
                 closeRejectModal();
                 
-                // โหลดข้อมูลทั้งหมดใหม่
                 await Promise.all([
                     loadPosts(),
                     loadMyPosts(),
@@ -1957,7 +1949,6 @@
 
         function showRejectModal(postId) {
             if (postId) {
-                // ดึงข้อมูลโพสต์ก่อน
                 callGAS('post', { postId }).then(result => {
                     if (result.success) {
                         state.currentPost = result.data;
@@ -1997,7 +1988,6 @@
                 closeRejectModal();
                 closeModal();
                 
-                // โหลดข้อมูลทั้งหมดใหม่
                 await Promise.all([
                     loadPosts(),
                     loadMyPosts(),
@@ -2023,13 +2013,11 @@
 
             const post = result.data;
             
-            // เช็คว่าโพสต์อนุมัติแล้วหรือไม่
             if (post.approvalStatus !== 'approved') {
                 showToast('ไม่สามารถแชร์โพสต์ที่ยังไม่อนุมัติ', 'warning');
                 return;
             }
             
-            // สร้าง Flex Message
             const flexMessage = {
                 type: 'flex',
                 altText: post.title,
@@ -2156,7 +2144,6 @@
                     'urgent': '⚠️ ประกาศด่วน'
                 }[post.type] || post.type;
 
-                // แสดงสถานะการอนุมัติ
                 const approvalStatus = post.approvalStatus || 'approved';
                 const approvalText = getApprovalStatusText(approvalStatus);
                 const approvalClass = approvalStatus === 'pending' ? 'pending' : 
@@ -2202,7 +2189,6 @@
 
                 document.getElementById('modal-body').innerHTML = html;
 
-                // จัดการปุ่มแชร์
                 const shareBtn = document.getElementById('modal-share-btn');
                 if (approvalStatus === 'approved') {
                     shareBtn.classList.remove('hidden');
@@ -2210,24 +2196,20 @@
                     shareBtn.classList.add('hidden');
                 }
 
-                // ตรวจสอบสิทธิ์
                 const isOwner = post.authorId === state.user?.lineUserId;
                 const ownerControls = document.getElementById('modal-owner-controls');
                 const adminControls = document.getElementById('modal-admin-controls');
                 const approvalButtons = document.getElementById('modal-approval-buttons');
 
-                // Owner controls
                 if (isOwner) {
                     ownerControls.classList.remove('hidden');
                 } else {
                     ownerControls.classList.add('hidden');
                 }
 
-                // Admin controls
                 if (state.isAdmin) {
                     adminControls.classList.remove('hidden');
                     
-                    // แสดงปุ่มอนุมัติ/ปฏิเสธ ถ้าเป็นโพสต์รออนุมัติ
                     if (approvalStatus === 'pending') {
                         approvalButtons.classList.remove('hidden');
                     } else {
@@ -2247,18 +2229,16 @@
 
         // ========== PERMISSION CHECKS ==========
         function canCreatePost() {
-            return state.isAdmin || state.user?.role === 'editor' || state.settings.allowUserPosts === 'true';
+            return state.isAdmin || state.isEditor;
         }
 
         function canEditPost(post) {
             if (!post) return false;
-            // เจ้าของโพสต์สามารถแก้ไขได้เสมอ (แต่จะกลายเป็นรออนุมัติใหม่)
             return state.isAdmin || (post.authorId === state.user?.lineUserId);
         }
 
         function canDeletePost(post) {
             if (!post) return false;
-            // เจ้าของโพสต์สามารถลบได้
             return state.isAdmin || (post.authorId === state.user?.lineUserId);
         }
 
@@ -2280,7 +2260,6 @@
             document.getElementById('image-preview').style.display = 'none';
             document.getElementById('post-image-file').value = '';
             
-            // แสดงสถานะการสร้างโพสต์
             const statusInfo = document.getElementById('post-status-info');
             const statusText = document.getElementById('post-status-text');
             
@@ -2289,13 +2268,11 @@
                 statusText.innerHTML = 'คุณเป็นแอดมิน โพสต์จะเผยแพร่ทันที <i class="fas fa-check-circle ml-1"></i>';
                 statusInfo.classList.remove('hidden');
             } else if (state.isEditor) {
-                statusInfo.className = 'mb-4 p-3 rounded-lg bg-[#06c755]/10 border border-[#06c755] text-[#06c755]';
-                statusText.innerHTML = 'คุณเป็นผู้เขียน โพสต์จะเผยแพร่ทันที <i class="fas fa-check-circle ml-1"></i>';
+                statusInfo.className = 'mb-4 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500 text-yellow-500';
+                statusText.innerHTML = 'คุณเป็นผู้เขียน โพสต์ต้องรอแอดมินอนุมัติ <i class="fas fa-clock ml-1"></i>';
                 statusInfo.classList.remove('hidden');
             } else {
-                statusInfo.className = 'mb-4 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500 text-yellow-500';
-                statusText.innerHTML = 'โพสต์ของคุณจะต้องรอการอนุมัติจากแอดมินก่อน <i class="fas fa-clock ml-1"></i>';
-                statusInfo.classList.remove('hidden');
+                statusInfo.classList.add('hidden');
             }
             
             document.getElementById('create-modal').classList.add('active');
@@ -2332,7 +2309,7 @@
                 content: document.getElementById('post-content').value,
                 imageUrl: imageUrl,
                 link: document.getElementById('post-link').value,
-                status: 'published' // ส่ง status เป็น published เสมอ
+                status: 'published'
             };
 
             if (isEdit) {
@@ -2353,7 +2330,6 @@
                 
                 closeCreateModal();
                 
-                // โหลดข้อมูลทั้งหมดใหม่
                 await Promise.all([
                     loadPosts(),
                     loadMyPosts(),
@@ -2362,8 +2338,7 @@
                     state.isAdmin ? loadAdminStats() : Promise.resolve()
                 ]);
                 
-                // แจ้งเตือนผู้ใช้ว่าโพสต์ต้องรออนุมัติ
-                if (approvalStatus === 'pending' && !state.isAdmin && !state.isEditor) {
+                if (approvalStatus === 'pending' && state.isEditor) {
                     setTimeout(() => {
                         showToast('📨 โพสต์ของคุณอยู่ระหว่างรอการอนุมัติจากแอดมิน', 'warning');
                     }, 500);
@@ -2397,7 +2372,6 @@
                 document.getElementById('image-preview').style.display = 'none';
             }
             
-            // แสดงสถานะการแก้ไข
             const statusInfo = document.getElementById('post-status-info');
             const statusText = document.getElementById('post-status-text');
             
@@ -2406,13 +2380,11 @@
                 statusText.innerHTML = 'คุณเป็นแอดมิน การแก้ไขจะเผยแพร่ทันที <i class="fas fa-check-circle ml-1"></i>';
                 statusInfo.classList.remove('hidden');
             } else if (state.isEditor) {
-                statusInfo.className = 'mb-4 p-3 rounded-lg bg-[#06c755]/10 border border-[#06c755] text-[#06c755]';
-                statusText.innerHTML = 'คุณเป็นผู้เขียน การแก้ไขจะเผยแพร่ทันที <i class="fas fa-check-circle ml-1"></i>';
-                statusInfo.classList.remove('hidden');
-            } else {
                 statusInfo.className = 'mb-4 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500 text-yellow-500';
                 statusText.innerHTML = 'เมื่อแก้ไขโพสต์แล้ว จะต้องรอการอนุมัติจากแอดมินอีกครั้ง <i class="fas fa-clock ml-1"></i>';
                 statusInfo.classList.remove('hidden');
+            } else {
+                statusInfo.classList.add('hidden');
             }
             
             closeModal();
@@ -2437,7 +2409,6 @@
                 showToast('ลบสำเร็จ');
                 closeModal();
                 
-                // โหลดข้อมูลทั้งหมดใหม่
                 await Promise.all([
                     loadPosts(),
                     loadMyPosts(),
@@ -2504,7 +2475,15 @@
         async function markNotificationAsRead(notifId) {
             const result = await callGAS('user/notification/read', { notifId });
             if (result.success) {
-                await loadNotifications();
+                // ไม่โหลดใหม่ เพื่อไม่ให้ badge หาย (กันลืม)
+                // แค่เปลี่ยน style
+                const elements = document.querySelectorAll('.notification-item');
+                elements.forEach(el => {
+                    if (el.classList.contains('unread')) {
+                        el.classList.remove('unread');
+                    }
+                });
+                showToast('ทำเครื่องหมายว่าอ่านแล้ว', 'info');
             }
         }
 
@@ -2513,8 +2492,12 @@
             
             const result = await callGAS('user/notifications/read-all');
             if (result.success) {
-                showToast('อ่านการแจ้งเตือนทั้งหมดแล้ว', 'success');
-                await loadNotifications();
+                showToast('ทำเครื่องหมายว่าอ่านทั้งหมดแล้ว', 'success');
+                // ไม่โหลดใหม่ เพื่อไม่ให้ badge หาย
+                const elements = document.querySelectorAll('.notification-item.unread');
+                elements.forEach(el => {
+                    el.classList.remove('unread');
+                });
             }
         }
 
@@ -2636,7 +2619,7 @@
             if (result.success) {
                 showToast('บันทึกสำเร็จ');
                 Object.assign(state.settings, data);
-                updateUI(); // อัปเดต UI ตามสิทธิ์ใหม่
+                updateUI();
             }
         }
 
@@ -2761,11 +2744,9 @@
         document.addEventListener('DOMContentLoaded', async () => {
             showLoading();
             try {
-                // ตรวจสอบว่า LIFF พร้อมใช้งานหรือยัง
                 if (typeof liff !== 'undefined') {
                     await initLIFF();
                 } else {
-                    // รอให้ LIFF โหลด
                     window.addEventListener('load', async () => {
                         await initLIFF();
                     });
