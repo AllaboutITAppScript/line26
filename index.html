@@ -19,6 +19,9 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <!-- Swiper CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     
@@ -141,7 +144,7 @@
         }
         
         .swiper-pagination-bullet-active {
-            background: var(--primary);
+            background: var(--primary) !important;
             opacity: 1;
         }
         
@@ -257,22 +260,6 @@
         }
         
         .btn-danger:active {
-            opacity: 0.8;
-        }
-        
-        .btn-warning {
-            background: #ffc107;
-            color: black;
-            padding: 12px;
-            border-radius: 12px;
-            font-weight: 600;
-            border: none;
-            width: 100%;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-        
-        .btn-warning:active {
             opacity: 0.8;
         }
         
@@ -703,6 +690,25 @@
             color: white;
             border-color: var(--primary);
         }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-card);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
     </style>
 </head>
 <body>
@@ -800,13 +806,7 @@
             <div id="my-posts-list" class="space-y-3"></div>
         </div>
 
-        <!-- Tab: Notifications -->
-        <div id="tab-notifications" class="tab-content">
-            <h2 class="text-xl font-bold mb-4">การแจ้งเตือน</h2>
-            <div id="notifications-list" class="space-y-3"></div>
-        </div>
-
-        <!-- Tab: Admin -->
+        <!-- Tab: Admin (แทนที่แท็บแจ้งเตือน) -->
         <div id="tab-admin" class="tab-content">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-bold">จัดการระบบ</h2>
@@ -905,7 +905,7 @@
         </div>
     </div>
 
-    <!-- Bottom Navigation -->
+    <!-- Bottom Navigation (3 Tabs: Home, My Posts, Admin) -->
     <div class="bottom-nav">
         <div class="nav-item active" data-tab="home">
             <i class="fas fa-home"></i>
@@ -914,11 +914,6 @@
         <div class="nav-item" data-tab="my">
             <i class="fas fa-pen-fancy"></i>
             <span>โพสต์ของฉัน</span>
-        </div>
-        <div class="nav-item" data-tab="notifications">
-            <i class="fas fa-bell"></i>
-            <span>แจ้งเตือน</span>
-            <span id="notif-badge" class="absolute -top-1 right-4 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
         </div>
         <div class="nav-item hidden admin-only" data-tab="admin">
             <i class="fas fa-cog"></i>
@@ -1064,7 +1059,6 @@
             posts: [],
             myPosts: [],
             pendingPosts: [],
-            notifications: [],
             users: [],
             currentFilter: 'all',
             searchTerm: '',
@@ -1238,7 +1232,6 @@
                         loadSettings(),
                         loadPosts(),
                         loadMyPosts(),
-                        loadNotifications(),
                         loadPendingPosts(),
                         state.isAdmin ? loadUsers() : Promise.resolve(),
                         state.isAdmin ? loadAdminStats() : Promise.resolve()
@@ -1504,17 +1497,36 @@
             }).join('');
         }
 
-        // ========== APPROVE/REJECT POST ==========
+        // ========== APPROVE/REJECT POST with SweetAlert ==========
         async function approvePost(postId) {
             const id = postId || state.currentPost?.postId;
             if (!id) return;
             
-            const result = await callGAS('admin/post/approve', { postId: id });
-            if (result.success) {
-                showToast('อนุมัติโพสต์สำเร็จ');
+            const result = await Swal.fire({
+                title: 'อนุมัติโพสต์',
+                text: 'คุณต้องการอนุมัติโพสต์นี้ใช่หรือไม่?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'ใช่, อนุมัติ',
+                cancelButtonText: 'ยกเลิก'
+            });
+            
+            if (!result.isConfirmed) return;
+            
+            const apiResult = await callGAS('admin/post/approve', { postId: id });
+            if (apiResult.success) {
+                await Swal.fire({
+                    title: 'อนุมัติสำเร็จ',
+                    text: 'โพสต์ได้รับการอนุมัติและเผยแพร่แล้ว',
+                    icon: 'success',
+                    confirmButtonColor: '#06c755'
+                });
+                
                 closeModal();
                 
-                // อัปเดต state ทันทีโดยไม่ต้องโหลดใหม่
+                // อัปเดต state
                 const postIndex = state.pendingPosts.findIndex(p => p.postId === id);
                 if (postIndex !== -1) {
                     state.pendingPosts.splice(postIndex, 1);
@@ -1525,7 +1537,7 @@
                     postInPosts.status = 'published';
                 }
                 
-                // อัปเดต UI ทันที
+                // อัปเดต UI
                 renderPendingPosts();
                 renderPosts();
                 renderHeroSlider();
@@ -1545,20 +1557,37 @@
             const id = postId || state.currentPost?.postId;
             if (!id) return;
             
-            if (!confirm('ต้องการปฏิเสธโพสต์นี้?')) return;
+            const result = await Swal.fire({
+                title: 'ปฏิเสธโพสต์',
+                text: 'คุณต้องการปฏิเสธโพสต์นี้ใช่หรือไม่?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'ใช่, ปฏิเสธ',
+                cancelButtonText: 'ยกเลิก'
+            });
             
-            const result = await callGAS('admin/post/reject', { postId: id });
-            if (result.success) {
-                showToast('ปฏิเสธโพสต์สำเร็จ');
+            if (!result.isConfirmed) return;
+            
+            const apiResult = await callGAS('admin/post/reject', { postId: id });
+            if (apiResult.success) {
+                await Swal.fire({
+                    title: 'ปฏิเสธสำเร็จ',
+                    text: 'โพสต์ถูกปฏิเสธเรียบร้อย',
+                    icon: 'success',
+                    confirmButtonColor: '#06c755'
+                });
+                
                 closeModal();
                 
-                // อัปเดต state ทันที
+                // อัปเดต state
                 const postIndex = state.pendingPosts.findIndex(p => p.postId === id);
                 if (postIndex !== -1) {
                     state.pendingPosts.splice(postIndex, 1);
                 }
                 
-                // อัปเดต UI ทันที
+                // อัปเดต UI
                 renderPendingPosts();
                 
                 // อัปเดต badge
@@ -1628,84 +1657,6 @@
                     </div>
                 `;
             }).join('');
-        }
-
-        // ========== NOTIFICATIONS ==========
-        async function loadNotifications() {
-            const result = await callGAS('user/notifications', { unreadOnly: 'true' });
-            if (result.success) {
-                state.notifications = result.data.notifications || [];
-                const unread = result.data.unreadCount || 0;
-                const badge = document.getElementById('notif-badge');
-                if (unread > 0) {
-                    badge.textContent = unread > 9 ? '9+' : unread;
-                    badge.classList.remove('hidden');
-                } else {
-                    badge.classList.add('hidden');
-                }
-                renderNotifications();
-            }
-        }
-
-        async function markNotificationAsRead(notificationId) {
-            showLoading();
-            try {
-                const result = await callGAS('user/notification/read', { notificationId });
-                if (result.success) {
-                    const notification = state.notifications.find(n => n.notificationId === notificationId);
-                    if (notification) {
-                        notification.isRead = 'TRUE';
-                    }
-                    
-                    const unreadCount = state.notifications.filter(n => n.isRead !== 'TRUE').length;
-                    
-                    const badge = document.getElementById('notif-badge');
-                    if (unreadCount > 0) {
-                        badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
-                        badge.classList.remove('hidden');
-                    } else {
-                        badge.classList.add('hidden');
-                    }
-                    
-                    renderNotifications();
-                    showToast('ทำเครื่องหมายว่าอ่านแล้ว');
-                }
-            } catch (error) {
-                console.error('Mark as read error:', error);
-                showToast('เกิดข้อผิดพลาด', 'error');
-            } finally {
-                hideLoading();
-            }
-        }
-
-        function renderNotifications() {
-            const list = document.getElementById('notifications-list');
-            if (state.notifications.length === 0) {
-                list.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-bell-slash text-4xl text-gray-500 mb-3"></i>
-                        <p class="text-gray-400">ไม่มีการแจ้งเตือน</p>
-                    </div>
-                `;
-                return;
-            }
-
-            list.innerHTML = state.notifications.map(n => `
-                <div class="bg-[#1a1d24] p-4 rounded-xl border border-[#2a2e36] ${n.isRead !== 'TRUE' ? 'border-l-4 border-l-[#06c755]' : ''}">
-                    <div class="flex justify-between items-start">
-                        <div class="flex-1">
-                            <p class="font-semibold">${n.title}</p>
-                            <p class="text-sm text-gray-400 mt-1">${n.message}</p>
-                            <p class="text-xs text-gray-500 mt-2">${formatDate(n.createdAt)}</p>
-                        </div>
-                        ${n.isRead !== 'TRUE' ? `
-                            <button class="mark-read-btn" onclick="event.stopPropagation(); markNotificationAsRead('${n.notificationId}')">
-                                <i class="fas fa-check-circle mr-1"></i>อ่านแล้ว
-                            </button>
-                        ` : ''}
-                    </div>
-                </div>
-            `).join('');
         }
 
         // ========== SHARE ==========
@@ -1921,9 +1872,6 @@
 
         function canEditPost(post) {
             if (!post) return false;
-            // แก้ไขได้ถ้า:
-            // 1. เป็น admin หรือ
-            // 2. เป็นเจ้าของโพสต์ (editor) และโพสต์ยังไม่ถูกเผยแพร่ (pending/draft)
             return state.isAdmin || 
                    (state.user?.role === 'editor' && 
                     post.authorId === state.user?.lineUserId && 
@@ -2001,12 +1949,21 @@
 
             const result = await callGAS(isEdit ? 'post/update' : 'post/create', data);
             if (result.success) {
-                showToast(isEdit ? 'แก้ไขสำเร็จ' : 'สร้างสำเร็จ');
+                if (status === 'pending' && !isEdit) {
+                    await Swal.fire({
+                        title: 'ส่งขออนุมัติแล้ว',
+                        text: 'โพสต์ของคุณถูกส่งให้ผู้ดูแลตรวจสอบแล้ว',
+                        icon: 'success',
+                        confirmButtonColor: '#06c755'
+                    });
+                } else {
+                    showToast(isEdit ? 'แก้ไขสำเร็จ' : 'สร้างสำเร็จ');
+                }
+                
                 closeCreateModal();
                 
-                // อัปเดต state ทันทีโดยไม่ต้องโหลดใหม่
+                // อัปเดต state
                 if (isEdit) {
-                    // แก้ไข: อัปเดตโพสต์ใน state
                     const postIndex = state.myPosts.findIndex(p => p.postId === id);
                     if (postIndex !== -1) {
                         state.myPosts[postIndex] = { ...state.myPosts[postIndex], ...data };
@@ -2017,7 +1974,6 @@
                         state.posts[postInAll] = { ...state.posts[postInAll], ...data };
                     }
                 } else {
-                    // สร้างใหม่: เพิ่มโพสต์เข้า state
                     const newPost = {
                         postId: result.data.postId,
                         ...data,
@@ -2035,14 +1991,14 @@
                     }
                 }
                 
-                // อัปเดต UI ทันที
+                // อัปเดต UI
                 renderMyPosts();
                 renderPosts();
                 renderHeroSlider();
                 renderPendingPosts();
                 
                 if (state.isAdmin) {
-                    loadAdminStats(); // โหลดสถิติใหม่
+                    loadAdminStats();
                 }
             }
         }
@@ -2084,17 +2040,34 @@
                 return;
             }
             
-            if (!confirm('แน่ใจว่าต้องการลบ?')) return;
+            const result = await Swal.fire({
+                title: 'ลบโพสต์',
+                text: 'คุณแน่ใจหรือไม่ว่าต้องการลบโพสต์นี้? การดำเนินการนี้ไม่สามารถย้อนกลับได้',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'ใช่, ลบ',
+                cancelButtonText: 'ยกเลิก'
+            });
             
-            const result = await callGAS('post/delete', { 
+            if (!result.isConfirmed) return;
+            
+            const apiResult = await callGAS('post/delete', { 
                 postId: state.currentPost.postId 
             });
             
-            if (result.success) {
-                showToast('ลบสำเร็จ');
+            if (apiResult.success) {
+                await Swal.fire({
+                    title: 'ลบสำเร็จ',
+                    text: 'โพสต์ถูกลบเรียบร้อย',
+                    icon: 'success',
+                    confirmButtonColor: '#06c755'
+                });
+                
                 closeModal();
                 
-                // ลบออกจาก state ทันที
+                // ลบออกจาก state
                 const postId = state.currentPost.postId;
                 
                 state.myPosts = state.myPosts.filter(p => p.postId !== postId);
@@ -2108,7 +2081,7 @@
                 renderPendingPosts();
                 
                 if (state.isAdmin) {
-                    loadAdminStats(); // โหลดสถิติใหม่
+                    loadAdminStats();
                 }
             }
         }
@@ -2186,22 +2159,41 @@
             const userId = document.getElementById('role-user-id').value;
             const role = document.getElementById('user-role').value;
             
-            const result = await callGAS('admin/user/role', {
+            const result = await Swal.fire({
+                title: 'เปลี่ยนสิทธิ์ผู้ใช้',
+                text: 'คุณแน่ใจหรือไม่ที่จะเปลี่ยนสิทธิ์ผู้ใช้นี้?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#06c755',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'ใช่, เปลี่ยน',
+                cancelButtonText: 'ยกเลิก'
+            });
+            
+            if (!result.isConfirmed) return;
+            
+            const apiResult = await callGAS('admin/user/role', {
                 targetUserId: userId,
                 role: role
             });
             
-            if (result.success) {
-                showToast('อัปเดตสิทธิ์สำเร็จ');
+            if (apiResult.success) {
+                await Swal.fire({
+                    title: 'บันทึกสำเร็จ',
+                    text: 'อัปเดตสิทธิ์ผู้ใช้เรียบร้อย',
+                    icon: 'success',
+                    confirmButtonColor: '#06c755'
+                });
+                
                 closeRoleModal();
                 
-                // อัปเดต state ทันที
+                // อัปเดต state
                 const userIndex = state.users.findIndex(u => u.lineUserId === userId);
                 if (userIndex !== -1) {
                     state.users[userIndex].role = role;
                 }
                 
-                renderUsers(); // อัปเดต UI ทันที
+                renderUsers();
             }
         }
 
@@ -2259,7 +2251,13 @@
             
             const result = await callGAS('admin/settings/update', data);
             if (result.success) {
-                showToast('บันทึกสำเร็จ');
+                await Swal.fire({
+                    title: 'บันทึกสำเร็จ',
+                    text: 'ตั้งค่าระบบถูกอัปเดตเรียบร้อย',
+                    icon: 'success',
+                    confirmButtonColor: '#06c755'
+                });
+                
                 Object.assign(state.settings, data);
             }
         }
@@ -2293,7 +2291,14 @@
 
             const result = await callGAS('user/update', data);
             if (result.success) {
-                showToast('บันทึกสำเร็จ');
+                await Swal.fire({
+                    title: 'บันทึกสำเร็จ',
+                    text: 'อัปเดตโปรไฟล์เรียบร้อย',
+                    icon: 'success',
+                    confirmButtonColor: '#06c755',
+                    timer: 1500
+                });
+                
                 closeProfileModal();
                 Object.assign(state.user, data);
                 updateUI();
@@ -2301,12 +2306,23 @@
         }
 
         function logout() {
-            if (confirm('ต้องการออกจากระบบ?')) {
-                if (liff.isLoggedIn()) {
-                    liff.logout();
+            Swal.fire({
+                title: 'ออกจากระบบ',
+                text: 'คุณต้องการออกจากระบบใช่หรือไม่?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'ใช่, ออกจากระบบ',
+                cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if (liff.isLoggedIn()) {
+                        liff.logout();
+                    }
+                    location.reload();
                 }
-                location.reload();
-            }
+            });
         }
 
         // ========== TAB NAVIGATION ==========
@@ -2321,13 +2337,10 @@
                 document.getElementById(`tab-${target}`).classList.add('active');
                 
                 if (target === 'home') {
-                    loadPosts(); // โหลดใหม่ถ้าต้องการ
+                    loadPosts();
                 }
                 if (target === 'my') {
-                    loadMyPosts(); // โหลดใหม่ถ้าต้องการ
-                }
-                if (target === 'notifications') {
-                    loadNotifications(); // โหลดใหม่ถ้าต้องการ
+                    loadMyPosts();
                 }
                 if (target === 'admin' && state.isAdmin) {
                     loadAdminStats();
