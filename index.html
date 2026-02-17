@@ -72,6 +72,7 @@
             font-size: 12px;
             cursor: pointer;
             transition: color 0.2s;
+            position: relative;
         }
         
         .nav-item.active {
@@ -652,7 +653,7 @@
             font-size: 18px;
         }
 
-        /* ปุ่มอ่านแล้ว - เพิ่มเล็กน้อย */
+        /* ปุ่มอ่านแล้ว */
         .mark-read-btn {
             background: transparent;
             border: 1px solid var(--border);
@@ -1456,10 +1457,11 @@
             try {
                 const result = await callGAS('user/notification/read', { notificationId });
                 if (result.success) {
-                    // อัปเดต state โดยไม่ต้องโหลดใหม่ทั้งหมด
-                    const notification = state.notifications.find(n => n.notificationId === notificationId);
-                    if (notification) {
-                        notification.isRead = 'TRUE';
+                    // หา index ของการแจ้งเตือนที่ถูกอ่าน
+                    const index = state.notifications.findIndex(n => n.notificationId === notificationId);
+                    if (index !== -1) {
+                        // ลบการแจ้งเตือนนั้นออกจาก state
+                        state.notifications.splice(index, 1);
                     }
                     
                     // นับจำนวนที่ยังไม่อ่านใหม่
