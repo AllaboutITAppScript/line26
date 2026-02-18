@@ -1223,9 +1223,9 @@
                             <input type="text" id="setting-drive-folder" class="input-field" value="18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE" required>
                             
                             <div class="mb-4">
-                                <label class="flex items-center gap-2">
-                                    <input type="checkbox" id="setting-require-approval" class="w-4 h-4">
-                                    <span class="text-sm text-gray-400">ต้องอนุมัติโพสต์ก่อนเผยแพร่</span>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="setting-require-approval" class="w-4 h-4 text-[#06c755] rounded border-gray-600 focus:ring-[#06c755] focus:ring-2">
+                                    <span class="text-sm text-gray-400 select-none">ต้องอนุมัติโพสต์ก่อนเผยแพร่</span>
                                 </label>
                             </div>
                             
@@ -1431,7 +1431,7 @@
             settings: { 
                 appName: 'iTNews',
                 driveFolderId: CONFIG.DRIVE_FOLDER_ID,
-                requireApproval: false 
+                requireApproval: 'false' 
             },
             urgentPosts: [],
             initialized: false,
@@ -1485,7 +1485,8 @@
             pendingBadge: document.getElementById('pending-badge'),
             userSearch: document.getElementById('user-search'),
             adminCommentSearch: document.getElementById('admin-comment-search'),
-            settingsSaveBtn: document.getElementById('settings-save-btn')
+            settingsSaveBtn: document.getElementById('settings-save-btn'),
+            settingRequireApproval: document.getElementById('setting-require-approval')
         };
 
         // ========== UTILS ==========
@@ -2550,13 +2551,17 @@
                 state.settings = result.data || {
                     appName: 'iTNews',
                     driveFolderId: CONFIG.DRIVE_FOLDER_ID,
-                    requireApproval: false
+                    requireApproval: 'false'
                 };
                 
                 // Update UI with settings
                 document.getElementById('setting-app-name').value = state.settings.appName || 'iTNews';
                 document.getElementById('setting-drive-folder').value = state.settings.driveFolderId || CONFIG.DRIVE_FOLDER_ID;
-                document.getElementById('setting-require-approval').checked = state.settings.requireApproval === 'true';
+                
+                // Fix: Convert string 'true'/'false' to boolean for checkbox
+                if ($.settingRequireApproval) {
+                    $.settingRequireApproval.checked = state.settings.requireApproval === 'true';
+                }
                 
                 // Update title and navbar
                 updateAppName(state.settings.appName);
@@ -2568,16 +2573,18 @@
             
             const appName = document.getElementById('setting-app-name').value.trim() || 'iTNews';
             const driveFolderId = document.getElementById('setting-drive-folder').value.trim() || CONFIG.DRIVE_FOLDER_ID;
-            const requireApproval = document.getElementById('setting-require-approval').checked;
+            
+            // Fix: Get checkbox value correctly
+            const requireApproval = $.settingRequireApproval ? $.settingRequireApproval.checked : false;
 
-            const saveBtn = document.getElementById('settings-save-btn');
+            const saveBtn = $.settingsSaveBtn;
             saveBtn.disabled = true;
             saveBtn.classList.add('loading');
 
             const data = {
                 appName,
                 driveFolderId,
-                requireApproval: requireApproval ? 'true' : 'false',
+                requireApproval: requireApproval ? 'true' : 'false', // Send as string to match GAS
                 lineUserId: state.user.lineUserId
             };
 
