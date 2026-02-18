@@ -277,6 +277,19 @@
             color: #ffc107;
             border: 1px solid rgba(255,193,7,0.3);
         }
+
+        .badge-deleted {
+            background: rgba(239,68,68,0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239,68,68,0.3);
+        }
+
+        .badge-deleted_by_admin {
+            background: rgba(239,68,68,0.25);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+            font-weight: 600;
+        }
         
         .btn-primary {
             background: var(--primary);
@@ -926,6 +939,13 @@
             background: var(--bg);
             border-radius: 12px;
             margin-bottom: 8px;
+            transition: opacity 0.2s;
+        }
+        
+        .modal-comment-item.deleted {
+            opacity: 0.7;
+            background: rgba(239,68,68,0.05);
+            border-left: 3px solid #ef4444;
         }
         
         .modal-comment-avatar {
@@ -965,6 +985,27 @@
             word-break: break-word;
         }
         
+        .modal-comment-status-badge {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-left: 8px;
+            display: inline-block;
+        }
+        
+        .modal-comment-status-deleted {
+            background: rgba(239,68,68,0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239,68,68,0.3);
+        }
+        
+        .modal-comment-status-deleted_by_admin {
+            background: rgba(239,68,68,0.25);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+            font-weight: 600;
+        }
+        
         .modal-comment-actions {
             display: flex;
             gap: 8px;
@@ -990,6 +1031,12 @@
         .modal-comment-action-btn.delete:hover {
             background: rgba(239,68,68,0.1);
             color: #ef4444;
+        }
+        
+        .modal-comment-action-btn.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
         }
         
         .modal-empty-comments {
@@ -1998,8 +2045,19 @@
                         const isAdmin = state.isAdmin;
                         const timeAgo = formatTimeAgo(c.createdAt);
                         
+                        // ตรวจสอบสถานะ
+                        const isDeleted = c.status === 'deleted' || c.status === 'deleted_by_admin';
+                        const deletedClass = isDeleted ? 'deleted' : '';
+                        const statusText = c.status === 'deleted' ? 'ลบแล้ว' : (c.status === 'deleted_by_admin' ? 'ลบโดยแอดมิน' : '');
+                        const statusClass = c.status === 'deleted' ? 'modal-comment-status-deleted' : (c.status === 'deleted_by_admin' ? 'modal-comment-status-deleted_by_admin' : '');
+                        
+                        // แสดงปุ่มลบเฉพาะเมื่อไม่ถูกลบ และเป็นเจ้าของหรือแอดมิน
+                        const showActions = !isDeleted && (isOwner || isAdmin);
+                        // แสดงปุ่มแก้ไขเฉพาะเมื่อไม่ถูกลบ และเป็นเจ้าของ
+                        const showEdit = !isDeleted && isOwner;
+                        
                         return `
-                            <div class="modal-comment-item" id="comment-${c.commentId}">
+                            <div class="modal-comment-item ${deletedClass}" id="comment-${c.commentId}">
                                 <img src="${c.userPicture || 'https://via.placeholder.com/32'}" 
                                      class="modal-comment-avatar"
                                      onerror="this.src='https://via.placeholder.com/32'">
@@ -2007,11 +2065,12 @@
                                     <div class="modal-comment-header">
                                         <span class="modal-comment-author">${c.userName || 'ผู้ใช้'}</span>
                                         <span class="modal-comment-time">${timeAgo}</span>
+                                        ${isDeleted ? `<span class="modal-comment-status-badge ${statusClass}">${statusText}</span>` : ''}
                                     </div>
-                                    <div class="modal-comment-text">${c.content}</div>
-                                    ${(isOwner || isAdmin) ? `
+                                    <div class="modal-comment-text">${isDeleted ? '<em>ความคิดเห็นนี้ถูกลบแล้ว</em>' : c.content}</div>
+                                    ${showActions ? `
                                         <div class="modal-comment-actions">
-                                            ${isOwner ? `
+                                            ${showEdit ? `
                                                 <button class="modal-comment-action-btn" onclick="showEditCommentModal('${c.commentId}')">
                                                     <i class="fas fa-edit"></i> แก้ไข
                                                 </button>
@@ -2071,6 +2130,12 @@
             const comment = findCommentById(commentId);
             if (!comment) return;
             
+            // ตรวจสอบว่าความคิดเห็นถูกลบหรือไม่
+            if (comment.status === 'deleted' || comment.status === 'deleted_by_admin') {
+                showToast('ไม่สามารถแก้ไขความคิดเห็นที่ถูกลบแล้ว', 'error');
+                return;
+            }
+            
             state.currentEditingComment = comment;
             document.getElementById('edit-comment-id').value = comment.commentId;
             document.getElementById('edit-comment-content').value = comment.content;
@@ -2129,6 +2194,15 @@
         };
 
         window.deleteComment = async function(commentId) {
+            const comment = findCommentById(commentId);
+            if (!comment) return;
+            
+            // ตรวจสอบว่าความคิดเห็นถูกลบไปแล้วหรือไม่
+            if (comment.status === 'deleted' || comment.status === 'deleted_by_admin') {
+                showToast('ความคิดเห็นนี้ถูกลบไปแล้ว', 'error');
+                return;
+            }
+
             const result = await Swal.fire({
                 title: 'ลบความคิดเห็น',
                 text: 'คุณแน่ใจหรือไม่ว่าต้องการลบความคิดเห็นนี้?',
@@ -2148,11 +2222,17 @@
                 
                 if (apiResult.success) {
                     for (let postId in state.comments) {
-                        const oldLength = state.comments[postId].length;
-                        state.comments[postId] = state.comments[postId].filter(c => c.commentId !== commentId);
-                        
-                        if (state.currentPost && state.currentPost.postId === postId) {
-                            state.currentPost.commentCount = Math.max(0, (state.currentPost.commentCount || 0) - (oldLength - state.comments[postId].length));
+                        const commentIndex = state.comments[postId].findIndex(c => c.commentId === commentId);
+                        if (commentIndex !== -1) {
+                            // อัปเดตสถานะแทนการลบออก
+                            state.comments[postId][commentIndex].status = 'deleted';
+                            state.comments[postId][commentIndex].content = '';
+                            
+                            // ลดจำนวนคอมเมนต์
+                            if (state.currentPost && state.currentPost.postId === postId) {
+                                state.currentPost.commentCount = Math.max(0, (state.currentPost.commentCount || 0) - 1);
+                            }
+                            break;
                         }
                     }
                     
@@ -2502,22 +2582,29 @@
                 return;
             }
 
-            $.adminCommentsList.innerHTML = filtered.map(c => `
+            $.adminCommentsList.innerHTML = filtered.map(c => {
+                const statusText = c.status === 'deleted' ? ' (ลบแล้ว)' : (c.status === 'deleted_by_admin' ? ' (ลบโดยแอดมิน)' : '');
+                const statusClass = c.status === 'deleted' ? 'badge-deleted' : (c.status === 'deleted_by_admin' ? 'badge-deleted_by_admin' : '');
+                
+                return `
                 <div class="bg-[#1a1d24] p-3 rounded-lg border border-[#2a2e36]">
                     <div class="flex items-center gap-2 mb-2">
                         <img src="${c.userPicture || 'https://via.placeholder.com/32'}" class="w-6 h-6 rounded-full">
-                        <span class="font-semibold text-xs text-[#06c755]">${c.userName || 'ผู้ใช้'}</span>
+                        <span class="font-semibold text-xs text-[#06c755]">${c.userName || 'ผู้ใช้'}${statusText}</span>
                         <span class="text-xs text-gray-500">${formatDateTime(c.createdAt)}</span>
+                        ${c.status !== 'active' ? `<span class="badge ${statusClass} text-xs">${c.status === 'deleted' ? 'ลบแล้ว' : 'ลบโดยแอดมิน'}</span>` : ''}
                     </div>
-                    <p class="text-sm mb-2">${c.content}</p>
+                    <p class="text-sm mb-2">${c.status === 'active' ? c.content : '<em>ความคิดเห็นนี้ถูกลบแล้ว</em>'}</p>
                     <div class="flex justify-between items-center text-xs">
                         <span class="text-gray-400">โพสต์: ${c.postId}</span>
-                        <button class="btn-danger text-xs py-1 px-2" onclick="adminDeleteComment('${c.commentId}')">
-                            <i class="fas fa-trash mr-1"></i>ลบ
-                        </button>
+                        ${c.status === 'active' ? `
+                            <button class="btn-danger text-xs py-1 px-2" onclick="adminDeleteComment('${c.commentId}')">
+                                <i class="fas fa-trash mr-1"></i>ลบ
+                            </button>
+                        ` : ''}
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         window.adminDeleteComment = async function(commentId) {
