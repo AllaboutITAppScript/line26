@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -14,7 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- LINE LIFF -->
-    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js" async></script>
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -220,7 +221,7 @@
         .tab-content {
             display: none;
             padding: 0 16px 16px 16px;
-            animation: fadeIn 0.2s ease;
+            animation: fadeIn 0.3s ease;
             max-width: 1200px;
             margin: 0 auto;
         }
@@ -289,7 +290,7 @@
             overflow: hidden;
             margin-bottom: 16px;
             cursor: pointer;
-            transition: transform 0.15s, border-color 0.15s;
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
             height: fit-content;
         }
         
@@ -302,8 +303,9 @@
             }
             
             .news-card:hover {
-                transform: translateY(-3px);
+                transform: translateY(-5px);
                 border-color: var(--primary);
+                box-shadow: 0 10px 30px rgba(6,199,85,0.2);
             }
         }
         
@@ -317,6 +319,11 @@
             height: 200px;
             object-fit: cover;
             background: #2a2e36;
+            transition: transform 0.3s;
+        }
+        
+        .news-card:hover .news-image {
+            transform: scale(1.05);
         }
         
         .news-content {
@@ -359,17 +366,14 @@
         .btn-primary {
             background: var(--primary);
             color: white;
-            padding: 12px 24px;
+            padding: 12px;
             border-radius: 12px;
             font-weight: 600;
             border: none;
+            width: 100%;
             cursor: pointer;
-            transition: opacity 0.15s;
+            transition: opacity 0.2s;
             position: relative;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
         }
         
         .btn-primary:active {
@@ -398,22 +402,19 @@
             border: 2px solid white;
             border-top-color: transparent;
             border-radius: 50%;
-            animation: spin 0.6s linear infinite;
+            animation: spin 0.8s linear infinite;
         }
         
         .btn-outline {
             background: transparent;
             border: 1px solid var(--border);
             color: var(--text);
-            padding: 12px 24px;
+            padding: 12px;
             border-radius: 12px;
+            width: 100%;
             cursor: pointer;
-            transition: background 0.15s;
+            transition: background 0.2s;
             position: relative;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
         }
         
         .btn-outline:active {
@@ -442,23 +443,20 @@
             border: 2px solid var(--text);
             border-top-color: transparent;
             border-radius: 50%;
-            animation: spin 0.6s linear infinite;
+            animation: spin 0.8s linear infinite;
         }
         
         .btn-danger {
             background: #ef4444;
             color: white;
-            padding: 12px 24px;
+            padding: 12px;
             border-radius: 12px;
             font-weight: 600;
             border: none;
+            width: 100%;
             cursor: pointer;
-            transition: opacity 0.15s;
+            transition: opacity 0.2s;
             position: relative;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
         }
         
         .btn-danger:active {
@@ -487,23 +485,20 @@
             border: 2px solid white;
             border-top-color: transparent;
             border-radius: 50%;
-            animation: spin 0.6s linear infinite;
+            animation: spin 0.8s linear infinite;
         }
         
         .btn-success {
             background: #28a745;
             color: white;
-            padding: 12px 24px;
+            padding: 12px;
             border-radius: 12px;
             font-weight: 600;
             border: none;
+            width: 100%;
             cursor: pointer;
-            transition: opacity 0.15s;
+            transition: opacity 0.2s;
             position: relative;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
         }
         
         .btn-success:active {
@@ -532,22 +527,23 @@
             border: 2px solid white;
             border-top-color: transparent;
             border-radius: 50%;
-            animation: spin 0.6s linear infinite;
+            animation: spin 0.8s linear infinite;
         }
         
         .btn-share {
             background: #00B900;
             color: white;
-            padding: 12px 24px;
+            padding: 10px;
             border-radius: 12px;
             font-weight: 500;
             border: none;
+            width: 100%;
             cursor: pointer;
-            display: inline-flex;
+            display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            transition: opacity 0.15s;
+            transition: opacity 0.2s;
             position: relative;
         }
         
@@ -577,15 +573,15 @@
             border: 2px solid white;
             border-top-color: transparent;
             border-radius: 50%;
-            animation: spin 0.6s linear infinite;
+            animation: spin 0.8s linear infinite;
         }
         
         /* ปุ่มลิงก์เพิ่มเติม */
         .btn-link {
             background: linear-gradient(135deg, #2a2e36, #1a1d24);
             color: var(--primary);
-            padding: 16px;
-            border-radius: 16px;
+            padding: 14px;
+            border-radius: 12px;
             font-weight: 600;
             border: 2px solid var(--primary);
             width: 100%;
@@ -593,11 +589,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            transition: all 0.2s;
+            gap: 10px;
+            transition: all 0.3s;
             text-decoration: none;
-            font-size: 16px;
-            margin: 24px 0;
+            font-size: 15px;
+            margin-top: 8px;
         }
         
         .btn-link:hover {
@@ -608,7 +604,32 @@
         }
         
         .btn-link i {
-            font-size: 20px;
+            font-size: 18px;
+        }
+        
+        .btn-link-external {
+            background: transparent;
+            color: var(--text);
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 500;
+            border: 2px dashed var(--border);
+            width: 100%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+            text-decoration: none;
+            font-size: 15px;
+            margin-top: 8px;
+        }
+        
+        .btn-link-external:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(6,199,85,0.05);
         }
         
         .btn-pagination {
@@ -619,7 +640,7 @@
             border-radius: 8px;
             font-size: 14px;
             cursor: pointer;
-            transition: all 0.15s;
+            transition: all 0.2s;
             min-width: 40px;
             display: flex;
             align-items: center;
@@ -642,132 +663,37 @@
             cursor: not-allowed;
         }
         
-        /* Modal - Full Screen with faster animation */
         .modal {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.98);
-            backdrop-filter: blur(20px);
-            z-index: 1000;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(10px);
+            z-index: 100;
             display: none;
             align-items: center;
             justify-content: center;
-            padding: 0;
+            padding: 16px;
         }
         
         .modal.active {
             display: flex;
-            animation: fadeIn 0.15s;
+            animation: fadeIn 0.3s;
         }
         
         .modal-content {
             background: var(--bg-card);
+            border-radius: 24px;
+            max-width: 500px;
             width: 100%;
-            height: 100vh;
-            max-height: 100vh;
+            max-height: 90vh;
             overflow-y: auto;
-            padding: 16px;
-            animation: slideUp 0.15s;
-            border-radius: 0;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        @media (min-width: 768px) {
-            .modal-content {
-                width: 90%;
-                max-width: 800px;
-                height: 90vh;
-                border-radius: 24px;
-                margin: 20px auto;
-            }
+            padding: 20px;
+            animation: slideUp 0.3s;
         }
         
         @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
+            from { transform: translateY(50px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
-        }
-        
-        /* Modal Header */
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 16px;
-            flex-shrink: 0;
-        }
-        
-        .modal-title {
-            font-size: 20px;
-            font-weight: 600;
-            line-clamp: 1;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            padding-right: 16px;
-        }
-        
-        .modal-close {
-            color: var(--text-secondary);
-            font-size: 24px;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.05);
-            transition: all 0.15s;
-            flex-shrink: 0;
-        }
-        
-        .modal-close:active {
-            background: rgba(255,255,255,0.1);
-            color: var(--primary);
-        }
-        
-        /* Modal Body */
-        .modal-body {
-            flex: 1;
-            overflow-y: auto;
-            padding-right: 4px;
-            margin-bottom: 16px;
-        }
-        
-        .modal-body::-webkit-scrollbar {
-            width: 4px;
-        }
-        
-        .modal-body::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 2px;
-        }
-        
-        /* Modal Footer */
-        .modal-footer {
-            display: flex;
-            gap: 8px;
-            padding-top: 12px;
-            border-top: 1px solid var(--border);
-            flex-shrink: 0;
-            background: var(--bg-card);
-        }
-        
-        .modal-footer .btn-share,
-        .modal-footer .btn-outline {
-            flex: 1;
-            padding: 12px;
-            font-size: 14px;
-        }
-        
-        /* Admin Controls in Modal */
-        .modal-admin-controls {
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border);
         }
         
         /* Loading - แสดงเฉพาะครั้งแรก */
@@ -775,12 +701,12 @@
             position: fixed;
             inset: 0;
             background: var(--bg);
-            z-index: 2000;
+            z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-direction: column;
-            transition: opacity 0.2s;
+            transition: opacity 0.5s;
         }
         
         .initial-loading.hide {
@@ -794,7 +720,7 @@
             border: 4px solid var(--border);
             border-top-color: var(--primary);
             border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+            animation: spin 1s linear infinite;
             margin-bottom: 16px;
         }
         
@@ -826,9 +752,9 @@
             gap: 4px;
             backdrop-filter: blur(5px);
             border: 1px solid var(--primary);
-            z-index: 1500;
+            z-index: 100;
             opacity: 0;
-            transition: opacity 0.15s;
+            transition: opacity 0.3s;
             pointer-events: none;
         }
         
@@ -846,7 +772,7 @@
             gap: 16px;
             border: 1px solid var(--border);
             cursor: pointer;
-            transition: background 0.15s;
+            transition: background 0.2s;
         }
         
         .profile-header:active {
@@ -881,7 +807,7 @@
             border: 1px solid var(--border);
             border-radius: 30px;
             color: var(--text);
-            transition: border-color 0.15s;
+            transition: border-color 0.2s;
         }
         
         .search-box input:focus {
@@ -919,7 +845,7 @@
             border: 1px solid var(--border);
             color: var(--text-secondary);
             cursor: pointer;
-            transition: all 0.15s;
+            transition: all 0.2s;
         }
         
         .filter-btn.active {
@@ -936,7 +862,7 @@
             padding: 12px;
             width: 100%;
             margin-bottom: 12px;
-            transition: border-color 0.15s;
+            transition: border-color 0.2s;
         }
         
         .input-field:focus {
@@ -976,9 +902,9 @@
             border-left: 4px solid var(--primary);
             border-radius: 12px;
             padding: 12px 16px;
-            z-index: 1500;
+            z-index: 1000;
             display: none;
-            animation: slideUp 0.15s ease;
+            animation: slideUp 0.3s ease;
         }
         
         .toast.show {
@@ -991,8 +917,7 @@
             border-radius: 12px;
             padding: 8px;
             margin-bottom: 16px;
-            animation: slideDown 0.15s;
-            z-index: 100;
+            animation: slideDown 0.2s;
         }
         
         @keyframes slideDown {
@@ -1004,7 +929,7 @@
             padding: 12px;
             border-radius: 8px;
             cursor: pointer;
-            transition: background 0.15s;
+            transition: background 0.2s;
         }
         
         .profile-menu-item:hover {
@@ -1018,7 +943,7 @@
             text-align: center;
             margin-bottom: 12px;
             cursor: pointer;
-            transition: border-color 0.15s;
+            transition: border-color 0.2s;
         }
         
         .upload-area:hover {
@@ -1043,7 +968,7 @@
             border: 1px solid var(--border);
             border-radius: 12px;
             margin-bottom: 8px;
-            transition: background 0.15s;
+            transition: background 0.2s;
         }
         
         .user-row:active {
@@ -1083,7 +1008,7 @@
             padding: 12px;
             border-bottom: 2px solid transparent;
             cursor: pointer;
-            transition: all 0.15s;
+            transition: all 0.2s;
         }
         
         .admin-tab-btn.active {
@@ -1093,7 +1018,7 @@
         }
         
         .hidden {
-            display: none !important;
+            display: none;
         }
         
         .line-clamp-2 {
@@ -1103,12 +1028,11 @@
             overflow: hidden;
         }
         
-        .skeleton-card {
+        .skeleton {
             background: linear-gradient(90deg, var(--bg-card) 25%, #252930 50%, var(--bg-card) 75%);
             background-size: 200% 100%;
-            animation: loading 1s infinite;
+            animation: loading 1.5s infinite;
             border-radius: 20px;
-            height: 300px;
         }
         
         @keyframes loading {
@@ -1118,7 +1042,7 @@
         
         .lazy-image {
             opacity: 0;
-            transition: opacity 0.15s;
+            transition: opacity 0.3s;
         }
         
         .lazy-image.loaded {
@@ -1141,7 +1065,7 @@
             border: none;
             cursor: pointer;
             z-index: 10;
-            transition: background 0.15s;
+            transition: background 0.2s;
         }
         
         .share-button:active {
@@ -1150,6 +1074,25 @@
         
         .share-button i {
             font-size: 18px;
+        }
+
+        .mark-read-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-left: 8px;
+            white-space: nowrap;
+        }
+        
+        .mark-read-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
         }
         
         /* Custom scrollbar */
@@ -1202,8 +1145,8 @@
             justify-content: center;
             box-shadow: 0 4px 15px rgba(6,199,85,0.3);
             cursor: pointer;
-            transition: all 0.15s;
-            z-index: 100;
+            transition: all 0.3s;
+            z-index: 40;
         }
         
         .floating-create-btn:hover {
@@ -1247,240 +1190,6 @@
             -webkit-text-fill-color: transparent;
             font-weight: 600;
         }
-        
-        /* Author avatar in modal */
-        .author-avatar-sm {
-            width: 40px;
-            height: 40px;
-            border-radius: 20px;
-            object-fit: cover;
-            border: 2px solid var(--primary);
-        }
-        
-        /* Admin Comments Tab */
-        .admin-comments-list {
-            max-height: 500px;
-            overflow-y: auto;
-        }
-        
-        .admin-comment-item {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 8px;
-        }
-        
-        .admin-comment-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-        
-        .admin-comment-status {
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 10px;
-        }
-        
-        .status-active {
-            background: rgba(6,199,85,0.2);
-            color: var(--primary);
-        }
-        
-        .status-deleted {
-            background: rgba(239,68,68,0.2);
-            color: #ef4444;
-        }
-        
-        .status-deleted_by_admin {
-            background: rgba(239,68,68,0.3);
-            color: #ef4444;
-        }
-
-        /* Fast loading classes */
-        .fast-transition {
-            transition: all 0.1s ease;
-        }
-
-        /* Comments Section in Modal */
-        .modal-comments-section {
-            margin-top: 20px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border);
-        }
-        
-        .modal-comments-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .modal-comments-title i {
-            color: var(--primary);
-        }
-        
-        .modal-comment-input-area {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-        
-        .modal-comment-input {
-            flex: 1;
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 10px 14px;
-            color: var(--text);
-            resize: none;
-            min-height: 60px;
-            font-size: 14px;
-        }
-        
-        .modal-comment-input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-        
-        .modal-comment-submit {
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 0 16px;
-            font-weight: 600;
-            cursor: pointer;
-            height: 60px;
-            font-size: 14px;
-        }
-        
-        .modal-comment-submit:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .modal-comment-submit.loading {
-            position: relative;
-            color: transparent;
-        }
-        
-        .modal-comment-submit.loading::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            top: 50%;
-            left: 50%;
-            margin-left: -10px;
-            margin-top: -10px;
-            border: 2px solid white;
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 0.6s linear infinite;
-        }
-        
-        .modal-comments-list {
-            max-height: 300px;
-            overflow-y: auto;
-            padding-right: 4px;
-        }
-        
-        .modal-comment-item {
-            display: flex;
-            gap: 10px;
-            padding: 12px;
-            background: var(--bg);
-            border-radius: 12px;
-            margin-bottom: 8px;
-        }
-        
-        .modal-comment-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 16px;
-            object-fit: cover;
-        }
-        
-        .modal-comment-content {
-            flex: 1;
-        }
-        
-        .modal-comment-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 2px;
-            flex-wrap: wrap;
-        }
-        
-        .modal-comment-author {
-            font-weight: 600;
-            font-size: 13px;
-            color: var(--primary);
-        }
-        
-        .modal-comment-time {
-            font-size: 10px;
-            color: var(--text-secondary);
-        }
-        
-        .modal-comment-text {
-            font-size: 13px;
-            line-height: 1.5;
-            color: var(--text);
-            word-break: break-word;
-        }
-        
-        .modal-comment-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 4px;
-        }
-        
-        .modal-comment-action-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 11px;
-            cursor: pointer;
-            padding: 2px 6px;
-            border-radius: 10px;
-            transition: all 0.15s;
-        }
-        
-        .modal-comment-action-btn:hover {
-            background: rgba(6,199,85,0.1);
-            color: var(--primary);
-        }
-        
-        .modal-comment-action-btn.delete:hover {
-            background: rgba(239,68,68,0.1);
-            color: #ef4444;
-        }
-        
-        .modal-empty-comments {
-            text-align: center;
-            padding: 20px;
-            color: var(--text-secondary);
-            background: var(--bg);
-            border-radius: 12px;
-            font-size: 13px;
-        }
-
-        /* Preload Animation */
-        .instant-fade {
-            animation: instantFade 0.1s ease;
-        }
-
-        @keyframes instantFade {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
     </style>
 </head>
 <body>
@@ -1508,7 +1217,7 @@
     <!-- Navbar -->
     <nav class="navbar">
         <div class="navbar-content">
-            <div class="navbar-logo" onclick="goHome()" style="cursor: pointer;">
+            <div class="navbar-logo">
                 <i class="fas fa-newspaper"></i>
                 <span>iTNews</span>
             </div>
@@ -1534,8 +1243,8 @@
         <!-- Tab: Home -->
         <div id="tab-home" class="tab-content active">
             <!-- Profile Header -->
-            <div class="profile-header" id="profile-header" data-aos="fade-up" data-aos-duration="200">
-                <img id="profile-avatar" src="" alt="avatar" class="profile-avatar" loading="eager">
+            <div class="profile-header" id="profile-header" data-aos="fade-up">
+                <img id="profile-avatar" src="" alt="avatar" class="profile-avatar" loading="lazy">
                 <div class="flex-1">
                     <h2 id="profile-name" class="text-lg font-bold">กำลังโหลด...</h2>
                     <p id="profile-email" class="text-sm text-gray-400"></p>
@@ -1554,51 +1263,43 @@
                 </div>
             </div>
 
-            <!-- Stats - แสดงทันทีด้วยค่าเริ่มต้น -->
-            <div class="grid grid-cols-3 gap-2 mb-4" data-aos="fade-up" data-aos-duration="200" data-aos-delay="50">
+            <!-- Stats -->
+            <div class="grid grid-cols-3 gap-2 mb-4" data-aos="fade-up" data-aos-delay="100">
                 <div class="stat-card">
                     <p class="text-xs text-gray-400">ข่าวสาร</p>
-                    <p id="stat-news" class="text-xl font-bold gradient-text">0</p>
+                    <p id="stat-news" class="text-xl font-bold gradient-text">-</p>
                 </div>
                 <div class="stat-card">
                     <p class="text-xs text-gray-400">กิจกรรม</p>
-                    <p id="stat-events" class="text-xl font-bold gradient-text">0</p>
+                    <p id="stat-events" class="text-xl font-bold gradient-text">-</p>
                 </div>
                 <div class="stat-card">
                     <p class="text-xs text-gray-400">ด่วน</p>
-                    <p id="stat-urgent" class="text-xl font-bold gradient-text">0</p>
+                    <p id="stat-urgent" class="text-xl font-bold gradient-text">-</p>
                 </div>
             </div>
 
             <!-- Hero Slider (แสดงเฉพาะประกาศด่วน เสมอ) -->
-            <div class="swiper hero-swiper mb-4" data-aos="fade-up" data-aos-duration="200" data-aos-delay="100">
-                <div class="swiper-wrapper" id="hero-slider-wrapper">
-                    <div class="swiper-slide">
-                        <img src="https://via.placeholder.com/1200x400/1a1d24/06c755?text=กำลังโหลด..." 
-                             class="w-full h-full object-cover">
-                        <div class="slide-content">
-                            <h3 class="font-bold text-base">กำลังโหลดข่าวด่วน...</h3>
-                        </div>
-                    </div>
-                </div>
+            <div class="swiper hero-swiper mb-4" data-aos="fade-up" data-aos-delay="150">
+                <div class="swiper-wrapper" id="hero-slider-wrapper"></div>
                 <div class="swiper-pagination"></div>
             </div>
 
             <!-- Real-time indicator -->
-            <div class="flex justify-end mb-2" data-aos="fade-up" data-aos-duration="200" data-aos-delay="150">
+            <div class="flex justify-end mb-2" id="realtime-indicator" data-aos="fade-up" data-aos-delay="200">
                 <span class="realtime-badge">
                     <i class="fas fa-circle"></i> อัปเดตเรียลไทม์
                 </span>
             </div>
 
             <!-- Search -->
-            <div class="search-box" data-aos="fade-up" data-aos-duration="200" data-aos-delay="200">
+            <div class="search-box" data-aos="fade-up" data-aos-delay="250">
                 <i class="fas fa-search"></i>
                 <input type="text" id="search-input" placeholder="ค้นหาข่าวสาร กิจกรรม..." autocomplete="off">
             </div>
 
             <!-- Filter (ไม่มีปุ่มรออนุมัติ) -->
-            <div class="filter-container" data-aos="fade-up" data-aos-duration="200" data-aos-delay="250">
+            <div class="filter-container" data-aos="fade-up" data-aos-delay="300">
                 <button class="filter-btn active" data-filter="all">ทั้งหมด</button>
                 <button class="filter-btn" data-filter="news">📰 ข่าวสาร</button>
                 <button class="filter-btn" data-filter="event">🎉 กิจกรรม</button>
@@ -1606,22 +1307,14 @@
             </div>
 
             <!-- Posts List - Grid for PC -->
-            <div id="posts-list" class="posts-grid space-y-3 lg:space-y-0" data-aos="fade-up" data-aos-duration="200" data-aos-delay="300">
-                <!-- แสดง skeleton ทันที -->
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-            </div>
+            <div id="posts-list" class="posts-grid space-y-3 lg:space-y-0" data-aos="fade-up" data-aos-delay="350"></div>
             
             <!-- Pagination -->
-            <div id="pagination-container" class="pagination-container hidden" data-aos="fade-up" data-aos-duration="200" data-aos-delay="350">
+            <div id="pagination-container" class="pagination-container hidden" data-aos="fade-up" data-aos-delay="400">
                 <button class="btn-pagination" id="prev-page" onclick="changePage('prev')" disabled>
                     <i class="fas fa-chevron-left"></i>
                 </button>
-                <span id="page-info" class="pagination-info">หน้า 1 จาก 1</span>
+                <span id="page-info" class="pagination-info"></span>
                 <button class="btn-pagination" id="next-page" onclick="changePage('next')" disabled>
                     <i class="fas fa-chevron-right"></i>
                 </button>
@@ -1630,24 +1323,20 @@
 
         <!-- Tab: My Posts -->
         <div id="tab-my" class="tab-content">
-            <div class="flex justify-between items-center mb-4" data-aos="fade-up" data-aos-duration="200">
+            <div class="flex justify-between items-center mb-4" data-aos="fade-up">
                 <h2 class="text-xl font-bold gradient-text">โพสต์ของฉัน</h2>
                 <button id="create-post-btn" class="bg-[#06c755] text-white px-4 py-2 rounded-xl text-sm hidden" onclick="showCreatePostModal()">
                     <i class="fas fa-plus mr-1"></i>สร้าง
                 </button>
             </div>
-            <div id="my-posts-list" class="my-posts-grid space-y-3 lg:space-y-0" data-aos="fade-up" data-aos-duration="200" data-aos-delay="50">
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-            </div>
+            <div id="my-posts-list" class="my-posts-grid space-y-3 lg:space-y-0" data-aos="fade-up" data-aos-delay="100"></div>
             
             <!-- My Posts Pagination -->
-            <div id="my-pagination-container" class="pagination-container hidden" data-aos="fade-up" data-aos-duration="200" data-aos-delay="100">
+            <div id="my-pagination-container" class="pagination-container hidden" data-aos="fade-up" data-aos-delay="150">
                 <button class="btn-pagination" id="my-prev-page" onclick="changeMyPage('prev')" disabled>
                     <i class="fas fa-chevron-left"></i>
                 </button>
-                <span id="my-page-info" class="pagination-info">หน้า 1 จาก 1</span>
+                <span id="my-page-info" class="pagination-info"></span>
                 <button class="btn-pagination" id="my-next-page" onclick="changeMyPage('next')" disabled>
                     <i class="fas fa-chevron-right"></i>
                 </button>
@@ -1656,7 +1345,7 @@
 
         <!-- Tab: Admin -->
         <div id="tab-admin" class="tab-content">
-            <div class="flex justify-between items-center mb-4" data-aos="fade-up" data-aos-duration="200">
+            <div class="flex justify-between items-center mb-4" data-aos="fade-up">
                 <h2 class="text-xl font-bold gradient-text">จัดการระบบ</h2>
                 <button id="refresh-admin" class="text-[#06c755] text-sm">
                     <i class="fas fa-sync-alt mr-1"></i>รีเฟรช
@@ -1664,30 +1353,30 @@
             </div>
 
             <!-- Admin Stats -->
-            <div class="admin-section" data-aos="fade-up" data-aos-duration="200" data-aos-delay="50">
+            <div class="admin-section" data-aos="fade-up" data-aos-delay="100">
                 <h3 class="font-semibold mb-3">สถิติ</h3>
                 <div class="grid grid-cols-2 gap-3">
                     <div class="admin-stat">
                         <p class="text-xs text-gray-400">ผู้ใช้</p>
-                        <p id="admin-users" class="text-xl font-bold gradient-text">0</p>
+                        <p id="admin-users" class="text-xl font-bold gradient-text">-</p>
                     </div>
                     <div class="admin-stat">
                         <p class="text-xs text-gray-400">โพสต์</p>
-                        <p id="admin-posts" class="text-xl font-bold gradient-text">0</p>
+                        <p id="admin-posts" class="text-xl font-bold gradient-text">-</p>
                     </div>
                     <div class="admin-stat">
                         <p class="text-xs text-gray-400">วันนี้</p>
-                        <p id="admin-today" class="text-xl font-bold gradient-text">0</p>
+                        <p id="admin-today" class="text-xl font-bold gradient-text">-</p>
                     </div>
                     <div class="admin-stat">
                         <p class="text-xs text-gray-400">รออนุมัติ</p>
-                        <p id="admin-pending" class="text-xl font-bold text-yellow-500">0</p>
+                        <p id="admin-pending" class="text-xl font-bold text-yellow-500">-</p>
                     </div>
                 </div>
             </div>
 
             <!-- Admin Tabs -->
-            <div class="flex border-b border-[#2a2e36] mb-4 overflow-x-auto" data-aos="fade-up" data-aos-duration="200" data-aos-delay="100">
+            <div class="flex border-b border-[#2a2e36] mb-4 overflow-x-auto" data-aos="fade-up" data-aos-delay="150">
                 <button class="admin-tab-btn flex-1 py-2 text-center active whitespace-nowrap" data-admin-tab="posts">
                     จัดการโพสต์
                 </button>
@@ -1700,9 +1389,6 @@
                 <button class="admin-tab-btn flex-1 py-2 text-center whitespace-nowrap" data-admin-tab="users">
                     จัดการผู้ใช้
                 </button>
-                <button class="admin-tab-btn flex-1 py-2 text-center whitespace-nowrap" data-admin-tab="comments">
-                    จัดการความคิดเห็น
-                </button>
                 <button class="admin-tab-btn flex-1 py-2 text-center whitespace-nowrap" data-admin-tab="settings">
                     ตั้งค่า
                 </button>
@@ -1710,17 +1396,17 @@
 
             <!-- Admin: Posts Management -->
             <div id="admin-posts-tab" class="admin-tab">
-                <button class="btn-primary mb-4" onclick="showCreatePostModal()" data-aos="fade-up" data-aos-duration="200" data-aos-delay="150">
+                <button class="btn-primary mb-4" onclick="showCreatePostModal()" data-aos="fade-up" data-aos-delay="200">
                     <i class="fas fa-plus mr-2"></i>สร้างโพสต์ใหม่
                 </button>
-                <div id="admin-posts-list" class="admin-posts-grid space-y-2" data-aos="fade-up" data-aos-duration="200" data-aos-delay="200"></div>
+                <div id="admin-posts-list" class="admin-posts-grid space-y-2" data-aos="fade-up" data-aos-delay="250"></div>
                 
                 <!-- Admin Posts Pagination -->
-                <div id="admin-posts-pagination" class="pagination-container hidden" data-aos="fade-up" data-aos-duration="200" data-aos-delay="250">
+                <div id="admin-posts-pagination" class="pagination-container hidden" data-aos="fade-up" data-aos-delay="300">
                     <button class="btn-pagination" id="admin-posts-prev" onclick="changeAdminPostsPage('prev')" disabled>
                         <i class="fas fa-chevron-left"></i>
                     </button>
-                    <span id="admin-posts-info" class="pagination-info">หน้า 1 จาก 1</span>
+                    <span id="admin-posts-info" class="pagination-info"></span>
                     <button class="btn-pagination" id="admin-posts-next" onclick="changeAdminPostsPage('next')" disabled>
                         <i class="fas fa-chevron-right"></i>
                     </button>
@@ -1740,16 +1426,6 @@
                     <input type="text" id="user-search" placeholder="ค้นหาผู้ใช้..." autocomplete="off">
                 </div>
                 <div id="users-list" class="space-y-2"></div>
-            </div>
-
-            <!-- Admin: Comments Management -->
-            <div id="admin-comments-tab" class="admin-tab hidden">
-                <h3 class="font-semibold mb-3">จัดการความคิดเห็นทั้งหมด</h3>
-                <div class="search-box mb-4">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="admin-comment-search" placeholder="ค้นหาความคิดเห็น..." autocomplete="off">
-                </div>
-                <div id="admin-comments-list" class="admin-comments-list space-y-2"></div>
             </div>
 
             <!-- Admin: Settings -->
@@ -1775,166 +1451,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Post Detail Modal (Full Screen) - แสดงทันทีเมื่อกด -->
-        <div class="modal" id="post-modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title" id="modal-title">กำลังโหลด...</h3>
-                    <button class="modal-close" onclick="closeModal()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                
-                <div class="modal-body" id="modal-body">
-                    <div class="flex justify-center items-center py-10">
-                        <div class="loading-spinner w-10 h-10"></div>
-                    </div>
-                </div>
-                
-                <div class="modal-footer">
-                    <button class="btn-share" onclick="shareAsFlexMessage()" disabled>
-                        <i class="fab fa-line"></i> แชร์
-                    </button>
-                    <button class="btn-outline" onclick="closeModal()">ปิด</button>
-                </div>
-                
-                <div id="modal-admin-controls" class="modal-admin-controls hidden">
-                    <p class="text-sm text-gray-400 mb-2">จัดการโพสต์</p>
-                    <div class="flex gap-2">
-                        <button id="modal-edit-btn" class="btn-outline flex-1 text-sm" onclick="editCurrentPost()" disabled>
-                            <i class="fas fa-edit mr-2"></i>แก้ไข
-                        </button>
-                        <button id="modal-delete-btn" class="btn-danger flex-1 text-sm" onclick="deleteCurrentPost()" disabled>
-                            <i class="fas fa-trash mr-2"></i>ลบ
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Create/Edit Post Modal (Full Screen) -->
-        <div class="modal" id="create-modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title" id="create-modal-title">สร้างโพสต์ใหม่</h3>
-                    <button class="modal-close" onclick="closeCreateModal()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                
-                <div class="modal-body">
-                    <form id="post-form" onsubmit="savePost(event)">
-                        <input type="hidden" id="edit-post-id">
-                        
-                        <select id="post-type" class="input-field" required>
-                            <option value="news">📰 ข่าวสาร</option>
-                            <option value="event">🎉 กิจกรรม</option>
-                            <option value="urgent">⚠️ ประกาศด่วน</option>
-                        </select>
-                        
-                        <input type="text" id="post-title" placeholder="หัวข้อ" class="input-field" required maxlength="100">
-                        
-                        <textarea id="post-content" placeholder="เนื้อหา" class="input-field" rows="5" required maxlength="5000"></textarea>
-                        
-                        <!-- Image Upload -->
-                        <div class="upload-area" onclick="document.getElementById('post-image-file').click()">
-                            <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
-                            <p class="text-sm text-gray-400">คลิกเพื่ออัปโหลดรูปภาพ</p>
-                            <p class="text-xs text-gray-500 mt-1">รองรับ JPG, PNG, GIF (สูงสุด 5MB)</p>
-                        </div>
-                        <input type="file" id="post-image-file" accept="image/*" style="display: none" onchange="previewImage(this)">
-                        <img id="image-preview" class="image-preview" src="" loading="lazy">
-                        <input type="hidden" id="post-image" value="">
-                        
-                        <input type="text" id="post-link" placeholder="ลิงก์เพิ่มเติม (ถ้ามี)" class="input-field">
-                    </form>
-                </div>
-                
-                <div class="modal-footer">
-                    <button type="submit" form="post-form" class="btn-primary flex-1" id="save-post-btn">บันทึก</button>
-                    <button type="button" class="btn-outline flex-1" onclick="closeCreateModal()">ยกเลิก</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Profile Settings Modal (Full Screen) -->
-        <div class="modal" id="profile-modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">แก้ไขโปรไฟล์</h3>
-                    <button class="modal-close" onclick="closeProfileModal()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                
-                <div class="modal-body">
-                    <form id="profile-form" onsubmit="saveProfile(event)">
-                        <input type="text" id="profile-phone" placeholder="เบอร์โทรศัพท์" class="input-field" maxlength="10">
-                        <input type="text" id="profile-department" placeholder="แผนก/หน่วยงาน" class="input-field" maxlength="50">
-                    </form>
-                </div>
-                
-                <div class="modal-footer">
-                    <button type="submit" form="profile-form" class="btn-primary flex-1">บันทึก</button>
-                    <button type="button" class="btn-outline flex-1" onclick="closeProfileModal()">ยกเลิก</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- User Role Modal (Full Screen) -->
-        <div class="modal" id="role-modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">จัดการสิทธิ์ผู้ใช้</h3>
-                    <button class="modal-close" onclick="closeRoleModal()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                
-                <div class="modal-body">
-                    <form id="role-form" onsubmit="saveUserRole(event)">
-                        <input type="hidden" id="role-user-id">
-                        <p id="role-user-name" class="text-white mb-4"></p>
-                        
-                        <select id="user-role" class="input-field">
-                            <option value="user">👤 ผู้ใช้ทั่วไป</option>
-                            <option value="editor">✏️ ผู้เขียน (สร้างโพสต์ได้)</option>
-                            <option value="admin">👑 ผู้ดูแลระบบ</option>
-                        </select>
-                    </form>
-                </div>
-                
-                <div class="modal-footer">
-                    <button type="submit" form="role-form" class="btn-primary flex-1">บันทึก</button>
-                    <button type="button" class="btn-outline flex-1" onclick="closeRoleModal()">ยกเลิก</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Edit Comment Modal (Full Screen) -->
-        <div class="modal" id="edit-comment-modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">แก้ไขความคิดเห็น</h3>
-                    <button class="modal-close" onclick="closeEditCommentModal()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                
-                <div class="modal-body">
-                    <form id="edit-comment-form" onsubmit="saveEditedComment(event)">
-                        <input type="hidden" id="edit-comment-id">
-                        <textarea id="edit-comment-content" class="input-field" rows="4" required maxlength="500"></textarea>
-                    </form>
-                </div>
-                
-                <div class="modal-footer">
-                    <button type="submit" form="edit-comment-form" class="btn-primary flex-1">บันทึก</button>
-                    <button type="button" class="btn-outline flex-1" onclick="closeEditCommentModal()">ยกเลิก</button>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Bottom Navigation (Mobile) -->
@@ -1953,17 +1469,128 @@
         </div>
     </div>
 
+    <!-- Post Detail Modal -->
+    <div class="modal" id="post-modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="modal-title" class="text-xl font-bold"></h3>
+                <button onclick="closeModal()"><i class="fas fa-times text-gray-400 text-xl"></i></button>
+            </div>
+            <div id="modal-body" class="space-y-4"></div>
+            <div class="flex gap-2 mt-4">
+                <button class="btn-share flex-1" onclick="shareAsFlexMessage()">
+                    <i class="fab fa-line"></i> แชร์ไป LINE
+                </button>
+                <button class="btn-outline flex-1" onclick="closeModal()">ปิด</button>
+            </div>
+            <div id="modal-admin-controls" class="hidden mt-4 pt-4 border-t border-[#2a2e36]">
+                <p class="text-sm text-gray-400 mb-2">จัดการโพสต์</p>
+                <div class="flex gap-2">
+                    <button id="modal-edit-btn" class="btn-outline flex-1 text-sm" onclick="editCurrentPost()">
+                        <i class="fas fa-edit mr-2"></i>แก้ไข
+                    </button>
+                    <button id="modal-delete-btn" class="btn-danger flex-1 text-sm" onclick="deleteCurrentPost()">
+                        <i class="fas fa-trash mr-2"></i>ลบ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create/Edit Post Modal -->
+    <div class="modal" id="create-modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="create-modal-title" class="text-xl font-bold">สร้างโพสต์ใหม่</h3>
+                <button onclick="closeCreateModal()"><i class="fas fa-times text-gray-400 text-xl"></i></button>
+            </div>
+            <form id="post-form" onsubmit="savePost(event)">
+                <input type="hidden" id="edit-post-id">
+                
+                <select id="post-type" class="input-field" required>
+                    <option value="news">📰 ข่าวสาร</option>
+                    <option value="event">🎉 กิจกรรม</option>
+                    <option value="urgent">⚠️ ประกาศด่วน</option>
+                </select>
+                
+                <input type="text" id="post-title" placeholder="หัวข้อ" class="input-field" required maxlength="100">
+                
+                <textarea id="post-content" placeholder="เนื้อหา" class="input-field" rows="5" required maxlength="5000"></textarea>
+                
+                <!-- Image Upload -->
+                <div class="upload-area" onclick="document.getElementById('post-image-file').click()">
+                    <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                    <p class="text-sm text-gray-400">คลิกเพื่ออัปโหลดรูปภาพ</p>
+                    <p class="text-xs text-gray-500 mt-1">รองรับ JPG, PNG, GIF (สูงสุด 5MB)</p>
+                </div>
+                <input type="file" id="post-image-file" accept="image/*" style="display: none" onchange="previewImage(this)">
+                <img id="image-preview" class="image-preview" src="" loading="lazy">
+                <input type="hidden" id="post-image" value="">
+                
+                <input type="text" id="post-link" placeholder="ลิงก์เพิ่มเติม (ถ้ามี)" class="input-field">
+                
+                <div class="flex gap-2">
+                    <button type="submit" class="btn-primary" id="save-post-btn">บันทึก</button>
+                    <button type="button" class="btn-outline" onclick="closeCreateModal()">ยกเลิก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Profile Settings Modal -->
+    <div class="modal" id="profile-modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">แก้ไขโปรไฟล์</h3>
+                <button onclick="closeProfileModal()"><i class="fas fa-times text-gray-400 text-xl"></i></button>
+            </div>
+            <form id="profile-form" onsubmit="saveProfile(event)">
+                <input type="text" id="profile-phone" placeholder="เบอร์โทรศัพท์" class="input-field" maxlength="10">
+                <input type="text" id="profile-department" placeholder="แผนก/หน่วยงาน" class="input-field" maxlength="50">
+                
+                <div class="flex gap-2">
+                    <button type="submit" class="btn-primary">บันทึก</button>
+                    <button type="button" class="btn-outline" onclick="closeProfileModal()">ยกเลิก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- User Role Modal -->
+    <div class="modal" id="role-modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">จัดการสิทธิ์ผู้ใช้</h3>
+                <button onclick="closeRoleModal()"><i class="fas fa-times text-gray-400 text-xl"></i></button>
+            </div>
+            <form id="role-form" onsubmit="saveUserRole(event)">
+                <input type="hidden" id="role-user-id">
+                <p id="role-user-name" class="text-white mb-4"></p>
+                
+                <select id="user-role" class="input-field">
+                    <option value="user">👤 ผู้ใช้ทั่วไป</option>
+                    <option value="editor">✏️ ผู้เขียน (สร้างโพสต์ได้)</option>
+                    <option value="admin">👑 ผู้ดูแลระบบ</option>
+                </select>
+                
+                <div class="flex gap-2">
+                    <button type="submit" class="btn-primary">บันทึก</button>
+                    <button type="button" class="btn-outline" onclick="closeRoleModal()">ยกเลิก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     
     <script>
-        // Initialize AOS with faster animation
+        // Initialize AOS
         AOS.init({
-            duration: 200,
+            duration: 800,
             once: true,
-            offset: 10,
-            delay: 0
+            offset: 50
         });
 
         // ========== CONFIG ==========
@@ -1972,10 +1599,7 @@
             LIFF_ID: '2008904120-T7I0VPZf',
             PAGE_SIZE: 9,
             DRIVE_FOLDER_ID: '18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE',
-            POLLING_INTERVAL: 5000,
-            CACHE_TIME: 5000,
-            MAX_RETRIES: 1,
-            RETRY_DELAY: 300
+            POLLING_INTERVAL: 5000
         };
 
         // ========== STATE ==========
@@ -1986,7 +1610,6 @@
             pendingPosts: [],
             adminPosts: [],
             users: [],
-            comments: {},
             currentFilter: 'all',
             searchTerm: '',
             isAdmin: false,
@@ -1998,25 +1621,13 @@
             myPostsTotalPages: 1,
             adminPostsTotalPages: 1,
             currentPost: null,
-            currentEditingComment: null,
             settings: {
                 requireApproval: false
             },
             lastUpdate: Date.now(),
             syncTimeout: null,
             urgentPosts: [],
-            initialized: false,
-            connectionError: false,
-            retryCount: 0,
-            loadingPosts: false,
-            loadingMyPosts: false,
-            loadingUrgent: false,
-            modalLoading: false,
-            cache: {
-                posts: { data: null, timestamp: 0 },
-                myPosts: { data: null, timestamp: 0 },
-                urgentPosts: { data: null, timestamp: 0 }
-            }
+            initialized: false
         };
 
         // ========== DOM Elements ==========
@@ -2024,14 +1635,13 @@
         const toastMessage = document.getElementById('toast-message');
         const syncIndicator = document.getElementById('sync-indicator');
         const initialLoading = document.getElementById('initial-loading');
-        const postModal = document.getElementById('post-modal');
 
         // ========== UTILS ==========
         function showToast(msg, type = 'success') {
             toastMessage.textContent = msg;
             toast.style.borderLeftColor = type === 'success' ? '#06c755' : '#ef4444';
             toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2000);
+            setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
         function showSyncIndicator() {
@@ -2039,7 +1649,7 @@
             if (state.syncTimeout) clearTimeout(state.syncTimeout);
             state.syncTimeout = setTimeout(() => {
                 syncIndicator.classList.remove('show');
-            }, 500);
+            }, 1000);
         }
 
         function formatDate(dateStr) {
@@ -2059,38 +1669,14 @@
             });
         }
 
-        function formatTimeAgo(dateStr) {
-            const date = new Date(dateStr);
-            const now = new Date();
-            const diffMs = now - date;
-            const diffMins = Math.floor(diffMs / 60000);
-            const diffHours = Math.floor(diffMs / 3600000);
-            const diffDays = Math.floor(diffMs / 86400000);
-
-            if (diffMins < 1) return 'เมื่อสักครู่';
-            if (diffMins < 60) return `${diffMins} นาทีที่แล้ว`;
-            if (diffHours < 24) return `${diffHours} ชั่วโมงที่แล้ว`;
-            if (diffDays < 7) return `${diffDays} วันที่แล้ว`;
-            return formatDateShort(dateStr);
-        }
-
-        // ========== CLOSE ALL MODALS ==========
-        function closeAllModals() {
-            document.querySelectorAll('.modal').forEach(modal => {
-                modal.classList.remove('active');
-            });
-        }
-
-        // ========== API CALL WITH RETRY ==========
-        async function callGAS(path, data = {}, retryCount = 0) {
+        // ========== API CALL ==========
+        async function callGAS(path, data = {}) {
             try {
                 const formData = new FormData();
                 formData.append('path', path);
                 
                 if (state.user?.lineUserId) {
                     formData.append('lineUserId', state.user.lineUserId);
-                } else if (data.lineUserId) {
-                    formData.append('lineUserId', data.lineUserId);
                 }
                 
                 Object.keys(data).forEach(key => {
@@ -2099,38 +1685,27 @@
                     }
                 });
 
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 8000);
+                console.log('Calling GAS:', path, data);
 
                 const response = await fetch(CONFIG.GAS_URL, {
                     method: 'POST',
-                    body: formData,
-                    signal: controller.signal
+                    body: formData
                 });
 
-                clearTimeout(timeoutId);
-
                 const text = await response.text();
+                console.log('GAS Response:', text);
                 
                 try {
                     const result = JSON.parse(text);
-                    state.connectionError = false;
-                    state.retryCount = 0;
                     return result;
                 } catch (e) {
-                    if (response.ok) {
-                        return { success: true, data: {}, message: 'success' };
-                    }
+                    console.error('JSON parse error:', text);
                     throw new Error('รูปแบบข้อมูลไม่ถูกต้อง');
                 }
 
             } catch (error) {
-                if (retryCount < CONFIG.MAX_RETRIES) {
-                    await new Promise(resolve => setTimeout(resolve, CONFIG.RETRY_DELAY));
-                    return callGAS(path, data, retryCount + 1);
-                }
-                
-                state.connectionError = true;
+                console.error('API call error:', error);
+                showToast('การเชื่อมต่อล้มเหลว: ' + error.message, 'error');
                 return { success: false, message: error.message };
             }
         }
@@ -2142,25 +1717,56 @@
             if (pollingInterval) clearInterval(pollingInterval);
             
             pollingInterval = setInterval(async () => {
-                if (document.hidden || !state.initialized || state.connectionError) return;
+                if (document.hidden || !state.initialized) return;
                 
-                const promises = [
-                    loadPosts(true),
-                    loadUrgentPosts(true)
-                ];
-                
-                if (document.getElementById('tab-my').classList.contains('active')) {
-                    promises.push(loadMyPosts(true));
-                }
-                
-                if (state.isAdmin && document.getElementById('tab-admin').classList.contains('active')) {
-                    promises.push(loadPendingPosts());
-                    promises.push(loadAdminStats());
-                }
-                
-                await Promise.allSettled(promises);
-                
+                await checkForUpdates();
             }, CONFIG.POLLING_INTERVAL);
+        }
+
+        async function checkForUpdates() {
+            try {
+                const result = await callGAS('posts/updates', {
+                    lastUpdate: state.lastUpdate
+                });
+                
+                if (result.success && result.data.hasUpdates) {
+                    console.log('New updates detected, refreshing...');
+                    
+                    showSyncIndicator();
+                    
+                    await Promise.all([
+                        loadPosts(true),
+                        loadMyPosts(),
+                        loadPendingPosts(),
+                        loadUrgentPosts(),
+                        state.isAdmin ? loadUsers() : Promise.resolve(),
+                        state.isAdmin ? loadAdminStats() : Promise.resolve()
+                    ]);
+                    
+                    showRealtimeIndicator();
+                    
+                    state.lastUpdate = Date.now();
+                }
+            } catch (error) {
+                console.error('Update check failed:', error);
+            }
+        }
+
+        function showRealtimeIndicator() {
+            const indicator = document.getElementById('realtime-indicator');
+            indicator.innerHTML = `
+                <span class="realtime-badge" style="animation: pulse 0.5s">
+                    <i class="fas fa-check-circle"></i> อัปเดตใหม่
+                </span>
+            `;
+            
+            setTimeout(() => {
+                indicator.innerHTML = `
+                    <span class="realtime-badge">
+                        <i class="fas fa-circle"></i> อัปเดตเรียลไทม์
+                    </span>
+                `;
+            }, 2000);
         }
 
         // ========== IMAGE UPLOAD ==========
@@ -2187,6 +1793,7 @@
                     throw new Error(result.message);
                 }
             } catch (error) {
+                console.error('Upload error:', error);
                 showToast('อัปโหลดรูปไม่สำเร็จ', 'error');
                 return null;
             }
@@ -2207,14 +1814,6 @@
         // ========== LIFF INIT ==========
         async function initLIFF() {
             try {
-                if (typeof liff === 'undefined') {
-                    showToast('ไม่สามารถโหลด LINE LIFF ได้', 'error');
-                    setTimeout(() => {
-                        initialLoading.classList.add('hide');
-                    }, 500);
-                    return;
-                }
-
                 await liff.init({ liffId: CONFIG.LIFF_ID });
                 
                 if (!liff.isLoggedIn()) {
@@ -2237,35 +1836,31 @@
                     state.isAdmin = state.user.role === 'admin';
                     state.isEditor = state.isAdmin || state.user.role === 'editor';
                     
-                    updateUI();
-                    
-                    await Promise.allSettled([
+                    await Promise.all([
+                        loadSettings(),
                         loadPosts(),
+                        loadMyPosts(),
+                        loadPendingPosts(),
                         loadUrgentPosts(),
-                        loadMyPosts()
+                        state.isAdmin ? loadUsers() : Promise.resolve(),
+                        state.isAdmin ? loadAdminStats() : Promise.resolve()
                     ]);
                     
-                    if (state.isAdmin) {
-                        loadSettings();
-                        loadUsers();
-                        loadAdminStats();
-                        loadPendingPosts();
-                    }
+                    updateUI();
                     
+                    // ซ่อน initial loading
                     setTimeout(() => {
                         initialLoading.classList.add('hide');
                         state.initialized = true;
-                    }, 100);
+                    }, 500);
                     
                     startRealtimeUpdates();
                 } else {
                     showToast(result.message, 'error');
-                    setTimeout(() => {
-                        initialLoading.classList.add('hide');
-                    }, 500);
                 }
                 
             } catch (err) {
+                console.error('LIFF init error:', err);
                 showToast('ไม่สามารถเชื่อมต่อกับ LINE ได้', 'error');
                 setTimeout(() => {
                     initialLoading.classList.add('hide');
@@ -2300,11 +1895,6 @@
                 loadUsers();
                 loadPendingPosts();
             }
-        }
-
-        function goHome() {
-            closeAllModals();
-            switchTab('home');
         }
 
         // ========== UPDATE UI ==========
@@ -2354,32 +1944,19 @@
 
         // ========== POSTS ==========
         async function loadPosts(silent = false) {
-            if (state.loadingPosts) return;
-            
-            const now = Date.now();
-            if (!silent && state.cache.posts.data && (now - state.cache.posts.timestamp) < CONFIG.CACHE_TIME) {
-                state.posts = state.cache.posts.data;
-                renderPosts();
-                renderPagination();
-                return;
-            }
-
-            state.loadingPosts = true;
-
             const result = await callGAS('posts', {
                 page: state.currentPage,
                 filter: state.currentFilter,
                 search: state.searchTerm,
                 pageSize: CONFIG.PAGE_SIZE,
-                includePending: state.isAdmin,
-                lineUserId: state.user?.lineUserId
+                includePending: state.isAdmin
             });
             
             if (result.success) {
                 state.posts = result.data.posts || [];
                 state.totalPages = Math.ceil((result.data.total || 0) / CONFIG.PAGE_SIZE) || 1;
-                state.cache.posts = { data: state.posts, timestamp: now };
                 
+                // อัปเดต admin posts ด้วย
                 if (state.isAdmin) {
                     state.adminPosts = result.data.posts || [];
                     renderAdminPosts();
@@ -2393,36 +1970,19 @@
                 renderPosts();
                 renderPagination();
             }
-            
-            state.loadingPosts = false;
         }
 
-        async function loadUrgentPosts(silent = false) {
-            if (state.loadingUrgent) return;
-            
-            const now = Date.now();
-            if (!silent && state.cache.urgentPosts.data && (now - state.cache.urgentPosts.timestamp) < CONFIG.CACHE_TIME) {
-                state.urgentPosts = state.cache.urgentPosts.data;
-                renderHeroSlider();
-                return;
-            }
-
-            state.loadingUrgent = true;
-
+        async function loadUrgentPosts() {
             const result = await callGAS('posts', {
                 filter: 'urgent',
                 pageSize: 10,
-                includePending: false,
-                lineUserId: state.user?.lineUserId
+                includePending: false
             });
             
             if (result.success) {
                 state.urgentPosts = result.data.posts?.filter(p => p.approvalStatus === 'approved') || [];
-                state.cache.urgentPosts = { data: state.urgentPosts, timestamp: now };
                 renderHeroSlider();
             }
-            
-            state.loadingUrgent = false;
         }
 
         function renderHeroSlider() {
@@ -2437,8 +1997,8 @@
                         <img src="https://via.placeholder.com/1200x400/1a1d24/06c755?text=iTNews+%C2%B7+ไม่มีประกาศด่วน" 
                              class="w-full h-full object-cover">
                         <div class="slide-content">
-                            <h3 class="font-bold text-base">ไม่มีประกาศด่วนในขณะนี้</h3>
-                            <p class="text-xs text-gray-300">ติดตามข่าวสารและกิจกรรมได้ที่หน้าแรก</p>
+                            <h3 class="font-bold text-lg">ไม่มีประกาศด่วนในขณะนี้</h3>
+                            <p class="text-sm text-gray-300">ติดตามข่าวสารและกิจกรรมได้ที่หน้าแรก</p>
                         </div>
                     </div>
                 `;
@@ -2469,9 +2029,9 @@
                              class="w-full h-full object-cover" 
                              loading="lazy"
                              onerror="this.src='https://via.placeholder.com/1200x400/2a2e36/ffffff?text=URGENT'">
-                        <span class="slide-badge ${badgeClass} text-xs">${typeText}</span>
+                        <span class="slide-badge ${badgeClass}">${typeText}</span>
                         <div class="slide-content">
-                            <h3 class="font-bold text-base line-clamp-2">${post.title}</h3>
+                            <h3 class="font-bold text-lg line-clamp-2">${post.title}</h3>
                             <p class="text-xs text-gray-300 mt-1">${formatDateShort(post.createdAt)}</p>
                         </div>
                     </div>
@@ -2493,7 +2053,7 @@
                     clickable: true,
                 },
                 loop: urgentPosts.length > 1,
-                speed: 300,
+                speed: 500,
             });
         }
 
@@ -2508,8 +2068,8 @@
             if (filteredPosts.length === 0) {
                 list.innerHTML = `
                     <div class="empty-state col-span-3">
-                        <i class="fas fa-newspaper text-3xl text-gray-500 mb-3"></i>
-                        <p class="text-gray-400 text-sm">ไม่มีโพสต์</p>
+                        <i class="fas fa-newspaper text-4xl text-gray-500 mb-3"></i>
+                        <p class="text-gray-400">ไม่มีโพสต์</p>
                     </div>
                 `;
                 return;
@@ -2535,7 +2095,7 @@
                                   post.approvalStatus === 'pending' ? 'รออนุมัติ' : 'ปฏิเสธ';
                 
                 return `
-                    <div class="news-card relative fast-transition" onclick="showPostDetail('${post.postId}')" data-aos="fade-up" data-aos-duration="200">
+                    <div class="news-card relative" onclick="showPostDetail('${post.postId}')" data-aos="fade-up">
                         <button class="share-button" onclick="event.stopPropagation(); sharePost('${post.postId}')">
                             <i class="fab fa-line"></i>
                         </button>
@@ -2548,20 +2108,17 @@
                         <div class="news-content">
                             <div class="flex justify-between items-start mb-2">
                                 <div>
-                                    <span class="badge ${typeClass} text-xs">${typeText}</span>
+                                    <span class="badge ${typeClass}">${typeText}</span>
                                     ${statusBadge}
                                 </div>
                                 <span class="text-xs text-gray-500">${formatDateShort(post.createdAt)}</span>
                             </div>
-                            <h3 class="font-semibold text-base mb-2 line-clamp-2">${post.title}</h3>
+                            <h3 class="font-semibold text-lg mb-2">${post.title}</h3>
                             <p class="text-sm text-gray-400 line-clamp-2">${post.content}</p>
                             <div class="flex items-center justify-between mt-3 text-xs text-gray-500">
                                 <span><i class="fas fa-user mr-1"></i> ${post.authorName || 'ผู้ดูแล'}</span>
-                                <div class="flex items-center gap-3">
-                                    <span><i class="far fa-eye mr-1"></i> ${post.viewCount || 0}</span>
-                                    <span><i class="far fa-comment mr-1"></i> ${post.commentCount || 0}</span>
-                                </div>
-                                ${state.isAdmin ? `<span class="text-${post.approvalStatus === 'approved' ? 'green-500' : post.approvalStatus === 'pending' ? 'yellow-500' : 'red-500'} text-xs">${statusText}</span>` : ''}
+                                <span><i class="fas fa-eye mr-1"></i> ${post.viewCount || 0}</span>
+                                ${state.isAdmin ? `<span class="text-${post.approvalStatus === 'approved' ? 'green-500' : post.approvalStatus === 'pending' ? 'yellow-500' : 'red-500'}">${statusText}</span>` : ''}
                             </div>
                         </div>
                     </div>
@@ -2602,26 +2159,14 @@
         }
 
         // ========== MY POSTS ==========
-        async function loadMyPosts(silent = false) {
-            if (state.loadingMyPosts) return;
-            
-            const now = Date.now();
-            if (!silent && state.cache.myPosts.data && (now - state.cache.myPosts.timestamp) < CONFIG.CACHE_TIME) {
-                state.myPosts = state.cache.myPosts.data;
-                renderMyPosts();
-                renderMyPostsPagination();
-                return;
-            }
-
-            state.loadingMyPosts = true;
-
+        async function loadMyPosts() {
             const result = await callGAS('user/posts', {
-                lineUserId: state.user?.lineUserId,
                 page: state.myPostsPage,
                 pageSize: CONFIG.PAGE_SIZE
             });
             
             if (result.success) {
+                // รองรับโครงสร้างข้อมูลทั้งแบบมี posts property และ array ตรงๆ
                 if (result.data.posts) {
                     state.myPosts = result.data.posts || [];
                     state.myPostsTotalPages = Math.ceil((result.data.total || 0) / CONFIG.PAGE_SIZE) || 1;
@@ -2633,15 +2178,13 @@
                     state.myPostsTotalPages = 1;
                 }
                 
-                state.cache.myPosts = { data: state.myPosts, timestamp: now };
                 renderMyPosts();
                 renderMyPostsPagination();
             } else {
+                console.error('Failed to load my posts:', result);
                 state.myPosts = [];
                 renderMyPosts();
             }
-            
-            state.loadingMyPosts = false;
         }
 
         function renderMyPostsPagination() {
@@ -2680,11 +2223,11 @@
             if (state.myPosts.length === 0) {
                 list.innerHTML = `
                     <div class="empty-state col-span-3">
-                        <i class="fas fa-pen-fancy text-3xl text-gray-500 mb-3"></i>
-                        <p class="text-gray-400 text-sm">ยังไม่มีโพสต์</p>
+                        <i class="fas fa-pen-fancy text-4xl text-gray-500 mb-3"></i>
+                        <p class="text-gray-400">ยังไม่มีโพสต์</p>
                         ${state.isEditor ? `
-                            <button class="btn-primary text-sm mt-3 px-4 py-2" onclick="showCreatePostModal()">
-                                <i class="fas fa-plus mr-1"></i>สร้างโพสต์แรก
+                            <button class="btn-primary mt-4" onclick="showCreatePostModal()">
+                                <i class="fas fa-plus mr-2"></i>สร้างโพสต์แรก
                             </button>
                         ` : ''}
                     </div>
@@ -2705,7 +2248,7 @@
                 }[post.type] || '📄';
                 
                 return `
-                    <div class="news-card fast-transition" onclick="showPostDetail('${post.postId}')" data-aos="fade-up" data-aos-duration="200">
+                    <div class="news-card" onclick="showPostDetail('${post.postId}')" data-aos="fade-up">
                         ${post.imageUrl ? `
                             <img src="${post.imageUrl}" 
                                  class="news-image" 
@@ -2715,18 +2258,15 @@
                         <div class="news-content">
                             <div class="flex justify-between items-start mb-2">
                                 <div>
-                                    <span class="badge badge-news text-xs">${typeIcon}</span>
+                                    <span class="badge badge-news">${typeIcon}</span>
                                     ${post.approvalStatus === 'pending' ? 
-                                        '<span class="badge badge-pending ml-2 text-xs">⏳ รออนุมัติ</span>' : ''}
+                                        '<span class="badge badge-pending ml-2">⏳ รออนุมัติ</span>' : ''}
                                 </div>
                                 <span class="text-xs ${statusClass}">${statusText}</span>
                             </div>
-                            <h3 class="font-semibold text-base line-clamp-2">${post.title}</h3>
+                            <h3 class="font-semibold">${post.title}</h3>
                             <p class="text-sm text-gray-400 mt-1 line-clamp-2">${post.content}</p>
-                            <div class="flex items-center justify-between mt-2 text-xs text-gray-500">
-                                <span>${formatDate(post.createdAt)}</span>
-                                <span><i class="far fa-comment mr-1"></i> ${post.commentCount || 0}</span>
-                            </div>
+                            <p class="text-xs text-gray-500 mt-2">${formatDate(post.createdAt)}</p>
                         </div>
                     </div>
                 `;
@@ -2737,10 +2277,7 @@
         async function loadPendingPosts() {
             if (!state.isAdmin) return;
             
-            const result = await callGAS('admin/posts/pending', {
-                lineUserId: state.user?.lineUserId
-            });
-            
+            const result = await callGAS('admin/posts/pending');
             if (result.success) {
                 state.pendingPosts = result.data || [];
                 renderPendingPosts();
@@ -2761,8 +2298,8 @@
             if (state.pendingPosts.length === 0) {
                 list.innerHTML = `
                     <div class="empty-state">
-                        <i class="fas fa-check-circle text-3xl text-gray-500 mb-3"></i>
-                        <p class="text-gray-400 text-sm">ไม่มีโพสต์รออนุมัติ</p>
+                        <i class="fas fa-check-circle text-4xl text-gray-500 mb-3"></i>
+                        <p class="text-gray-400">ไม่มีโพสต์รออนุมัติ</p>
                     </div>
                 `;
                 return;
@@ -2776,23 +2313,23 @@
                 }[post.type] || '📄';
                 
                 return `
-                    <div class="bg-[#1a1d24] p-4 rounded-xl border border-yellow-500/30" data-aos="fade-up" data-aos-duration="200">
+                    <div class="bg-[#1a1d24] p-4 rounded-xl border border-yellow-500/30" data-aos="fade-up">
                         <div class="flex justify-between items-start mb-3">
                             <div>
-                                <span class="badge badge-pending text-xs">⏳ รออนุมัติ</span>
-                                <span class="badge badge-${post.type} text-xs ml-2">${typeIcon}</span>
+                                <span class="badge badge-pending">⏳ รออนุมัติ</span>
+                                <span class="badge badge-${post.type} ml-2">${typeIcon}</span>
                             </div>
                             <span class="text-xs text-gray-500">${formatDateShort(post.createdAt)}</span>
                         </div>
-                        <h3 class="font-semibold text-base mb-2">${post.title}</h3>
+                        <h3 class="font-semibold text-lg mb-2">${post.title}</h3>
                         <p class="text-sm text-gray-400 mb-3 line-clamp-2">${post.content}</p>
                         <div class="flex items-center justify-between text-sm">
-                            <span class="text-gray-500 text-xs">โดย: ${post.authorName || 'ผู้ใช้'}</span>
+                            <span class="text-gray-500">โดย: ${post.authorName || 'ผู้ใช้'}</span>
                             <div class="flex gap-2">
-                                <button class="btn-success text-xs py-2 px-3" onclick="approvePost('${post.postId}', this)">
+                                <button class="btn-success text-sm py-2 px-4" onclick="approvePost('${post.postId}', this)">
                                     <i class="fas fa-check mr-1"></i>อนุมัติ
                                 </button>
-                                <button class="btn-danger text-xs py-2 px-3" onclick="rejectPost('${post.postId}', this)">
+                                <button class="btn-danger text-sm py-2 px-4" onclick="rejectPost('${post.postId}', this)">
                                     <i class="fas fa-times mr-1"></i>ปฏิเสธ
                                 </button>
                             </div>
@@ -2806,6 +2343,7 @@
         async function approvePost(postId, button) {
             if (!state.isAdmin) return;
             
+            // ป้องกันการกดซ้ำโดย disable ปุ่มชั่วคราว
             if (button) {
                 button.disabled = true;
                 button.classList.add('loading');
@@ -2823,10 +2361,7 @@
                 showLoaderOnConfirm: true,
                 preConfirm: async () => {
                     try {
-                        const apiResult = await callGAS('admin/post/approve', { 
-                            postId,
-                            lineUserId: state.user?.lineUserId 
-                        });
+                        const apiResult = await callGAS('admin/post/approve', { postId });
                         if (!apiResult.success) {
                             Swal.showValidationMessage(apiResult.message);
                         }
@@ -2844,20 +2379,24 @@
                     text: 'โพสต์ได้รับการอนุมัติและเผยแพร่แล้ว',
                     icon: 'success',
                     confirmButtonColor: '#06c755',
-                    timer: 1000,
+                    timer: 1500,
                     showConfirmButton: false
                 });
                 
-                await Promise.allSettled([
+                showSyncIndicator();
+                
+                await Promise.all([
                     loadPosts(true),
                     loadPendingPosts(),
-                    loadUrgentPosts(true),
+                    loadUrgentPosts(),
                     loadAdminStats()
                 ]);
                 
                 state.lastUpdate = Date.now();
+                showRealtimeIndicator();
             }
             
+            // คืนค่าปุ่ม
             if (button) {
                 button.disabled = false;
                 button.classList.remove('loading');
@@ -2867,6 +2406,7 @@
         async function rejectPost(postId, button) {
             if (!state.isAdmin) return;
             
+            // ป้องกันการกดซ้ำโดย disable ปุ่มชั่วคราว
             if (button) {
                 button.disabled = true;
                 button.classList.add('loading');
@@ -2884,10 +2424,7 @@
                 showLoaderOnConfirm: true,
                 preConfirm: async () => {
                     try {
-                        const apiResult = await callGAS('admin/post/reject', { 
-                            postId,
-                            lineUserId: state.user?.lineUserId 
-                        });
+                        const apiResult = await callGAS('admin/post/reject', { postId });
                         if (!apiResult.success) {
                             Swal.showValidationMessage(apiResult.message);
                         }
@@ -2905,225 +2442,28 @@
                     text: 'โพสต์ถูกปฏิเสธเรียบร้อย',
                     icon: 'success',
                     confirmButtonColor: '#06c755',
-                    timer: 1000,
+                    timer: 1500,
                     showConfirmButton: false
                 });
                 
-                await Promise.allSettled([
+                showSyncIndicator();
+                
+                await Promise.all([
                     loadPosts(true),
                     loadPendingPosts(),
-                    loadUrgentPosts(true),
+                    loadUrgentPosts(),
                     loadAdminStats()
                 ]);
                 
                 state.lastUpdate = Date.now();
+                showRealtimeIndicator();
             }
             
+            // คืนค่าปุ่ม
             if (button) {
                 button.disabled = false;
                 button.classList.remove('loading');
             }
-        }
-
-        // ========== COMMENTS ==========
-        async function loadComments(postId) {
-            const result = await callGAS('post/comments', { postId });
-            if (result.success) {
-                state.comments[postId] = result.data || [];
-                renderModalComments(postId);
-            }
-        }
-
-        function renderModalComments(postId) {
-            const commentsContainer = document.getElementById(`modal-comments-${postId}`);
-            if (!commentsContainer) return;
-            
-            const comments = state.comments[postId] || [];
-            
-            if (comments.length === 0) {
-                commentsContainer.innerHTML = `
-                    <div class="modal-empty-comments">
-                        <p>ยังไม่มีความคิดเห็น</p>
-                        <p class="text-xs mt-1">เป็นคนแรกที่แสดงความคิดเห็น</p>
-                    </div>
-                `;
-                return;
-            }
-
-            commentsContainer.innerHTML = comments.map(comment => {
-                const isOwner = comment.userId === state.user?.lineUserId;
-                const isAdmin = state.isAdmin;
-                const timeAgo = formatTimeAgo(comment.createdAt);
-                
-                return `
-                    <div class="modal-comment-item" id="comment-${comment.commentId}">
-                        <img src="${comment.userPicture || 'https://via.placeholder.com/32'}" 
-                             class="modal-comment-avatar"
-                             onerror="this.src='https://via.placeholder.com/32'">
-                        <div class="modal-comment-content">
-                            <div class="modal-comment-header">
-                                <span class="modal-comment-author">${comment.userName || 'ผู้ใช้'}</span>
-                                <span class="modal-comment-time">${timeAgo}</span>
-                            </div>
-                            <div class="modal-comment-text">${comment.content}</div>
-                            ${(isOwner || isAdmin) ? `
-                                <div class="modal-comment-actions">
-                                    ${isOwner ? `
-                                        <button class="modal-comment-action-btn" onclick="showEditCommentModal('${comment.commentId}')">
-                                            <i class="fas fa-edit"></i> แก้ไข
-                                        </button>
-                                    ` : ''}
-                                    <button class="modal-comment-action-btn delete" onclick="deleteComment('${comment.commentId}')">
-                                        <i class="fas fa-trash"></i> ลบ
-                                    </button>
-                                </div>
-                            ` : ''}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        async function addComment(postId) {
-            const input = document.getElementById(`comment-input-${postId}`);
-            const content = input.value.trim();
-            
-            if (!content) {
-                showToast('กรุณาใส่ข้อความ', 'error');
-                return;
-            }
-            
-            const submitBtn = document.getElementById(`comment-submit-${postId}`);
-            submitBtn.disabled = true;
-            submitBtn.classList.add('loading');
-            
-            const result = await callGAS('post/comment/add', {
-                postId,
-                userId: state.user.lineUserId,
-                userName: state.user.displayName,
-                userPicture: state.user.pictureUrl,
-                content
-            });
-            
-            if (result.success) {
-                input.value = '';
-                await loadComments(postId);
-                
-                if (state.currentPost) {
-                    state.currentPost.commentCount = (state.currentPost.commentCount || 0) + 1;
-                }
-                
-                showToast('เพิ่มความคิดเห็นสำเร็จ');
-                state.lastUpdate = Date.now();
-            }
-            
-            submitBtn.disabled = false;
-            submitBtn.classList.remove('loading');
-        }
-
-        function showEditCommentModal(commentId) {
-            const comment = findCommentById(commentId);
-            if (!comment) return;
-            
-            state.currentEditingComment = comment;
-            document.getElementById('edit-comment-id').value = comment.commentId;
-            document.getElementById('edit-comment-content').value = comment.content;
-            document.getElementById('edit-comment-modal').classList.add('active');
-        }
-
-        function closeEditCommentModal() {
-            document.getElementById('edit-comment-modal').classList.remove('active');
-            state.currentEditingComment = null;
-        }
-
-        async function saveEditedComment(e) {
-            e.preventDefault();
-            
-            const commentId = document.getElementById('edit-comment-id').value;
-            const content = document.getElementById('edit-comment-content').value.trim();
-            
-            if (!content) {
-                showToast('กรุณาใส่ข้อความ', 'error');
-                return;
-            }
-            
-            const saveBtn = e.target.querySelector('button[type="submit"]');
-            saveBtn.disabled = true;
-            saveBtn.classList.add('loading');
-            
-            const result = await callGAS('post/comment/update', {
-                commentId,
-                content,
-                userId: state.user.lineUserId
-            });
-            
-            if (result.success) {
-                closeEditCommentModal();
-                
-                for (let postId in state.comments) {
-                    const comment = state.comments[postId].find(c => c.commentId === commentId);
-                    if (comment) {
-                        comment.content = content;
-                        break;
-                    }
-                }
-                
-                if (state.currentPost) {
-                    renderModalComments(state.currentPost.postId);
-                }
-                
-                showToast('แก้ไขความคิดเห็นสำเร็จ');
-                state.lastUpdate = Date.now();
-            }
-            
-            saveBtn.disabled = false;
-            saveBtn.classList.remove('loading');
-        }
-
-        async function deleteComment(commentId) {
-            const result = await Swal.fire({
-                title: 'ลบความคิดเห็น',
-                text: 'คุณแน่ใจหรือไม่ว่าต้องการลบความคิดเห็นนี้?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'ใช่, ลบ',
-                cancelButtonText: 'ยกเลิก'
-            });
-            
-            if (result.isConfirmed) {
-                const apiResult = await callGAS('post/comment/delete', {
-                    commentId,
-                    userId: state.user.lineUserId
-                });
-                
-                if (apiResult.success) {
-                    for (let postId in state.comments) {
-                        const oldLength = state.comments[postId].length;
-                        state.comments[postId] = state.comments[postId].filter(c => c.commentId !== commentId);
-                        
-                        if (state.currentPost && state.currentPost.postId === postId) {
-                            state.currentPost.commentCount = Math.max(0, (state.currentPost.commentCount || 0) - 1);
-                        }
-                    }
-                    
-                    if (state.currentPost) {
-                        renderModalComments(state.currentPost.postId);
-                    }
-                    
-                    showToast('ลบความคิดเห็นสำเร็จ');
-                    state.lastUpdate = Date.now();
-                }
-            }
-        }
-
-        function findCommentById(commentId) {
-            for (let postId in state.comments) {
-                const comment = state.comments[postId].find(c => c.commentId === commentId);
-                if (comment) return comment;
-            }
-            return null;
         }
 
         // ========== SHARE ==========
@@ -3133,11 +2473,7 @@
                 return;
             }
 
-            const result = await callGAS('post', { 
-                postId,
-                lineUserId: state.user?.lineUserId 
-            });
-            
+            const result = await callGAS('post', { postId });
             if (!result.success) {
                 showToast('ไม่สามารถโหลดข้อมูลโพสต์', 'error');
                 return;
@@ -3219,6 +2555,7 @@
                                     }
                                 ]
                             },
+                            // เพิ่มปุ่มลิงก์เพิ่มเติมใน Flex Message
                             ...(post.link ? [{
                                 type: 'button',
                                 style: 'secondary',
@@ -3257,6 +2594,7 @@
                 await liff.shareTargetPicker([flexMessage]);
                 showToast('แชร์สำเร็จ');
             } catch (err) {
+                console.error('Share error:', err);
                 showToast('ไม่สามารถแชร์ได้', 'error');
             }
         }
@@ -3267,34 +2605,15 @@
             }
         }
 
-        // ========== POST DETAIL (MODAL) ==========
+        // ========== POST DETAIL ==========
         async function showPostDetail(postId) {
-            if (state.modalLoading) return;
-            
-            closeAllModals();
-            state.modalLoading = true;
-            
-            postModal.classList.add('active');
-            
-            const shareBtn = document.querySelector('#post-modal .btn-share');
-            const editBtn = document.getElementById('modal-edit-btn');
-            const deleteBtn = document.getElementById('modal-delete-btn');
-            
-            if (shareBtn) shareBtn.disabled = true;
-            if (editBtn) editBtn.disabled = true;
-            if (deleteBtn) deleteBtn.disabled = true;
-
-            const result = await callGAS('post', { 
-                postId,
-                lineUserId: state.user?.lineUserId 
-            });
-            
+            const result = await callGAS('post', { postId });
             if (result.success) {
                 state.currentPost = result.data;
                 const post = result.data;
                 
-                loadComments(postId);
-                
+                document.getElementById('modal-title').textContent = post.title;
+
                 const typeText = {
                     'news': '📰 ข่าวสาร',
                     'event': '🎉 กิจกรรม',
@@ -3307,104 +2626,63 @@
                 const statusClass = post.approvalStatus === 'approved' ? 'text-[#06c755]' : 
                                    post.approvalStatus === 'pending' ? 'text-yellow-500' : 'text-red-500';
 
-                const canEdit = canEditPost(post);
-                const canDelete = canDeletePost(post);
-
-                document.getElementById('modal-title').textContent = post.title;
-
-                const html = `
+                let html = `
                     ${post.imageUrl ? `
-                        <img src="${post.imageUrl}" class="w-full h-48 object-cover rounded-xl mb-4" loading="lazy">
+                        <img src="${post.imageUrl}" class="w-full h-48 object-cover rounded-xl" loading="lazy">
                     ` : ''}
                     
-                    <div class="flex justify-between items-center mb-4">
+                    <div class="flex justify-between items-center">
                         <div>
-                            <span class="badge badge-${post.type} text-xs">${typeText}</span>
+                            <span class="badge badge-${post.type}">${typeText}</span>
                             ${post.approvalStatus !== 'approved' ? 
-                                `<span class="badge badge-pending ml-2 text-xs">⏳ ${statusText}</span>` : ''}
+                                `<span class="badge badge-pending ml-2">⏳ ${statusText}</span>` : ''}
                         </div>
-                        <span class="text-xs text-gray-400">
-                            <i class="far fa-eye mr-1"></i>${post.viewCount || 0}
+                        <span class="text-sm text-gray-400">
+                            <i class="fas fa-eye mr-1"></i>${post.viewCount || 0}
                         </span>
                     </div>
                     
-                    <p class="text-sm text-gray-400 whitespace-pre-wrap mb-6">${post.content}</p>
+                    <p class="text-gray-400 whitespace-pre-wrap">${post.content}</p>
                     
                     ${post.link ? `
-                        <a href="${post.link}" target="_blank" class="btn-link text-sm py-3 mb-6">
+                        <a href="${post.link}" target="_blank" class="btn-link">
                             <i class="fas fa-external-link-alt"></i>
                             ดูข้อมูลเพิ่มเติม
                             <i class="fas fa-arrow-right"></i>
                         </a>
                     ` : ''}
                     
-                    <div class="text-xs text-gray-500 border-t border-[#2a2e36] pt-4 mb-6">
+                    <div class="text-sm text-gray-500 border-t border-[#2a2e36] pt-4">
                         <p><i class="fas fa-user mr-2"></i> โพสต์โดย: ${post.authorName || 'ผู้ดูแล'}</p>
                         <p><i class="fas fa-calendar mr-2 mt-2"></i> ${formatDate(post.createdAt)}</p>
                         <p class="mt-1"><span class="${statusClass}">สถานะ: ${statusText}</span></p>
-                    </div>
-                    
-                    <!-- Comments Section -->
-                    <div class="modal-comments-section">
-                        <div class="modal-comments-title">
-                            <i class="far fa-comment-dots"></i>
-                            <span>ความคิดเห็น (${post.commentCount || 0})</span>
-                        </div>
-                        
-                        <!-- Comment Input -->
-                        <div class="modal-comment-input-area">
-                            <textarea id="comment-input-${postId}" 
-                                      class="modal-comment-input" 
-                                      placeholder="แสดงความคิดเห็น..."></textarea>
-                            <button class="modal-comment-submit" 
-                                    id="comment-submit-${postId}"
-                                    onclick="addComment('${postId}')">
-                                ส่ง
-                            </button>
-                        </div>
-                        
-                        <!-- Comments List -->
-                        <div id="modal-comments-${postId}" class="modal-comments-list">
-                            <div class="flex justify-center py-4">
-                                <div class="loading-spinner w-6 h-6"></div>
-                            </div>
-                        </div>
                     </div>
                 `;
 
                 document.getElementById('modal-body').innerHTML = html;
 
-                if (shareBtn) shareBtn.disabled = false;
-
+                const canEdit = canEditPost(post);
+                const canDelete = canDeletePost(post);
+                
                 const adminControls = document.getElementById('modal-admin-controls');
+                
                 if (canEdit || canDelete) {
                     adminControls.classList.remove('hidden');
-                    if (editBtn) {
-                        editBtn.style.display = canEdit ? 'flex' : 'none';
-                        editBtn.disabled = false;
-                    }
-                    if (deleteBtn) {
-                        deleteBtn.style.display = canDelete ? 'flex' : 'none';
-                        deleteBtn.disabled = false;
-                    }
+                    
+                    const editDeleteDiv = document.getElementById('modal-edit-btn').parentNode;
+                    editDeleteDiv.classList.remove('hidden');
+                    document.getElementById('modal-edit-btn').style.display = canEdit ? 'block' : 'none';
+                    document.getElementById('modal-delete-btn').style.display = canDelete ? 'block' : 'none';
                 } else {
                     adminControls.classList.add('hidden');
                 }
-            } else {
-                document.getElementById('modal-body').innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-exclamation-circle text-3xl text-red-500 mb-3"></i>
-                        <p class="text-gray-400 text-sm">ไม่พบโพสต์</p>
-                    </div>
-                `;
+
+                document.getElementById('post-modal').classList.add('active');
             }
-            
-            state.modalLoading = false;
         }
 
         function closeModal() {
-            postModal.classList.remove('active');
-            state.currentPost = null;
+            document.getElementById('post-modal').classList.remove('active');
         }
 
         // ========== PERMISSION CHECKS ==========
@@ -3412,22 +2690,17 @@
             return state.isAdmin || state.user?.role === 'editor';
         }
 
-        // ========== แก้ไขตรงนี้ ==========
         function canEditPost(post) {
             if (!post) return false;
-            // Admin แก้ไขได้ทุกโพสต์
-            if (state.isAdmin) return true;
-            // เจ้าของโพสต์ (Editor หรือ User) แก้ไขได้เฉพาะโพสต์ของตัวเองที่ยังไม่ถูกอนุมัติ
-            return post.authorId === state.user?.lineUserId && post.approvalStatus !== 'approved';
+            return state.isAdmin || 
+                   (state.user?.role === 'editor' && 
+                    post.authorId === state.user?.lineUserId && 
+                    post.approvalStatus !== 'approved');
         }
 
-        // ========== แก้ไขตรงนี้ ==========
         function canDeletePost(post) {
             if (!post) return false;
-            // Admin ลบได้ทุกโพสต์
-            if (state.isAdmin) return true;
-            // เจ้าของโพสต์ (Editor หรือ User) ลบได้เฉพาะโพสต์ของตัวเองที่ยังไม่ถูกอนุมัติ
-            return post.authorId === state.user?.lineUserId && post.approvalStatus !== 'approved';
+            return state.isAdmin;
         }
 
         // ========== CREATE/EDIT POST ==========
@@ -3436,8 +2709,6 @@
                 showToast('คุณไม่มีสิทธิ์สร้างโพสต์', 'error');
                 return;
             }
-            
-            closeAllModals();
             
             document.getElementById('create-modal-title').textContent = 'สร้างโพสต์ใหม่';
             document.getElementById('edit-post-id').value = '';
@@ -3464,8 +2735,9 @@
                 return;
             }
             
+            // ป้องกันการกดซ้ำ
             const saveBtn = document.getElementById('save-post-btn');
-            if (saveBtn.disabled) return;
+            if (saveBtn.disabled) return; // เช็คว่ากำลังทำงานอยู่หรือไม่
             
             saveBtn.disabled = true;
             saveBtn.classList.add('loading');
@@ -3490,8 +2762,7 @@
                     title: document.getElementById('post-title').value,
                     content: document.getElementById('post-content').value,
                     imageUrl: imageUrl,
-                    link: document.getElementById('post-link').value,
-                    lineUserId: state.user.lineUserId
+                    link: document.getElementById('post-link').value
                 };
 
                 if (isEdit) {
@@ -3507,7 +2778,7 @@
                             text: 'โพสต์ของคุณถูกส่งให้ผู้ดูแลตรวจสอบแล้ว',
                             icon: 'success',
                             confirmButtonColor: '#06c755',
-                            timer: 1000,
+                            timer: 1500,
                             showConfirmButton: false
                         });
                     } else {
@@ -3518,19 +2789,23 @@
                     
                     showSyncIndicator();
                     
-                    await Promise.allSettled([
+                    // โหลดข้อมูลทั้งหมดใหม่
+                    await Promise.all([
                         loadPosts(true),
-                        loadMyPosts(true),
+                        loadMyPosts(),
                         loadPendingPosts(),
-                        loadUrgentPosts(true),
+                        loadUrgentPosts(),
                         state.isAdmin ? loadAdminStats() : Promise.resolve()
                     ]);
                     
                     state.lastUpdate = Date.now();
+                    showRealtimeIndicator();
                 }
             } catch (error) {
+                console.error('Save post error:', error);
                 showToast('เกิดข้อผิดพลาดในการบันทึก', 'error');
             } finally {
+                // คืนค่าปุ่ม
                 saveBtn.disabled = false;
                 saveBtn.classList.remove('loading');
             }
@@ -3573,6 +2848,13 @@
                 return;
             }
             
+            // ป้องกันการกดซ้ำ
+            const deleteBtn = document.getElementById('modal-delete-btn');
+            if (deleteBtn) {
+                deleteBtn.disabled = true;
+                deleteBtn.classList.add('loading');
+            }
+            
             const result = await Swal.fire({
                 title: 'ลบโพสต์',
                 text: 'คุณแน่ใจหรือไม่ว่าต้องการลบโพสต์นี้? การดำเนินการนี้ไม่สามารถย้อนกลับได้',
@@ -3586,8 +2868,7 @@
                 preConfirm: async () => {
                     try {
                         const apiResult = await callGAS('post/delete', { 
-                            postId: state.currentPost.postId,
-                            lineUserId: state.user.lineUserId
+                            postId: state.currentPost.postId 
                         });
                         if (!apiResult.success) {
                             Swal.showValidationMessage(apiResult.message);
@@ -3606,7 +2887,7 @@
                     text: 'โพสต์ถูกลบเรียบร้อย',
                     icon: 'success',
                     confirmButtonColor: '#06c755',
-                    timer: 1000,
+                    timer: 1500,
                     showConfirmButton: false
                 });
                 
@@ -3614,15 +2895,22 @@
                 
                 showSyncIndicator();
                 
-                await Promise.allSettled([
+                await Promise.all([
                     loadPosts(true),
-                    loadMyPosts(true),
+                    loadMyPosts(),
                     loadPendingPosts(),
-                    loadUrgentPosts(true),
+                    loadUrgentPosts(),
                     state.isAdmin ? loadAdminStats() : Promise.resolve()
                 ]);
                 
                 state.lastUpdate = Date.now();
+                showRealtimeIndicator();
+            }
+            
+            // คืนค่าปุ่ม
+            if (deleteBtn) {
+                deleteBtn.disabled = false;
+                deleteBtn.classList.remove('loading');
             }
         }
 
@@ -3630,10 +2918,7 @@
         async function loadUsers() {
             if (!state.isAdmin) return;
             
-            const result = await callGAS('admin/users', {
-                lineUserId: state.user?.lineUserId
-            });
-            
+            const result = await callGAS('admin/users');
             if (result.success) {
                 state.users = result.data || [];
                 renderUsers();
@@ -3650,7 +2935,7 @@
             );
             
             if (filtered.length === 0) {
-                list.innerHTML = '<p class="text-gray-400 text-center py-6 text-sm">ไม่พบผู้ใช้</p>';
+                list.innerHTML = '<p class="text-gray-400 text-center py-8">ไม่พบผู้ใช้</p>';
                 return;
             }
 
@@ -3668,15 +2953,15 @@
                 }[user.role] || 'ผู้ใช้';
                 
                 return `
-                    <div class="user-row" data-aos="fade-up" data-aos-duration="200">
+                    <div class="user-row" data-aos="fade-up">
                         <img src="${user.pictureUrl || 'https://via.placeholder.com/40'}" class="user-avatar-sm" loading="lazy">
                         <div class="flex-1">
-                            <p class="font-semibold text-sm">${user.displayName || 'ไม่ระบุชื่อ'}</p>
+                            <p class="font-semibold">${user.displayName || 'ไม่ระบุชื่อ'}</p>
                             <p class="text-xs text-gray-400">${user.email || ''}</p>
                         </div>
-                        <span class="role-badge ${roleClass} text-xs">${roleText}</span>
+                        <span class="role-badge ${roleClass}">${roleText}</span>
                         ${state.isAdmin ? `
-                            <button class="text-[#06c755] text-xs" onclick="showRoleModal('${user.lineUserId}', '${user.displayName}', '${user.role}')">
+                            <button class="text-[#06c755] text-sm" onclick="showRoleModal('${user.lineUserId}', '${user.displayName}', '${user.role}')">
                                 <i class="fas fa-cog"></i>
                             </button>
                         ` : ''}
@@ -3686,8 +2971,6 @@
         }
 
         function showRoleModal(userId, userName, currentRole) {
-            closeAllModals();
-            
             document.getElementById('role-user-id').value = userId;
             document.getElementById('role-user-name').textContent = `จัดการสิทธิ์: ${userName}`;
             document.getElementById('user-role').value = currentRole || 'user';
@@ -3701,6 +2984,7 @@
         async function saveUserRole(e) {
             e.preventDefault();
             
+            // ป้องกันการกดซ้ำ
             const saveBtn = e.target.querySelector('button[type="submit"]');
             if (saveBtn) {
                 if (saveBtn.disabled) return;
@@ -3725,8 +3009,7 @@
                     try {
                         const apiResult = await callGAS('admin/user/role', {
                             targetUserId: userId,
-                            role: role,
-                            lineUserId: state.user.lineUserId
+                            role: role
                         });
                         if (!apiResult.success) {
                             Swal.showValidationMessage(apiResult.message);
@@ -3745,7 +3028,7 @@
                     text: 'อัปเดตสิทธิ์ผู้ใช้เรียบร้อย',
                     icon: 'success',
                     confirmButtonColor: '#06c755',
-                    timer: 1000,
+                    timer: 1500,
                     showConfirmButton: false
                 });
                 
@@ -3771,100 +3054,10 @@
                 state.lastUpdate = Date.now();
             }
             
+            // คืนค่าปุ่ม
             if (saveBtn) {
                 saveBtn.disabled = false;
                 saveBtn.classList.remove('loading');
-            }
-        }
-
-        // ========== ADMIN: COMMENTS ==========
-        async function loadAllComments() {
-            if (!state.isAdmin) return;
-            
-            const result = await callGAS('admin/comments', {
-                lineUserId: state.user?.lineUserId
-            });
-            
-            if (result.success) {
-                renderAdminComments(result.data || []);
-            }
-        }
-
-        function renderAdminComments(comments) {
-            const list = document.getElementById('admin-comments-list');
-            const search = document.getElementById('admin-comment-search')?.value?.toLowerCase() || '';
-            
-            const filtered = comments.filter(c => 
-                c.content?.toLowerCase().includes(search) || 
-                c.userName?.toLowerCase().includes(search)
-            );
-            
-            if (filtered.length === 0) {
-                list.innerHTML = '<p class="text-gray-400 text-center py-6 text-sm">ไม่พบความคิดเห็น</p>';
-                return;
-            }
-
-            list.innerHTML = filtered.map(comment => {
-                const statusClass = {
-                    'active': 'status-active',
-                    'deleted': 'status-deleted',
-                    'deleted_by_admin': 'status-deleted_by_admin'
-                }[comment.status] || '';
-                
-                const statusText = {
-                    'active': 'ปกติ',
-                    'deleted': 'ถูกลบ',
-                    'deleted_by_admin': 'ถูกลบโดย Admin'
-                }[comment.status] || comment.status;
-                
-                return `
-                    <div class="admin-comment-item">
-                        <div class="admin-comment-header">
-                            <img src="${comment.userPicture || 'https://via.placeholder.com/32'}" 
-                                 class="w-6 h-6 rounded-full object-cover">
-                            <div class="flex-1">
-                                <p class="font-semibold text-xs">${comment.userName || 'ผู้ใช้'}</p>
-                                <p class="text-xs text-gray-400">${formatDate(comment.createdAt)}</p>
-                            </div>
-                            <span class="admin-comment-status text-xs ${statusClass}">${statusText}</span>
-                        </div>
-                        <p class="text-xs text-gray-300 mb-2">${comment.content}</p>
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs text-gray-400">โพสต์: ${comment.postId}</span>
-                            ${comment.status === 'active' ? `
-                                <button class="btn-danger text-xs py-1 px-2" onclick="adminDeleteComment('${comment.commentId}')">
-                                    <i class="fas fa-trash mr-1"></i>ลบ
-                                </button>
-                            ` : ''}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        async function adminDeleteComment(commentId) {
-            const result = await Swal.fire({
-                title: 'ลบความคิดเห็น',
-                text: 'คุณแน่ใจหรือไม่ว่าต้องการลบความคิดเห็นนี้?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'ใช่, ลบ',
-                cancelButtonText: 'ยกเลิก'
-            });
-            
-            if (result.isConfirmed) {
-                const apiResult = await callGAS('admin/comment/delete', { 
-                    commentId,
-                    lineUserId: state.user.lineUserId
-                });
-                
-                if (apiResult.success) {
-                    await loadAllComments();
-                    showToast('ลบความคิดเห็นสำเร็จ');
-                    state.lastUpdate = Date.now();
-                }
             }
         }
 
@@ -3872,10 +3065,7 @@
         async function loadAdminStats() {
             if (!state.isAdmin) return;
             
-            const result = await callGAS('admin/stats', {
-                lineUserId: state.user?.lineUserId
-            });
-            
+            const result = await callGAS('admin/stats');
             if (result.success) {
                 const stats = result.data;
                 document.getElementById('admin-users').textContent = stats.users || 0;
@@ -3884,14 +3074,15 @@
                 document.getElementById('admin-pending').textContent = stats.pending || 0;
             }
 
+            // โหลด posts สำหรับ admin โดยใช้ API เดียวกับ loadPosts
             const posts = await callGAS('posts', { 
                 page: state.adminPostsPage,
                 pageSize: CONFIG.PAGE_SIZE,
-                includePending: true,
-                lineUserId: state.user?.lineUserId
+                includePending: true
             });
             
             if (posts.success) {
+                // รองรับโครงสร้างข้อมูลทั้งแบบมี posts property และ array ตรงๆ
                 if (posts.data.posts) {
                     state.adminPosts = posts.data.posts || [];
                     state.adminPostsTotalPages = Math.ceil((posts.data.total || 0) / CONFIG.PAGE_SIZE) || 1;
@@ -3911,7 +3102,7 @@
         function renderAdminPosts() {
             const list = document.getElementById('admin-posts-list');
             if (!state.adminPosts || state.adminPosts.length === 0) {
-                list.innerHTML = '<p class="text-gray-400 text-center py-6 text-sm">ไม่มีโพสต์</p>';
+                list.innerHTML = '<p class="text-gray-400 text-center py-8">ไม่มีโพสต์</p>';
                 return;
             }
 
@@ -3926,9 +3117,9 @@
                                   p.approvalStatus === 'pending' ? 'รออนุมัติ' : 'ปฏิเสธ';
                 
                 return `
-                    <div class="flex justify-between items-center p-3 bg-[#111317] rounded-lg cursor-pointer" onclick="showPostDetail('${p.postId}')" data-aos="fade-up" data-aos-duration="200">
+                    <div class="flex justify-between items-center p-3 bg-[#111317] rounded-lg cursor-pointer" onclick="showPostDetail('${p.postId}')" data-aos="fade-up">
                         <div class="flex-1">
-                            <p class="font-semibold text-sm">${p.title}</p>
+                            <p class="font-semibold">${p.title}</p>
                             <p class="text-xs text-gray-400">${formatDateShort(p.createdAt)}</p>
                         </div>
                         <span class="badge badge-${p.type} text-xs mr-2">${typeIcon}</span>
@@ -3978,6 +3169,7 @@
                 return;
             }
             
+            // ป้องกันการกดซ้ำ
             const saveBtn = e.target.querySelector('button[type="submit"]');
             if (saveBtn) {
                 if (saveBtn.disabled) return;
@@ -3988,8 +3180,7 @@
             const data = {
                 appName: document.getElementById('setting-app-name').value,
                 driveFolderId: document.getElementById('setting-drive-folder').value,
-                requireApproval: document.getElementById('setting-require-approval').checked,
-                lineUserId: state.user.lineUserId
+                requireApproval: document.getElementById('setting-require-approval').checked
             };
             
             const result = await callGAS('admin/settings/update', data);
@@ -3999,7 +3190,7 @@
                     text: 'ตั้งค่าระบบถูกอัปเดตเรียบร้อย',
                     icon: 'success',
                     confirmButtonColor: '#06c755',
-                    timer: 1000,
+                    timer: 1500,
                     showConfirmButton: false
                 });
                 
@@ -4009,6 +3200,7 @@
                 showSyncIndicator();
             }
             
+            // คืนค่าปุ่ม
             if (saveBtn) {
                 saveBtn.disabled = false;
                 saveBtn.classList.remove('loading');
@@ -4023,8 +3215,6 @@
         document.getElementById('profile-header').addEventListener('click', toggleProfileMenu);
 
         function showProfileSettings() {
-            closeAllModals();
-            
             document.getElementById('profile-phone').value = state.user?.phone || '';
             document.getElementById('profile-department').value = state.user?.department || '';
             
@@ -4039,6 +3229,7 @@
         async function saveProfile(e) {
             e.preventDefault();
             
+            // ป้องกันการกดซ้ำ
             const saveBtn = e.target.querySelector('button[type="submit"]');
             if (saveBtn) {
                 if (saveBtn.disabled) return;
@@ -4048,8 +3239,7 @@
             
             const data = {
                 phone: document.getElementById('profile-phone').value,
-                department: document.getElementById('profile-department').value,
-                lineUserId: state.user.lineUserId
+                department: document.getElementById('profile-department').value
             };
 
             const result = await callGAS('user/update', data);
@@ -4059,7 +3249,7 @@
                     text: 'อัปเดตโปรไฟล์เรียบร้อย',
                     icon: 'success',
                     confirmButtonColor: '#06c755',
-                    timer: 1000,
+                    timer: 1500,
                     showConfirmButton: false
                 });
                 
@@ -4071,6 +3261,7 @@
                 showSyncIndicator();
             }
             
+            // คืนค่าปุ่ม
             if (saveBtn) {
                 saveBtn.disabled = false;
                 saveBtn.classList.remove('loading');
@@ -4104,17 +3295,12 @@
             searchTimeout = setTimeout(() => {
                 state.searchTerm = e.target.value;
                 state.currentPage = 1;
-                state.cache.posts.data = null;
                 loadPosts();
-            }, 300);
+            }, 500);
         });
 
         document.getElementById('user-search')?.addEventListener('input', () => {
             renderUsers();
-        });
-
-        document.getElementById('admin-comment-search')?.addEventListener('input', () => {
-            loadAllComments();
         });
 
         // ========== FILTER ==========
@@ -4124,7 +3310,6 @@
                 btn.classList.add('active');
                 state.currentFilter = btn.dataset.filter;
                 state.currentPage = 1;
-                state.cache.posts.data = null;
                 loadPosts();
             });
         });
@@ -4137,7 +3322,6 @@
                 loadAdminStats();
                 loadUsers();
                 loadPendingPosts();
-                loadAllComments();
             }
         });
 
@@ -4146,16 +3330,15 @@
             btn.addEventListener('click', () => {
                 const tab = btn.dataset.adminTab;
                 
+                // อัปเดต active state
                 document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 
+                // ซ่อนทุก tab
                 document.querySelectorAll('.admin-tab').forEach(t => t.classList.add('hidden'));
                 
+                // แสดง tab ที่เลือก
                 document.getElementById(`admin-${tab}-tab`).classList.remove('hidden');
-                
-                if (tab === 'comments') {
-                    loadAllComments();
-                }
             });
         });
 
@@ -4178,6 +3361,7 @@
                     });
                 }
             } catch (err) {
+                console.error(err);
                 showToast('ไม่สามารถเชื่อมต่อกับระบบได้', 'error');
                 setTimeout(() => {
                     initialLoading.classList.add('hide');
@@ -4199,9 +3383,6 @@
         window.onclick = function(e) {
             if (e.target.classList.contains('modal')) {
                 e.target.classList.remove('active');
-                if (e.target.id === 'post-modal') {
-                    state.currentPost = null;
-                }
             }
             
             if (!e.target.closest('#profile-header') && !e.target.closest('#profile-menu')) {
