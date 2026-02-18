@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>iTNews · LINE</title>
+    <title id="page-title">iTNews · LINE</title>
     <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/653/653021.png">
     
-    <!-- Tailwind (โหลดเร็ว) -->
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Fonts -->
@@ -52,7 +52,6 @@
             padding-bottom: 70px;
         }
         
-        /* Preload styles - ไม่มี animation */
         .navbar {
             position: sticky;
             top: 0;
@@ -133,7 +132,6 @@
             display: block;
         }
         
-        /* Fast grid */
         @media (min-width: 1024px) {
             .posts-grid {
                 display: grid;
@@ -804,13 +802,20 @@
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
         }
+
+        /* Navbar logo text - will be updated by JS */
+        #navbar-app-name {
+            background: linear-gradient(135deg, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
     </style>
 </head>
 <body>
     <!-- Initial Loading -->
     <div class="initial-loading" id="initial-loading">
         <div class="loading-spinner"></div>
-        <div class="loading-text mt-4 text-[#06c755]">iTNews กำลังโหลด...</div>
+        <div class="loading-text mt-4 text-[#06c755]">กำลังโหลด...</div>
     </div>
     
     <!-- Floating Create Button -->
@@ -823,7 +828,7 @@
         <div class="navbar-content">
             <div class="navbar-logo" onclick="goHome()">
                 <i class="fas fa-newspaper"></i>
-                <span>iTNews</span>
+                <span id="navbar-app-name">iTNews</span>
             </div>
         </div>
     </nav>
@@ -888,7 +893,6 @@
 
             <!-- Posts List -->
             <div id="posts-list" class="posts-grid">
-                <!-- Pre-render skeletons -->
                 <div class="skeleton-card"></div>
                 <div class="skeleton-card"></div>
                 <div class="skeleton-card"></div>
@@ -1003,10 +1007,10 @@
                         <h3 class="font-semibold mb-3">ตั้งค่าระบบ</h3>
                         <form id="settings-form" onsubmit="saveSettings(event)">
                             <label class="block text-sm text-gray-400 mb-1">ชื่อระบบ</label>
-                            <input type="text" id="setting-app-name" class="input-field" required>
+                            <input type="text" id="setting-app-name" class="input-field" value="iTNews" required>
                             
                             <label class="block text-sm text-gray-400 mb-1">Google Drive Folder ID</label>
-                            <input type="text" id="setting-drive-folder" class="input-field" required>
+                            <input type="text" id="setting-drive-folder" class="input-field" value="18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE" required>
                             
                             <div class="mb-4">
                                 <label class="flex items-center gap-2">
@@ -1212,7 +1216,11 @@
             adminPostsTotalPages: 1,
             currentPost: null,
             currentEditingComment: null,
-            settings: { requireApproval: false },
+            settings: { 
+                appName: 'iTNews',
+                driveFolderId: CONFIG.DRIVE_FOLDER_ID,
+                requireApproval: false 
+            },
             urgentPosts: [],
             initialized: false,
             cache: { posts: null, myPosts: null, urgentPosts: null }
@@ -1221,6 +1229,8 @@
         // ========== DOM Cache ==========
         const $ = {
             initLoading: document.getElementById('initial-loading'),
+            pageTitle: document.getElementById('page-title'),
+            navbarAppName: document.getElementById('navbar-app-name'),
             homeTab: document.getElementById('tab-home'),
             myTab: document.getElementById('tab-my'),
             adminTab: document.getElementById('tab-admin'),
@@ -1281,6 +1291,7 @@
                 z-index: 2000;
                 max-width: 400px;
                 margin: 0 auto;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.5);
             `;
             toast.textContent = msg;
             document.body.appendChild(toast);
@@ -1299,6 +1310,13 @@
             return new Date(dateStr).toLocaleString('th-TH');
         }
 
+        // ========== UPDATE APP NAME ==========
+        function updateAppName(name) {
+            if (!name) name = 'iTNews';
+            $.pageTitle.textContent = name + ' · LINE';
+            $.navbarAppName.textContent = name;
+        }
+
         // ========== API CALL ==========
         async function callGAS(path, data = {}) {
             try {
@@ -1312,10 +1330,20 @@
                     }
                 });
 
-                const res = await fetch(CONFIG.GAS_URL, { method: 'POST', body: formData });
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+                const res = await fetch(CONFIG.GAS_URL, { 
+                    method: 'POST', 
+                    body: formData,
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                
                 const text = await res.text();
                 return JSON.parse(text);
-            } catch {
+            } catch (error) {
                 return { success: false, message: 'connection error' };
             }
         }
@@ -1402,6 +1430,9 @@
                         if ($.createPostBtn) $.createPostBtn.classList.remove('hidden');
                     }
 
+                    // Load settings first to get app name
+                    await loadSettings();
+                    
                     // Load data
                     await Promise.all([
                         loadPosts(),
@@ -1410,7 +1441,6 @@
                     ]);
 
                     if (state.isAdmin) {
-                        loadSettings();
                         loadUsers();
                         loadAdminStats();
                         loadPendingPosts();
@@ -1419,7 +1449,7 @@
                     $.initLoading.classList.add('hide');
                     state.initialized = true;
                 }
-            } catch {
+            } catch (error) {
                 $.initLoading.classList.add('hide');
                 showToast('ไม่สามารถเชื่อมต่อ LINE ได้', 'error');
             }
@@ -1511,7 +1541,7 @@
             if (!urgent.length) {
                 $.heroSlider.innerHTML = `
                     <div class="swiper-slide">
-                        <img src="https://via.placeholder.com/1200x400/1a1d24/06c755?text=iTNews" class="w-full h-full object-cover">
+                        <img src="https://via.placeholder.com/1200x400/1a1d24/06c755?text=${encodeURIComponent(state.settings.appName)}" class="w-full h-full object-cover">
                         <div class="slide-content">
                             <h3 class="font-bold">ไม่มีประกาศด่วน</h3>
                         </div>
@@ -1668,25 +1698,70 @@
 
         function renderComments(postId) {
             const comments = state.comments[postId] || [];
-            const container = document.getElementById(`comments-${postId}`);
-            if (!container) return;
+            
+            // Create comments section if not exists
+            let commentsSection = document.getElementById(`comments-section-${postId}`);
+            if (!commentsSection) {
+                commentsSection = document.createElement('div');
+                commentsSection.id = `comments-section-${postId}`;
+                commentsSection.className = 'modal-comments-section';
+                $.modalBody.appendChild(commentsSection);
+            }
 
             if (!comments.length) {
-                container.innerHTML = '<p class="text-center text-gray-400 py-4">ยังไม่มีความคิดเห็น</p>';
+                commentsSection.innerHTML = '<p class="text-center text-gray-400 py-4">ยังไม่มีความคิดเห็น</p>';
                 return;
             }
 
-            container.innerHTML = comments.map(c => `
-                <div class="bg-[#111317] p-3 rounded-lg mb-2">
-                    <div class="flex items-center gap-2 mb-1">
-                        <img src="${c.userPicture || 'https://via.placeholder.com/32'}" class="w-6 h-6 rounded-full">
-                        <span class="font-semibold text-xs text-[#06c755]">${c.userName || 'ผู้ใช้'}</span>
-                        <span class="text-xs text-gray-500">${new Date(c.createdAt).toLocaleString('th-TH')}</span>
-                    </div>
-                    <p class="text-sm">${c.content}</p>
+            commentsSection.innerHTML = `
+                <div class="modal-comments-title">
+                    <i class="far fa-comment-dots"></i>
+                    <span>ความคิดเห็น (${comments.length})</span>
                 </div>
-            `).join('');
+                <div class="modal-comment-input-area">
+                    <textarea id="comment-input-${postId}" class="modal-comment-input" placeholder="แสดงความคิดเห็น..."></textarea>
+                    <button class="modal-comment-submit" onclick="addComment('${postId}')">ส่ง</button>
+                </div>
+                <div class="modal-comments-list">
+                    ${comments.map(c => `
+                        <div class="modal-comment-item">
+                            <img src="${c.userPicture || 'https://via.placeholder.com/32'}" class="modal-comment-avatar">
+                            <div class="modal-comment-content">
+                                <div class="modal-comment-header">
+                                    <span class="modal-comment-author">${c.userName || 'ผู้ใช้'}</span>
+                                    <span class="modal-comment-time">${new Date(c.createdAt).toLocaleString('th-TH')}</span>
+                                </div>
+                                <div class="modal-comment-text">${c.content}</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
         }
+
+        window.addComment = async function(postId) {
+            const input = document.getElementById(`comment-input-${postId}`);
+            const content = input?.value.trim();
+            
+            if (!content) {
+                showToast('กรุณาใส่ข้อความ', 'error');
+                return;
+            }
+
+            const result = await callGAS('post/comment/add', {
+                postId,
+                userId: state.user.lineUserId,
+                userName: state.user.displayName,
+                userPicture: state.user.pictureUrl,
+                content
+            });
+
+            if (result.success) {
+                input.value = '';
+                await loadComments(postId);
+                showToast('เพิ่มความคิดเห็นสำเร็จ');
+            }
+        };
 
         // ========== SHARE ==========
         window.shareAsFlexMessage = async function() {
@@ -1974,20 +2049,33 @@
         async function loadSettings() {
             const result = await callGAS('settings');
             if (result.success) {
-                state.settings = result.data || {};
+                state.settings = result.data || {
+                    appName: 'iTNews',
+                    driveFolderId: CONFIG.DRIVE_FOLDER_ID,
+                    requireApproval: false
+                };
+                
+                // Update UI with settings
                 document.getElementById('setting-app-name').value = state.settings.appName || 'iTNews';
                 document.getElementById('setting-drive-folder').value = state.settings.driveFolderId || CONFIG.DRIVE_FOLDER_ID;
                 document.getElementById('setting-require-approval').checked = state.settings.requireApproval || false;
+                
+                // Update title and navbar
+                updateAppName(state.settings.appName);
             }
         }
 
         window.saveSettings = async function(e) {
             e.preventDefault();
             
+            const appName = document.getElementById('setting-app-name').value.trim() || 'iTNews';
+            const driveFolderId = document.getElementById('setting-drive-folder').value.trim() || CONFIG.DRIVE_FOLDER_ID;
+            const requireApproval = document.getElementById('setting-require-approval').checked;
+
             const data = {
-                appName: document.getElementById('setting-app-name').value,
-                driveFolderId: document.getElementById('setting-drive-folder').value,
-                requireApproval: document.getElementById('setting-require-approval').checked,
+                appName,
+                driveFolderId,
+                requireApproval,
                 lineUserId: state.user.lineUserId
             };
 
@@ -1995,6 +2083,9 @@
             if (result.success) {
                 showToast('บันทึกสำเร็จ');
                 Object.assign(state.settings, data);
+                
+                // Update title and navbar immediately
+                updateAppName(appName);
             }
         };
 
@@ -2099,7 +2190,6 @@
         });
 
         document.getElementById('profile-header').addEventListener('click', () => {
-            // Simple profile menu
             Swal.fire({
                 title: state.user?.displayName,
                 text: state.user?.email,
