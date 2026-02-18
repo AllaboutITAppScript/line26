@@ -1952,10 +1952,10 @@
             LIFF_ID: '2008904120-T7I0VPZf',
             PAGE_SIZE: 9,
             DRIVE_FOLDER_ID: '18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE',
-            POLLING_INTERVAL: 10000,
-            CACHE_TIME: 30000,
-            MAX_RETRIES: 2,
-            RETRY_DELAY: 800
+            POLLING_INTERVAL: 5000, // ลดเหลือ 5 วินาที
+            CACHE_TIME: 10000, // ลดเหลือ 10 วินาที
+            MAX_RETRIES: 1,
+            RETRY_DELAY: 500
         };
 
         // ========== STATE ==========
@@ -1988,6 +1988,9 @@
             initialized: false,
             connectionError: false,
             retryCount: 0,
+            loadingPosts: false,
+            loadingMyPosts: false,
+            loadingUrgent: false,
             cache: {
                 posts: { data: null, timestamp: 0 },
                 myPosts: { data: null, timestamp: 0 },
@@ -2075,15 +2078,18 @@
                     }
                 });
 
-                console.log('Calling GAS:', path, data);
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
 
                 const response = await fetch(CONFIG.GAS_URL, {
                     method: 'POST',
-                    body: formData
+                    body: formData,
+                    signal: controller.signal
                 });
 
+                clearTimeout(timeoutId);
+
                 const text = await response.text();
-                console.log('GAS Response:', text);
                 
                 try {
                     const result = JSON.parse(text);
@@ -2091,20 +2097,18 @@
                     state.retryCount = 0;
                     return result;
                 } catch (e) {
-                    console.error('JSON parse error:', text);
-                    
                     if (response.ok) {
                         return { success: true, data: {}, message: 'success' };
                     }
-                    
                     throw new Error('รูปแบบข้อมูลไม่ถูกต้อง');
                 }
 
             } catch (error) {
-                console.error('API call error:', error);
+                if (error.name === 'AbortError') {
+                    showToast('การเชื่อมต่อหมดเวลา', 'error');
+                }
                 
                 if (retryCount < CONFIG.MAX_RETRIES) {
-                    console.log(`Retrying... (${retryCount + 1}/${CONFIG.MAX_RETRIES})`);
                     await new Promise(resolve => setTimeout(resolve, CONFIG.RETRY_DELAY));
                     return callGAS(path, data, retryCount + 1);
                 }
@@ -2126,14 +2130,20 @@
                 
                 showSyncIndicator();
                 
-                await Promise.all([
+                // โหลดแบบ parallel ไม่ต้องรอกัน
+                const promises = [
                     loadPosts(true),
                     loadMyPosts(true),
-                    loadPendingPosts(),
-                    loadUrgentPosts(true),
-                    state.isAdmin ? loadUsers() : Promise.resolve(),
-                    state.isAdmin ? loadAdminStats() : Promise.resolve()
-                ]);
+                    loadUrgentPosts(true)
+                ];
+                
+                if (state.isAdmin) {
+                    promises.push(loadPendingPosts());
+                    promises.push(loadUsers());
+                    promises.push(loadAdminStats());
+                }
+                
+                await Promise.allSettled(promises);
                 
                 state.lastUpdate = Date.now();
                 
@@ -2164,7 +2174,6 @@
                     throw new Error(result.message);
                 }
             } catch (error) {
-                console.error('Upload error:', error);
                 showToast('อัปโหลดรูปไม่สำเร็จ', 'error');
                 return null;
             }
@@ -2186,7 +2195,6 @@
         async function initLIFF() {
             try {
                 if (typeof liff === 'undefined') {
-                    console.error('LIFF not loaded');
                     showToast('ไม่สามารถโหลด LINE LIFF ได้', 'error');
                     setTimeout(() => {
                         initialLoading.classList.add('hide');
@@ -2216,15 +2224,21 @@
                     state.isAdmin = state.user.role === 'admin';
                     state.isEditor = state.isAdmin || state.user.role === 'editor';
                     
-                    await Promise.all([
+                    // โหลดข้อมูลพร้อมกันแบบ parallel
+                    const loadPromises = [
                         loadSettings(),
                         loadPosts(),
                         loadMyPosts(),
-                        loadPendingPosts(),
-                        loadUrgentPosts(),
-                        state.isAdmin ? loadUsers() : Promise.resolve(),
-                        state.isAdmin ? loadAdminStats() : Promise.resolve()
-                    ]);
+                        loadUrgentPosts()
+                    ];
+                    
+                    if (state.isAdmin) {
+                        loadPromises.push(loadUsers());
+                        loadPromises.push(loadAdminStats());
+                        loadPromises.push(loadPendingPosts());
+                    }
+                    
+                    await Promise.allSettled(loadPromises);
                     
                     updateUI();
                     
@@ -2242,7 +2256,6 @@
                 }
                 
             } catch (err) {
-                console.error('LIFF init error:', err);
                 showToast('ไม่สามารถเชื่อมต่อกับ LINE ได้', 'error');
                 setTimeout(() => {
                     initialLoading.classList.add('hide');
@@ -2331,6 +2344,8 @@
 
         // ========== POSTS ==========
         async function loadPosts(silent = false) {
+            if (state.loadingPosts) return;
+            
             const now = Date.now();
             if (!silent && state.cache.posts.data && (now - state.cache.posts.timestamp) < CONFIG.CACHE_TIME) {
                 state.posts = state.cache.posts.data;
@@ -2338,6 +2353,8 @@
                 renderPagination();
                 return;
             }
+
+            state.loadingPosts = true;
 
             const list = document.getElementById('posts-list');
             if (!silent && state.posts.length === 0) {
@@ -2373,15 +2390,21 @@
                 renderPosts();
                 renderPagination();
             }
+            
+            state.loadingPosts = false;
         }
 
         async function loadUrgentPosts(silent = false) {
+            if (state.loadingUrgent) return;
+            
             const now = Date.now();
             if (!silent && state.cache.urgentPosts.data && (now - state.cache.urgentPosts.timestamp) < CONFIG.CACHE_TIME) {
                 state.urgentPosts = state.cache.urgentPosts.data;
                 renderHeroSlider();
                 return;
             }
+
+            state.loadingUrgent = true;
 
             const result = await callGAS('posts', {
                 filter: 'urgent',
@@ -2395,6 +2418,8 @@
                 state.cache.urgentPosts = { data: state.urgentPosts, timestamp: now };
                 renderHeroSlider();
             }
+            
+            state.loadingUrgent = false;
         }
 
         function renderHeroSlider() {
@@ -2575,6 +2600,8 @@
 
         // ========== MY POSTS ==========
         async function loadMyPosts(silent = false) {
+            if (state.loadingMyPosts) return;
+            
             const now = Date.now();
             if (!silent && state.cache.myPosts.data && (now - state.cache.myPosts.timestamp) < CONFIG.CACHE_TIME) {
                 state.myPosts = state.cache.myPosts.data;
@@ -2582,6 +2609,8 @@
                 renderMyPostsPagination();
                 return;
             }
+
+            state.loadingMyPosts = true;
 
             const list = document.getElementById('my-posts-list');
             if (!silent && state.myPosts.length === 0) {
@@ -2612,10 +2641,11 @@
                 renderMyPosts();
                 renderMyPostsPagination();
             } else {
-                console.error('Failed to load my posts:', result);
                 state.myPosts = [];
                 renderMyPosts();
             }
+            
+            state.loadingMyPosts = false;
         }
 
         function renderMyPostsPagination() {
@@ -2824,7 +2854,7 @@
                 
                 showSyncIndicator();
                 
-                await Promise.all([
+                await Promise.allSettled([
                     loadPosts(true),
                     loadPendingPosts(),
                     loadUrgentPosts(true),
@@ -2887,7 +2917,7 @@
                 
                 showSyncIndicator();
                 
-                await Promise.all([
+                await Promise.allSettled([
                     loadPosts(true),
                     loadPendingPosts(),
                     loadUrgentPosts(true),
@@ -3235,7 +3265,6 @@
                 await liff.shareTargetPicker([flexMessage]);
                 showToast('แชร์สำเร็จ');
             } catch (err) {
-                console.error('Share error:', err);
                 showToast('ไม่สามารถแชร์ได้', 'error');
             }
         }
@@ -3477,7 +3506,7 @@
                     
                     showSyncIndicator();
                     
-                    await Promise.all([
+                    await Promise.allSettled([
                         loadPosts(true),
                         loadMyPosts(true),
                         loadPendingPosts(),
@@ -3488,7 +3517,6 @@
                     state.lastUpdate = Date.now();
                 }
             } catch (error) {
-                console.error('Save post error:', error);
                 showToast('เกิดข้อผิดพลาดในการบันทึก', 'error');
             } finally {
                 saveBtn.disabled = false;
@@ -3574,7 +3602,7 @@
                 
                 showSyncIndicator();
                 
-                await Promise.all([
+                await Promise.allSettled([
                     loadPosts(true),
                     loadMyPosts(true),
                     loadPendingPosts(),
@@ -4138,7 +4166,6 @@
                     });
                 }
             } catch (err) {
-                console.error(err);
                 showToast('ไม่สามารถเชื่อมต่อกับระบบได้', 'error');
                 setTimeout(() => {
                     initialLoading.classList.add('hide');
