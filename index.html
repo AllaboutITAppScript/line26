@@ -1822,7 +1822,7 @@
             if (window.heroSwiper) window.heroSwiper.destroy();
             window.heroSwiper = new Swiper('.hero-swiper', {
                 autoplay: { delay: 3000 },
-                pagination: { el: '.swiper-pagination', clickable: TRUE },
+                pagination: { el: '.swiper-pagination', clickable: true },
                 loop: urgent.length > 1
             });
         }
@@ -2558,9 +2558,23 @@
                 document.getElementById('setting-app-name').value = state.settings.appName || 'iTNews';
                 document.getElementById('setting-drive-folder').value = state.settings.driveFolderId || CONFIG.DRIVE_FOLDER_ID;
                 
-                // Fix: Convert string 'true'/'false' to boolean for checkbox
+                // แก้ไข: แปลงค่าจาก string เป็น boolean อย่างถูกต้อง
+                // รองรับทั้ง 'true', 'TRUE', true, 1, '1'
                 if ($.settingRequireApproval) {
-                    $.settingRequireApproval.checked = state.settings.requireApproval === 'true';
+                    const requireApproval = state.settings.requireApproval;
+                    
+                    // แปลงเป็น boolean
+                    let isChecked = false;
+                    if (typeof requireApproval === 'string') {
+                        isChecked = requireApproval.toLowerCase() === 'true' || requireApproval === '1';
+                    } else if (typeof requireApproval === 'boolean') {
+                        isChecked = requireApproval;
+                    } else if (typeof requireApproval === 'number') {
+                        isChecked = requireApproval === 1;
+                    }
+                    
+                    $.settingRequireApproval.checked = isChecked;
+                    console.log('Setting requireApproval:', requireApproval, '->', isChecked);
                 }
                 
                 // Update title and navbar
@@ -2574,7 +2588,7 @@
             const appName = document.getElementById('setting-app-name').value.trim() || 'iTNews';
             const driveFolderId = document.getElementById('setting-drive-folder').value.trim() || CONFIG.DRIVE_FOLDER_ID;
             
-            // Fix: Get checkbox value correctly
+            // ดึงค่า checkbox อย่างถูกต้อง
             const requireApproval = $.settingRequireApproval ? $.settingRequireApproval.checked : false;
 
             const saveBtn = $.settingsSaveBtn;
@@ -2584,9 +2598,11 @@
             const data = {
                 appName,
                 driveFolderId,
-                requireApproval: requireApproval ? 'true' : 'false', // Send as string to match GAS
+                requireApproval: requireApproval ? 'true' : 'false', // ส่งเป็น string เสมอ
                 lineUserId: state.user.lineUserId
             };
+
+            console.log('Saving settings:', data);
 
             const result = await callGAS('admin/settings/update', data);
             
