@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- LINE LIFF -->
-    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js" async></script>
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -2040,7 +2040,7 @@
     <script>
         // Initialize AOS
         AOS.init({
-            duration: 600,
+            duration: 600, // ลดเวลา animation เพื่อความเร็ว
             once: true,
             offset: 30
         });
@@ -2051,10 +2051,8 @@
             LIFF_ID: '2008904120-T7I0VPZf',
             PAGE_SIZE: 9,
             DRIVE_FOLDER_ID: '18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE',
-            POLLING_INTERVAL: 10000, // เพิ่มเป็น 10 วินาที
-            CACHE_TIME: 30000,
-            MAX_RETRIES: 3,
-            RETRY_DELAY: 1000
+            POLLING_INTERVAL: 5000,
+            CACHE_TIME: 30000 // 30 วินาที
         };
 
         // ========== STATE ==========
@@ -2087,8 +2085,6 @@
             urgentPosts: [],
             initialized: false,
             previousTab: 'home',
-            connectionError: false,
-            retryCount: 0,
             cache: {
                 posts: { data: null, timestamp: 0 },
                 myPosts: { data: null, timestamp: 0 },
@@ -2264,8 +2260,8 @@
             updateNotificationBadge();
         }
 
-        // ========== API CALL WITH RETRY ==========
-        async function callGAS(path, data = {}, retryCount = 0) {
+        // ========== API CALL ==========
+        async function callGAS(path, data = {}) {
             try {
                 const formData = new FormData();
                 formData.append('path', path);
@@ -2284,56 +2280,25 @@
 
                 console.log('Calling GAS:', path, data);
 
-                // ใช้ no-cors เพื่อป้องกัน CORS error ในบางกรณี
                 const response = await fetch(CONFIG.GAS_URL, {
                     method: 'POST',
-                    body: formData,
-                    mode: 'no-cors', // เพิ่ม mode no-cors
-                    headers: {
-                        'Accept': 'application/json'
-                    }
+                    body: formData
                 });
 
-                // เนื่องจากใช้ no-cors เราจะไม่สามารถอ่าน response ได้
-                // จึงต้องใช้วิธีอื่น - แต่ GAS URL จริงควรใช้แบบปกติ
-                // ลองใช้แบบปกติก่อน
+                const text = await response.text();
+                console.log('GAS Response:', text);
+                
                 try {
-                    const text = await response.text();
-                    console.log('GAS Response:', text);
-                    
-                    // ลอง parse JSON
-                    try {
-                        const result = JSON.parse(text);
-                        state.connectionError = false;
-                        state.retryCount = 0;
-                        return result;
-                    } catch (e) {
-                        console.error('JSON parse error:', text);
-                        
-                        // ถ้า parse ไม่ได้ แต่ response สำเร็จ ให้ถือว่าสำเร็จ
-                        if (response.ok) {
-                            return { success: true, data: {}, message: 'success' };
-                        }
-                        
-                        throw new Error('รูปแบบข้อมูลไม่ถูกต้อง');
-                    }
+                    const result = JSON.parse(text);
+                    return result;
                 } catch (e) {
-                    console.error('Response error:', e);
-                    throw e;
+                    console.error('JSON parse error:', text);
+                    throw new Error('รูปแบบข้อมูลไม่ถูกต้อง');
                 }
 
             } catch (error) {
                 console.error('API call error:', error);
-                
-                // ลอง retry
-                if (retryCount < CONFIG.MAX_RETRIES) {
-                    console.log(`Retrying... (${retryCount + 1}/${CONFIG.MAX_RETRIES})`);
-                    await new Promise(resolve => setTimeout(resolve, CONFIG.RETRY_DELAY));
-                    return callGAS(path, data, retryCount + 1);
-                }
-                
-                state.connectionError = true;
-                showToast('การเชื่อมต่อล้มเหลว กรุณาลองใหม่อีกครั้ง', 'error');
+                showToast('การเชื่อมต่อล้มเหลว: ' + error.message, 'error');
                 return { success: false, message: error.message };
             }
         }
@@ -2345,7 +2310,7 @@
             if (pollingInterval) clearInterval(pollingInterval);
             
             pollingInterval = setInterval(async () => {
-                if (document.hidden || !state.initialized || state.connectionError) return;
+                if (document.hidden || !state.initialized) return;
                 
                 showSyncIndicator();
                 
@@ -2427,16 +2392,6 @@
         // ========== LIFF INIT ==========
         async function initLIFF() {
             try {
-                // ตรวจสอบว่า liff พร้อมใช้งาน
-                if (typeof liff === 'undefined') {
-                    console.error('LIFF not loaded');
-                    showToast('ไม่สามารถโหลด LINE LIFF ได้', 'error');
-                    setTimeout(() => {
-                        initialLoading.classList.add('hide');
-                    }, 500);
-                    return;
-                }
-
                 await liff.init({ liffId: CONFIG.LIFF_ID });
                 
                 if (!liff.isLoggedIn()) {
@@ -2489,9 +2444,6 @@
                     startRealtimeUpdates();
                 } else {
                     showToast(result.message, 'error');
-                    setTimeout(() => {
-                        initialLoading.classList.add('hide');
-                    }, 500);
                 }
                 
             } catch (err) {
@@ -3504,6 +3456,7 @@
             const activeTab = document.querySelector('.tab-content.active')?.id || 'tab-home';
             state.previousTab = activeTab.replace('tab-', '');
             
+            // ซ่อน main content และแสดง post detail
             document.querySelector('.min-h-screen > div:not(#post-detail-page)').style.display = 'none';
             postDetailPage.classList.remove('hidden');
             
@@ -4479,20 +4432,6 @@
             img.classList.add('lazy-image');
             imageObserver.observe(img);
         });
-
-        // ทดสอบการเชื่อมต่ออัตโนมัติ
-        async function testConnection() {
-            const result = await callGAS('testConnection');
-            if (result.success) {
-                console.log('Connection test successful:', result.data);
-            } else {
-                console.error('Connection test failed:', result.message);
-                showToast('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้', 'error');
-            }
-        }
-
-        // ทดสอบการเชื่อมต่อเมื่อเริ่มต้น
-        setTimeout(testConnection, 2000);
     </script>
 </body>
 </html>
