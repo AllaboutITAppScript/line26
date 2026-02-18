@@ -151,6 +151,12 @@
                 padding: 0 16px;
             }
             
+            .admin-posts-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+            
             .bottom-nav {
                 max-width: 400px;
                 left: 50%;
@@ -803,7 +809,6 @@
             100% { background-position: -200% 0; }
         }
 
-        /* Navbar logo text - will be updated by JS */
         #navbar-app-name {
             background: linear-gradient(135deg, #fff, var(--primary));
             -webkit-background-clip: text;
@@ -1202,8 +1207,10 @@
             posts: [],
             myPosts: [],
             pendingPosts: [],
+            adminPosts: [],
             users: [],
             comments: {},
+            allComments: [],
             currentFilter: 'all',
             searchTerm: '',
             isAdmin: false,
@@ -1473,6 +1480,12 @@
                 $.statEvents.textContent = result.data.stats?.events || 0;
                 $.statUrgent.textContent = result.data.stats?.urgent || 0;
 
+                // Update admin posts if admin
+                if (state.isAdmin) {
+                    state.adminPosts = result.data.posts || [];
+                    renderAdminPosts();
+                }
+
                 renderPosts();
 
                 // Pagination
@@ -1518,6 +1531,29 @@
                             <span><i class="far fa-comment mr-1"></i> ${p.commentCount || 0}</span>
                         </div>
                     </div>
+                </div>
+            `).join('');
+        }
+
+        // ========== ADMIN POSTS ==========
+        function renderAdminPosts() {
+            if (!$.adminPostsList) return;
+            
+            if (!state.adminPosts || !state.adminPosts.length) {
+                $.adminPostsList.innerHTML = '<p class="text-center text-gray-400 py-6">ไม่มีโพสต์</p>';
+                return;
+            }
+
+            $.adminPostsList.innerHTML = state.adminPosts.map(p => `
+                <div class="flex justify-between items-center p-3 bg-[#111317] rounded-lg cursor-pointer" onclick="showPostDetail('${p.postId}')">
+                    <div class="flex-1">
+                        <p class="font-semibold text-sm">${p.title}</p>
+                        <p class="text-xs text-gray-400">${formatDate(p.createdAt)}</p>
+                    </div>
+                    <span class="badge badge-${p.type} mr-2">${{news:'📰', event:'🎉', urgent:'⚠️'}[p.type]}</span>
+                    <span class="text-xs ${p.approvalStatus === 'approved' ? 'text-green-500' : p.approvalStatus === 'pending' ? 'text-yellow-500' : 'text-red-500'}">
+                        ${p.approvalStatus === 'approved' ? 'เผยแพร่' : p.approvalStatus === 'pending' ? 'รออนุมัติ' : 'ปฏิเสธ'}
+                    </span>
                 </div>
             `).join('');
         }
@@ -1699,7 +1735,6 @@
         function renderComments(postId) {
             const comments = state.comments[postId] || [];
             
-            // Create comments section if not exists
             let commentsSection = document.getElementById(`comments-section-${postId}`);
             if (!commentsSection) {
                 commentsSection = document.createElement('div');
@@ -1918,6 +1953,9 @@
                 $.adminToday.textContent = result.data.today || 0;
                 $.adminPending.textContent = result.data.pending || 0;
             }
+
+            // Also load admin posts
+            await loadPosts();
         }
 
         async function loadPendingPosts() {
@@ -2046,6 +2084,68 @@
             }
         };
 
+        // ========== ADMIN COMMENTS ==========
+        async function loadAllComments() {
+            const result = await callGAS('admin/comments');
+            if (result.success) {
+                state.allComments = result.data || [];
+                renderAdminComments();
+            }
+        }
+
+        function renderAdminComments() {
+            const search = $.adminCommentSearch?.value.toLowerCase() || '';
+            const filtered = state.allComments.filter(c => 
+                c.content?.toLowerCase().includes(search) || 
+                c.userName?.toLowerCase().includes(search)
+            );
+
+            if (!filtered.length) {
+                $.adminCommentsList.innerHTML = '<p class="text-center text-gray-400 py-6">ไม่พบความคิดเห็น</p>';
+                return;
+            }
+
+            $.adminCommentsList.innerHTML = filtered.map(c => `
+                <div class="bg-[#1a1d24] p-3 rounded-lg border border-[#2a2e36]">
+                    <div class="flex items-center gap-2 mb-2">
+                        <img src="${c.userPicture || 'https://via.placeholder.com/32'}" class="w-6 h-6 rounded-full">
+                        <span class="font-semibold text-xs text-[#06c755]">${c.userName || 'ผู้ใช้'}</span>
+                        <span class="text-xs text-gray-500">${formatDateTime(c.createdAt)}</span>
+                    </div>
+                    <p class="text-sm mb-2">${c.content}</p>
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-gray-400">โพสต์: ${c.postId}</span>
+                        <button class="btn-danger text-xs py-1 px-2" onclick="adminDeleteComment('${c.commentId}')">
+                            <i class="fas fa-trash mr-1"></i>ลบ
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.adminDeleteComment = async function(commentId) {
+            const result = await Swal.fire({
+                title: 'ลบความคิดเห็น',
+                text: 'คุณแน่ใจหรือไม่?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                confirmButtonText: 'ใช่, ลบ'
+            });
+
+            if (result.isConfirmed) {
+                const apiResult = await callGAS('admin/comment/delete', { 
+                    commentId,
+                    lineUserId: state.user.lineUserId
+                });
+
+                if (apiResult.success) {
+                    showToast('ลบความคิดเห็นสำเร็จ');
+                    await loadAllComments();
+                }
+            }
+        };
+
         async function loadSettings() {
             const result = await callGAS('settings');
             if (result.success) {
@@ -2135,6 +2235,7 @@
                 loadAdminStats();
                 loadUsers();
                 loadPendingPosts();
+                loadAllComments();
             }
         };
 
@@ -2164,12 +2265,17 @@
         });
 
         $.userSearch?.addEventListener('input', renderUsers);
+        
+        $.adminCommentSearch?.addEventListener('input', () => {
+            renderAdminComments();
+        });
 
         $.refreshAdmin?.addEventListener('click', () => {
             if (state.isAdmin) {
                 loadAdminStats();
                 loadUsers();
                 loadPendingPosts();
+                loadAllComments();
             }
         });
 
@@ -2180,6 +2286,11 @@
                 
                 document.querySelectorAll('.admin-tab').forEach(t => t.classList.add('hidden'));
                 document.getElementById(`admin-${btn.dataset.adminTab}-tab`).classList.remove('hidden');
+                
+                // Load data when tab is clicked
+                if (btn.dataset.adminTab === 'comments') {
+                    loadAllComments();
+                }
             });
         });
 
