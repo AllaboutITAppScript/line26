@@ -1973,7 +1973,7 @@
             PAGE_SIZE: 9,
             DRIVE_FOLDER_ID: '18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE',
             POLLING_INTERVAL: 5000,
-            CACHE_TIME: 5000, // ลดเหลือ 5 วินาที
+            CACHE_TIME: 5000,
             MAX_RETRIES: 1,
             RETRY_DELAY: 300
         };
@@ -2144,7 +2144,6 @@
             pollingInterval = setInterval(async () => {
                 if (document.hidden || !state.initialized || state.connectionError) return;
                 
-                // อัปเดตเฉพาะข้อมูลที่จำเป็น
                 const promises = [
                     loadPosts(true),
                     loadUrgentPosts(true)
@@ -2240,14 +2239,12 @@
                     
                     updateUI();
                     
-                    // โหลดข้อมูลหลักทันที
                     await Promise.allSettled([
                         loadPosts(),
                         loadUrgentPosts(),
                         loadMyPosts()
                     ]);
                     
-                    // โหลดข้อมูลรองทีหลัง
                     if (state.isAdmin) {
                         loadSettings();
                         loadUsers();
@@ -3277,10 +3274,8 @@
             closeAllModals();
             state.modalLoading = true;
             
-            // แสดง Modal ทันที
             postModal.classList.add('active');
             
-            // Disable ปุ่มแชร์และปุ่มจัดการระหว่างโหลด
             const shareBtn = document.querySelector('#post-modal .btn-share');
             const editBtn = document.getElementById('modal-edit-btn');
             const deleteBtn = document.getElementById('modal-delete-btn');
@@ -3298,7 +3293,6 @@
                 state.currentPost = result.data;
                 const post = result.data;
                 
-                // โหลดความคิดเห็นแบบไม่ต้องรอ
                 loadComments(postId);
                 
                 const typeText = {
@@ -3380,10 +3374,8 @@
 
                 document.getElementById('modal-body').innerHTML = html;
 
-                // Enable ปุ่มแชร์
                 if (shareBtn) shareBtn.disabled = false;
 
-                // จัดการปุ่ม Admin
                 const adminControls = document.getElementById('modal-admin-controls');
                 if (canEdit || canDelete) {
                     adminControls.classList.remove('hidden');
@@ -3420,17 +3412,22 @@
             return state.isAdmin || state.user?.role === 'editor';
         }
 
+        // ========== แก้ไขตรงนี้ ==========
         function canEditPost(post) {
             if (!post) return false;
-            return state.isAdmin || 
-                   (state.user?.role === 'editor' && 
-                    post.authorId === state.user?.lineUserId && 
-                    post.approvalStatus !== 'approved');
+            // Admin แก้ไขได้ทุกโพสต์
+            if (state.isAdmin) return true;
+            // เจ้าของโพสต์ (Editor หรือ User) แก้ไขได้เฉพาะโพสต์ของตัวเองที่ยังไม่ถูกอนุมัติ
+            return post.authorId === state.user?.lineUserId && post.approvalStatus !== 'approved';
         }
 
+        // ========== แก้ไขตรงนี้ ==========
         function canDeletePost(post) {
             if (!post) return false;
-            return state.isAdmin;
+            // Admin ลบได้ทุกโพสต์
+            if (state.isAdmin) return true;
+            // เจ้าของโพสต์ (Editor หรือ User) ลบได้เฉพาะโพสต์ของตัวเองที่ยังไม่ถูกอนุมัติ
+            return post.authorId === state.user?.lineUserId && post.approvalStatus !== 'approved';
         }
 
         // ========== CREATE/EDIT POST ==========
