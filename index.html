@@ -120,27 +120,6 @@
             color: white;
         }
         
-        /* Back button */
-        .back-button {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            padding: 8px 0;
-            margin-bottom: 16px;
-            transition: color 0.2s;
-            width: fit-content;
-        }
-        
-        .back-button:hover {
-            color: var(--primary);
-        }
-        
-        .back-button i {
-            font-size: 20px;
-        }
-        
         @media (max-width: 768px) {
             .navbar-menu {
                 display: none;
@@ -200,12 +179,6 @@
                 margin-left: auto;
                 margin-right: auto;
             }
-            
-            /* Post detail page */
-            .post-detail-container {
-                max-width: 800px;
-                margin: 0 auto;
-            }
         }
         
         .bottom-nav {
@@ -254,99 +227,6 @@
         
         .tab-content.active {
             display: block;
-        }
-        
-        /* Post detail page */
-        .post-detail-page {
-            min-height: calc(100vh - 200px);
-            animation: fadeIn 0.3s ease;
-        }
-        
-        .post-detail-header {
-            position: relative;
-            margin-bottom: 20px;
-        }
-        
-        .post-detail-image {
-            width: 100%;
-            height: 300px;
-            object-fit: cover;
-            border-radius: 20px;
-            background: var(--bg-card);
-        }
-        
-        .post-detail-content {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 24px;
-            margin-top: 20px;
-        }
-        
-        .post-detail-title {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 16px;
-            line-height: 1.4;
-        }
-        
-        .post-detail-meta {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 24px;
-            padding-bottom: 24px;
-            border-bottom: 1px solid var(--border);
-            flex-wrap: wrap;
-        }
-        
-        .post-detail-author {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .post-detail-author img {
-            width: 40px;
-            height: 40px;
-            border-radius: 20px;
-            object-fit: cover;
-        }
-        
-        .post-detail-stats {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-        
-        .post-detail-stats i {
-            margin-right: 4px;
-        }
-        
-        .post-detail-body {
-            font-size: 16px;
-            line-height: 1.8;
-            color: var(--text);
-            white-space: pre-wrap;
-            margin-bottom: 32px;
-        }
-        
-        .post-detail-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 32px;
-            padding-top: 24px;
-            border-top: 1px solid var(--border);
-        }
-        
-        .post-detail-admin-actions {
-            margin-top: 24px;
-            padding: 20px;
-            background: rgba(239,68,68,0.1);
-            border: 1px solid var(--primary);
-            border-radius: 16px;
         }
         
         @keyframes fadeIn {
@@ -485,17 +365,14 @@
         .btn-primary {
             background: var(--primary);
             color: white;
-            padding: 12px 24px;
+            padding: 12px;
             border-radius: 12px;
             font-weight: 600;
             border: none;
+            width: 100%;
             cursor: pointer;
             transition: opacity 0.2s;
             position: relative;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
         }
         
         .btn-primary:active {
@@ -531,15 +408,12 @@
             background: transparent;
             border: 1px solid var(--border);
             color: var(--text);
-            padding: 12px 24px;
+            padding: 12px;
             border-radius: 12px;
+            width: 100%;
             cursor: pointer;
             transition: background 0.2s;
             position: relative;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
         }
         
         .btn-outline:active {
@@ -574,17 +448,14 @@
         .btn-danger {
             background: #ef4444;
             color: white;
-            padding: 12px 24px;
+            padding: 12px;
             border-radius: 12px;
             font-weight: 600;
             border: none;
+            width: 100%;
             cursor: pointer;
             transition: opacity 0.2s;
             position: relative;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
         }
         
         .btn-danger:active {
@@ -619,17 +490,14 @@
         .btn-success {
             background: #28a745;
             color: white;
-            padding: 12px 24px;
+            padding: 12px;
             border-radius: 12px;
             font-weight: 600;
             border: none;
+            width: 100%;
             cursor: pointer;
             transition: opacity 0.2s;
             position: relative;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
         }
         
         .btn-success:active {
@@ -664,12 +532,13 @@
         .btn-share {
             background: #00B900;
             color: white;
-            padding: 12px 24px;
+            padding: 10px;
             border-radius: 12px;
             font-weight: 500;
             border: none;
+            width: 100%;
             cursor: pointer;
-            display: inline-flex;
+            display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
@@ -706,37 +575,6 @@
             animation: spin 0.8s linear infinite;
         }
         
-        /* ปุ่มลิงก์เพิ่มเติม */
-        .btn-link {
-            background: linear-gradient(135deg, #2a2e36, #1a1d24);
-            color: var(--primary);
-            padding: 16px;
-            border-radius: 16px;
-            font-weight: 600;
-            border: 2px solid var(--primary);
-            width: 100%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            transition: all 0.3s;
-            text-decoration: none;
-            font-size: 16px;
-            margin: 24px 0;
-        }
-        
-        .btn-link:hover {
-            background: var(--primary);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(6,199,85,0.3);
-        }
-        
-        .btn-link i {
-            font-size: 20px;
-        }
-        
         .btn-pagination {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -766,6 +604,39 @@
         .btn-pagination:disabled {
             opacity: 0.3;
             cursor: not-allowed;
+        }
+        
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.3s;
+        }
+        
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 24px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 20px;
+            animation: slideUp 0.3s;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
         
         /* Loading - แสดงเฉพาะครั้งแรก */
@@ -1262,15 +1133,6 @@
             -webkit-text-fill-color: transparent;
             font-weight: 600;
         }
-        
-        /* Author avatar in post detail */
-        .author-avatar-sm {
-            width: 40px;
-            height: 40px;
-            border-radius: 20px;
-            object-fit: cover;
-            border: 2px solid var(--primary);
-        }
     </style>
 </head>
 <body>
@@ -1298,7 +1160,7 @@
     <!-- Navbar -->
     <nav class="navbar">
         <div class="navbar-content">
-            <div class="navbar-logo" onclick="goHome()" style="cursor: pointer;">
+            <div class="navbar-logo">
                 <i class="fas fa-newspaper"></i>
                 <span>iTNews</span>
             </div>
@@ -1532,20 +1394,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Post Detail Page (Full Page) -->
-        <div id="post-detail-page" class="post-detail-page hidden">
-            <div class="post-detail-container">
-                <!-- Back Button -->
-                <div class="back-button" onclick="goBack()">
-                    <i class="fas fa-arrow-left"></i>
-                    <span>กลับ</span>
-                </div>
-
-                <!-- Post Detail Content -->
-                <div id="post-detail-content"></div>
-            </div>
-        </div>
     </div>
 
     <!-- Bottom Navigation (Mobile) -->
@@ -1561,6 +1409,34 @@
         <div class="nav-item hidden admin-only" data-tab="admin">
             <i class="fas fa-cog"></i>
             <span>จัดการ</span>
+        </div>
+    </div>
+
+    <!-- Post Detail Modal -->
+    <div class="modal" id="post-modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="modal-title" class="text-xl font-bold"></h3>
+                <button onclick="closeModal()"><i class="fas fa-times text-gray-400 text-xl"></i></button>
+            </div>
+            <div id="modal-body" class="space-y-4"></div>
+            <div class="flex gap-2 mt-4">
+                <button class="btn-share flex-1" onclick="shareAsFlexMessage()">
+                    <i class="fab fa-line"></i> แชร์ไป LINE
+                </button>
+                <button class="btn-outline flex-1" onclick="closeModal()">ปิด</button>
+            </div>
+            <div id="modal-admin-controls" class="hidden mt-4 pt-4 border-t border-[#2a2e36]">
+                <p class="text-sm text-gray-400 mb-2">จัดการโพสต์</p>
+                <div class="flex gap-2">
+                    <button id="modal-edit-btn" class="btn-outline flex-1 text-sm" onclick="editCurrentPost()">
+                        <i class="fas fa-edit mr-2"></i>แก้ไข
+                    </button>
+                    <button id="modal-delete-btn" class="btn-danger flex-1 text-sm" onclick="deleteCurrentPost()">
+                        <i class="fas fa-trash mr-2"></i>ลบ
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1597,8 +1473,8 @@
                 <input type="text" id="post-link" placeholder="ลิงก์เพิ่มเติม (ถ้ามี)" class="input-field">
                 
                 <div class="flex gap-2">
-                    <button type="submit" class="btn-primary flex-1" id="save-post-btn">บันทึก</button>
-                    <button type="button" class="btn-outline flex-1" onclick="closeCreateModal()">ยกเลิก</button>
+                    <button type="submit" class="btn-primary" id="save-post-btn">บันทึก</button>
+                    <button type="button" class="btn-outline" onclick="closeCreateModal()">ยกเลิก</button>
                 </div>
             </form>
         </div>
@@ -1616,8 +1492,8 @@
                 <input type="text" id="profile-department" placeholder="แผนก/หน่วยงาน" class="input-field" maxlength="50">
                 
                 <div class="flex gap-2">
-                    <button type="submit" class="btn-primary flex-1">บันทึก</button>
-                    <button type="button" class="btn-outline flex-1" onclick="closeProfileModal()">ยกเลิก</button>
+                    <button type="submit" class="btn-primary">บันทึก</button>
+                    <button type="button" class="btn-outline" onclick="closeProfileModal()">ยกเลิก</button>
                 </div>
             </form>
         </div>
@@ -1641,8 +1517,8 @@
                 </select>
                 
                 <div class="flex gap-2">
-                    <button type="submit" class="btn-primary flex-1">บันทึก</button>
-                    <button type="button" class="btn-outline flex-1" onclick="closeRoleModal()">ยกเลิก</button>
+                    <button type="submit" class="btn-primary">บันทึก</button>
+                    <button type="button" class="btn-outline" onclick="closeRoleModal()">ยกเลิก</button>
                 </div>
             </form>
         </div>
@@ -1694,8 +1570,7 @@
             lastUpdate: Date.now(),
             syncTimeout: null,
             urgentPosts: [],
-            initialized: false,
-            previousTab: 'home' // เก็บ tab ก่อนหน้าเพื่อกลับ
+            initialized: false
         };
 
         // ========== DOM Elements ==========
@@ -1703,7 +1578,6 @@
         const toastMessage = document.getElementById('toast-message');
         const syncIndicator = document.getElementById('sync-indicator');
         const initialLoading = document.getElementById('initial-loading');
-        const postDetailPage = document.getElementById('post-detail-page');
 
         // ========== UTILS ==========
         function showToast(msg, type = 'success') {
@@ -1736,29 +1610,6 @@
             return d.toLocaleDateString('th-TH', { 
                 year: 'numeric', month: 'short', day: 'numeric'
             });
-        }
-
-        // ========== NAVIGATION ==========
-        function goHome() {
-            // ซ่อน post detail
-            postDetailPage.classList.add('hidden');
-            
-            // แสดง main content
-            document.querySelector('.min-h-screen > div:not(#post-detail-page)').style.display = 'block';
-            
-            // เปิด tab home
-            switchTab('home');
-        }
-
-        function goBack() {
-            // ซ่อน post detail
-            postDetailPage.classList.add('hidden');
-            
-            // แสดง main content
-            document.querySelector('.min-h-screen > div:not(#post-detail-page)').style.display = 'block';
-            
-            // เปิด tab ก่อนหน้า
-            switchTab(state.previousTab);
         }
 
         // ========== API CALL ==========
@@ -1939,13 +1790,6 @@
                     ]);
                     
                     updateUI();
-                    
-                    // ตรวจสอบ URL parameter สำหรับเปิดโพสต์โดยตรง
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const postId = urlParams.get('post');
-                    if (postId) {
-                        await showPostDetail(postId);
-                    }
                     
                     // ซ่อน initial loading
                     setTimeout(() => {
@@ -2265,6 +2109,7 @@
             });
             
             if (result.success) {
+                // รองรับโครงสร้างข้อมูลทั้งแบบมี posts property และ array ตรงๆ
                 if (result.data.posts) {
                     state.myPosts = result.data.posts || [];
                     state.myPostsTotalPages = Math.ceil((result.data.total || 0) / CONFIG.PAGE_SIZE) || 1;
@@ -2441,6 +2286,7 @@
         async function approvePost(postId, button) {
             if (!state.isAdmin) return;
             
+            // ป้องกันการกดซ้ำโดย disable ปุ่มชั่วคราว
             if (button) {
                 button.disabled = true;
                 button.classList.add('loading');
@@ -2493,6 +2339,7 @@
                 showRealtimeIndicator();
             }
             
+            // คืนค่าปุ่ม
             if (button) {
                 button.disabled = false;
                 button.classList.remove('loading');
@@ -2502,6 +2349,7 @@
         async function rejectPost(postId, button) {
             if (!state.isAdmin) return;
             
+            // ป้องกันการกดซ้ำโดย disable ปุ่มชั่วคราว
             if (button) {
                 button.disabled = true;
                 button.classList.add('loading');
@@ -2554,6 +2402,7 @@
                 showRealtimeIndicator();
             }
             
+            // คืนค่าปุ่ม
             if (button) {
                 button.disabled = false;
                 button.classList.remove('loading');
@@ -2648,19 +2497,7 @@
                                         margin: 'xs'
                                     }
                                 ]
-                            },
-                            ...(post.link ? [{
-                                type: 'button',
-                                style: 'secondary',
-                                color: '#06c755',
-                                height: 'sm',
-                                margin: 'md',
-                                action: {
-                                    type: 'uri',
-                                    label: '🔗 ดูเพิ่มเติม',
-                                    uri: post.link
-                                }
-                            }] : [])
+                            }
                         ]
                     },
                     footer: {
@@ -2698,30 +2535,15 @@
             }
         }
 
-        // ========== POST DETAIL (FULL PAGE) ==========
+        // ========== POST DETAIL ==========
         async function showPostDetail(postId) {
-            // บันทึก tab ปัจจุบัน
-            const activeTab = document.querySelector('.tab-content.active')?.id || 'tab-home';
-            state.previousTab = activeTab.replace('tab-', '');
-            
-            // ซ่อน main content
-            document.querySelector('.min-h-screen > div:not(#post-detail-page)').style.display = 'none';
-            
-            // แสดง post detail page
-            postDetailPage.classList.remove('hidden');
-            
-            // แสดง loading
-            document.getElementById('post-detail-content').innerHTML = `
-                <div class="flex justify-center items-center py-20">
-                    <div class="loading-spinner"></div>
-                </div>
-            `;
-
             const result = await callGAS('post', { postId });
             if (result.success) {
                 state.currentPost = result.data;
                 const post = result.data;
                 
+                document.getElementById('modal-title').textContent = post.title;
+
                 const typeText = {
                     'news': '📰 ข่าวสาร',
                     'event': '🎉 กิจกรรม',
@@ -2734,96 +2556,56 @@
                 const statusClass = post.approvalStatus === 'approved' ? 'text-[#06c755]' : 
                                    post.approvalStatus === 'pending' ? 'text-yellow-500' : 'text-red-500';
 
-                const canEdit = canEditPost(post);
-                const canDelete = canDeletePost(post);
-
-                const html = `
-                    <div class="post-detail-header">
-                        ${post.imageUrl ? `
-                            <img src="${post.imageUrl}" class="post-detail-image" loading="lazy">
-                        ` : ''}
+                let html = `
+                    ${post.imageUrl ? `
+                        <img src="${post.imageUrl}" class="w-full h-48 object-cover rounded-xl" loading="lazy">
+                    ` : ''}
+                    
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="badge badge-${post.type}">${typeText}</span>
+                            ${post.approvalStatus !== 'approved' ? 
+                                `<span class="badge badge-pending ml-2">⏳ ${statusText}</span>` : ''}
+                        </div>
+                        <span class="text-sm text-gray-400">
+                            <i class="fas fa-eye mr-1"></i>${post.viewCount || 0}
+                        </span>
                     </div>
                     
-                    <div class="post-detail-content">
-                        <h1 class="post-detail-title">${post.title}</h1>
-                        
-                        <div class="post-detail-meta">
-                            <div class="post-detail-author">
-                                <img src="${post.authorPicture || state.user?.pictureUrl || 'https://via.placeholder.com/40'}" 
-                                     class="author-avatar-sm"
-                                     onerror="this.src='https://via.placeholder.com/40'">
-                                <div>
-                                    <p class="font-semibold">${post.authorName || 'ผู้ดูแล'}</p>
-                                    <p class="text-xs text-gray-400">${post.authorRole || ''}</p>
-                                </div>
-                            </div>
-                            
-                            <div class="post-detail-stats">
-                                <span><i class="far fa-eye"></i> ${post.viewCount || 0}</span>
-                                <span><i class="far fa-calendar"></i> ${formatDate(post.createdAt)}</span>
-                            </div>
-                            
-                            <div class="flex gap-2">
-                                <span class="badge badge-${post.type}">${typeText}</span>
-                                ${post.approvalStatus !== 'approved' ? 
-                                    `<span class="badge badge-pending">⏳ ${statusText}</span>` : ''}
-                            </div>
-                        </div>
-                        
-                        <div class="post-detail-body">
-                            ${post.content}
-                        </div>
-                        
-                        ${post.link ? `
-                            <a href="${post.link}" target="_blank" class="btn-link">
-                                <i class="fas fa-external-link-alt"></i>
-                                ดูข้อมูลเพิ่มเติม
-                                <i class="fas fa-arrow-right"></i>
-                            </a>
-                        ` : ''}
-                        
-                        <div class="post-detail-actions">
-                            <button class="btn-share flex-1" onclick="shareAsFlexMessage()">
-                                <i class="fab fa-line"></i> แชร์
-                            </button>
-                            <button class="btn-outline flex-1" onclick="goBack()">
-                                <i class="fas fa-arrow-left"></i> กลับ
-                            </button>
-                        </div>
-                        
-                        ${canEdit || canDelete ? `
-                            <div class="post-detail-admin-actions">
-                                <p class="text-sm text-gray-400 mb-3">จัดการโพสต์</p>
-                                <div class="flex gap-2">
-                                    ${canEdit ? `
-                                        <button class="btn-outline flex-1" onclick="editCurrentPost()">
-                                            <i class="fas fa-edit mr-2"></i>แก้ไข
-                                        </button>
-                                    ` : ''}
-                                    ${canDelete ? `
-                                        <button class="btn-danger flex-1" onclick="deleteCurrentPost()">
-                                            <i class="fas fa-trash mr-2"></i>ลบ
-                                        </button>
-                                    ` : ''}
-                                </div>
-                            </div>
-                        ` : ''}
+                    <p class="text-gray-400 whitespace-pre-wrap">${post.content}</p>
+                    
+                    <div class="text-sm text-gray-500 border-t border-[#2a2e36] pt-4">
+                        <p><i class="fas fa-user mr-2"></i> โพสต์โดย: ${post.authorName || 'ผู้ดูแล'}</p>
+                        <p><i class="fas fa-calendar mr-2 mt-2"></i> ${formatDate(post.createdAt)}</p>
+                        <p class="mt-1"><span class="${statusClass}">สถานะ: ${statusText}</span></p>
+                        ${post.link ? `<p><i class="fas fa-link mr-2 mt-2"></i> <a href="${post.link}" target="_blank" class="text-[#06c755]">ลิงก์เพิ่มเติม</a></p>` : ''}
                     </div>
                 `;
 
-                document.getElementById('post-detail-content').innerHTML = html;
+                document.getElementById('modal-body').innerHTML = html;
+
+                const canEdit = canEditPost(post);
+                const canDelete = canDeletePost(post);
                 
-                // อัปเดต title
-                document.title = `${post.title} - iTNews`;
-            } else {
-                document.getElementById('post-detail-content').innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-exclamation-circle text-4xl text-red-500 mb-3"></i>
-                        <p class="text-gray-400">ไม่พบโพสต์</p>
-                        <button class="btn-primary mt-4" onclick="goBack()">กลับ</button>
-                    </div>
-                `;
+                const adminControls = document.getElementById('modal-admin-controls');
+                
+                if (canEdit || canDelete) {
+                    adminControls.classList.remove('hidden');
+                    
+                    const editDeleteDiv = document.getElementById('modal-edit-btn').parentNode;
+                    editDeleteDiv.classList.remove('hidden');
+                    document.getElementById('modal-edit-btn').style.display = canEdit ? 'block' : 'none';
+                    document.getElementById('modal-delete-btn').style.display = canDelete ? 'block' : 'none';
+                } else {
+                    adminControls.classList.add('hidden');
+                }
+
+                document.getElementById('post-modal').classList.add('active');
             }
+        }
+
+        function closeModal() {
+            document.getElementById('post-modal').classList.remove('active');
         }
 
         // ========== PERMISSION CHECKS ==========
@@ -2876,8 +2658,9 @@
                 return;
             }
             
+            // ป้องกันการกดซ้ำ
             const saveBtn = document.getElementById('save-post-btn');
-            if (saveBtn.disabled) return;
+            if (saveBtn.disabled) return; // เช็คว่ากำลังทำงานอยู่หรือไม่
             
             saveBtn.disabled = true;
             saveBtn.classList.add('loading');
@@ -2929,6 +2712,7 @@
                     
                     showSyncIndicator();
                     
+                    // โหลดข้อมูลทั้งหมดใหม่
                     await Promise.all([
                         loadPosts(true),
                         loadMyPosts(),
@@ -2944,6 +2728,7 @@
                 console.error('Save post error:', error);
                 showToast('เกิดข้อผิดพลาดในการบันทึก', 'error');
             } finally {
+                // คืนค่าปุ่ม
                 saveBtn.disabled = false;
                 saveBtn.classList.remove('loading');
             }
@@ -2974,11 +2759,7 @@
                 document.getElementById('image-preview').style.display = 'none';
             }
             
-            // ถ้าอยู่ในหน้า post detail ให้กลับไปก่อน
-            if (!postDetailPage.classList.contains('hidden')) {
-                goBack();
-            }
-            
+            closeModal();
             document.getElementById('create-modal').classList.add('active');
         }
 
@@ -2990,7 +2771,7 @@
                 return;
             }
             
-            // เก็บข้อมูลปุ่มลบ (ถ้ามีใน modal)
+            // ป้องกันการกดซ้ำ
             const deleteBtn = document.getElementById('modal-delete-btn');
             if (deleteBtn) {
                 deleteBtn.disabled = true;
@@ -3033,8 +2814,7 @@
                     showConfirmButton: false
                 });
                 
-                // กลับไปหน้าก่อนหน้า
-                goBack();
+                closeModal();
                 
                 showSyncIndicator();
                 
@@ -3050,6 +2830,7 @@
                 showRealtimeIndicator();
             }
             
+            // คืนค่าปุ่ม
             if (deleteBtn) {
                 deleteBtn.disabled = false;
                 deleteBtn.classList.remove('loading');
@@ -3126,6 +2907,7 @@
         async function saveUserRole(e) {
             e.preventDefault();
             
+            // ป้องกันการกดซ้ำ
             const saveBtn = e.target.querySelector('button[type="submit"]');
             if (saveBtn) {
                 if (saveBtn.disabled) return;
@@ -3195,6 +2977,7 @@
                 state.lastUpdate = Date.now();
             }
             
+            // คืนค่าปุ่ม
             if (saveBtn) {
                 saveBtn.disabled = false;
                 saveBtn.classList.remove('loading');
@@ -3214,6 +2997,7 @@
                 document.getElementById('admin-pending').textContent = stats.pending || 0;
             }
 
+            // โหลด posts สำหรับ admin โดยใช้ API เดียวกับ loadPosts
             const posts = await callGAS('posts', { 
                 page: state.adminPostsPage,
                 pageSize: CONFIG.PAGE_SIZE,
@@ -3221,6 +3005,7 @@
             });
             
             if (posts.success) {
+                // รองรับโครงสร้างข้อมูลทั้งแบบมี posts property และ array ตรงๆ
                 if (posts.data.posts) {
                     state.adminPosts = posts.data.posts || [];
                     state.adminPostsTotalPages = Math.ceil((posts.data.total || 0) / CONFIG.PAGE_SIZE) || 1;
@@ -3307,6 +3092,7 @@
                 return;
             }
             
+            // ป้องกันการกดซ้ำ
             const saveBtn = e.target.querySelector('button[type="submit"]');
             if (saveBtn) {
                 if (saveBtn.disabled) return;
@@ -3337,6 +3123,7 @@
                 showSyncIndicator();
             }
             
+            // คืนค่าปุ่ม
             if (saveBtn) {
                 saveBtn.disabled = false;
                 saveBtn.classList.remove('loading');
@@ -3365,6 +3152,7 @@
         async function saveProfile(e) {
             e.preventDefault();
             
+            // ป้องกันการกดซ้ำ
             const saveBtn = e.target.querySelector('button[type="submit"]');
             if (saveBtn) {
                 if (saveBtn.disabled) return;
@@ -3396,6 +3184,7 @@
                 showSyncIndicator();
             }
             
+            // คืนค่าปุ่ม
             if (saveBtn) {
                 saveBtn.disabled = false;
                 saveBtn.classList.remove('loading');
@@ -3464,11 +3253,14 @@
             btn.addEventListener('click', () => {
                 const tab = btn.dataset.adminTab;
                 
+                // อัปเดต active state
                 document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 
+                // ซ่อนทุก tab
                 document.querySelectorAll('.admin-tab').forEach(t => t.classList.add('hidden'));
                 
+                // แสดง tab ที่เลือก
                 document.getElementById(`admin-${tab}-tab`).classList.remove('hidden');
             });
         });
