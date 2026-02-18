@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -7,21 +6,26 @@
     <title>iTNews · LINE ข่าวสาร</title>
     <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/653/653021.png">
     
-    <!-- โหลด CSS ก่อน -->
+    <!-- โหลด CSS และ Preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://unpkg.com">
+    <link rel="preconnect" href="https://static.line-scdn.net">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- LINE LIFF (โหลดแบบ async) -->
+    <!-- LINE LIFF (โหลดแบบ async และ preconnect) -->
     <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js" async></script>
     
-    <!-- SweetAlert2 (โหลดทีหลัง) -->
+    <!-- SweetAlert2 (โหลดแบบ defer) -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
     
     <!-- Swiper CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     
-    <!-- AOS Animation (โหลดทีหลัง) -->
+    <!-- AOS Animation -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
     <style>
@@ -288,6 +292,7 @@
             cursor: pointer;
             transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
             height: fit-content;
+            position: relative;
         }
         
         @media (min-width: 1024px) {
@@ -542,7 +547,7 @@
             align-items: center;
             justify-content: center;
             flex-direction: column;
-            transition: opacity 0.5s;
+            transition: opacity 0.3s;
         }
         
         .initial-loading.hide {
@@ -854,7 +859,7 @@
         }
         
         .hidden {
-            display: none;
+            display: none !important;
         }
         
         .line-clamp-2 {
@@ -1057,16 +1062,63 @@
         .skeleton-line.short {
             width: 60%;
         }
+
+        /* Performance Optimizations */
+        .will-change-transform {
+            will-change: transform;
+        }
+        
+        .content-visibility-auto {
+            content-visibility: auto;
+        }
+        
+        /* Loading bar */
+        .loading-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), #fff);
+            animation: loadingBar 2s ease-in-out infinite;
+            z-index: 2000;
+            display: none;
+        }
+        
+        .loading-bar.active {
+            display: block;
+        }
+        
+        @keyframes loadingBar {
+            0% { transform: translateX(-100%); }
+            50% { transform: translateX(0); }
+            100% { transform: translateX(100%); }
+        }
+        
+        /* Touch optimization */
+        @media (hover: none) {
+            .news-card:hover {
+                transform: none;
+            }
+            
+            .btn-pagination:hover {
+                border-color: var(--border);
+                color: var(--text-secondary);
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Initial Loading - แสดงเฉพาะครั้งแรก -->
+    <!-- Loading Bar -->
+    <div class="loading-bar" id="loading-bar"></div>
+    
+    <!-- Initial Loading -->
     <div class="initial-loading" id="initial-loading">
         <div class="loading-spinner"></div>
         <div class="loading-text">iTNews กำลังโหลด...</div>
     </div>
     
-    <!-- Sync Indicator (แสดงตอนอัปเดตเบื้องหลัง) -->
+    <!-- Sync Indicator -->
     <div class="sync-indicator" id="sync-indicator">
         <i class="fas fa-sync-alt fa-spin"></i> กำลังอัปเดต...
     </div>
@@ -1076,7 +1128,7 @@
         <p id="toast-message"></p>
     </div>
 
-    <!-- Floating Create Button (สำหรับ Editor/Admin) -->
+    <!-- Floating Create Button -->
     <div id="floating-create-btn" class="floating-create-btn hidden" onclick="showCreatePostModal()">
         <i class="fas fa-plus text-2xl"></i>
     </div>
@@ -1146,10 +1198,9 @@
                 </div>
             </div>
 
-            <!-- Hero Slider (แสดงเฉพาะประกาศด่วน เสมอ) -->
+            <!-- Hero Slider -->
             <div class="swiper hero-swiper mb-4">
                 <div class="swiper-wrapper" id="hero-slider-wrapper">
-                    <!-- Skeleton for slider -->
                     <div class="swiper-slide skeleton">
                         <div style="width:100%; height:100%; background:#1a1d24;"></div>
                     </div>
@@ -1170,7 +1221,7 @@
                 <input type="text" id="search-input" placeholder="ค้นหาข่าวสาร กิจกรรม..." autocomplete="off">
             </div>
 
-            <!-- Filter (ไม่มีปุ่มรออนุมัติ) -->
+            <!-- Filter -->
             <div class="filter-container">
                 <button class="filter-btn active" data-filter="all">ทั้งหมด</button>
                 <button class="filter-btn" data-filter="news">📰 ข่าวสาร</button>
@@ -1178,9 +1229,8 @@
                 <button class="filter-btn" data-filter="urgent">⚠️ ประกาศด่วน</button>
             </div>
 
-            <!-- Posts List - Grid for PC -->
+            <!-- Posts List -->
             <div id="posts-list" class="posts-grid space-y-3 lg:space-y-0">
-                <!-- Skeleton loading -->
                 <div class="skeleton-card">
                     <div class="skeleton-image"></div>
                     <div class="skeleton-line short"></div>
@@ -1222,7 +1272,6 @@
                 </button>
             </div>
             <div id="my-posts-list" class="my-posts-grid space-y-3 lg:space-y-0">
-                <!-- Skeleton loading -->
                 <div class="skeleton-card">
                     <div class="skeleton-image"></div>
                     <div class="skeleton-line short"></div>
@@ -1256,7 +1305,7 @@
         <div id="tab-admin" class="tab-content">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-bold gradient-text">จัดการระบบ</h2>
-                <button id="refresh-admin" class="text-[#06c755] text-sm">
+                <button id="refresh-admin" class="text-[#06c755] text-sm" onclick="refreshAdminData()">
                     <i class="fas fa-sync-alt mr-1"></i>รีเฟรช
                 </button>
             </div>
@@ -1286,19 +1335,19 @@
 
             <!-- Admin Tabs -->
             <div class="flex border-b border-[#2a2e36] mb-4 overflow-x-auto">
-                <button class="admin-tab-btn flex-1 py-2 text-center active whitespace-nowrap" data-admin-tab="posts">
+                <button class="admin-tab-btn flex-1 py-2 text-center active whitespace-nowrap" data-admin-tab="posts" onclick="switchAdminTab('posts')">
                     จัดการโพสต์
                 </button>
-                <button class="admin-tab-btn flex-1 py-2 text-center whitespace-nowrap" data-admin-tab="pending">
+                <button class="admin-tab-btn flex-1 py-2 text-center whitespace-nowrap" data-admin-tab="pending" onclick="switchAdminTab('pending')">
                     <span class="relative">
                         รออนุมัติ
                         <span id="pending-badge" class="absolute -top-2 -right-4 bg-yellow-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
                     </span>
                 </button>
-                <button class="admin-tab-btn flex-1 py-2 text-center whitespace-nowrap" data-admin-tab="users">
+                <button class="admin-tab-btn flex-1 py-2 text-center whitespace-nowrap" data-admin-tab="users" onclick="switchAdminTab('users')">
                     จัดการผู้ใช้
                 </button>
-                <button class="admin-tab-btn flex-1 py-2 text-center whitespace-nowrap" data-admin-tab="settings">
+                <button class="admin-tab-btn flex-1 py-2 text-center whitespace-nowrap" data-admin-tab="settings" onclick="switchAdminTab('settings')">
                     ตั้งค่า
                 </button>
             </div>
@@ -1510,7 +1559,8 @@
             DRIVE_FOLDER_ID: '18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE',
             POLLING_INTERVAL: isMobile ? 10000 : 5000,
             CACHE_TIME: 5 * 60 * 1000,
-            INIT_TIMEOUT: 8000 // 8 วินาที
+            INIT_TIMEOUT: 5000,
+            REQUEST_TIMEOUT: 10000
         };
 
         // ========== STATE ==========
@@ -1532,13 +1582,18 @@
             myPostsTotalPages: 1,
             adminPostsTotalPages: 1,
             currentPost: null,
-            settings: { requireApproval: false },
+            settings: { 
+                appName: 'iTNews',
+                driveFolderId: CONFIG.DRIVE_FOLDER_ID,
+                requireApproval: false 
+            },
             lastUpdate: Date.now(),
             syncTimeout: null,
             urgentPosts: [],
             initialized: false,
-            cache: {},
-            loadingTimeout: null
+            cache: new Map(),
+            loadingTimeout: null,
+            pendingRequests: new Set()
         };
 
         // ========== DOM Elements ==========
@@ -1546,6 +1601,7 @@
         const toastMessage = document.getElementById('toast-message');
         const syncIndicator = document.getElementById('sync-indicator');
         const initialLoading = document.getElementById('initial-loading');
+        const loadingBar = document.getElementById('loading-bar');
 
         // ========== UTILS ==========
         function showToast(msg, type = 'success') {
@@ -1561,6 +1617,14 @@
             state.syncTimeout = setTimeout(() => {
                 syncIndicator.classList.remove('show');
             }, 1000);
+        }
+
+        function showLoadingBar() {
+            loadingBar.classList.add('active');
+        }
+
+        function hideLoadingBar() {
+            loadingBar.classList.remove('active');
         }
 
         function formatDate(dateStr) {
@@ -1588,14 +1652,34 @@
             }
         }
 
+        // Abort previous requests with same path
+        function abortPreviousRequests(path) {
+            state.pendingRequests.forEach((controller, requestPath) => {
+                if (requestPath === path) {
+                    controller.abort();
+                    state.pendingRequests.delete(requestPath);
+                }
+            });
+        }
+
         // ========== API CALL ==========
         async function callGAS(path, data = {}, useCache = false) {
             const cacheKey = path + JSON.stringify(data);
-            if (useCache && state.cache[cacheKey] && (Date.now() - state.cache[cacheKey].time) < CONFIG.CACHE_TIME) {
-                return state.cache[cacheKey].data;
+            
+            // Check cache
+            if (useCache && state.cache.has(cacheKey)) {
+                const cached = state.cache.get(cacheKey);
+                if (Date.now() - cached.time < CONFIG.CACHE_TIME) {
+                    return cached.data;
+                }
             }
 
+            // Abort previous request
+            abortPreviousRequests(path);
+
             try {
+                showLoadingBar();
+                
                 const formData = new FormData();
                 formData.append('path', path);
                 
@@ -1610,26 +1694,37 @@
                 });
 
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 15000);
+                state.pendingRequests.set(path, controller);
+
+                const timeoutId = setTimeout(() => controller.abort(), CONFIG.REQUEST_TIMEOUT);
 
                 const response = await fetch(CONFIG.GAS_URL, {
                     method: 'POST',
                     body: formData,
-                    signal: controller.signal
+                    signal: controller.signal,
+                    cache: 'no-cache'
                 });
 
                 clearTimeout(timeoutId);
+                state.pendingRequests.delete(path);
+                hideLoadingBar();
 
                 const text = await response.text();
                 
                 try {
                     const result = JSON.parse(text);
                     
-                    if (useCache && result.success) {
-                        state.cache[cacheKey] = {
+                    if (result.success && useCache) {
+                        state.cache.set(cacheKey, {
                             time: Date.now(),
                             data: result
-                        };
+                        });
+                        
+                        // Limit cache size
+                        if (state.cache.size > 50) {
+                            const firstKey = state.cache.keys().next().value;
+                            state.cache.delete(firstKey);
+                        }
                     }
                     
                     return result;
@@ -1638,6 +1733,13 @@
                 }
 
             } catch (error) {
+                hideLoadingBar();
+                state.pendingRequests.delete(path);
+                
+                if (error.name === 'AbortError') {
+                    return { success: false, message: 'การเชื่อมต่อหมดเวลา' };
+                }
+                
                 return { success: false, message: 'การเชื่อมต่อล้มเหลว' };
             }
         }
@@ -1719,11 +1821,14 @@
         // ========== LIFF INIT ==========
         async function initLIFF() {
             try {
-                // ตั้ง timeout เผื่อ LIFF โหลดช้า
                 state.loadingTimeout = setTimeout(() => {
                     initialLoading.classList.add('hide');
                     showToast('การเชื่อมต่อใช้เวลานานกว่าปกติ', 'warning');
                 }, CONFIG.INIT_TIMEOUT);
+
+                if (!window.liff) {
+                    throw new Error('LIFF SDK ไม่โหลด');
+                }
 
                 await liff.init({ liffId: CONFIG.LIFF_ID });
                 
@@ -1732,10 +1837,12 @@
                     return;
                 }
                 
-                const profile = await liff.getProfile();
-                const idToken = liff.getDecodedIDToken();
+                // โหลดข้อมูลแบบขนาน
+                const [profile, idToken] = await Promise.all([
+                    liff.getProfile(),
+                    liff.getDecodedIDToken().catch(() => ({}))
+                ]);
                 
-                // โหลดข้อมูลที่จำเป็นก่อน
                 const userResult = await callGAS('user/profile', {
                     lineUserId: profile.userId,
                     displayName: profile.displayName,
@@ -1752,25 +1859,22 @@
                     
                     updateUI();
                     
-                    // โหลดข้อมูลทีละส่วน
-                    setTimeout(() => {
-                        Promise.all([
-                            loadPosts(),
-                            loadUrgentPosts(),
-                            loadMyPosts()
-                        ]).then(() => {
-                            state.initialized = true;
-                            initialLoading.classList.add('hide');
-                        });
-                    }, 100);
+                    // โหลดข้อมูลที่จำเป็นพร้อมกัน
+                    await Promise.all([
+                        loadPosts(true),
+                        loadUrgentPosts(true),
+                        loadMyPosts(true),
+                        loadSettings(true) // โหลดตั้งค่าทันที
+                    ]);
                     
-                    // โหลดข้อมูลที่เหลือแบบไม่ต้องรอ
+                    state.initialized = true;
+                    initialLoading.classList.add('hide');
+                    
+                    // โหลดข้อมูล admin แบบ async
                     if (state.isAdmin) {
-                        setTimeout(() => {
-                            loadPendingPosts(true);
-                            loadUsers(true);
-                            loadAdminStats(true);
-                        }, 500);
+                        loadPendingPosts(true);
+                        loadUsers(true);
+                        loadAdminStats(true);
                     }
                     
                     startRealtimeUpdates();
@@ -1802,13 +1906,15 @@
                 if (result.success && result.data?.hasUpdates) {
                     showSyncIndicator();
                     
-                    if (document.getElementById('tab-home').classList.contains('active')) {
+                    const activeTab = document.querySelector('.tab-content.active')?.id;
+                    
+                    if (activeTab === 'tab-home') {
                         await loadPosts(true);
                     }
-                    if (document.getElementById('tab-my').classList.contains('active')) {
+                    if (activeTab === 'tab-my') {
                         await loadMyPosts(true);
                     }
-                    if (state.isAdmin && document.getElementById('tab-admin').classList.contains('active')) {
+                    if (state.isAdmin && activeTab === 'tab-admin') {
                         await loadAdminStats(true);
                         await loadPendingPosts(true);
                     }
@@ -1882,13 +1988,40 @@
         }
 
         // ========== LOAD SETTINGS ==========
-        async function loadSettings() {
-            const result = await callGAS('settings', {}, true);
-            if (result.success) {
-                state.settings = result.data || {};
-                document.getElementById('setting-app-name').value = state.settings.appName || 'iTNews';
-                document.getElementById('setting-drive-folder').value = state.settings.driveFolderId || CONFIG.DRIVE_FOLDER_ID;
-                document.getElementById('setting-require-approval').checked = state.settings.requireApproval || false;
+        async function loadSettings(useCache = false) {
+            try {
+                const result = await callGAS('settings', {}, useCache);
+                if (result.success) {
+                    // Merge กับค่าปัจจุบัน
+                    state.settings = {
+                        ...state.settings,
+                        ...(result.data || {})
+                    };
+                    
+                    // อัปเดต input fields
+                    const appNameInput = document.getElementById('setting-app-name');
+                    const driveFolderInput = document.getElementById('setting-drive-folder');
+                    const requireApprovalInput = document.getElementById('setting-require-approval');
+                    
+                    if (appNameInput) {
+                        appNameInput.value = state.settings.appName || 'iTNews';
+                    }
+                    
+                    if (driveFolderInput) {
+                        driveFolderInput.value = state.settings.driveFolderId || CONFIG.DRIVE_FOLDER_ID;
+                    }
+                    
+                    if (requireApprovalInput) {
+                        requireApprovalInput.checked = state.settings.requireApproval || false;
+                    }
+                    
+                    // อัปเดต CONFIG ถ้ามีการเปลี่ยนแปลง
+                    if (state.settings.driveFolderId) {
+                        CONFIG.DRIVE_FOLDER_ID = state.settings.driveFolderId;
+                    }
+                }
+            } catch (error) {
+                console.error('Load settings error:', error);
             }
         }
 
@@ -1915,12 +2048,12 @@
             }
         }
 
-        async function loadUrgentPosts() {
+        async function loadUrgentPosts(useCache = false) {
             const result = await callGAS('posts', {
                 filter: 'urgent',
                 pageSize: 10,
                 includePending: false
-            }, true);
+            }, useCache);
             
             if (result.success) {
                 state.urgentPosts = result.data.posts?.filter(p => p.approvalStatus === 'approved') || [];
@@ -1969,23 +2102,27 @@
         }
 
         function initSwiper(autoplay) {
-            const swiperEl = document.querySelector('.hero-swiper');
-            if (swiperEl.swiper) {
-                swiperEl.swiper.destroy(true, true);
-            }
-            
-            new Swiper('.hero-swiper', {
-                autoplay: autoplay ? {
-                    delay: 3000,
-                    disableOnInteraction: false,
-                } : false,
-                pagination: {
-                    el: '.swiper-pagination',
-                    clickable: true,
-                },
-                loop: autoplay,
-                speed: 500,
-            });
+            setTimeout(() => {
+                const swiperEl = document.querySelector('.hero-swiper');
+                if (!swiperEl) return;
+                
+                if (swiperEl.swiper) {
+                    swiperEl.swiper.destroy(true, true);
+                }
+                
+                new Swiper('.hero-swiper', {
+                    autoplay: autoplay ? {
+                        delay: 3000,
+                        disableOnInteraction: false,
+                    } : false,
+                    pagination: {
+                        el: '.swiper-pagination',
+                        clickable: true,
+                    },
+                    loop: autoplay,
+                    speed: 500,
+                });
+            }, 100);
         }
 
         function renderPosts() {
@@ -2082,11 +2219,11 @@
         }
 
         // ========== MY POSTS ==========
-        async function loadMyPosts(silent = false) {
+        async function loadMyPosts(useCache = false) {
             const result = await callGAS('user/posts', {
                 page: state.myPostsPage,
                 pageSize: CONFIG.PAGE_SIZE
-            }, true);
+            }, useCache);
             
             if (result.success) {
                 if (result.data.posts) {
@@ -2275,7 +2412,7 @@
             
             if (result.isConfirmed) {
                 showSyncIndicator();
-                state.cache = {};
+                state.cache.clear();
                 await Promise.all([
                     loadPosts(true),
                     loadPendingPosts(),
@@ -2309,7 +2446,7 @@
             
             if (result.isConfirmed) {
                 showSyncIndicator();
-                state.cache = {};
+                state.cache.clear();
                 await Promise.all([
                     loadPosts(true),
                     loadPendingPosts(),
@@ -2547,6 +2684,7 @@
             document.getElementById('post-image').value = '';
             document.getElementById('post-link').value = '';
             document.getElementById('image-preview').style.display = 'none';
+            document.getElementById('image-preview').src = '';
             document.getElementById('post-image-file').value = '';
             
             document.getElementById('create-modal').classList.add('active');
@@ -2613,7 +2751,7 @@
                     
                     closeCreateModal();
                     
-                    state.cache = {};
+                    state.cache.clear();
                     
                     await Promise.all([
                         loadPosts(true),
@@ -2691,7 +2829,7 @@
             
             if (result.isConfirmed) {
                 closeModal();
-                state.cache = {};
+                state.cache.clear();
                 await Promise.all([
                     loadPosts(true),
                     loadMyPosts(),
@@ -2797,7 +2935,7 @@
             
             if (result.isConfirmed) {
                 closeRoleModal();
-                state.cache = {};
+                state.cache.clear();
                 
                 if (state.user?.lineUserId === userId) {
                     state.user.role = role;
@@ -2907,6 +3045,32 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // ========== ADMIN TAB SWITCH ==========
+        function switchAdminTab(tab) {
+            document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`[data-admin-tab="${tab}"]`).classList.add('active');
+            
+            document.querySelectorAll('.admin-tab').forEach(t => t.classList.add('hidden'));
+            document.getElementById(`admin-${tab}-tab`).classList.remove('hidden');
+            
+            // โหลดข้อมูลตามแท็บ
+            if (tab === 'settings') {
+                loadSettings(true);
+            }
+        }
+
+        // ========== REFRESH ADMIN ==========
+        function refreshAdminData() {
+            if (state.isAdmin) {
+                showSyncIndicator();
+                state.adminPostsPage = 1;
+                state.cache.clear();
+                loadAdminStats();
+                loadUsers();
+                loadPendingPosts();
+            }
+        }
+
         // ========== SETTINGS ==========
         async function saveSettings(e) {
             e.preventDefault();
@@ -2924,7 +3088,15 @@
             
             const result = await callGAS('admin/settings/update', data);
             if (result.success) {
-                state.cache = {};
+                state.cache.clear();
+                
+                // อัปเดต state
+                Object.assign(state.settings, data);
+                
+                // อัปเดต CONFIG
+                if (data.driveFolderId) {
+                    CONFIG.DRIVE_FOLDER_ID = data.driveFolderId;
+                }
                 
                 await Swal.fire({
                     title: 'บันทึกสำเร็จ',
@@ -2934,8 +3106,6 @@
                     timer: 1500,
                     showConfirmButton: false
                 });
-                
-                Object.assign(state.settings, data);
             }
         }
 
@@ -2971,6 +3141,7 @@
                 closeProfileModal();
                 Object.assign(state.user, data);
                 updateUI();
+                showToast('บันทึกสำเร็จ');
             }
         }
 
@@ -3020,31 +3191,6 @@
             });
         });
 
-        // ========== REFRESH ADMIN ==========
-        document.getElementById('refresh-admin')?.addEventListener('click', () => {
-            if (state.isAdmin) {
-                showSyncIndicator();
-                state.adminPostsPage = 1;
-                state.cache = {};
-                loadAdminStats();
-                loadUsers();
-                loadPendingPosts();
-            }
-        });
-
-        // ========== ADMIN TAB BUTTONS ==========
-        document.querySelectorAll('.admin-tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const tab = btn.dataset.adminTab;
-                
-                document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                
-                document.querySelectorAll('.admin-tab').forEach(t => t.classList.add('hidden'));
-                document.getElementById(`admin-${tab}-tab`).classList.remove('hidden');
-            });
-        });
-
         // ========== BOTTOM NAVIGATION ==========
         document.querySelectorAll('.nav-item').forEach(tab => {
             tab.addEventListener('click', () => {
@@ -3059,9 +3205,22 @@
                 if (typeof liff !== 'undefined') {
                     await initLIFF();
                 } else {
-                    window.addEventListener('load', async () => {
-                        await initLIFF();
-                    });
+                    // รอให้ LIFF โหลด
+                    const checkLiff = setInterval(() => {
+                        if (typeof liff !== 'undefined') {
+                            clearInterval(checkLiff);
+                            initLIFF();
+                        }
+                    }, 100);
+                    
+                    // timeout หลังจาก 5 วินาที
+                    setTimeout(() => {
+                        clearInterval(checkLiff);
+                        if (!state.initialized) {
+                            initialLoading.classList.add('hide');
+                            showToast('ไม่สามารถโหลด LIFF SDK', 'error');
+                        }
+                    }, 5000);
                 }
             } catch {
                 setTimeout(() => {
@@ -3081,6 +3240,12 @@
             if (state.loadingTimeout) {
                 clearTimeout(state.loadingTimeout);
             }
+            
+            // Abort all pending requests
+            state.pendingRequests.forEach(controller => {
+                controller.abort();
+            });
+            state.pendingRequests.clear();
         });
 
         // Close modals on outside click
