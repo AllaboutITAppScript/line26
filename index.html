@@ -28,6 +28,10 @@
     <!-- AOS Animation -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
+    <!-- Emoji Picker -->
+    <script src="https://cdn.jsdelivr.net/npm/@emoji-mart/data@latest/sets/14/twitter.json"></script>
+    <script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js"></script>
+    
     <style>
         * {
             font-family: 'IBM Plex Sans Thai', sans-serif;
@@ -118,6 +122,74 @@
         .navbar-item.active {
             background: var(--primary);
             color: white;
+        }
+        
+        /* Notification Bell */
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            margin-right: 16px;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ef4444;
+            color: white;
+            font-size: 10px;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            border: 2px solid var(--bg-card);
+        }
+        
+        .notification-panel {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-top: 8px;
+            z-index: 100;
+            display: none;
+        }
+        
+        .notification-panel.show {
+            display: block;
+        }
+        
+        .notification-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .notification-item:hover {
+            background: #252930;
+        }
+        
+        .notification-item.unread {
+            background: rgba(6,199,85,0.1);
+        }
+        
+        .notification-item.unread::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--primary);
         }
         
         /* Back button */
@@ -347,6 +419,241 @@
             background: rgba(239,68,68,0.1);
             border: 1px solid var(--primary);
             border-radius: 16px;
+        }
+        
+        /* Comments Section */
+        .comments-section {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .comments-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .comments-title i {
+            color: var(--primary);
+        }
+        
+        .comment-input-area {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .comment-input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+        
+        .comment-input {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 12px 16px;
+            color: var(--text);
+            resize: none;
+            min-height: 80px;
+            transition: border-color 0.2s;
+        }
+        
+        .comment-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .comment-emoji-btn {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 20px;
+            transition: color 0.2s;
+        }
+        
+        .comment-emoji-btn:hover {
+            color: var(--primary);
+        }
+        
+        .comment-submit-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 0 24px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            height: 80px;
+        }
+        
+        .comment-submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .comment-submit-btn.loading {
+            position: relative;
+            color: transparent;
+        }
+        
+        .comment-submit-btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 2px solid white;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        .comments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .comment-item {
+            display: flex;
+            gap: 12px;
+            padding: 16px;
+            background: var(--bg);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            transition: background 0.2s;
+            position: relative;
+        }
+        
+        .comment-item:hover {
+            background: #252930;
+        }
+        
+        .comment-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            object-fit: cover;
+        }
+        
+        .comment-content {
+            flex: 1;
+        }
+        
+        .comment-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+            flex-wrap: wrap;
+        }
+        
+        .comment-author {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .comment-time {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+        
+        .comment-text {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text);
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        
+        .comment-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .comment-action-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 12px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .comment-action-btn:hover {
+            background: rgba(6,199,85,0.1);
+            color: var(--primary);
+        }
+        
+        .comment-action-btn.delete:hover {
+            background: rgba(239,68,68,0.1);
+            color: #ef4444;
+        }
+        
+        .comment-edit-input {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 8px 12px;
+            color: var(--text);
+            margin-top: 8px;
+            resize: vertical;
+        }
+        
+        .comment-edit-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .empty-comments {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+            background: var(--bg);
+            border-radius: 16px;
+            border: 1px dashed var(--border);
+        }
+        
+        .empty-comments i {
+            font-size: 40px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+        
+        /* Emoji Picker */
+        .emoji-picker-container {
+            position: absolute;
+            bottom: 100%;
+            right: 0;
+            margin-bottom: 8px;
+            z-index: 100;
+            display: none;
+        }
+        
+        .emoji-picker-container.show {
+            display: block;
         }
         
         @keyframes fadeIn {
@@ -1306,6 +1613,48 @@
             object-fit: cover;
             border: 2px solid var(--primary);
         }
+        
+        /* Admin Comments Tab */
+        .admin-comments-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .admin-comment-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .admin-comment-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .admin-comment-status {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+        
+        .status-active {
+            background: rgba(6,199,85,0.2);
+            color: var(--primary);
+        }
+        
+        .status-deleted {
+            background: rgba(239,68,68,0.2);
+            color: #ef4444;
+        }
+        
+        .status-deleted_by_admin {
+            background: rgba(239,68,68,0.3);
+            color: #ef4444;
+        }
     </style>
 </head>
 <body>
@@ -1337,19 +1686,37 @@
                 <i class="fas fa-newspaper"></i>
                 <span>iTNews</span>
             </div>
-            <div class="navbar-menu">
-                <div class="navbar-item active" onclick="switchTab('home')">
-                    <i class="fas fa-home"></i>
-                    <span>หน้าแรก</span>
+            <div class="flex items-center">
+                <!-- Notification Bell -->
+                <div class="notification-bell" id="notification-bell" onclick="toggleNotifications()">
+                    <i class="far fa-bell text-xl"></i>
+                    <span id="notification-badge" class="notification-badge hidden">0</span>
                 </div>
-                <div class="navbar-item" onclick="switchTab('my')">
-                    <i class="fas fa-pen-fancy"></i>
-                    <span>โพสต์ของฉัน</span>
+                <div class="navbar-menu">
+                    <div class="navbar-item active" onclick="switchTab('home')">
+                        <i class="fas fa-home"></i>
+                        <span>หน้าแรก</span>
+                    </div>
+                    <div class="navbar-item" onclick="switchTab('my')">
+                        <i class="fas fa-pen-fancy"></i>
+                        <span>โพสต์ของฉัน</span>
+                    </div>
+                    <div class="navbar-item admin-only hidden" onclick="switchTab('admin')">
+                        <i class="fas fa-cog"></i>
+                        <span>จัดการ</span>
+                    </div>
                 </div>
-                <div class="navbar-item admin-only hidden" onclick="switchTab('admin')">
-                    <i class="fas fa-cog"></i>
-                    <span>จัดการ</span>
-                </div>
+            </div>
+        </div>
+        
+        <!-- Notification Panel -->
+        <div id="notification-panel" class="notification-panel">
+            <div class="p-3 border-b border-[#2a2e36] flex justify-between items-center">
+                <h4 class="font-semibold">การแจ้งเตือน</h4>
+                <button class="text-xs text-[#06c755]" onclick="markAllNotificationsRead()">อ่านทั้งหมด</button>
+            </div>
+            <div id="notifications-list" class="py-2">
+                <!-- Notifications will be loaded here -->
             </div>
         </div>
     </nav>
@@ -1505,6 +1872,9 @@
                 <button class="admin-tab-btn flex-1 py-2 text-center whitespace-nowrap" data-admin-tab="users">
                     จัดการผู้ใช้
                 </button>
+                <button class="admin-tab-btn flex-1 py-2 text-center whitespace-nowrap" data-admin-tab="comments">
+                    จัดการความคิดเห็น
+                </button>
                 <button class="admin-tab-btn flex-1 py-2 text-center whitespace-nowrap" data-admin-tab="settings">
                     ตั้งค่า
                 </button>
@@ -1542,6 +1912,16 @@
                     <input type="text" id="user-search" placeholder="ค้นหาผู้ใช้..." autocomplete="off">
                 </div>
                 <div id="users-list" class="space-y-2"></div>
+            </div>
+
+            <!-- Admin: Comments Management -->
+            <div id="admin-comments-tab" class="admin-tab hidden">
+                <h3 class="font-semibold mb-3">จัดการความคิดเห็นทั้งหมด</h3>
+                <div class="search-box mb-4">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="admin-comment-search" placeholder="ค้นหาความคิดเห็น..." autocomplete="off">
+                </div>
+                <div id="admin-comments-list" class="admin-comments-list space-y-2"></div>
             </div>
 
             <!-- Admin: Settings -->
@@ -1683,6 +2063,24 @@
         </div>
     </div>
 
+    <!-- Edit Comment Modal -->
+    <div class="modal" id="edit-comment-modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">แก้ไขความคิดเห็น</h3>
+                <button onclick="closeEditCommentModal()"><i class="fas fa-times text-gray-400 text-xl"></i></button>
+            </div>
+            <form id="edit-comment-form" onsubmit="saveEditedComment(event)">
+                <input type="hidden" id="edit-comment-id">
+                <textarea id="edit-comment-content" class="input-field" rows="4" required maxlength="500"></textarea>
+                <div class="flex gap-2">
+                    <button type="submit" class="btn-primary flex-1">บันทึก</button>
+                    <button type="button" class="btn-outline flex-1" onclick="closeEditCommentModal()">ยกเลิก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
@@ -1712,6 +2110,8 @@
             pendingPosts: [],
             adminPosts: [],
             users: [],
+            comments: {}, // comments by postId
+            notifications: [],
             currentFilter: 'all',
             searchTerm: '',
             isAdmin: false,
@@ -1723,6 +2123,7 @@
             myPostsTotalPages: 1,
             adminPostsTotalPages: 1,
             currentPost: null,
+            currentEditingComment: null,
             settings: {
                 requireApproval: false
             },
@@ -1773,6 +2174,21 @@
             });
         }
 
+        function formatTimeAgo(dateStr) {
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffMins < 1) return 'เมื่อสักครู่';
+            if (diffMins < 60) return `${diffMins} นาทีที่แล้ว`;
+            if (diffHours < 24) return `${diffHours} ชั่วโมงที่แล้ว`;
+            if (diffDays < 7) return `${diffDays} วันที่แล้ว`;
+            return formatDateShort(dateStr);
+        }
+
         // ========== CLOSE ALL MODALS ==========
         function closeAllModals() {
             document.querySelectorAll('.modal').forEach(modal => {
@@ -1782,31 +2198,109 @@
 
         // ========== NAVIGATION ==========
         function goHome() {
-            // ปิด modal ทั้งหมด
             closeAllModals();
-            
-            // ซ่อน post detail
             postDetailPage.classList.add('hidden');
-            
-            // แสดง main content
             document.querySelector('.min-h-screen > div:not(#post-detail-page)').style.display = 'block';
-            
-            // เปิด tab home
             switchTab('home');
         }
 
         function goBack() {
-            // ปิด modal ทั้งหมด
             closeAllModals();
-            
-            // ซ่อน post detail
             postDetailPage.classList.add('hidden');
-            
-            // แสดง main content
             document.querySelector('.min-h-screen > div:not(#post-detail-page)').style.display = 'block';
-            
-            // เปิด tab ก่อนหน้า
             switchTab(state.previousTab);
+        }
+
+        // ========== NOTIFICATIONS ==========
+        function toggleNotifications() {
+            const panel = document.getElementById('notification-panel');
+            panel.classList.toggle('show');
+            if (panel.classList.contains('show')) {
+                loadNotifications();
+            }
+        }
+
+        async function loadNotifications() {
+            if (!state.user) return;
+            
+            const result = await callGAS('notifications', {
+                userId: state.user.lineUserId
+            });
+            
+            if (result.success) {
+                state.notifications = result.data || [];
+                renderNotifications();
+                updateNotificationBadge();
+            }
+        }
+
+        function renderNotifications() {
+            const list = document.getElementById('notifications-list');
+            const unreadCount = state.notifications.filter(n => !n.isRead).length;
+            
+            if (state.notifications.length === 0) {
+                list.innerHTML = `
+                    <div class="text-center py-8 text-gray-400">
+                        <i class="far fa-bell text-3xl mb-2 opacity-50"></i>
+                        <p class="text-sm">ไม่มีการแจ้งเตือน</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = state.notifications.map(notif => {
+                const timeAgo = formatTimeAgo(notif.createdAt);
+                const isUnread = !notif.isRead;
+                
+                return `
+                    <div class="notification-item ${isUnread ? 'unread' : ''}" 
+                         onclick="markNotificationRead('${notif.notificationId}')">
+                        <div class="flex items-start gap-3">
+                            <div class="flex-1">
+                                <p class="text-sm ${isUnread ? 'font-semibold' : ''}">
+                                    ${notif.content}
+                                </p>
+                                <p class="text-xs text-gray-400 mt-1">${timeAgo}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateNotificationBadge() {
+            const badge = document.getElementById('notification-badge');
+            const unreadCount = state.notifications.filter(n => !n.isRead).length;
+            
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        async function markNotificationRead(notificationId) {
+            await callGAS('notification/read', { notificationId });
+            
+            const notif = state.notifications.find(n => n.notificationId === notificationId);
+            if (notif) {
+                notif.isRead = true;
+            }
+            
+            renderNotifications();
+            updateNotificationBadge();
+        }
+
+        function markAllNotificationsRead() {
+            state.notifications.forEach(notif => {
+                if (!notif.isRead) {
+                    callGAS('notification/read', { notificationId: notif.notificationId });
+                    notif.isRead = true;
+                }
+            });
+            renderNotifications();
+            updateNotificationBadge();
         }
 
         // ========== API CALL ==========
@@ -1879,6 +2373,7 @@
                         loadMyPosts(),
                         loadPendingPosts(),
                         loadUrgentPosts(),
+                        loadNotifications(),
                         state.isAdmin ? loadUsers() : Promise.resolve(),
                         state.isAdmin ? loadAdminStats() : Promise.resolve()
                     ]);
@@ -1982,6 +2477,7 @@
                         loadMyPosts(),
                         loadPendingPosts(),
                         loadUrgentPosts(),
+                        loadNotifications(),
                         state.isAdmin ? loadUsers() : Promise.resolve(),
                         state.isAdmin ? loadAdminStats() : Promise.resolve()
                     ]);
@@ -2264,7 +2760,10 @@
                             <p class="text-sm text-gray-400 line-clamp-2">${post.content}</p>
                             <div class="flex items-center justify-between mt-3 text-xs text-gray-500">
                                 <span><i class="fas fa-user mr-1"></i> ${post.authorName || 'ผู้ดูแล'}</span>
-                                <span><i class="fas fa-eye mr-1"></i> ${post.viewCount || 0}</span>
+                                <div class="flex items-center gap-3">
+                                    <span><i class="far fa-eye mr-1"></i> ${post.viewCount || 0}</span>
+                                    <span><i class="far fa-comment mr-1"></i> ${post.commentCount || 0}</span>
+                                </div>
                                 ${state.isAdmin ? `<span class="text-${post.approvalStatus === 'approved' ? 'green-500' : post.approvalStatus === 'pending' ? 'yellow-500' : 'red-500'}">${statusText}</span>` : ''}
                             </div>
                         </div>
@@ -2412,7 +2911,10 @@
                             </div>
                             <h3 class="font-semibold">${post.title}</h3>
                             <p class="text-sm text-gray-400 mt-1 line-clamp-2">${post.content}</p>
-                            <p class="text-xs text-gray-500 mt-2">${formatDate(post.createdAt)}</p>
+                            <div class="flex items-center justify-between mt-2 text-xs text-gray-500">
+                                <span>${formatDate(post.createdAt)}</span>
+                                <span><i class="far fa-comment mr-1"></i> ${post.commentCount || 0}</span>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -2608,6 +3110,202 @@
             }
         }
 
+        // ========== COMMENTS ==========
+        async function loadComments(postId) {
+            const result = await callGAS('post/comments', { postId });
+            if (result.success) {
+                state.comments[postId] = result.data || [];
+                renderComments(postId);
+            }
+        }
+
+        function renderComments(postId) {
+            const commentsContainer = document.getElementById(`comments-${postId}`);
+            if (!commentsContainer) return;
+            
+            const comments = state.comments[postId] || [];
+            
+            if (comments.length === 0) {
+                commentsContainer.innerHTML = `
+                    <div class="empty-comments">
+                        <i class="far fa-comment-dots"></i>
+                        <p>ยังไม่มีความคิดเห็น</p>
+                        <p class="text-xs mt-2">เป็นคนแรกที่แสดงความคิดเห็น</p>
+                    </div>
+                `;
+                return;
+            }
+
+            commentsContainer.innerHTML = comments.map(comment => {
+                const isOwner = comment.userId === state.user?.lineUserId;
+                const isAdmin = state.isAdmin;
+                const timeAgo = formatTimeAgo(comment.createdAt);
+                
+                return `
+                    <div class="comment-item" id="comment-${comment.commentId}">
+                        <img src="${comment.userPicture || 'https://via.placeholder.com/40'}" 
+                             class="comment-avatar"
+                             onerror="this.src='https://via.placeholder.com/40'">
+                        <div class="comment-content">
+                            <div class="comment-header">
+                                <span class="comment-author">${comment.userName || 'ผู้ใช้'}</span>
+                                <span class="comment-time">${timeAgo}</span>
+                            </div>
+                            <div class="comment-text">${comment.content}</div>
+                            ${(isOwner || isAdmin) ? `
+                                <div class="comment-actions">
+                                    ${isOwner ? `
+                                        <button class="comment-action-btn" onclick="editComment('${comment.commentId}')">
+                                            <i class="fas fa-edit"></i> แก้ไข
+                                        </button>
+                                    ` : ''}
+                                    <button class="comment-action-btn delete" onclick="deleteComment('${comment.commentId}')">
+                                        <i class="fas fa-trash"></i> ลบ
+                                    </button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function addComment(postId) {
+            const input = document.getElementById(`comment-input-${postId}`);
+            const content = input.value.trim();
+            
+            if (!content) {
+                showToast('กรุณาใส่ข้อความ', 'error');
+                return;
+            }
+            
+            const submitBtn = document.getElementById(`comment-submit-${postId}`);
+            submitBtn.disabled = true;
+            submitBtn.classList.add('loading');
+            
+            const result = await callGAS('post/comment/add', {
+                postId,
+                userId: state.user.lineUserId,
+                userName: state.user.displayName,
+                userPicture: state.user.pictureUrl,
+                content
+            });
+            
+            if (result.success) {
+                input.value = '';
+                await loadComments(postId);
+                showToast('เพิ่มความคิดเห็นสำเร็จ');
+                state.lastUpdate = Date.now();
+            }
+            
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('loading');
+        }
+
+        function showEditCommentModal(commentId) {
+            const comment = findCommentById(commentId);
+            if (!comment) return;
+            
+            state.currentEditingComment = comment;
+            document.getElementById('edit-comment-id').value = comment.commentId;
+            document.getElementById('edit-comment-content').value = comment.content;
+            document.getElementById('edit-comment-modal').classList.add('active');
+        }
+
+        function closeEditCommentModal() {
+            document.getElementById('edit-comment-modal').classList.remove('active');
+            state.currentEditingComment = null;
+        }
+
+        async function saveEditedComment(e) {
+            e.preventDefault();
+            
+            const commentId = document.getElementById('edit-comment-id').value;
+            const content = document.getElementById('edit-comment-content').value.trim();
+            
+            if (!content) {
+                showToast('กรุณาใส่ข้อความ', 'error');
+                return;
+            }
+            
+            const saveBtn = e.target.querySelector('button[type="submit"]');
+            saveBtn.disabled = true;
+            saveBtn.classList.add('loading');
+            
+            const result = await callGAS('post/comment/update', {
+                commentId,
+                content,
+                userId: state.user.lineUserId
+            });
+            
+            if (result.success) {
+                closeEditCommentModal();
+                
+                // อัปเดต comment ใน state
+                for (let postId in state.comments) {
+                    const comment = state.comments[postId].find(c => c.commentId === commentId);
+                    if (comment) {
+                        comment.content = content;
+                        break;
+                    }
+                }
+                
+                // รีเรนเดอร์คอมเมนต์ของโพสต์ปัจจุบัน
+                if (state.currentPost) {
+                    renderComments(state.currentPost.postId);
+                }
+                
+                showToast('แก้ไขความคิดเห็นสำเร็จ');
+                state.lastUpdate = Date.now();
+            }
+            
+            saveBtn.disabled = false;
+            saveBtn.classList.remove('loading');
+        }
+
+        async function deleteComment(commentId) {
+            const result = await Swal.fire({
+                title: 'ลบความคิดเห็น',
+                text: 'คุณแน่ใจหรือไม่ว่าต้องการลบความคิดเห็นนี้?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'ใช่, ลบ',
+                cancelButtonText: 'ยกเลิก'
+            });
+            
+            if (result.isConfirmed) {
+                const apiResult = await callGAS('post/comment/delete', {
+                    commentId,
+                    userId: state.user.lineUserId
+                });
+                
+                if (apiResult.success) {
+                    // ลบ comment ออกจาก state
+                    for (let postId in state.comments) {
+                        state.comments[postId] = state.comments[postId].filter(c => c.commentId !== commentId);
+                    }
+                    
+                    // รีเรนเดอร์คอมเมนต์ของโพสต์ปัจจุบัน
+                    if (state.currentPost) {
+                        renderComments(state.currentPost.postId);
+                    }
+                    
+                    showToast('ลบความคิดเห็นสำเร็จ');
+                    state.lastUpdate = Date.now();
+                }
+            }
+        }
+
+        function findCommentById(commentId) {
+            for (let postId in state.comments) {
+                const comment = state.comments[postId].find(c => c.commentId === commentId);
+                if (comment) return comment;
+            }
+            return null;
+        }
+
         // ========== SHARE ==========
         async function sharePost(postId) {
             if (!liff.isInClient()) {
@@ -2748,20 +3446,14 @@
 
         // ========== POST DETAIL (FULL PAGE) ==========
         async function showPostDetail(postId) {
-            // ปิด modal ทั้งหมด
             closeAllModals();
             
-            // บันทึก tab ปัจจุบัน
             const activeTab = document.querySelector('.tab-content.active')?.id || 'tab-home';
             state.previousTab = activeTab.replace('tab-', '');
             
-            // ซ่อน main content
             document.querySelector('.min-h-screen > div:not(#post-detail-page)').style.display = 'none';
-            
-            // แสดง post detail page
             postDetailPage.classList.remove('hidden');
             
-            // แสดง loading
             document.getElementById('post-detail-content').innerHTML = `
                 <div class="flex justify-center items-center py-20">
                     <div class="loading-spinner"></div>
@@ -2772,6 +3464,9 @@
             if (result.success) {
                 state.currentPost = result.data;
                 const post = result.data;
+                
+                // โหลดความคิดเห็น
+                await loadComments(postId);
                 
                 const typeText = {
                     'news': '📰 ข่าวสาร',
@@ -2812,6 +3507,7 @@
                             <div class="post-detail-stats">
                                 <span><i class="far fa-eye"></i> ${post.viewCount || 0}</span>
                                 <span><i class="far fa-calendar"></i> ${formatDate(post.createdAt)}</span>
+                                <span><i class="far fa-comment"></i> ${post.commentCount || 0}</span>
                             </div>
                             
                             <div class="flex gap-2">
@@ -2859,12 +3555,41 @@
                                 </div>
                             </div>
                         ` : ''}
+                        
+                        <!-- Comments Section -->
+                        <div class="comments-section">
+                            <div class="comments-title">
+                                <i class="far fa-comment-dots"></i>
+                                <span>ความคิดเห็น (${post.commentCount || 0})</span>
+                            </div>
+                            
+                            <!-- Comment Input -->
+                            <div class="comment-input-area">
+                                <div class="comment-input-wrapper">
+                                    <textarea id="comment-input-${postId}" 
+                                              class="comment-input" 
+                                              placeholder="แสดงความคิดเห็น..."></textarea>
+                                </div>
+                                <button class="comment-submit-btn" 
+                                        id="comment-submit-${postId}"
+                                        onclick="addComment('${postId}')">
+                                    ส่ง
+                                </button>
+                            </div>
+                            
+                            <!-- Comments List -->
+                            <div id="comments-${postId}" class="comments-list">
+                                <!-- Comments will be loaded here -->
+                            </div>
+                        </div>
                     </div>
                 `;
 
                 document.getElementById('post-detail-content').innerHTML = html;
                 
-                // อัปเดต title
+                // รีเรนเดอร์ความคิดเห็น
+                renderComments(postId);
+                
                 document.title = `${post.title} - iTNews`;
             } else {
                 document.getElementById('post-detail-content').innerHTML = `
@@ -2902,7 +3627,6 @@
                 return;
             }
             
-            // ปิด modal อื่นก่อน
             closeAllModals();
             
             document.getElementById('create-modal-title').textContent = 'สร้างโพสต์ใหม่';
@@ -2988,6 +3712,7 @@
                         loadMyPosts(),
                         loadPendingPosts(),
                         loadUrgentPosts(),
+                        loadNotifications(),
                         state.isAdmin ? loadAdminStats() : Promise.resolve()
                     ]);
                     
@@ -3028,10 +3753,8 @@
                 document.getElementById('image-preview').style.display = 'none';
             }
             
-            // ปิด modal อื่นก่อน
             closeAllModals();
             
-            // ถ้าอยู่ในหน้า post detail ให้กลับไปก่อน
             if (!postDetailPage.classList.contains('hidden')) {
                 goBack();
             }
@@ -3083,7 +3806,6 @@
                     showConfirmButton: false
                 });
                 
-                // กลับไปหน้าก่อนหน้า
                 goBack();
                 
                 showSyncIndicator();
@@ -3093,6 +3815,7 @@
                     loadMyPosts(),
                     loadPendingPosts(),
                     loadUrgentPosts(),
+                    loadNotifications(),
                     state.isAdmin ? loadAdminStats() : Promise.resolve()
                 ]);
                 
@@ -3158,7 +3881,6 @@
         }
 
         function showRoleModal(userId, userName, currentRole) {
-            // ปิด modal อื่นก่อน
             closeAllModals();
             
             document.getElementById('role-user-id').value = userId;
@@ -3246,6 +3968,90 @@
             if (saveBtn) {
                 saveBtn.disabled = false;
                 saveBtn.classList.remove('loading');
+            }
+        }
+
+        // ========== ADMIN: COMMENTS ==========
+        async function loadAllComments() {
+            if (!state.isAdmin) return;
+            
+            const result = await callGAS('admin/comments');
+            if (result.success) {
+                renderAdminComments(result.data || []);
+            }
+        }
+
+        function renderAdminComments(comments) {
+            const list = document.getElementById('admin-comments-list');
+            const search = document.getElementById('admin-comment-search')?.value?.toLowerCase() || '';
+            
+            const filtered = comments.filter(c => 
+                c.content?.toLowerCase().includes(search) || 
+                c.userName?.toLowerCase().includes(search)
+            );
+            
+            if (filtered.length === 0) {
+                list.innerHTML = '<p class="text-gray-400 text-center py-8">ไม่พบความคิดเห็น</p>';
+                return;
+            }
+
+            list.innerHTML = filtered.map(comment => {
+                const statusClass = {
+                    'active': 'status-active',
+                    'deleted': 'status-deleted',
+                    'deleted_by_admin': 'status-deleted_by_admin'
+                }[comment.status] || '';
+                
+                const statusText = {
+                    'active': 'ปกติ',
+                    'deleted': 'ถูกลบ',
+                    'deleted_by_admin': 'ถูกลบโดย Admin'
+                }[comment.status] || comment.status;
+                
+                return `
+                    <div class="admin-comment-item">
+                        <div class="admin-comment-header">
+                            <img src="${comment.userPicture || 'https://via.placeholder.com/32'}" 
+                                 class="w-8 h-8 rounded-full object-cover">
+                            <div class="flex-1">
+                                <p class="font-semibold">${comment.userName || 'ผู้ใช้'}</p>
+                                <p class="text-xs text-gray-400">${formatDate(comment.createdAt)}</p>
+                            </div>
+                            <span class="admin-comment-status ${statusClass}">${statusText}</span>
+                        </div>
+                        <p class="text-sm text-gray-300 mb-2">${comment.content}</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-gray-400">โพสต์: ${comment.postId}</span>
+                            ${comment.status === 'active' ? `
+                                <button class="btn-danger text-xs py-1 px-3" onclick="adminDeleteComment('${comment.commentId}')">
+                                    <i class="fas fa-trash mr-1"></i>ลบ
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function adminDeleteComment(commentId) {
+            const result = await Swal.fire({
+                title: 'ลบความคิดเห็น',
+                text: 'คุณแน่ใจหรือไม่ว่าต้องการลบความคิดเห็นนี้?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'ใช่, ลบ',
+                cancelButtonText: 'ยกเลิก'
+            });
+            
+            if (result.isConfirmed) {
+                const apiResult = await callGAS('admin/comment/delete', { commentId });
+                if (apiResult.success) {
+                    await loadAllComments();
+                    showToast('ลบความคิดเห็นสำเร็จ');
+                    state.lastUpdate = Date.now();
+                }
             }
         }
 
@@ -3399,7 +4205,6 @@
         document.getElementById('profile-header').addEventListener('click', toggleProfileMenu);
 
         function showProfileSettings() {
-            // ปิด modal อื่นก่อน
             closeAllModals();
             
             document.getElementById('profile-phone').value = state.user?.phone || '';
@@ -3488,6 +4293,10 @@
             renderUsers();
         });
 
+        document.getElementById('admin-comment-search')?.addEventListener('input', () => {
+            loadAllComments();
+        });
+
         // ========== FILTER ==========
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -3507,6 +4316,7 @@
                 loadAdminStats();
                 loadUsers();
                 loadPendingPosts();
+                loadAllComments();
             }
         });
 
@@ -3521,6 +4331,10 @@
                 document.querySelectorAll('.admin-tab').forEach(t => t.classList.add('hidden'));
                 
                 document.getElementById(`admin-${tab}-tab`).classList.remove('hidden');
+                
+                if (tab === 'comments') {
+                    loadAllComments();
+                }
             });
         });
 
@@ -3569,6 +4383,10 @@
             
             if (!e.target.closest('#profile-header') && !e.target.closest('#profile-menu')) {
                 document.getElementById('profile-menu')?.classList.add('hidden');
+            }
+            
+            if (!e.target.closest('#notification-bell') && !e.target.closest('#notification-panel')) {
+                document.getElementById('notification-panel')?.classList.remove('show');
             }
         };
 
