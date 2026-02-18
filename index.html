@@ -172,6 +172,7 @@
             border-bottom: 1px solid var(--border);
             cursor: pointer;
             transition: background 0.2s;
+            position: relative;
         }
         
         .notification-item:hover {
@@ -2224,11 +2225,12 @@
             if (!state.user) return;
             
             const result = await callGAS('notifications', {
-                userId: state.user.lineUserId
+                lineUserId: state.user.lineUserId
             });
             
-            if (result.success) {
-                state.notifications = result.data || [];
+            if (result.success && result.data) {
+                // GAS 3.0 ส่งกลับมาเป็น { notifications: [], unreadCount: 0 }
+                state.notifications = result.data.notifications || [];
                 renderNotifications();
                 updateNotificationBadge();
             }
@@ -2236,7 +2238,7 @@
 
         function renderNotifications() {
             const list = document.getElementById('notifications-list');
-            const unreadCount = state.notifications.filter(n => !n.isRead).length;
+            const unreadCount = state.notifications.filter(n => !n.isRead || n.isRead !== 'TRUE').length;
             
             if (state.notifications.length === 0) {
                 list.innerHTML = `
@@ -2250,16 +2252,15 @@
 
             list.innerHTML = state.notifications.map(notif => {
                 const timeAgo = formatTimeAgo(notif.createdAt);
-                const isUnread = !notif.isRead;
+                const isUnread = !notif.isRead || notif.isRead !== 'TRUE';
                 
                 return `
                     <div class="notification-item ${isUnread ? 'unread' : ''}" 
-                         onclick="markNotificationRead('${notif.notificationId}')">
+                         onclick="markNotificationRead('${notif.notifId}')">
                         <div class="flex items-start gap-3">
                             <div class="flex-1">
-                                <p class="text-sm ${isUnread ? 'font-semibold' : ''}">
-                                    ${notif.content}
-                                </p>
+                                <p class="text-sm font-semibold">${notif.title || 'การแจ้งเตือน'}</p>
+                                <p class="text-xs text-gray-300 mt-1">${notif.message || notif.content || ''}</p>
                                 <p class="text-xs text-gray-400 mt-1">${timeAgo}</p>
                             </div>
                         </div>
@@ -2270,7 +2271,7 @@
 
         function updateNotificationBadge() {
             const badge = document.getElementById('notification-badge');
-            const unreadCount = state.notifications.filter(n => !n.isRead).length;
+            const unreadCount = state.notifications.filter(n => !n.isRead || n.isRead !== 'TRUE').length;
             
             if (unreadCount > 0) {
                 badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
@@ -2280,12 +2281,12 @@
             }
         }
 
-        async function markNotificationRead(notificationId) {
-            await callGAS('notification/read', { notificationId });
+        async function markNotificationRead(notifId) {
+            await callGAS('notification/read', { notifId });
             
-            const notif = state.notifications.find(n => n.notificationId === notificationId);
+            const notif = state.notifications.find(n => n.notifId === notifId);
             if (notif) {
-                notif.isRead = true;
+                notif.isRead = 'TRUE';
             }
             
             renderNotifications();
@@ -2294,9 +2295,9 @@
 
         function markAllNotificationsRead() {
             state.notifications.forEach(notif => {
-                if (!notif.isRead) {
-                    callGAS('notification/read', { notificationId: notif.notificationId });
-                    notif.isRead = true;
+                if (!notif.isRead || notif.isRead !== 'TRUE') {
+                    callGAS('notification/read', { notifId: notif.notifId });
+                    notif.isRead = 'TRUE';
                 }
             });
             renderNotifications();
@@ -2311,6 +2312,8 @@
                 
                 if (state.user?.lineUserId) {
                     formData.append('lineUserId', state.user.lineUserId);
+                } else if (data.lineUserId) {
+                    formData.append('lineUserId', data.lineUserId);
                 }
                 
                 Object.keys(data).forEach(key => {
@@ -2359,29 +2362,23 @@
 
         async function checkForUpdates() {
             try {
-                const result = await callGAS('posts/updates', {
-                    lastUpdate: state.lastUpdate
-                });
+                // GAS 3.0 ไม่มี posts/updates ต้องใช้วิธีโหลดใหม่ทั้งหมด
+                showSyncIndicator();
                 
-                if (result.success && result.data.hasUpdates) {
-                    console.log('New updates detected, refreshing...');
-                    
-                    showSyncIndicator();
-                    
-                    await Promise.all([
-                        loadPosts(true),
-                        loadMyPosts(),
-                        loadPendingPosts(),
-                        loadUrgentPosts(),
-                        loadNotifications(),
-                        state.isAdmin ? loadUsers() : Promise.resolve(),
-                        state.isAdmin ? loadAdminStats() : Promise.resolve()
-                    ]);
-                    
-                    showRealtimeIndicator();
-                    
-                    state.lastUpdate = Date.now();
-                }
+                await Promise.all([
+                    loadPosts(true),
+                    loadMyPosts(),
+                    loadPendingPosts(),
+                    loadUrgentPosts(),
+                    loadNotifications(),
+                    state.isAdmin ? loadUsers() : Promise.resolve(),
+                    state.isAdmin ? loadAdminStats() : Promise.resolve()
+                ]);
+                
+                showRealtimeIndicator();
+                
+                state.lastUpdate = Date.now();
+                
             } catch (error) {
                 console.error('Update check failed:', error);
             }
@@ -2592,7 +2589,8 @@
                 filter: state.currentFilter,
                 search: state.searchTerm,
                 pageSize: CONFIG.PAGE_SIZE,
-                includePending: state.isAdmin
+                includePending: state.isAdmin,
+                lineUserId: state.user?.lineUserId
             });
             
             if (result.success) {
@@ -2619,7 +2617,8 @@
             const result = await callGAS('posts', {
                 filter: 'urgent',
                 pageSize: 10,
-                includePending: false
+                includePending: false,
+                lineUserId: state.user?.lineUserId
             });
             
             if (result.success) {
@@ -2807,6 +2806,7 @@
         // ========== MY POSTS ==========
         async function loadMyPosts() {
             const result = await callGAS('user/posts', {
+                lineUserId: state.user?.lineUserId,
                 page: state.myPostsPage,
                 pageSize: CONFIG.PAGE_SIZE
             });
@@ -2925,7 +2925,10 @@
         async function loadPendingPosts() {
             if (!state.isAdmin) return;
             
-            const result = await callGAS('admin/posts/pending');
+            const result = await callGAS('admin/posts/pending', {
+                lineUserId: state.user?.lineUserId
+            });
+            
             if (result.success) {
                 state.pendingPosts = result.data || [];
                 renderPendingPosts();
@@ -3008,7 +3011,10 @@
                 showLoaderOnConfirm: true,
                 preConfirm: async () => {
                     try {
-                        const apiResult = await callGAS('admin/post/approve', { postId });
+                        const apiResult = await callGAS('admin/post/approve', { 
+                            postId,
+                            lineUserId: state.user?.lineUserId 
+                        });
                         if (!apiResult.success) {
                             Swal.showValidationMessage(apiResult.message);
                         }
@@ -3069,7 +3075,10 @@
                 showLoaderOnConfirm: true,
                 preConfirm: async () => {
                     try {
-                        const apiResult = await callGAS('admin/post/reject', { postId });
+                        const apiResult = await callGAS('admin/post/reject', { 
+                            postId,
+                            lineUserId: state.user?.lineUserId 
+                        });
                         if (!apiResult.success) {
                             Swal.showValidationMessage(apiResult.message);
                         }
@@ -3155,7 +3164,7 @@
                             ${(isOwner || isAdmin) ? `
                                 <div class="comment-actions">
                                     ${isOwner ? `
-                                        <button class="comment-action-btn" onclick="editComment('${comment.commentId}')">
+                                        <button class="comment-action-btn" onclick="showEditCommentModal('${comment.commentId}')">
                                             <i class="fas fa-edit"></i> แก้ไข
                                         </button>
                                     ` : ''}
@@ -3194,6 +3203,12 @@
             if (result.success) {
                 input.value = '';
                 await loadComments(postId);
+                
+                // อัปเดตจำนวนคอมเมนต์ในโพสต์ปัจจุบัน
+                if (state.currentPost) {
+                    state.currentPost.commentCount = (state.currentPost.commentCount || 0) + 1;
+                }
+                
                 showToast('เพิ่มความคิดเห็นสำเร็จ');
                 state.lastUpdate = Date.now();
             }
@@ -3284,7 +3299,13 @@
                 if (apiResult.success) {
                     // ลบ comment ออกจาก state
                     for (let postId in state.comments) {
+                        const oldLength = state.comments[postId].length;
                         state.comments[postId] = state.comments[postId].filter(c => c.commentId !== commentId);
+                        
+                        // อัปเดตจำนวนคอมเมนต์ในโพสต์ปัจจุบัน
+                        if (state.currentPost && state.currentPost.postId === postId) {
+                            state.currentPost.commentCount = Math.max(0, (state.currentPost.commentCount || 0) - 1);
+                        }
                     }
                     
                     // รีเรนเดอร์คอมเมนต์ของโพสต์ปัจจุบัน
@@ -3313,7 +3334,11 @@
                 return;
             }
 
-            const result = await callGAS('post', { postId });
+            const result = await callGAS('post', { 
+                postId,
+                lineUserId: state.user?.lineUserId 
+            });
+            
             if (!result.success) {
                 showToast('ไม่สามารถโหลดข้อมูลโพสต์', 'error');
                 return;
@@ -3460,7 +3485,11 @@
                 </div>
             `;
 
-            const result = await callGAS('post', { postId });
+            const result = await callGAS('post', { 
+                postId,
+                lineUserId: state.user?.lineUserId 
+            });
+            
             if (result.success) {
                 state.currentPost = result.data;
                 const post = result.data;
@@ -3680,7 +3709,8 @@
                     title: document.getElementById('post-title').value,
                     content: document.getElementById('post-content').value,
                     imageUrl: imageUrl,
-                    link: document.getElementById('post-link').value
+                    link: document.getElementById('post-link').value,
+                    lineUserId: state.user.lineUserId
                 };
 
                 if (isEdit) {
@@ -3783,7 +3813,8 @@
                 preConfirm: async () => {
                     try {
                         const apiResult = await callGAS('post/delete', { 
-                            postId: state.currentPost.postId 
+                            postId: state.currentPost.postId,
+                            lineUserId: state.user.lineUserId
                         });
                         if (!apiResult.success) {
                             Swal.showValidationMessage(apiResult.message);
@@ -3828,7 +3859,10 @@
         async function loadUsers() {
             if (!state.isAdmin) return;
             
-            const result = await callGAS('admin/users');
+            const result = await callGAS('admin/users', {
+                lineUserId: state.user?.lineUserId
+            });
+            
             if (result.success) {
                 state.users = result.data || [];
                 renderUsers();
@@ -3920,7 +3954,8 @@
                     try {
                         const apiResult = await callGAS('admin/user/role', {
                             targetUserId: userId,
-                            role: role
+                            role: role,
+                            lineUserId: state.user.lineUserId
                         });
                         if (!apiResult.success) {
                             Swal.showValidationMessage(apiResult.message);
@@ -3975,7 +4010,10 @@
         async function loadAllComments() {
             if (!state.isAdmin) return;
             
-            const result = await callGAS('admin/comments');
+            const result = await callGAS('admin/comments', {
+                lineUserId: state.user?.lineUserId
+            });
+            
             if (result.success) {
                 renderAdminComments(result.data || []);
             }
@@ -4046,7 +4084,11 @@
             });
             
             if (result.isConfirmed) {
-                const apiResult = await callGAS('admin/comment/delete', { commentId });
+                const apiResult = await callGAS('admin/comment/delete', { 
+                    commentId,
+                    lineUserId: state.user.lineUserId
+                });
+                
                 if (apiResult.success) {
                     await loadAllComments();
                     showToast('ลบความคิดเห็นสำเร็จ');
@@ -4059,7 +4101,10 @@
         async function loadAdminStats() {
             if (!state.isAdmin) return;
             
-            const result = await callGAS('admin/stats');
+            const result = await callGAS('admin/stats', {
+                lineUserId: state.user?.lineUserId
+            });
+            
             if (result.success) {
                 const stats = result.data;
                 document.getElementById('admin-users').textContent = stats.users || 0;
@@ -4071,7 +4116,8 @@
             const posts = await callGAS('posts', { 
                 page: state.adminPostsPage,
                 pageSize: CONFIG.PAGE_SIZE,
-                includePending: true
+                includePending: true,
+                lineUserId: state.user?.lineUserId
             });
             
             if (posts.success) {
@@ -4171,7 +4217,8 @@
             const data = {
                 appName: document.getElementById('setting-app-name').value,
                 driveFolderId: document.getElementById('setting-drive-folder').value,
-                requireApproval: document.getElementById('setting-require-approval').checked
+                requireApproval: document.getElementById('setting-require-approval').checked,
+                lineUserId: state.user.lineUserId
             };
             
             const result = await callGAS('admin/settings/update', data);
@@ -4230,7 +4277,8 @@
             
             const data = {
                 phone: document.getElementById('profile-phone').value,
-                department: document.getElementById('profile-department').value
+                department: document.getElementById('profile-department').value,
+                lineUserId: state.user.lineUserId
             };
 
             const result = await callGAS('user/update', data);
