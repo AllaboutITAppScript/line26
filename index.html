@@ -28,10 +28,6 @@
     <!-- AOS Animation -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
-    <!-- Emoji Picker -->
-    <script src="https://cdn.jsdelivr.net/npm/@emoji-mart/data@latest/sets/14/twitter.json"></script>
-    <script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js"></script>
-    
     <style>
         * {
             font-family: 'IBM Plex Sans Thai', sans-serif;
@@ -333,6 +329,9 @@
         .post-detail-page {
             min-height: calc(100vh - 200px);
             animation: fadeIn 0.3s ease;
+            position: relative;
+            z-index: 10;
+            background: var(--bg);
         }
         
         .post-detail-header {
@@ -470,22 +469,6 @@
             border-color: var(--primary);
         }
         
-        .comment-emoji-btn {
-            position: absolute;
-            bottom: 12px;
-            right: 12px;
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-size: 20px;
-            transition: color 0.2s;
-        }
-        
-        .comment-emoji-btn:hover {
-            color: var(--primary);
-        }
-        
         .comment-submit-btn {
             background: var(--primary);
             color: white;
@@ -611,23 +594,6 @@
             color: #ef4444;
         }
         
-        .comment-edit-input {
-            width: 100%;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 8px 12px;
-            color: var(--text);
-            margin-top: 8px;
-            resize: vertical;
-        }
-        
-        .comment-edit-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 8px;
-        }
-        
         .empty-comments {
             text-align: center;
             padding: 40px 20px;
@@ -641,20 +607,6 @@
             font-size: 40px;
             margin-bottom: 12px;
             opacity: 0.5;
-        }
-        
-        /* Emoji Picker */
-        .emoji-picker-container {
-            position: absolute;
-            bottom: 100%;
-            right: 0;
-            margin-bottom: 8px;
-            z-index: 100;
-            display: none;
-        }
-        
-        .emoji-picker-container.show {
-            display: block;
         }
         
         @keyframes fadeIn {
@@ -1490,25 +1442,6 @@
         .share-button i {
             font-size: 18px;
         }
-
-        .mark-read-btn {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-left: 8px;
-            white-space: nowrap;
-        }
-        
-        .mark-read-btn:hover {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
         
         /* Custom scrollbar */
         ::-webkit-scrollbar {
@@ -1655,6 +1588,24 @@
         .status-deleted_by_admin {
             background: rgba(239,68,68,0.3);
             color: #ef4444;
+        }
+
+        /* Fast loading classes */
+        .fast-transition {
+            transition: all 0.15s ease;
+        }
+        
+        .content-wrapper {
+            position: relative;
+            min-height: 200px;
+        }
+        
+        .skeleton-card {
+            background: linear-gradient(90deg, var(--bg-card) 25%, #252930 50%, var(--bg-card) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.2s infinite;
+            border-radius: 20px;
+            height: 300px;
         }
     </style>
 </head>
@@ -2089,9 +2040,9 @@
     <script>
         // Initialize AOS
         AOS.init({
-            duration: 800,
+            duration: 600, // ลดเวลา animation เพื่อความเร็ว
             once: true,
-            offset: 50
+            offset: 30
         });
 
         // ========== CONFIG ==========
@@ -2100,7 +2051,8 @@
             LIFF_ID: '2008904120-T7I0VPZf',
             PAGE_SIZE: 9,
             DRIVE_FOLDER_ID: '18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE',
-            POLLING_INTERVAL: 5000
+            POLLING_INTERVAL: 5000,
+            CACHE_TIME: 30000 // 30 วินาที
         };
 
         // ========== STATE ==========
@@ -2111,7 +2063,7 @@
             pendingPosts: [],
             adminPosts: [],
             users: [],
-            comments: {}, // comments by postId
+            comments: {},
             notifications: [],
             currentFilter: 'all',
             searchTerm: '',
@@ -2132,7 +2084,12 @@
             syncTimeout: null,
             urgentPosts: [],
             initialized: false,
-            previousTab: 'home' // เก็บ tab ก่อนหน้าเพื่อกลับ
+            previousTab: 'home',
+            cache: {
+                posts: { data: null, timestamp: 0 },
+                myPosts: { data: null, timestamp: 0 },
+                urgentPosts: { data: null, timestamp: 0 }
+            }
         };
 
         // ========== DOM Elements ==========
@@ -2229,7 +2186,6 @@
             });
             
             if (result.success && result.data) {
-                // GAS 3.0 ส่งกลับมาเป็น { notifications: [], unreadCount: 0 }
                 state.notifications = result.data.notifications || [];
                 renderNotifications();
                 updateNotificationBadge();
@@ -2356,32 +2312,22 @@
             pollingInterval = setInterval(async () => {
                 if (document.hidden || !state.initialized) return;
                 
-                await checkForUpdates();
-            }, CONFIG.POLLING_INTERVAL);
-        }
-
-        async function checkForUpdates() {
-            try {
-                // GAS 3.0 ไม่มี posts/updates ต้องใช้วิธีโหลดใหม่ทั้งหมด
                 showSyncIndicator();
                 
                 await Promise.all([
                     loadPosts(true),
-                    loadMyPosts(),
+                    loadMyPosts(true),
                     loadPendingPosts(),
-                    loadUrgentPosts(),
+                    loadUrgentPosts(true),
                     loadNotifications(),
                     state.isAdmin ? loadUsers() : Promise.resolve(),
                     state.isAdmin ? loadAdminStats() : Promise.resolve()
                 ]);
                 
                 showRealtimeIndicator();
-                
                 state.lastUpdate = Date.now();
                 
-            } catch (error) {
-                console.error('Update check failed:', error);
-            }
+            }, CONFIG.POLLING_INTERVAL);
         }
 
         function showRealtimeIndicator() {
@@ -2468,6 +2414,7 @@
                     state.isAdmin = state.user.role === 'admin';
                     state.isEditor = state.isAdmin || state.user.role === 'editor';
                     
+                    // โหลดข้อมูลพร้อมกันแบบเร็ว
                     await Promise.all([
                         loadSettings(),
                         loadPosts(),
@@ -2584,6 +2531,21 @@
 
         // ========== POSTS ==========
         async function loadPosts(silent = false) {
+            const now = Date.now();
+            if (!silent && state.cache.posts.data && (now - state.cache.posts.timestamp) < CONFIG.CACHE_TIME) {
+                state.posts = state.cache.posts.data;
+                renderPosts();
+                renderPagination();
+                return;
+            }
+
+            const list = document.getElementById('posts-list');
+            if (!silent) {
+                list.innerHTML = Array(6).fill(0).map(() => `
+                    <div class="skeleton-card"></div>
+                `).join('');
+            }
+
             const result = await callGAS('posts', {
                 page: state.currentPage,
                 filter: state.currentFilter,
@@ -2596,8 +2558,8 @@
             if (result.success) {
                 state.posts = result.data.posts || [];
                 state.totalPages = Math.ceil((result.data.total || 0) / CONFIG.PAGE_SIZE) || 1;
+                state.cache.posts = { data: state.posts, timestamp: now };
                 
-                // อัปเดต admin posts ด้วย
                 if (state.isAdmin) {
                     state.adminPosts = result.data.posts || [];
                     renderAdminPosts();
@@ -2613,7 +2575,14 @@
             }
         }
 
-        async function loadUrgentPosts() {
+        async function loadUrgentPosts(silent = false) {
+            const now = Date.now();
+            if (!silent && state.cache.urgentPosts.data && (now - state.cache.urgentPosts.timestamp) < CONFIG.CACHE_TIME) {
+                state.urgentPosts = state.cache.urgentPosts.data;
+                renderHeroSlider();
+                return;
+            }
+
             const result = await callGAS('posts', {
                 filter: 'urgent',
                 pageSize: 10,
@@ -2623,6 +2592,7 @@
             
             if (result.success) {
                 state.urgentPosts = result.data.posts?.filter(p => p.approvalStatus === 'approved') || [];
+                state.cache.urgentPosts = { data: state.urgentPosts, timestamp: now };
                 renderHeroSlider();
             }
         }
@@ -2737,7 +2707,7 @@
                                   post.approvalStatus === 'pending' ? 'รออนุมัติ' : 'ปฏิเสธ';
                 
                 return `
-                    <div class="news-card relative" onclick="showPostDetail('${post.postId}')" data-aos="fade-up">
+                    <div class="news-card relative fast-transition" onclick="showPostDetail('${post.postId}')" data-aos="fade-up">
                         <button class="share-button" onclick="event.stopPropagation(); sharePost('${post.postId}')">
                             <i class="fab fa-line"></i>
                         </button>
@@ -2755,7 +2725,7 @@
                                 </div>
                                 <span class="text-xs text-gray-500">${formatDateShort(post.createdAt)}</span>
                             </div>
-                            <h3 class="font-semibold text-lg mb-2">${post.title}</h3>
+                            <h3 class="font-semibold text-lg mb-2 line-clamp-2">${post.title}</h3>
                             <p class="text-sm text-gray-400 line-clamp-2">${post.content}</p>
                             <div class="flex items-center justify-between mt-3 text-xs text-gray-500">
                                 <span><i class="fas fa-user mr-1"></i> ${post.authorName || 'ผู้ดูแล'}</span>
@@ -2804,7 +2774,22 @@
         }
 
         // ========== MY POSTS ==========
-        async function loadMyPosts() {
+        async function loadMyPosts(silent = false) {
+            const now = Date.now();
+            if (!silent && state.cache.myPosts.data && (now - state.cache.myPosts.timestamp) < CONFIG.CACHE_TIME) {
+                state.myPosts = state.cache.myPosts.data;
+                renderMyPosts();
+                renderMyPostsPagination();
+                return;
+            }
+
+            const list = document.getElementById('my-posts-list');
+            if (!silent) {
+                list.innerHTML = Array(3).fill(0).map(() => `
+                    <div class="skeleton-card"></div>
+                `).join('');
+            }
+
             const result = await callGAS('user/posts', {
                 lineUserId: state.user?.lineUserId,
                 page: state.myPostsPage,
@@ -2823,6 +2808,7 @@
                     state.myPostsTotalPages = 1;
                 }
                 
+                state.cache.myPosts = { data: state.myPosts, timestamp: now };
                 renderMyPosts();
                 renderMyPostsPagination();
             } else {
@@ -2893,7 +2879,7 @@
                 }[post.type] || '📄';
                 
                 return `
-                    <div class="news-card" onclick="showPostDetail('${post.postId}')" data-aos="fade-up">
+                    <div class="news-card fast-transition" onclick="showPostDetail('${post.postId}')" data-aos="fade-up">
                         ${post.imageUrl ? `
                             <img src="${post.imageUrl}" 
                                  class="news-image" 
@@ -2909,7 +2895,7 @@
                                 </div>
                                 <span class="text-xs ${statusClass}">${statusText}</span>
                             </div>
-                            <h3 class="font-semibold">${post.title}</h3>
+                            <h3 class="font-semibold line-clamp-2">${post.title}</h3>
                             <p class="text-sm text-gray-400 mt-1 line-clamp-2">${post.content}</p>
                             <div class="flex items-center justify-between mt-2 text-xs text-gray-500">
                                 <span>${formatDate(post.createdAt)}</span>
@@ -3041,7 +3027,7 @@
                 await Promise.all([
                     loadPosts(true),
                     loadPendingPosts(),
-                    loadUrgentPosts(),
+                    loadUrgentPosts(true),
                     loadAdminStats()
                 ]);
                 
@@ -3105,7 +3091,7 @@
                 await Promise.all([
                     loadPosts(true),
                     loadPendingPosts(),
-                    loadUrgentPosts(),
+                    loadUrgentPosts(true),
                     loadAdminStats()
                 ]);
                 
@@ -3204,7 +3190,6 @@
                 input.value = '';
                 await loadComments(postId);
                 
-                // อัปเดตจำนวนคอมเมนต์ในโพสต์ปัจจุบัน
                 if (state.currentPost) {
                     state.currentPost.commentCount = (state.currentPost.commentCount || 0) + 1;
                 }
@@ -3256,7 +3241,6 @@
             if (result.success) {
                 closeEditCommentModal();
                 
-                // อัปเดต comment ใน state
                 for (let postId in state.comments) {
                     const comment = state.comments[postId].find(c => c.commentId === commentId);
                     if (comment) {
@@ -3265,7 +3249,6 @@
                     }
                 }
                 
-                // รีเรนเดอร์คอมเมนต์ของโพสต์ปัจจุบัน
                 if (state.currentPost) {
                     renderComments(state.currentPost.postId);
                 }
@@ -3297,18 +3280,15 @@
                 });
                 
                 if (apiResult.success) {
-                    // ลบ comment ออกจาก state
                     for (let postId in state.comments) {
                         const oldLength = state.comments[postId].length;
                         state.comments[postId] = state.comments[postId].filter(c => c.commentId !== commentId);
                         
-                        // อัปเดตจำนวนคอมเมนต์ในโพสต์ปัจจุบัน
                         if (state.currentPost && state.currentPost.postId === postId) {
                             state.currentPost.commentCount = Math.max(0, (state.currentPost.commentCount || 0) - 1);
                         }
                     }
                     
-                    // รีเรนเดอร์คอมเมนต์ของโพสต์ปัจจุบัน
                     if (state.currentPost) {
                         renderComments(state.currentPost.postId);
                     }
@@ -3476,6 +3456,7 @@
             const activeTab = document.querySelector('.tab-content.active')?.id || 'tab-home';
             state.previousTab = activeTab.replace('tab-', '');
             
+            // ซ่อน main content และแสดง post detail
             document.querySelector('.min-h-screen > div:not(#post-detail-page)').style.display = 'none';
             postDetailPage.classList.remove('hidden');
             
@@ -3494,7 +3475,6 @@
                 state.currentPost = result.data;
                 const post = result.data;
                 
-                // โหลดความคิดเห็น
                 await loadComments(postId);
                 
                 const typeText = {
@@ -3615,10 +3595,7 @@
                 `;
 
                 document.getElementById('post-detail-content').innerHTML = html;
-                
-                // รีเรนเดอร์ความคิดเห็น
                 renderComments(postId);
-                
                 document.title = `${post.title} - iTNews`;
             } else {
                 document.getElementById('post-detail-content').innerHTML = `
@@ -3739,9 +3716,9 @@
                     
                     await Promise.all([
                         loadPosts(true),
-                        loadMyPosts(),
+                        loadMyPosts(true),
                         loadPendingPosts(),
-                        loadUrgentPosts(),
+                        loadUrgentPosts(true),
                         loadNotifications(),
                         state.isAdmin ? loadAdminStats() : Promise.resolve()
                     ]);
@@ -3843,9 +3820,9 @@
                 
                 await Promise.all([
                     loadPosts(true),
-                    loadMyPosts(),
+                    loadMyPosts(true),
                     loadPendingPosts(),
-                    loadUrgentPosts(),
+                    loadUrgentPosts(true),
                     loadNotifications(),
                     state.isAdmin ? loadAdminStats() : Promise.resolve()
                 ]);
@@ -4333,6 +4310,7 @@
             searchTimeout = setTimeout(() => {
                 state.searchTerm = e.target.value;
                 state.currentPage = 1;
+                state.cache.posts.data = null; // เคลียร์ cache
                 loadPosts();
             }, 500);
         });
@@ -4352,6 +4330,7 @@
                 btn.classList.add('active');
                 state.currentFilter = btn.dataset.filter;
                 state.currentPage = 1;
+                state.cache.posts.data = null; // เคลียร์ cache
                 loadPosts();
             });
         });
