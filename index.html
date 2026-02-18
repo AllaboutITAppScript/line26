@@ -5,26 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>iTNews · LINE ข่าวสาร</title>
     <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/653/653021.png">
-    
-    <!-- โหลด CSS ก่อน -->
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- LINE LIFF (โหลดแบบ async) -->
+    <!-- LINE LIFF -->
     <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js" async></script>
     
-    <!-- SweetAlert2 (โหลดทีหลัง) -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <!-- Swiper CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     
-    <!-- AOS Animation (โหลดทีหลัง) -->
+    <!-- AOS Animation -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
     <style>
-        /* CSS เดิมทั้งหมดเหมือนเดิม */
         * {
             font-family: 'IBM Plex Sans Thai', sans-serif;
             margin: 0;
@@ -1025,37 +1029,6 @@
             -webkit-text-fill-color: transparent;
             font-weight: 600;
         }
-
-        /* Skeleton Loading */
-        .skeleton-card {
-            background: var(--bg-card);
-            border-radius: 20px;
-            padding: 16px;
-            height: 300px;
-        }
-        
-        .skeleton-image {
-            width: 100%;
-            height: 150px;
-            background: linear-gradient(90deg, #2a2e36 25%, #353a45 50%, #2a2e36 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-            border-radius: 12px;
-            margin-bottom: 12px;
-        }
-        
-        .skeleton-line {
-            height: 16px;
-            background: linear-gradient(90deg, #2a2e36 25%, #353a45 50%, #2a2e36 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-            border-radius: 8px;
-            margin-bottom: 8px;
-        }
-        
-        .skeleton-line.short {
-            width: 60%;
-        }
     </style>
 </head>
 <body>
@@ -1109,7 +1082,7 @@
         <!-- Tab: Home -->
         <div id="tab-home" class="tab-content active">
             <!-- Profile Header -->
-            <div class="profile-header" id="profile-header">
+            <div class="profile-header" id="profile-header" data-aos="fade-up">
                 <img id="profile-avatar" src="" alt="avatar" class="profile-avatar" loading="lazy">
                 <div class="flex-1">
                     <h2 id="profile-name" class="text-lg font-bold">กำลังโหลด...</h2>
@@ -1130,7 +1103,7 @@
             </div>
 
             <!-- Stats -->
-            <div class="grid grid-cols-3 gap-2 mb-4">
+            <div class="grid grid-cols-3 gap-2 mb-4" data-aos="fade-up" data-aos-delay="100">
                 <div class="stat-card">
                     <p class="text-xs text-gray-400">ข่าวสาร</p>
                     <p id="stat-news" class="text-xl font-bold gradient-text">-</p>
@@ -1146,31 +1119,26 @@
             </div>
 
             <!-- Hero Slider (แสดงเฉพาะประกาศด่วน เสมอ) -->
-            <div class="swiper hero-swiper mb-4">
-                <div class="swiper-wrapper" id="hero-slider-wrapper">
-                    <!-- Skeleton for slider -->
-                    <div class="swiper-slide skeleton">
-                        <div style="width:100%; height:100%; background:#1a1d24;"></div>
-                    </div>
-                </div>
+            <div class="swiper hero-swiper mb-4" data-aos="fade-up" data-aos-delay="150">
+                <div class="swiper-wrapper" id="hero-slider-wrapper"></div>
                 <div class="swiper-pagination"></div>
             </div>
 
             <!-- Real-time indicator -->
-            <div class="flex justify-end mb-2" id="realtime-indicator">
+            <div class="flex justify-end mb-2" id="realtime-indicator" data-aos="fade-up" data-aos-delay="200">
                 <span class="realtime-badge">
                     <i class="fas fa-circle"></i> อัปเดตเรียลไทม์
                 </span>
             </div>
 
             <!-- Search -->
-            <div class="search-box">
+            <div class="search-box" data-aos="fade-up" data-aos-delay="250">
                 <i class="fas fa-search"></i>
                 <input type="text" id="search-input" placeholder="ค้นหาข่าวสาร กิจกรรม..." autocomplete="off">
             </div>
 
             <!-- Filter (ไม่มีปุ่มรออนุมัติ) -->
-            <div class="filter-container">
+            <div class="filter-container" data-aos="fade-up" data-aos-delay="300">
                 <button class="filter-btn active" data-filter="all">ทั้งหมด</button>
                 <button class="filter-btn" data-filter="news">📰 ข่าวสาร</button>
                 <button class="filter-btn" data-filter="event">🎉 กิจกรรม</button>
@@ -1178,30 +1146,10 @@
             </div>
 
             <!-- Posts List - Grid for PC -->
-            <div id="posts-list" class="posts-grid space-y-3 lg:space-y-0">
-                <!-- Skeleton loading -->
-                <div class="skeleton-card">
-                    <div class="skeleton-image"></div>
-                    <div class="skeleton-line short"></div>
-                    <div class="skeleton-line"></div>
-                    <div class="skeleton-line"></div>
-                </div>
-                <div class="skeleton-card">
-                    <div class="skeleton-image"></div>
-                    <div class="skeleton-line short"></div>
-                    <div class="skeleton-line"></div>
-                    <div class="skeleton-line"></div>
-                </div>
-                <div class="skeleton-card">
-                    <div class="skeleton-image"></div>
-                    <div class="skeleton-line short"></div>
-                    <div class="skeleton-line"></div>
-                    <div class="skeleton-line"></div>
-                </div>
-            </div>
+            <div id="posts-list" class="posts-grid space-y-3 lg:space-y-0" data-aos="fade-up" data-aos-delay="350"></div>
             
             <!-- Pagination -->
-            <div id="pagination-container" class="pagination-container hidden">
+            <div id="pagination-container" class="pagination-container hidden" data-aos="fade-up" data-aos-delay="400">
                 <button class="btn-pagination" id="prev-page" onclick="changePage('prev')" disabled>
                     <i class="fas fa-chevron-left"></i>
                 </button>
@@ -1214,33 +1162,16 @@
 
         <!-- Tab: My Posts -->
         <div id="tab-my" class="tab-content">
-            <div class="flex justify-between items-center mb-4">
+            <div class="flex justify-between items-center mb-4" data-aos="fade-up">
                 <h2 class="text-xl font-bold gradient-text">โพสต์ของฉัน</h2>
                 <button id="create-post-btn" class="bg-[#06c755] text-white px-4 py-2 rounded-xl text-sm hidden" onclick="showCreatePostModal()">
                     <i class="fas fa-plus mr-1"></i>สร้าง
                 </button>
             </div>
-            <div id="my-posts-list" class="my-posts-grid space-y-3 lg:space-y-0">
-                <!-- Skeleton loading -->
-                <div class="skeleton-card">
-                    <div class="skeleton-image"></div>
-                    <div class="skeleton-line short"></div>
-                    <div class="skeleton-line"></div>
-                </div>
-                <div class="skeleton-card">
-                    <div class="skeleton-image"></div>
-                    <div class="skeleton-line short"></div>
-                    <div class="skeleton-line"></div>
-                </div>
-                <div class="skeleton-card">
-                    <div class="skeleton-image"></div>
-                    <div class="skeleton-line short"></div>
-                    <div class="skeleton-line"></div>
-                </div>
-            </div>
+            <div id="my-posts-list" class="my-posts-grid space-y-3 lg:space-y-0" data-aos="fade-up" data-aos-delay="100"></div>
             
             <!-- My Posts Pagination -->
-            <div id="my-pagination-container" class="pagination-container hidden">
+            <div id="my-pagination-container" class="pagination-container hidden" data-aos="fade-up" data-aos-delay="150">
                 <button class="btn-pagination" id="my-prev-page" onclick="changeMyPage('prev')" disabled>
                     <i class="fas fa-chevron-left"></i>
                 </button>
@@ -1253,7 +1184,7 @@
 
         <!-- Tab: Admin -->
         <div id="tab-admin" class="tab-content">
-            <div class="flex justify-between items-center mb-4">
+            <div class="flex justify-between items-center mb-4" data-aos="fade-up">
                 <h2 class="text-xl font-bold gradient-text">จัดการระบบ</h2>
                 <button id="refresh-admin" class="text-[#06c755] text-sm">
                     <i class="fas fa-sync-alt mr-1"></i>รีเฟรช
@@ -1261,7 +1192,7 @@
             </div>
 
             <!-- Admin Stats -->
-            <div class="admin-section">
+            <div class="admin-section" data-aos="fade-up" data-aos-delay="100">
                 <h3 class="font-semibold mb-3">สถิติ</h3>
                 <div class="grid grid-cols-2 gap-3">
                     <div class="admin-stat">
@@ -1284,7 +1215,7 @@
             </div>
 
             <!-- Admin Tabs -->
-            <div class="flex border-b border-[#2a2e36] mb-4 overflow-x-auto">
+            <div class="flex border-b border-[#2a2e36] mb-4 overflow-x-auto" data-aos="fade-up" data-aos-delay="150">
                 <button class="admin-tab-btn flex-1 py-2 text-center active whitespace-nowrap" data-admin-tab="posts">
                     จัดการโพสต์
                 </button>
@@ -1304,17 +1235,13 @@
 
             <!-- Admin: Posts Management -->
             <div id="admin-posts-tab" class="admin-tab">
-                <button class="btn-primary mb-4" onclick="showCreatePostModal()">
+                <button class="btn-primary mb-4" onclick="showCreatePostModal()" data-aos="fade-up" data-aos-delay="200">
                     <i class="fas fa-plus mr-2"></i>สร้างโพสต์ใหม่
                 </button>
-                <div id="admin-posts-list" class="admin-posts-grid space-y-2">
-                    <div class="skeleton-line"></div>
-                    <div class="skeleton-line"></div>
-                    <div class="skeleton-line"></div>
-                </div>
+                <div id="admin-posts-list" class="admin-posts-grid space-y-2" data-aos="fade-up" data-aos-delay="250"></div>
                 
                 <!-- Admin Posts Pagination -->
-                <div id="admin-posts-pagination" class="pagination-container hidden">
+                <div id="admin-posts-pagination" class="pagination-container hidden" data-aos="fade-up" data-aos-delay="300">
                     <button class="btn-pagination" id="admin-posts-prev" onclick="changeAdminPostsPage('prev')" disabled>
                         <i class="fas fa-chevron-left"></i>
                     </button>
@@ -1495,21 +1422,23 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" defer></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     
     <script>
-        // ========== ตั้งค่าให้เร็วขึ้น ==========
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 50
+        });
+
         // ========== CONFIG ==========
         const CONFIG = {
             GAS_URL: 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec',
             LIFF_ID: '2008904120-T7I0VPZf',
-            PAGE_SIZE: isMobile ? 6 : 9,
+            PAGE_SIZE: 9,
             DRIVE_FOLDER_ID: '18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE',
-            POLLING_INTERVAL: isMobile ? 10000 : 5000,
-            CACHE_TIME: 5 * 60 * 1000,
-            INIT_TIMEOUT: 8000 // 8 วินาที
+            POLLING_INTERVAL: 5000
         };
 
         // ========== STATE ==========
@@ -1531,13 +1460,13 @@
             myPostsTotalPages: 1,
             adminPostsTotalPages: 1,
             currentPost: null,
-            settings: { requireApproval: false },
+            settings: {
+                requireApproval: false
+            },
             lastUpdate: Date.now(),
             syncTimeout: null,
             urgentPosts: [],
-            initialized: false,
-            cache: {},
-            loadingTimeout: null
+            initialized: false
         };
 
         // ========== DOM Elements ==========
@@ -1564,36 +1493,23 @@
 
         function formatDate(dateStr) {
             if (!dateStr) return '-';
-            try {
-                const d = new Date(dateStr);
-                return d.toLocaleDateString('th-TH', { 
-                    year: 'numeric', month: 'short', day: 'numeric',
-                    hour: '2-digit', minute: '2-digit'
-                });
-            } catch {
-                return '-';
-            }
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('th-TH', { 
+                year: 'numeric', month: 'short', day: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            });
         }
 
         function formatDateShort(dateStr) {
             if (!dateStr) return '-';
-            try {
-                const d = new Date(dateStr);
-                return d.toLocaleDateString('th-TH', { 
-                    year: 'numeric', month: 'short', day: 'numeric'
-                });
-            } catch {
-                return '-';
-            }
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('th-TH', { 
+                year: 'numeric', month: 'short', day: 'numeric'
+            });
         }
 
         // ========== API CALL ==========
-        async function callGAS(path, data = {}, useCache = false) {
-            const cacheKey = path + JSON.stringify(data);
-            if (useCache && state.cache[cacheKey] && (Date.now() - state.cache[cacheKey].time) < CONFIG.CACHE_TIME) {
-                return state.cache[cacheKey].data;
-            }
-
+        async function callGAS(path, data = {}) {
             try {
                 const formData = new FormData();
                 formData.append('path', path);
@@ -1608,49 +1524,98 @@
                     }
                 });
 
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 15000);
+                console.log('Calling GAS:', path, data);
 
                 const response = await fetch(CONFIG.GAS_URL, {
                     method: 'POST',
-                    body: formData,
-                    signal: controller.signal
+                    body: formData
                 });
 
-                clearTimeout(timeoutId);
-
                 const text = await response.text();
+                console.log('GAS Response:', text);
                 
                 try {
                     const result = JSON.parse(text);
-                    
-                    if (useCache && result.success) {
-                        state.cache[cacheKey] = {
-                            time: Date.now(),
-                            data: result
-                        };
-                    }
-                    
                     return result;
-                } catch {
-                    return { success: false, message: 'รูปแบบข้อมูลไม่ถูกต้อง' };
+                } catch (e) {
+                    console.error('JSON parse error:', text);
+                    throw new Error('รูปแบบข้อมูลไม่ถูกต้อง');
                 }
 
             } catch (error) {
-                return { success: false, message: 'การเชื่อมต่อล้มเหลว' };
+                console.error('API call error:', error);
+                showToast('การเชื่อมต่อล้มเหลว: ' + error.message, 'error');
+                return { success: false, message: error.message };
             }
+        }
+
+        // ========== REAL-TIME UPDATE ==========
+        let pollingInterval = null;
+        
+        function startRealtimeUpdates() {
+            if (pollingInterval) clearInterval(pollingInterval);
+            
+            pollingInterval = setInterval(async () => {
+                if (document.hidden || !state.initialized) return;
+                
+                await checkForUpdates();
+            }, CONFIG.POLLING_INTERVAL);
+        }
+
+        async function checkForUpdates() {
+            try {
+                const result = await callGAS('posts/updates', {
+                    lastUpdate: state.lastUpdate
+                });
+                
+                if (result.success && result.data.hasUpdates) {
+                    console.log('New updates detected, refreshing...');
+                    
+                    showSyncIndicator();
+                    
+                    await Promise.all([
+                        loadPosts(true),
+                        loadMyPosts(),
+                        loadPendingPosts(),
+                        loadUrgentPosts(),
+                        state.isAdmin ? loadUsers() : Promise.resolve(),
+                        state.isAdmin ? loadAdminStats() : Promise.resolve()
+                    ]);
+                    
+                    showRealtimeIndicator();
+                    
+                    state.lastUpdate = Date.now();
+                }
+            } catch (error) {
+                console.error('Update check failed:', error);
+            }
+        }
+
+        function showRealtimeIndicator() {
+            const indicator = document.getElementById('realtime-indicator');
+            indicator.innerHTML = `
+                <span class="realtime-badge" style="animation: pulse 0.5s">
+                    <i class="fas fa-check-circle"></i> อัปเดตใหม่
+                </span>
+            `;
+            
+            setTimeout(() => {
+                indicator.innerHTML = `
+                    <span class="realtime-badge">
+                        <i class="fas fa-circle"></i> อัปเดตเรียลไทม์
+                    </span>
+                `;
+            }, 2000);
         }
 
         // ========== IMAGE UPLOAD ==========
         async function uploadImageToDrive(file) {
             try {
-                const compressedFile = await compressImage(file);
-                
                 const base64 = await new Promise((resolve, reject) => {
                     const reader = new FileReader();
                     reader.onload = () => resolve(reader.result.split(',')[1]);
                     reader.onerror = reject;
-                    reader.readAsDataURL(compressedFile);
+                    reader.readAsDataURL(file);
                 });
 
                 const result = await callGAS('uploadImage', {
@@ -1661,46 +1626,16 @@
                 });
 
                 if (result.success) {
-                    return `https://lh5.googleusercontent.com/d/${result.data.fileId}=s0`;
+                    const fileId = result.data.fileId;
+                    return `https://lh5.googleusercontent.com/d/${fileId}=s0`;
+                } else {
+                    throw new Error(result.message);
                 }
-                return null;
-            } catch {
+            } catch (error) {
+                console.error('Upload error:', error);
                 showToast('อัปโหลดรูปไม่สำเร็จ', 'error');
                 return null;
             }
-        }
-
-        function compressImage(file) {
-            return new Promise((resolve, reject) => {
-                if (file.size < 1024 * 1024) {
-                    resolve(file);
-                    return;
-                }
-
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = (e) => {
-                    const img = new Image();
-                    img.src = e.target.result;
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        let width = img.width * 0.5;
-                        let height = img.height * 0.5;
-                        
-                        canvas.width = width;
-                        canvas.height = height;
-                        
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-                        
-                        canvas.toBlob((blob) => {
-                            resolve(blob);
-                        }, file.type, 0.8);
-                    };
-                    img.onerror = reject;
-                };
-                reader.onerror = reject;
-            });
         }
 
         function previewImage(input) {
@@ -1718,12 +1653,6 @@
         // ========== LIFF INIT ==========
         async function initLIFF() {
             try {
-                // ตั้ง timeout เผื่อ LIFF โหลดช้า
-                state.loadingTimeout = setTimeout(() => {
-                    initialLoading.classList.add('hide');
-                    showToast('การเชื่อมต่อใช้เวลานานกว่าปกติ', 'warning');
-                }, CONFIG.INIT_TIMEOUT);
-
                 await liff.init({ liffId: CONFIG.LIFF_ID });
                 
                 if (!liff.isLoggedIn()) {
@@ -1734,87 +1663,48 @@
                 const profile = await liff.getProfile();
                 const idToken = liff.getDecodedIDToken();
                 
-                // โหลดข้อมูลที่จำเป็นก่อน
-                const userResult = await callGAS('user/profile', {
+                const result = await callGAS('user/profile', {
                     lineUserId: profile.userId,
                     displayName: profile.displayName,
                     pictureUrl: profile.pictureUrl || '',
                     email: idToken?.email || ''
                 });
                 
-                clearTimeout(state.loadingTimeout);
-                
-                if (userResult.success) {
-                    state.user = userResult.data;
+                if (result.success) {
+                    state.user = result.data;
                     state.isAdmin = state.user.role === 'admin';
                     state.isEditor = state.isAdmin || state.user.role === 'editor';
                     
+                    await Promise.all([
+                        loadSettings(),
+                        loadPosts(),
+                        loadMyPosts(),
+                        loadPendingPosts(),
+                        loadUrgentPosts(),
+                        state.isAdmin ? loadUsers() : Promise.resolve(),
+                        state.isAdmin ? loadAdminStats() : Promise.resolve()
+                    ]);
+                    
                     updateUI();
                     
-                    // โหลดข้อมูลทีละส่วน
+                    // ซ่อน initial loading
                     setTimeout(() => {
-                        Promise.all([
-                            loadPosts(),
-                            loadUrgentPosts(),
-                            loadMyPosts()
-                        ]).then(() => {
-                            state.initialized = true;
-                            initialLoading.classList.add('hide');
-                        });
-                    }, 100);
-                    
-                    // โหลดข้อมูลที่เหลือแบบไม่ต้องรอ
-                    if (state.isAdmin) {
-                        setTimeout(() => {
-                            loadPendingPosts(true);
-                            loadUsers(true);
-                            loadAdminStats(true);
-                        }, 500);
-                    }
+                        initialLoading.classList.add('hide');
+                        state.initialized = true;
+                    }, 500);
                     
                     startRealtimeUpdates();
                 } else {
-                    showToast(userResult.message, 'error');
-                    initialLoading.classList.add('hide');
+                    showToast(result.message, 'error');
                 }
                 
             } catch (err) {
-                clearTimeout(state.loadingTimeout);
-                initialLoading.classList.add('hide');
-                showToast('ไม่สามารถเชื่อมต่อกับระบบได้', 'error');
+                console.error('LIFF init error:', err);
+                showToast('ไม่สามารถเชื่อมต่อกับ LINE ได้', 'error');
+                setTimeout(() => {
+                    initialLoading.classList.add('hide');
+                }, 500);
             }
-        }
-
-        // ========== REAL-TIME UPDATE ==========
-        let pollingInterval = null;
-        
-        function startRealtimeUpdates() {
-            if (pollingInterval) clearInterval(pollingInterval);
-            
-            pollingInterval = setInterval(async () => {
-                if (document.hidden || !state.initialized) return;
-                
-                const result = await callGAS('posts/updates', {
-                    lastUpdate: state.lastUpdate
-                });
-                
-                if (result.success && result.data?.hasUpdates) {
-                    showSyncIndicator();
-                    
-                    if (document.getElementById('tab-home').classList.contains('active')) {
-                        await loadPosts(true);
-                    }
-                    if (document.getElementById('tab-my').classList.contains('active')) {
-                        await loadMyPosts(true);
-                    }
-                    if (state.isAdmin && document.getElementById('tab-admin').classList.contains('active')) {
-                        await loadAdminStats(true);
-                        await loadPendingPosts(true);
-                    }
-                    
-                    state.lastUpdate = Date.now();
-                }
-            }, CONFIG.POLLING_INTERVAL);
         }
 
         // ========== SWITCH TAB ==========
@@ -1841,8 +1731,8 @@
             if (tab === 'admin' && state.isAdmin) {
                 state.adminPostsPage = 1;
                 loadAdminStats();
-                loadUsers(true);
-                loadPendingPosts(true);
+                loadUsers();
+                loadPendingPosts();
             }
         }
 
@@ -1882,7 +1772,7 @@
 
         // ========== LOAD SETTINGS ==========
         async function loadSettings() {
-            const result = await callGAS('settings', {}, true);
+            const result = await callGAS('settings');
             if (result.success) {
                 state.settings = result.data || {};
                 document.getElementById('setting-app-name').value = state.settings.appName || 'iTNews';
@@ -1899,11 +1789,18 @@
                 search: state.searchTerm,
                 pageSize: CONFIG.PAGE_SIZE,
                 includePending: state.isAdmin
-            }, true);
+            });
             
             if (result.success) {
                 state.posts = result.data.posts || [];
                 state.totalPages = Math.ceil((result.data.total || 0) / CONFIG.PAGE_SIZE) || 1;
+                
+                // อัปเดต admin posts ด้วย
+                if (state.isAdmin) {
+                    state.adminPosts = result.data.posts || [];
+                    renderAdminPosts();
+                    renderAdminPostsPagination();
+                }
                 
                 document.getElementById('stat-news').textContent = result.data.stats?.news || 0;
                 document.getElementById('stat-events').textContent = result.data.stats?.events || 0;
@@ -1919,7 +1816,7 @@
                 filter: 'urgent',
                 pageSize: 10,
                 includePending: false
-            }, true);
+            });
             
             if (result.success) {
                 state.urgentPosts = result.data.posts?.filter(p => p.approvalStatus === 'approved') || [];
@@ -1936,53 +1833,65 @@
             if (urgentPosts.length === 0) {
                 wrapper.innerHTML = `
                     <div class="swiper-slide">
-                        <img src="https://via.placeholder.com/1200x400/1a1d24/06c755?text=iTNews" 
-                             class="w-full h-full object-cover"
-                             loading="lazy">
+                        <img src="https://via.placeholder.com/1200x400/1a1d24/06c755?text=iTNews+%C2%B7+ไม่มีประกาศด่วน" 
+                             class="w-full h-full object-cover">
                         <div class="slide-content">
-                            <h3 class="font-bold text-lg">ยินดีต้อนรับสู่ iTNews</h3>
-                            <p class="text-sm text-gray-300">ไม่มีประกาศด่วนในขณะนี้</p>
+                            <h3 class="font-bold text-lg">ไม่มีประกาศด่วนในขณะนี้</h3>
+                            <p class="text-sm text-gray-300">ติดตามข่าวสารและกิจกรรมได้ที่หน้าแรก</p>
                         </div>
                     </div>
                 `;
                 
-                initSwiper(false);
+                const swiperEl = document.querySelector('.hero-swiper');
+                if (swiperEl.swiper) {
+                    swiperEl.swiper.destroy(true, true);
+                }
+                
+                new Swiper('.hero-swiper', {
+                    autoplay: false,
+                    pagination: {
+                        el: '.swiper-pagination',
+                        clickable: true,
+                    },
+                    loop: false,
+                });
                 return;
             }
 
-            wrapper.innerHTML = urgentPosts.map(post => `
-                <div class="swiper-slide cursor-pointer" onclick="showPostDetail('${post.postId}')">
-                    <img src="${post.imageUrl || 'https://via.placeholder.com/1200x400/2a2e36/ffffff?text=URGENT'}" 
-                         class="w-full h-full object-cover" 
-                         loading="lazy"
-                         onerror="this.src='https://via.placeholder.com/1200x400/2a2e36/ffffff?text=URGENT'">
-                    <span class="slide-badge urgent">⚠️ ประกาศด่วน</span>
-                    <div class="slide-content">
-                        <h3 class="font-bold text-lg line-clamp-2">${post.title}</h3>
-                        <p class="text-xs text-gray-300 mt-1">${formatDateShort(post.createdAt)}</p>
+            wrapper.innerHTML = urgentPosts.map(post => {
+                const typeText = '⚠️ ประกาศด่วน';
+                const badgeClass = 'urgent';
+                
+                return `
+                    <div class="swiper-slide cursor-pointer" onclick="showPostDetail('${post.postId}')">
+                        <img src="${post.imageUrl || 'https://via.placeholder.com/1200x400/2a2e36/ffffff?text=URGENT'}" 
+                             class="w-full h-full object-cover" 
+                             loading="lazy"
+                             onerror="this.src='https://via.placeholder.com/1200x400/2a2e36/ffffff?text=URGENT'">
+                        <span class="slide-badge ${badgeClass}">${typeText}</span>
+                        <div class="slide-content">
+                            <h3 class="font-bold text-lg line-clamp-2">${post.title}</h3>
+                            <p class="text-xs text-gray-300 mt-1">${formatDateShort(post.createdAt)}</p>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
 
-            initSwiper(urgentPosts.length > 1);
-        }
-
-        function initSwiper(autoplay) {
             const swiperEl = document.querySelector('.hero-swiper');
             if (swiperEl.swiper) {
                 swiperEl.swiper.destroy(true, true);
             }
             
             new Swiper('.hero-swiper', {
-                autoplay: autoplay ? {
+                autoplay: {
                     delay: 3000,
                     disableOnInteraction: false,
-                } : false,
+                },
                 pagination: {
                     el: '.swiper-pagination',
                     clickable: true,
                 },
-                loop: autoplay,
+                loop: urgentPosts.length > 1,
                 speed: 500,
             });
         }
@@ -2021,8 +1930,11 @@
                 const statusBadge = post.approvalStatus !== 'approved' ? 
                     `<span class="badge badge-pending ml-2">⏳ รออนุมัติ</span>` : '';
                 
+                const statusText = post.approvalStatus === 'approved' ? 'เผยแพร่' : 
+                                  post.approvalStatus === 'pending' ? 'รออนุมัติ' : 'ปฏิเสธ';
+                
                 return `
-                    <div class="news-card relative" onclick="showPostDetail('${post.postId}')">
+                    <div class="news-card relative" onclick="showPostDetail('${post.postId}')" data-aos="fade-up">
                         <button class="share-button" onclick="event.stopPropagation(); sharePost('${post.postId}')">
                             <i class="fab fa-line"></i>
                         </button>
@@ -2040,8 +1952,13 @@
                                 </div>
                                 <span class="text-xs text-gray-500">${formatDateShort(post.createdAt)}</span>
                             </div>
-                            <h3 class="font-semibold text-lg mb-2 line-clamp-2">${post.title}</h3>
+                            <h3 class="font-semibold text-lg mb-2">${post.title}</h3>
                             <p class="text-sm text-gray-400 line-clamp-2">${post.content}</p>
+                            <div class="flex items-center justify-between mt-3 text-xs text-gray-500">
+                                <span><i class="fas fa-user mr-1"></i> ${post.authorName || 'ผู้ดูแล'}</span>
+                                <span><i class="fas fa-eye mr-1"></i> ${post.viewCount || 0}</span>
+                                ${state.isAdmin ? `<span class="text-${post.approvalStatus === 'approved' ? 'green-500' : post.approvalStatus === 'pending' ? 'yellow-500' : 'red-500'}">${statusText}</span>` : ''}
+                            </div>
                         </div>
                     </div>
                 `;
@@ -2081,13 +1998,14 @@
         }
 
         // ========== MY POSTS ==========
-        async function loadMyPosts(silent = false) {
+        async function loadMyPosts() {
             const result = await callGAS('user/posts', {
                 page: state.myPostsPage,
                 pageSize: CONFIG.PAGE_SIZE
-            }, true);
+            });
             
             if (result.success) {
+                // รองรับโครงสร้างข้อมูลทั้งแบบมี posts property และ array ตรงๆ
                 if (result.data.posts) {
                     state.myPosts = result.data.posts || [];
                     state.myPostsTotalPages = Math.ceil((result.data.total || 0) / CONFIG.PAGE_SIZE) || 1;
@@ -2101,6 +2019,10 @@
                 
                 renderMyPosts();
                 renderMyPostsPagination();
+            } else {
+                console.error('Failed to load my posts:', result);
+                state.myPosts = [];
+                renderMyPosts();
             }
         }
 
@@ -2165,7 +2087,7 @@
                 }[post.type] || '📄';
                 
                 return `
-                    <div class="news-card" onclick="showPostDetail('${post.postId}')">
+                    <div class="news-card" onclick="showPostDetail('${post.postId}')" data-aos="fade-up">
                         ${post.imageUrl ? `
                             <img src="${post.imageUrl}" 
                                  class="news-image" 
@@ -2181,7 +2103,8 @@
                                 </div>
                                 <span class="text-xs ${statusClass}">${statusText}</span>
                             </div>
-                            <h3 class="font-semibold line-clamp-2">${post.title}</h3>
+                            <h3 class="font-semibold">${post.title}</h3>
+                            <p class="text-sm text-gray-400 mt-1 line-clamp-2">${post.content}</p>
                             <p class="text-xs text-gray-500 mt-2">${formatDate(post.createdAt)}</p>
                         </div>
                     </div>
@@ -2190,10 +2113,10 @@
         }
 
         // ========== PENDING POSTS ==========
-        async function loadPendingPosts(useCache = false) {
+        async function loadPendingPosts() {
             if (!state.isAdmin) return;
             
-            const result = await callGAS('admin/posts/pending', {}, useCache);
+            const result = await callGAS('admin/posts/pending');
             if (result.success) {
                 state.pendingPosts = result.data || [];
                 renderPendingPosts();
@@ -2221,32 +2144,38 @@
                 return;
             }
 
-            list.innerHTML = state.pendingPosts.map(post => `
-                <div class="bg-[#1a1d24] p-4 rounded-xl border border-yellow-500/30">
-                    <div class="flex justify-between items-start mb-3">
-                        <div>
-                            <span class="badge badge-pending">⏳ รออนุมัติ</span>
-                            <span class="badge badge-${post.type} ml-2">${
-                                {news:'📰', event:'🎉', urgent:'⚠️'}[post.type] || '📄'
-                            }</span>
+            list.innerHTML = state.pendingPosts.map(post => {
+                const typeIcon = {
+                    'news': '📰',
+                    'event': '🎉',
+                    'urgent': '⚠️'
+                }[post.type] || '📄';
+                
+                return `
+                    <div class="bg-[#1a1d24] p-4 rounded-xl border border-yellow-500/30" data-aos="fade-up">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <span class="badge badge-pending">⏳ รออนุมัติ</span>
+                                <span class="badge badge-${post.type} ml-2">${typeIcon}</span>
+                            </div>
+                            <span class="text-xs text-gray-500">${formatDateShort(post.createdAt)}</span>
                         </div>
-                        <span class="text-xs text-gray-500">${formatDateShort(post.createdAt)}</span>
-                    </div>
-                    <h3 class="font-semibold text-lg mb-2">${post.title}</h3>
-                    <p class="text-sm text-gray-400 mb-3 line-clamp-2">${post.content}</p>
-                    <div class="flex items-center justify-between text-sm">
-                        <span class="text-gray-500">โดย: ${post.authorName || 'ผู้ใช้'}</span>
-                        <div class="flex gap-2">
-                            <button class="btn-success text-sm py-2 px-4" onclick="approvePost('${post.postId}')">
-                                <i class="fas fa-check mr-1"></i>อนุมัติ
-                            </button>
-                            <button class="btn-danger text-sm py-2 px-4" onclick="rejectPost('${post.postId}')">
-                                <i class="fas fa-times mr-1"></i>ปฏิเสธ
-                            </button>
+                        <h3 class="font-semibold text-lg mb-2">${post.title}</h3>
+                        <p class="text-sm text-gray-400 mb-3 line-clamp-2">${post.content}</p>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-500">โดย: ${post.authorName || 'ผู้ใช้'}</span>
+                            <div class="flex gap-2">
+                                <button class="btn-success text-sm py-2 px-4" onclick="approvePost('${post.postId}')">
+                                    <i class="fas fa-check mr-1"></i>อนุมัติ
+                                </button>
+                                <button class="btn-danger text-sm py-2 px-4" onclick="rejectPost('${post.postId}')">
+                                    <i class="fas fa-times mr-1"></i>ปฏิเสธ
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         // ========== APPROVE/REJECT POST ==========
@@ -2269,18 +2198,31 @@
                         Swal.showValidationMessage(apiResult.message);
                     }
                     return apiResult;
-                }
+                },
+                allowOutsideClick: () => !Swal.isLoading()
             });
             
             if (result.isConfirmed) {
+                await Swal.fire({
+                    title: 'อนุมัติสำเร็จ',
+                    text: 'โพสต์ได้รับการอนุมัติและเผยแพร่แล้ว',
+                    icon: 'success',
+                    confirmButtonColor: '#06c755',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                
                 showSyncIndicator();
-                state.cache = {};
+                
                 await Promise.all([
                     loadPosts(true),
                     loadPendingPosts(),
                     loadUrgentPosts(),
                     loadAdminStats()
                 ]);
+                
+                state.lastUpdate = Date.now();
+                showRealtimeIndicator();
             }
         }
 
@@ -2303,18 +2245,31 @@
                         Swal.showValidationMessage(apiResult.message);
                     }
                     return apiResult;
-                }
+                },
+                allowOutsideClick: () => !Swal.isLoading()
             });
             
             if (result.isConfirmed) {
+                await Swal.fire({
+                    title: 'ปฏิเสธสำเร็จ',
+                    text: 'โพสต์ถูกปฏิเสธเรียบร้อย',
+                    icon: 'success',
+                    confirmButtonColor: '#06c755',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                
                 showSyncIndicator();
-                state.cache = {};
+                
                 await Promise.all([
                     loadPosts(true),
                     loadPendingPosts(),
                     loadUrgentPosts(),
                     loadAdminStats()
                 ]);
+                
+                state.lastUpdate = Date.now();
+                showRealtimeIndicator();
             }
         }
 
@@ -2432,7 +2387,8 @@
             try {
                 await liff.shareTargetPicker([flexMessage]);
                 showToast('แชร์สำเร็จ');
-            } catch {
+            } catch (err) {
+                console.error('Share error:', err);
                 showToast('ไม่สามารถแชร์ได้', 'error');
             }
         }
@@ -2499,6 +2455,9 @@
                 
                 if (canEdit || canDelete) {
                     adminControls.classList.remove('hidden');
+                    
+                    const editDeleteDiv = document.getElementById('modal-edit-btn').parentNode;
+                    editDeleteDiv.classList.remove('hidden');
                     document.getElementById('modal-edit-btn').style.display = canEdit ? 'block' : 'none';
                     document.getElementById('modal-delete-btn').style.display = canDelete ? 'block' : 'none';
                 } else {
@@ -2563,6 +2522,7 @@
                 return;
             }
             
+            // ป้องกันการกดซ้ำ
             const saveBtn = document.getElementById('save-post-btn');
             saveBtn.disabled = true;
             saveBtn.classList.add('loading');
@@ -2612,8 +2572,9 @@
                     
                     closeCreateModal();
                     
-                    state.cache = {};
+                    showSyncIndicator();
                     
+                    // โหลดข้อมูลทั้งหมดใหม่
                     await Promise.all([
                         loadPosts(true),
                         loadMyPosts(),
@@ -2621,10 +2582,15 @@
                         loadUrgentPosts(),
                         state.isAdmin ? loadAdminStats() : Promise.resolve()
                     ]);
+                    
+                    state.lastUpdate = Date.now();
+                    showRealtimeIndicator();
                 }
-            } catch {
+            } catch (error) {
+                console.error('Save post error:', error);
                 showToast('เกิดข้อผิดพลาดในการบันทึก', 'error');
             } finally {
+                // คืนค่าปุ่ม
                 saveBtn.disabled = false;
                 saveBtn.classList.remove('loading');
             }
@@ -2669,7 +2635,7 @@
             
             const result = await Swal.fire({
                 title: 'ลบโพสต์',
-                text: 'คุณแน่ใจหรือไม่ว่าต้องการลบโพสต์นี้?',
+                text: 'คุณแน่ใจหรือไม่ว่าต้องการลบโพสต์นี้? การดำเนินการนี้ไม่สามารถย้อนกลับได้',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
@@ -2685,12 +2651,24 @@
                         Swal.showValidationMessage(apiResult.message);
                     }
                     return apiResult;
-                }
+                },
+                allowOutsideClick: () => !Swal.isLoading()
             });
             
             if (result.isConfirmed) {
+                await Swal.fire({
+                    title: 'ลบสำเร็จ',
+                    text: 'โพสต์ถูกลบเรียบร้อย',
+                    icon: 'success',
+                    confirmButtonColor: '#06c755',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                
                 closeModal();
-                state.cache = {};
+                
+                showSyncIndicator();
+                
                 await Promise.all([
                     loadPosts(true),
                     loadMyPosts(),
@@ -2698,14 +2676,17 @@
                     loadUrgentPosts(),
                     state.isAdmin ? loadAdminStats() : Promise.resolve()
                 ]);
+                
+                state.lastUpdate = Date.now();
+                showRealtimeIndicator();
             }
         }
 
         // ========== ADMIN: USERS ==========
-        async function loadUsers(useCache = false) {
+        async function loadUsers() {
             if (!state.isAdmin) return;
             
-            const result = await callGAS('admin/users', {}, useCache);
+            const result = await callGAS('admin/users');
             if (result.success) {
                 state.users = result.data || [];
                 renderUsers();
@@ -2740,16 +2721,18 @@
                 }[user.role] || 'ผู้ใช้';
                 
                 return `
-                    <div class="user-row">
+                    <div class="user-row" data-aos="fade-up">
                         <img src="${user.pictureUrl || 'https://via.placeholder.com/40'}" class="user-avatar-sm" loading="lazy">
                         <div class="flex-1">
                             <p class="font-semibold">${user.displayName || 'ไม่ระบุชื่อ'}</p>
                             <p class="text-xs text-gray-400">${user.email || ''}</p>
                         </div>
                         <span class="role-badge ${roleClass}">${roleText}</span>
-                        <button class="text-[#06c755] text-sm" onclick="showRoleModal('${user.lineUserId}', '${user.displayName}', '${user.role}')">
-                            <i class="fas fa-cog"></i>
-                        </button>
+                        ${state.isAdmin ? `
+                            <button class="text-[#06c755] text-sm" onclick="showRoleModal('${user.lineUserId}', '${user.displayName}', '${user.role}')">
+                                <i class="fas fa-cog"></i>
+                            </button>
+                        ` : ''}
                     </div>
                 `;
             }).join('');
@@ -2791,12 +2774,28 @@
                         Swal.showValidationMessage(apiResult.message);
                     }
                     return apiResult;
-                }
+                },
+                allowOutsideClick: () => !Swal.isLoading()
             });
             
             if (result.isConfirmed) {
+                await Swal.fire({
+                    title: 'บันทึกสำเร็จ',
+                    text: 'อัปเดตสิทธิ์ผู้ใช้เรียบร้อย',
+                    icon: 'success',
+                    confirmButtonColor: '#06c755',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                
                 closeRoleModal();
-                state.cache = {};
+                
+                showSyncIndicator();
+                
+                const userIndex = state.users.findIndex(u => u.lineUserId === userId);
+                if (userIndex !== -1) {
+                    state.users[userIndex].role = role;
+                }
                 
                 if (state.user?.lineUserId === userId) {
                     state.user.role = role;
@@ -2805,15 +2804,18 @@
                     updateUI();
                 }
                 
+                renderUsers();
                 await loadUsers();
+                
+                state.lastUpdate = Date.now();
             }
         }
 
         // ========== ADMIN: STATS ==========
-        async function loadAdminStats(useCache = false) {
+        async function loadAdminStats() {
             if (!state.isAdmin) return;
             
-            const result = await callGAS('admin/stats', {}, useCache);
+            const result = await callGAS('admin/stats');
             if (result.success) {
                 const stats = result.data;
                 document.getElementById('admin-users').textContent = stats.users || 0;
@@ -2822,13 +2824,15 @@
                 document.getElementById('admin-pending').textContent = stats.pending || 0;
             }
 
+            // โหลด posts สำหรับ admin โดยใช้ API เดียวกับ loadPosts
             const posts = await callGAS('posts', { 
                 page: state.adminPostsPage,
                 pageSize: CONFIG.PAGE_SIZE,
                 includePending: true
-            }, useCache);
+            });
             
             if (posts.success) {
+                // รองรับโครงสร้างข้อมูลทั้งแบบมี posts property และ array ตรงๆ
                 if (posts.data.posts) {
                     state.adminPosts = posts.data.posts || [];
                     state.adminPostsTotalPages = Math.ceil((posts.data.total || 0) / CONFIG.PAGE_SIZE) || 1;
@@ -2863,7 +2867,7 @@
                                   p.approvalStatus === 'pending' ? 'รออนุมัติ' : 'ปฏิเสธ';
                 
                 return `
-                    <div class="flex justify-between items-center p-3 bg-[#111317] rounded-lg cursor-pointer" onclick="showPostDetail('${p.postId}')">
+                    <div class="flex justify-between items-center p-3 bg-[#111317] rounded-lg cursor-pointer" onclick="showPostDetail('${p.postId}')" data-aos="fade-up">
                         <div class="flex-1">
                             <p class="font-semibold">${p.title}</p>
                             <p class="text-xs text-gray-400">${formatDateShort(p.createdAt)}</p>
@@ -2923,8 +2927,6 @@
             
             const result = await callGAS('admin/settings/update', data);
             if (result.success) {
-                state.cache = {};
-                
                 await Swal.fire({
                     title: 'บันทึกสำเร็จ',
                     text: 'ตั้งค่าระบบถูกอัปเดตเรียบร้อย',
@@ -2935,6 +2937,9 @@
                 });
                 
                 Object.assign(state.settings, data);
+                state.lastUpdate = Date.now();
+                
+                showSyncIndicator();
             }
         }
 
@@ -2967,9 +2972,21 @@
 
             const result = await callGAS('user/update', data);
             if (result.success) {
+                await Swal.fire({
+                    title: 'บันทึกสำเร็จ',
+                    text: 'อัปเดตโปรไฟล์เรียบร้อย',
+                    icon: 'success',
+                    confirmButtonColor: '#06c755',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                
                 closeProfileModal();
                 Object.assign(state.user, data);
                 updateUI();
+                state.lastUpdate = Date.now();
+                
+                showSyncIndicator();
             }
         }
 
@@ -3024,7 +3041,6 @@
             if (state.isAdmin) {
                 showSyncIndicator();
                 state.adminPostsPage = 1;
-                state.cache = {};
                 loadAdminStats();
                 loadUsers();
                 loadPendingPosts();
@@ -3036,10 +3052,14 @@
             btn.addEventListener('click', () => {
                 const tab = btn.dataset.adminTab;
                 
+                // อัปเดต active state
                 document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 
+                // ซ่อนทุก tab
                 document.querySelectorAll('.admin-tab').forEach(t => t.classList.add('hidden'));
+                
+                // แสดง tab ที่เลือก
                 document.getElementById(`admin-${tab}-tab`).classList.remove('hidden');
             });
         });
@@ -3062,10 +3082,12 @@
                         await initLIFF();
                     });
                 }
-            } catch {
+            } catch (err) {
+                console.error(err);
+                showToast('ไม่สามารถเชื่อมต่อกับระบบได้', 'error');
                 setTimeout(() => {
                     initialLoading.classList.add('hide');
-                }, 300);
+                }, 500);
             }
         });
 
@@ -3076,9 +3098,6 @@
             }
             if (state.syncTimeout) {
                 clearTimeout(state.syncTimeout);
-            }
-            if (state.loadingTimeout) {
-                clearTimeout(state.loadingTimeout);
             }
         });
 
@@ -3092,6 +3111,22 @@
                 document.getElementById('profile-menu')?.classList.add('hidden');
             }
         };
+
+        // Lazy Loading Images
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    img.classList.add('loaded');
+                    observer.unobserve(img);
+                }
+            });
+        });
+
+        document.querySelectorAll('img[loading="lazy"]').forEach(img => {
+            img.classList.add('lazy-image');
+            imageObserver.observe(img);
+        });
     </script>
 </body>
 </html> 
