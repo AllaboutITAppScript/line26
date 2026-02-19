@@ -2255,7 +2255,7 @@
             return null;
         }
 
-        // ========== SHARE ==========
+        // ========== SHARE AS FLEX MESSAGE (ปรับปรุงให้สวยงาม) ==========
         window.shareAsFlexMessage = async function() {
             if (!state.currentPost || !liff.isInClient()) {
                 showToast('ไม่สามารถแชร์ได้', 'error');
@@ -2263,26 +2263,150 @@
             }
 
             const p = state.currentPost;
+            
+            // กำหนดสีและไอคอนตามประเภท
+            const typeConfig = {
+                news: { color: '#06c755', icon: '📰', label: 'ข่าวสาร' },
+                event: { color: '#f59e0b', icon: '🎉', label: 'กิจกรรม' },
+                urgent: { color: '#ef4444', icon: '⚠️', label: 'ประกาศด่วน' }
+            }[p.type] || { color: '#06c755', icon: '📰', label: 'ข่าวสาร' };
+
+            // สร้าง Flex Message ที่สวยงาม
             const flex = {
                 type: 'flex',
-                altText: p.title,
+                altText: `${typeConfig.icon} ${p.title}`,
                 contents: {
                     type: 'bubble',
+                    size: 'mega',
+                    header: {
+                        type: 'box',
+                        layout: 'vertical',
+                        contents: [
+                            {
+                                type: 'box',
+                                layout: 'horizontal',
+                                contents: [
+                                    {
+                                        type: 'text',
+                                        text: typeConfig.icon,
+                                        size: 'xl',
+                                        align: 'start'
+                                    },
+                                    {
+                                        type: 'text',
+                                        text: typeConfig.label,
+                                        color: typeConfig.color,
+                                        size: 'xs',
+                                        align: 'end',
+                                        gravity: 'center'
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    hero: p.imageUrl ? {
+                        type: 'image',
+                        url: p.imageUrl,
+                        size: 'full',
+                        aspectRatio: '20:13',
+                        aspectMode: 'cover',
+                        backgroundColor: '#1a1d24'
+                    } : null,
                     body: {
                         type: 'box',
                         layout: 'vertical',
                         contents: [
-                            { type: 'text', text: p.title, weight: 'bold', size: 'xl', wrap: true },
-                            { type: 'text', text: p.content, wrap: true, color: '#666666', size: 'sm', margin: 'md' }
+                            {
+                                type: 'text',
+                                text: p.title,
+                                weight: 'bold',
+                                size: 'xl',
+                                wrap: true,
+                                color: '#ffffff'
+                            },
+                            {
+                                type: 'text',
+                                text: p.content.length > 200 ? p.content.substring(0, 200) + '...' : p.content,
+                                wrap: true,
+                                color: '#9ca3af',
+                                size: 'md',
+                                margin: 'md'
+                            },
+                            {
+                                type: 'separator',
+                                margin: 'xl',
+                                color: '#2a2e36'
+                            },
+                            {
+                                type: 'box',
+                                layout: 'horizontal',
+                                margin: 'md',
+                                contents: [
+                                    {
+                                        type: 'text',
+                                        text: 'โพสต์โดย',
+                                        color: '#9ca3af',
+                                        size: 'xs'
+                                    },
+                                    {
+                                        type: 'text',
+                                        text: p.authorName || 'ผู้ดูแลระบบ',
+                                        color: '#06c755',
+                                        size: 'xs',
+                                        align: 'end',
+                                        weight: 'bold'
+                                    }
+                                ]
+                            },
+                            {
+                                type: 'box',
+                                layout: 'horizontal',
+                                contents: [
+                                    {
+                                        type: 'text',
+                                        text: formatDate(p.createdAt),
+                                        color: '#9ca3af',
+                                        size: 'xxs'
+                                    }
+                                ]
+                            }
                         ]
-                    }
+                    },
+                    footer: p.link ? {
+                        type: 'box',
+                        layout: 'vertical',
+                        contents: [
+                            {
+                                type: 'button',
+                                action: {
+                                    type: 'uri',
+                                    label: '🔗 อ่านเพิ่มเติม',
+                                    uri: p.link
+                                },
+                                style: 'primary',
+                                color: typeConfig.color,
+                                height: 'sm'
+                            }
+                        ]
+                    } : null
                 }
             };
+
+            // ลบ hero ถ้าไม่มีรูป
+            if (!p.imageUrl) {
+                delete flex.contents.hero;
+            }
+
+            // ลบ footer ถ้าไม่มี link
+            if (!p.link) {
+                delete flex.contents.footer;
+            }
 
             try {
                 await liff.shareTargetPicker([flex]);
                 showToast('แชร์สำเร็จ');
-            } catch {
+            } catch (error) {
+                console.error('Share error:', error);
                 showToast('แชร์ไม่สำเร็จ', 'error');
             }
         };
