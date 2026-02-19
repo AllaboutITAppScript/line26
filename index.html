@@ -352,6 +352,11 @@
             background: rgba(255,255,255,0.05);
         }
         
+        .btn-outline:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
         .btn-outline.loading {
             color: transparent;
             pointer-events: none;
@@ -427,6 +432,11 @@
             cursor: pointer;
         }
         
+        .btn-success:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
         .btn-success.loading {
             color: transparent;
             pointer-events: none;
@@ -465,6 +475,27 @@
         .btn-share:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+        }
+        
+        .btn-share.loading {
+            color: transparent;
+            pointer-events: none;
+            position: relative;
+        }
+        
+        .btn-share.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 2px solid white;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
         }
         
         .profile-header {
@@ -1066,9 +1097,71 @@
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
         }
+
+        /* Skeleton Loader for Content */
+        .skeleton-text {
+            background: linear-gradient(90deg, var(--bg-card) 25%, #252930 50%, var(--bg-card) 75%);
+            background-size: 200% 100%;
+            animation: loading 1s infinite;
+            height: 16px;
+            border-radius: 8px;
+            margin: 8px 0;
+        }
+
+        .skeleton-title {
+            height: 24px;
+            width: 80%;
+        }
+
+        .skeleton-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
+            background: linear-gradient(90deg, var(--bg-card) 25%, #252930 50%, var(--bg-card) 75%);
+            background-size: 200% 100%;
+            animation: loading 1s infinite;
+        }
+
+        .skeleton-badge {
+            height: 24px;
+            width: 80px;
+            border-radius: 12px;
+            background: linear-gradient(90deg, var(--bg-card) 25%, #252930 50%, var(--bg-card) 75%);
+            background-size: 200% 100%;
+            animation: loading 1s infinite;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(2px);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-overlay .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
     </style>
 </head>
 <body>
+    <!-- Global Loading Overlay -->
+    <div class="loading-overlay" id="global-loading">
+        <div class="spinner"></div>
+    </div>
+
     <!-- Initial Loading -->
     <div class="initial-loading" id="initial-loading">
         <div class="loading-spinner"></div>
@@ -1488,6 +1581,7 @@
         // ========== DOM Cache ==========
         const $ = {
             initLoading: document.getElementById('initial-loading'),
+            globalLoading: document.getElementById('global-loading'),
             pageTitle: document.getElementById('page-title'),
             navbarAppName: document.getElementById('navbar-app-name'),
             homeTab: document.getElementById('tab-home'),
@@ -1535,6 +1629,15 @@
             settingsSaveBtn: document.getElementById('settings-save-btn'),
             settingRequireApproval: document.getElementById('setting-require-approval')
         };
+
+        // ========== LOADING UTILS ==========
+        function showGlobalLoading() {
+            $.globalLoading.classList.add('active');
+        }
+
+        function hideGlobalLoading() {
+            $.globalLoading.classList.remove('active');
+        }
 
         // ========== UTILS ==========
         function showToast(msg, type = 'success') {
@@ -1596,6 +1699,8 @@
         // ========== API CALL ==========
         async function callGAS(path, data = {}) {
             try {
+                showGlobalLoading();
+                
                 const formData = new FormData();
                 formData.append('path', path);
                 if (state.user?.lineUserId) formData.append('lineUserId', state.user.lineUserId);
@@ -1607,7 +1712,7 @@
                 });
 
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 10000);
+                const timeoutId = setTimeout(() => controller.abort(), 15000);
 
                 const res = await fetch(CONFIG.GAS_URL, { 
                     method: 'POST', 
@@ -1618,8 +1723,10 @@
                 clearTimeout(timeoutId);
                 
                 const text = await res.text();
+                hideGlobalLoading();
                 return JSON.parse(text);
             } catch (error) {
+                hideGlobalLoading();
                 return { success: false, message: 'connection error' };
             }
         }
@@ -2159,6 +2266,8 @@
             }
             
             const saveBtn = document.getElementById('edit-comment-save-btn');
+            if (saveBtn.disabled) return;
+            
             saveBtn.disabled = true;
             saveBtn.classList.add('loading');
             
@@ -2261,6 +2370,10 @@
                 showToast('ไม่สามารถแชร์ได้', 'error');
                 return;
             }
+
+            const shareBtn = $.modalShareBtn;
+            shareBtn.disabled = true;
+            shareBtn.classList.add('loading');
 
             const p = state.currentPost;
             
@@ -2408,6 +2521,9 @@
             } catch (error) {
                 console.error('Share error:', error);
                 showToast('แชร์ไม่สำเร็จ', 'error');
+            } finally {
+                shareBtn.disabled = false;
+                shareBtn.classList.remove('loading');
             }
         };
 
@@ -2514,6 +2630,10 @@
             });
 
             if (result.isConfirmed) {
+                const deleteBtn = $.modalDeleteBtn;
+                deleteBtn.disabled = true;
+                deleteBtn.classList.add('loading');
+
                 const apiResult = await callGAS('post/delete', { 
                     postId: state.currentPost.postId,
                     lineUserId: state.user.lineUserId
@@ -2526,6 +2646,9 @@
                 } else {
                     showToast(apiResult.message || 'ลบไม่สำเร็จ', 'error');
                 }
+
+                deleteBtn.disabled = false;
+                deleteBtn.classList.remove('loading');
             }
         };
 
@@ -2670,6 +2793,10 @@
             const userId = document.getElementById('role-user-id').value;
             const role = document.getElementById('user-role').value;
 
+            const saveBtn = e.submitter;
+            saveBtn.disabled = true;
+            saveBtn.classList.add('loading');
+
             const result = await callGAS('admin/user/role', {
                 targetUserId: userId,
                 role,
@@ -2683,6 +2810,9 @@
             } else {
                 showToast(result.message || 'อัปเดตไม่สำเร็จ', 'error');
             }
+
+            saveBtn.disabled = false;
+            saveBtn.classList.remove('loading');
         };
 
         // ========== ADMIN COMMENTS ==========
@@ -2722,7 +2852,7 @@
                     <div class="flex justify-between items-center text-xs">
                         <span class="text-gray-400">โพสต์: ${c.postId}</span>
                         ${c.status === 'active' ? `
-                            <button class="btn-danger text-xs py-1 px-2" onclick="adminDeleteComment('${c.commentId}')">
+                            <button class="btn-danger text-xs py-1 px-2" onclick="adminDeleteComment('${c.commentId}', this)">
                                 <i class="fas fa-trash mr-1"></i>ลบ
                             </button>
                         ` : ''}
@@ -2731,7 +2861,7 @@
             `}).join('');
         }
 
-        window.adminDeleteComment = async function(commentId) {
+        window.adminDeleteComment = async function(commentId, btn) {
             const result = await Swal.fire({
                 title: 'ลบความคิดเห็น',
                 text: 'คุณแน่ใจหรือไม่?',
@@ -2742,6 +2872,9 @@
             });
 
             if (result.isConfirmed) {
+                btn.disabled = true;
+                btn.classList.add('loading');
+
                 const apiResult = await callGAS('admin/comment/delete', { 
                     commentId,
                     lineUserId: state.user.lineUserId
@@ -2753,6 +2886,9 @@
                 } else {
                     showToast(apiResult.message || 'ลบไม่สำเร็จ', 'error');
                 }
+
+                btn.disabled = false;
+                btn.classList.remove('loading');
             }
         };
 
@@ -2843,6 +2979,10 @@
         window.saveProfile = async function(e) {
             e.preventDefault();
             
+            const saveBtn = e.submitter;
+            saveBtn.disabled = true;
+            saveBtn.classList.add('loading');
+
             const data = {
                 phone: document.getElementById('profile-phone').value,
                 department: document.getElementById('profile-department').value,
@@ -2857,6 +2997,9 @@
             } else {
                 showToast(result.message || 'บันทึกไม่สำเร็จ', 'error');
             }
+
+            saveBtn.disabled = false;
+            saveBtn.classList.remove('loading');
         };
 
         window.logout = function() {
