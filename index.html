@@ -1097,71 +1097,9 @@
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
         }
-
-        /* Skeleton Loader for Content */
-        .skeleton-text {
-            background: linear-gradient(90deg, var(--bg-card) 25%, #252930 50%, var(--bg-card) 75%);
-            background-size: 200% 100%;
-            animation: loading 1s infinite;
-            height: 16px;
-            border-radius: 8px;
-            margin: 8px 0;
-        }
-
-        .skeleton-title {
-            height: 24px;
-            width: 80%;
-        }
-
-        .skeleton-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 30px;
-            background: linear-gradient(90deg, var(--bg-card) 25%, #252930 50%, var(--bg-card) 75%);
-            background-size: 200% 100%;
-            animation: loading 1s infinite;
-        }
-
-        .skeleton-badge {
-            height: 24px;
-            width: 80px;
-            border-radius: 12px;
-            background: linear-gradient(90deg, var(--bg-card) 25%, #252930 50%, var(--bg-card) 75%);
-            background-size: 200% 100%;
-            animation: loading 1s infinite;
-        }
-
-        .loading-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(2px);
-            z-index: 9999;
-            display: none;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .loading-overlay.active {
-            display: flex;
-        }
-
-        .loading-overlay .spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
     </style>
 </head>
 <body>
-    <!-- Global Loading Overlay -->
-    <div class="loading-overlay" id="global-loading">
-        <div class="spinner"></div>
-    </div>
-
     <!-- Initial Loading -->
     <div class="initial-loading" id="initial-loading">
         <div class="loading-spinner"></div>
@@ -1581,7 +1519,6 @@
         // ========== DOM Cache ==========
         const $ = {
             initLoading: document.getElementById('initial-loading'),
-            globalLoading: document.getElementById('global-loading'),
             pageTitle: document.getElementById('page-title'),
             navbarAppName: document.getElementById('navbar-app-name'),
             homeTab: document.getElementById('tab-home'),
@@ -1629,15 +1566,6 @@
             settingsSaveBtn: document.getElementById('settings-save-btn'),
             settingRequireApproval: document.getElementById('setting-require-approval')
         };
-
-        // ========== LOADING UTILS ==========
-        function showGlobalLoading() {
-            $.globalLoading.classList.add('active');
-        }
-
-        function hideGlobalLoading() {
-            $.globalLoading.classList.remove('active');
-        }
 
         // ========== UTILS ==========
         function showToast(msg, type = 'success') {
@@ -1699,8 +1627,6 @@
         // ========== API CALL ==========
         async function callGAS(path, data = {}) {
             try {
-                showGlobalLoading();
-                
                 const formData = new FormData();
                 formData.append('path', path);
                 if (state.user?.lineUserId) formData.append('lineUserId', state.user.lineUserId);
@@ -1723,10 +1649,8 @@
                 clearTimeout(timeoutId);
                 
                 const text = await res.text();
-                hideGlobalLoading();
                 return JSON.parse(text);
             } catch (error) {
-                hideGlobalLoading();
                 return { success: false, message: 'connection error' };
             }
         }
