@@ -2730,7 +2730,33 @@
             if (result.success) {
                 showToast('อัปเดตสิทธิ์สำเร็จ');
                 closeRoleModal();
+                // โหลดข้อมูลผู้ใช้ใหม่อีกครั้งเพื่ออัปเดตสิทธิ์ทันที
                 await loadUsers();
+                
+                // ถ้าเป็นผู้ใช้คนปัจจุบัน ให้อัปเดต state.user ด้วย
+                if (userId === state.user?.lineUserId) {
+                    const userResult = await callGAS('user/profile', {
+                        lineUserId: state.user.lineUserId
+                    });
+                    if (userResult.success) {
+                        state.user = userResult.data;
+                        state.isAdmin = state.user.role === 'admin';
+                        state.isEditor = state.isAdmin || state.user.role === 'editor';
+                        
+                        // อัปเดต UI
+                        $.profileRole.textContent = {
+                            admin: '👑 ผู้ดูแลระบบ',
+                            editor: '✏️ ผู้เขียน',
+                            user: '👤 ผู้ใช้ทั่วไป'
+                        }[state.user.role] || '';
+                        
+                        // อัปเดตการแสดงปุ่ม admin
+                        $.adminOnly.forEach(el => {
+                            if (state.isAdmin) el.classList.remove('hidden');
+                            else el.classList.add('hidden');
+                        });
+                    }
+                }
             } else {
                 showToast(result.message || 'อัปเดตไม่สำเร็จ', 'error');
             }
