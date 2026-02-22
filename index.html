@@ -6,29 +6,33 @@
     <title id="page-title">iTNews · LINE</title>
     <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/653/653021.png">
     
-    <!-- Tailwind -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind (โหลดแบบ async) -->
+    <link rel="preload" href="https://cdn.tailwindcss.com" as="script">
+    <script src="https://cdn.tailwindcss.com" defer></script>
     
-    <!-- Fonts -->
+    <!-- Fonts (preconnect และ preload) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" as="style">
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- LINE LIFF -->
-    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+    <!-- LINE LIFF (โหลดแบบ defer) -->
+    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js" defer></script>
     
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Font Awesome (โหลดแบบ async) -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- SweetAlert2 (โหลดแบบ defer) -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
     
-    <!-- Swiper CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <!-- Swiper CSS (โหลดแบบ async) -->
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" as="style">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" media="print" onload="this.media='all'">
     
     <style>
+        /* Critical CSS - โหลดก่อนทันที */
         * {
-            font-family: 'IBM Plex Sans Thai', sans-serif;
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -50,8 +54,115 @@
             background-color: var(--bg);
             color: var(--text);
             padding-bottom: 70px;
+            font-family: 'IBM Plex Sans Thai', sans-serif;
         }
         
+        /* Loading Overlay แบบใหม่ */
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .loading-overlay.hide {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loading-container {
+            text-align: center;
+            max-width: 280px;
+            width: 90%;
+        }
+        
+        .loading-logo {
+            font-size: 48px;
+            color: var(--primary);
+            margin-bottom: 20px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        .loading-logo i {
+            filter: drop-shadow(0 0 10px rgba(6,199,85,0.5));
+        }
+        
+        .loading-title {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+        
+        .loading-progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .loading-progress-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), #4ade80);
+            border-radius: 10px;
+            transition: width 0.2s ease;
+            box-shadow: 0 0 10px var(--primary);
+        }
+        
+        .loading-percentage {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+            text-shadow: 0 0 10px rgba(6,199,85,0.5);
+        }
+        
+        .loading-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+        }
+        
+        .loading-dots {
+            display: inline-flex;
+            gap: 4px;
+            margin-top: 4px;
+        }
+        
+        .loading-dots span {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+        
+        .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+        
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        
+        /* Critical UI elements */
         .navbar {
             position: sticky;
             top: 0;
@@ -95,14 +206,23 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: var(--bg-card);
+            background: rgba(26, 29, 36, 0.95);
+            backdrop-filter: blur(10px);
             border-top: 1px solid var(--border);
             display: flex;
             justify-content: space-around;
             padding: 8px 0;
             z-index: 50;
-            backdrop-filter: blur(10px);
-            background: rgba(26, 29, 36, 0.95);
+        }
+        
+        @media (min-width: 1024px) {
+            .bottom-nav {
+                max-width: 400px;
+                left: 50%;
+                transform: translateX(-50%);
+                border-radius: 50px;
+                margin-bottom: 10px;
+            }
         }
         
         .nav-item {
@@ -120,10 +240,6 @@
             color: var(--primary);
         }
         
-        .nav-item i {
-            font-size: 20px;
-        }
-        
         .tab-content {
             display: none;
         }
@@ -132,963 +248,11 @@
             display: block;
         }
         
-        @media (min-width: 1024px) {
-            .posts-grid {
-                display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                gap: 20px;
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: 0 16px;
-            }
-            
-            .my-posts-grid {
-                display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                gap: 20px;
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: 0 16px;
-            }
-            
-            .admin-posts-grid {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 20px;
-            }
-            
-            .bottom-nav {
-                max-width: 400px;
-                left: 50%;
-                transform: translateX(-50%);
-                border-radius: 50px;
-                margin-bottom: 10px;
-            }
-        }
-        
-        @media (max-width: 1023px) {
-            .posts-grid, .my-posts-grid {
-                display: flex;
-                flex-direction: column;
-                gap: 16px;
-                padding: 0 16px;
-            }
-        }
-        
-        .swiper {
-            width: 100%;
-            height: 220px;
-            margin-bottom: 20px;
-            border-radius: 20px;
-        }
-        
-        .swiper-slide {
-            border-radius: 20px;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .slide-content {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 20px;
-            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-            color: white;
-        }
-        
-        .slide-badge {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 500;
-            z-index: 10;
-        }
-        
-        .slide-badge.urgent { background: rgba(239,68,68,0.9); color: white; }
-        .slide-badge.event { background: rgba(245,158,11,0.9); color: white; }
-        .slide-badge.news { background: rgba(6,199,85,0.9); color: white; }
-        
-        .swiper-pagination-bullet {
-            background: white;
-            opacity: 0.5;
-        }
-        
-        .swiper-pagination-bullet-active {
-            background: var(--primary) !important;
-            opacity: 1;
-        }
-        
-        .news-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            overflow: hidden;
-            cursor: pointer;
-        }
-        
-        .news-card:active {
-            border-color: var(--primary);
-        }
-        
-        .news-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            background: #2a2e36;
-        }
-        
-        .news-content {
-            padding: 16px;
-        }
-        
-        .badge {
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 500;
-            display: inline-block;
-        }
-        
-        .badge-news {
-            background: rgba(6,199,85,0.15);
-            color: var(--primary);
-            border: 1px solid rgba(6,199,85,0.3);
-        }
-        
-        .badge-event {
-            background: rgba(245,158,11,0.15);
-            color: #f59e0b;
-            border: 1px solid rgba(245,158,11,0.3);
-        }
-        
-        .badge-urgent {
-            background: rgba(239,68,68,0.15);
-            color: #ef4444;
-            border: 1px solid rgba(239,68,68,0.3);
-        }
-        
-        .badge-pending {
-            background: rgba(255,193,7,0.15);
-            color: #ffc107;
-            border: 1px solid rgba(255,193,7,0.3);
-        }
-
-        .badge-deleted {
-            background: rgba(239,68,68,0.15);
-            color: #ef4444;
-            border: 1px solid rgba(239,68,68,0.3);
-        }
-
-        .badge-deleted_by_admin {
-            background: rgba(239,68,68,0.25);
-            color: #ef4444;
-            border: 1px solid #ef4444;
-            font-weight: 600;
-        }
-        
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        
-        .btn-primary:active {
-            opacity: 0.8;
-        }
-        
-        .btn-primary:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .btn-primary.loading {
-            color: transparent;
-            pointer-events: none;
-            position: relative;
-        }
-        
-        .btn-primary.loading::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            top: 50%;
-            left: 50%;
-            margin-left: -10px;
-            margin-top: -10px;
-            border: 2px solid white;
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 0.6s linear infinite;
-        }
-        
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 12px 24px;
-            border-radius: 12px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        
-        .btn-outline:active {
-            background: rgba(255,255,255,0.05);
-        }
-        
-        .btn-outline:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .btn-outline.loading {
-            color: transparent;
-            pointer-events: none;
-            position: relative;
-        }
-        
-        .btn-outline.loading::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            top: 50%;
-            left: 50%;
-            margin-left: -10px;
-            margin-top: -10px;
-            border: 2px solid var(--text);
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 0.6s linear infinite;
-        }
-        
-        .btn-danger {
-            background: #ef4444;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        
-        .btn-danger:active {
-            opacity: 0.8;
-        }
-        
-        .btn-danger:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .btn-danger.loading {
-            color: transparent;
-            pointer-events: none;
-            position: relative;
-        }
-        
-        .btn-danger.loading::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            top: 50%;
-            left: 50%;
-            margin-left: -10px;
-            margin-top: -10px;
-            border: 2px solid white;
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 0.6s linear infinite;
-        }
-        
-        .btn-success {
-            background: #28a745;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-        }
-        
-        .btn-success:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .btn-success.loading {
-            color: transparent;
-            pointer-events: none;
-            position: relative;
-        }
-        
-        .btn-success.loading::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            top: 50%;
-            left: 50%;
-            margin-left: -10px;
-            margin-top: -10px;
-            border: 2px solid white;
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 0.6s linear infinite;
-        }
-        
-        .btn-share {
-            background: #00B900;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: 500;
-            border: none;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        
-        .btn-share:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .btn-share.loading {
-            color: transparent;
-            pointer-events: none;
-            position: relative;
-        }
-        
-        .btn-share.loading::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            top: 50%;
-            left: 50%;
-            margin-left: -10px;
-            margin-top: -10px;
-            border: 2px solid white;
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 0.6s linear infinite;
-        }
-        
-        .profile-header {
-            background: var(--bg-card);
-            border-radius: 20px;
-            padding: 16px;
-            margin: 16px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            border: 1px solid var(--border);
-            cursor: pointer;
-            max-width: 1200px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .profile-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 30px;
-            border: 3px solid var(--primary);
-            object-fit: cover;
-        }
-        
-        .stat-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 16px;
-            text-align: center;
-        }
-        
-        .search-box {
-            position: relative;
-            max-width: 1200px;
-            margin: 0 auto 16px;
-            padding: 0 16px;
-        }
-        
-        .search-box input {
-            width: 100%;
-            padding: 12px 12px 12px 44px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 30px;
-            color: var(--text);
-        }
-        
-        .search-box input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-        
-        .search-box i {
-            position: absolute;
-            left: 28px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-secondary);
-        }
-        
-        .filter-container {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding: 0 16px 8px;
-            max-width: 1200px;
-            margin: 0 auto 16px;
-        }
-        
-        .filter-btn {
-            padding: 8px 16px;
-            border-radius: 30px;
-            font-size: 14px;
-            white-space: nowrap;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            cursor: pointer;
-        }
-        
-        .filter-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-        
-        .modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.98);
-            z-index: 1000;
-            display: none;
-        }
-        
-        .modal.active {
-            display: flex;
-        }
-        
-        .modal-content {
-            background: var(--bg-card);
-            width: 100%;
-            height: 100vh;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        @media (min-width: 768px) {
-            .modal-content {
-                width: 90%;
-                max-width: 800px;
-                height: 90vh;
-                margin: 20px auto;
-                border-radius: 24px;
-            }
-        }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .modal-title {
-            font-size: 20px;
-            font-weight: 600;
-            line-clamp: 2;
-            padding-right: 16px;
-        }
-        
-        .modal-close {
-            color: var(--text-secondary);
-            font-size: 24px;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.05);
-        }
-        
-        .modal-close:active {
-            background: rgba(255,255,255,0.1);
-            color: var(--primary);
-        }
-        
-        .modal-body {
-            flex: 1;
-            overflow-y: auto;
-            padding: 16px;
-        }
-        
-        .modal-body::-webkit-scrollbar {
-            width: 4px;
-        }
-        
-        .modal-body::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 2px;
-        }
-        
-        .modal-footer {
-            display: flex;
-            gap: 8px;
-            padding: 16px;
-            border-top: 1px solid var(--border);
-        }
-        
-        .modal-footer button {
-            flex: 1;
-        }
-        
-        .input-field {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text);
-            border-radius: 12px;
-            padding: 12px;
-            width: 100%;
-            margin-bottom: 12px;
-        }
-        
-        .input-field:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            background: var(--bg-card);
-            border-radius: 20px;
-            border: 1px solid var(--border);
-        }
-        
-        .hidden {
-            display: none !important;
-        }
-        
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        
-        .initial-loading {
-            position: fixed;
-            inset: 0;
-            background: var(--bg);
-            z-index: 2000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.15s;
-        }
-        
-        .initial-loading.hide {
-            opacity: 0;
-            pointer-events: none;
-        }
-        
-        .loading-spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .floating-create-btn {
-            position: fixed;
-            bottom: 90px;
-            right: 20px;
-            background: var(--primary);
-            color: white;
-            width: 60px;
-            height: 60px;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 15px rgba(6,199,85,0.3);
-            cursor: pointer;
-            z-index: 100;
-        }
-        
-        .pagination-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            margin: 24px 0;
-        }
-        
-        .btn-pagination {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        
-        .btn-pagination:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-        
-        .admin-section {
-            background: linear-gradient(135deg, rgba(6,199,85,0.1), transparent);
-            border: 1px solid var(--primary);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 16px;
-        }
-        
-        .admin-stat {
-            background: var(--bg-card);
-            padding: 12px;
-            border-radius: 12px;
-            text-align: center;
-        }
-        
-        .user-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            margin-bottom: 8px;
-        }
-        
-        .user-row:active {
-            background: #252930;
-        }
-        
-        .user-avatar-sm {
-            width: 40px;
-            height: 40px;
-            border-radius: 20px;
-            object-fit: cover;
-        }
-        
-        .role-badge {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 10px;
-            font-weight: 600;
-        }
-        
-        .role-admin {
-            background: rgba(239,68,68,0.2);
-            color: #ef4444;
-        }
-        
-        .role-editor {
-            background: rgba(245,158,11,0.2);
-            color: #f59e0b;
-        }
-        
-        .role-user {
-            background: rgba(107,114,128,0.2);
-            color: #9ca3af;
-        }
-        
-        .admin-tab-btn {
-            padding: 12px;
-            border-bottom: 2px solid transparent;
-            cursor: pointer;
-        }
-        
-        .admin-tab-btn.active {
-            border-bottom-color: var(--primary);
-            color: var(--primary);
-            font-weight: 600;
-        }
-        
-        .upload-area {
-            border: 2px dashed var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 12px;
-            cursor: pointer;
-        }
-        
-        .upload-area:hover {
-            border-color: var(--primary);
-        }
-        
-        .image-preview {
-            width: 100%;
-            max-height: 200px;
-            object-fit: cover;
-            border-radius: 12px;
-            margin-top: 12px;
-            display: none;
-        }
-        
-        .modal-comments-section {
-            margin-top: 20px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border);
-        }
-        
-        .modal-comments-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .modal-comments-title i {
-            color: var(--primary);
-        }
-        
-        .modal-comment-input-area {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-        
-        .modal-comment-input {
-            flex: 1;
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 10px 14px;
-            color: var(--text);
-            resize: none;
-            min-height: 60px;
-            font-size: 14px;
-        }
-        
-        .modal-comment-input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-        
-        .modal-comment-submit {
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 0 16px;
-            font-weight: 600;
-            cursor: pointer;
-            height: 60px;
-            font-size: 14px;
-        }
-        
-        .modal-comment-submit:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .modal-comment-submit.loading {
-            position: relative;
-            color: transparent;
-        }
-        
-        .modal-comment-submit.loading::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            top: 50%;
-            left: 50%;
-            margin-left: -10px;
-            margin-top: -10px;
-            border: 2px solid white;
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 0.6s linear infinite;
-        }
-        
-        .modal-comments-list {
-            max-height: 300px;
-            overflow-y: auto;
-            padding-right: 4px;
-        }
-        
-        .modal-comments-list::-webkit-scrollbar {
-            width: 4px;
-        }
-        
-        .modal-comments-list::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 2px;
-        }
-        
-        .modal-comment-item {
-            display: flex;
-            gap: 10px;
-            padding: 12px;
-            background: var(--bg);
-            border-radius: 12px;
-            margin-bottom: 8px;
-            transition: opacity 0.2s;
-        }
-        
-        .modal-comment-item.deleted {
-            opacity: 0.7;
-            background: rgba(239,68,68,0.05);
-            border-left: 3px solid #ef4444;
-        }
-        
-        .modal-comment-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 16px;
-            object-fit: cover;
-        }
-        
-        .modal-comment-content {
-            flex: 1;
-        }
-        
-        .modal-comment-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 2px;
-            flex-wrap: wrap;
-        }
-        
-        .modal-comment-author {
-            font-weight: 600;
-            font-size: 13px;
-            color: var(--primary);
-        }
-        
-        .modal-comment-time {
-            font-size: 10px;
-            color: var(--text-secondary);
-        }
-        
-        .modal-comment-text {
-            font-size: 13px;
-            line-height: 1.5;
-            color: var(--text);
-            word-break: break-word;
-        }
-        
-        .modal-comment-status-badge {
-            font-size: 10px;
-            padding: 2px 8px;
-            border-radius: 12px;
-            margin-left: 8px;
-            display: inline-block;
-        }
-        
-        .modal-comment-status-deleted {
-            background: rgba(239,68,68,0.15);
-            color: #ef4444;
-            border: 1px solid rgba(239,68,68,0.3);
-        }
-        
-        .modal-comment-status-deleted_by_admin {
-            background: rgba(239,68,68,0.25);
-            color: #ef4444;
-            border: 1px solid #ef4444;
-            font-weight: 600;
-        }
-        
-        .modal-comment-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 4px;
-        }
-        
-        .modal-comment-action-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 11px;
-            cursor: pointer;
-            padding: 2px 6px;
-            border-radius: 10px;
-            transition: all 0.15s;
-        }
-        
-        .modal-comment-action-btn:hover {
-            background: rgba(6,199,85,0.1);
-            color: var(--primary);
-        }
-        
-        .modal-comment-action-btn.delete:hover {
-            background: rgba(239,68,68,0.1);
-            color: #ef4444;
-        }
-        
-        .modal-comment-action-btn.disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-        
-        .modal-empty-comments {
-            text-align: center;
-            padding: 20px;
-            color: var(--text-secondary);
-            background: var(--bg);
-            border-radius: 12px;
-            font-size: 13px;
-        }
-
-        #navbar-app-name {
-            background: linear-gradient(135deg, #fff, var(--primary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
+        /* Skeleton Loading */
         .skeleton-card {
             background: linear-gradient(90deg, var(--bg-card) 25%, #252930 50%, var(--bg-card) 75%);
             background-size: 200% 100%;
-            animation: loading 1s infinite;
+            animation: loading 1.5s infinite;
             border-radius: 20px;
             height: 300px;
         }
@@ -1098,15 +262,35 @@
             100% { background-position: -200% 0; }
         }
     </style>
+    
+    <!-- Non-critical CSS จะโหลดทีหลัง -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" media="print" onload="this.media='all'">
+    <noscript>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    </noscript>
 </head>
 <body>
-    <!-- Initial Loading -->
-    <div class="initial-loading" id="initial-loading">
-        <div class="loading-spinner"></div>
-        <div class="loading-text mt-4 text-[#06c755]">กำลังโหลด...</div>
+    <!-- Loading Overlay แบบใหม่ -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-container">
+            <div class="loading-logo">
+                <i class="fas fa-newspaper"></i>
+            </div>
+            <div class="loading-title" id="loading-app-name">iTNews</div>
+            <div class="loading-progress-bar">
+                <div class="loading-progress-fill" id="loading-progress" style="width: 0%"></div>
+            </div>
+            <div class="loading-percentage" id="loading-percentage">0%</div>
+            <div class="loading-text" id="loading-status">กำลังเริ่มต้นระบบ...</div>
+            <div class="loading-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
     </div>
-    
-    <!-- Floating Create Button -->
+
+    <!-- Floating Create Button (ซ่อนไว้ก่อน) -->
     <div id="floating-create-btn" class="floating-create-btn hidden" onclick="showCreatePostModal()">
         <i class="fas fa-plus text-2xl"></i>
     </div>
@@ -1125,9 +309,9 @@
     <div class="min-h-screen">
         <!-- Tab: Home -->
         <div id="tab-home" class="tab-content active">
-            <!-- Profile Header -->
-            <div class="profile-header" id="profile-header">
-                <img id="profile-avatar" src="https://via.placeholder.com/60/2a2e36/06c755?text=..." alt="avatar" class="profile-avatar">
+            <!-- Profile Header (Skeleton จนกว่าจะโหลดเสร็จ) -->
+            <div class="profile-header" id="profile-header" style="display: none;">
+                <img id="profile-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Crect width='60' height='60' fill='%232a2e36'/%3E%3C/svg%3E" alt="avatar" class="profile-avatar">
                 <div class="flex-1">
                     <h2 id="profile-name" class="text-lg font-bold">กำลังโหลด...</h2>
                     <p id="profile-email" class="text-sm text-gray-400"></p>
@@ -1136,27 +320,27 @@
                 <i class="fas fa-chevron-down text-gray-400"></i>
             </div>
 
-            <!-- Stats -->
-            <div class="grid grid-cols-3 gap-2 max-w-7xl mx-auto px-4 mb-4">
+            <!-- Stats Skeleton -->
+            <div class="grid grid-cols-3 gap-2 max-w-7xl mx-auto px-4 mb-4" id="stats-container">
                 <div class="stat-card">
                     <p class="text-xs text-gray-400">ข่าวสาร</p>
-                    <p id="stat-news" class="text-xl font-bold text-[#06c755]">0</p>
+                    <p class="text-xl font-bold text-[#06c755]">...</p>
                 </div>
                 <div class="stat-card">
                     <p class="text-xs text-gray-400">กิจกรรม</p>
-                    <p id="stat-events" class="text-xl font-bold text-[#06c755]">0</p>
+                    <p class="text-xl font-bold text-[#06c755]">...</p>
                 </div>
                 <div class="stat-card">
                     <p class="text-xs text-gray-400">ด่วน</p>
-                    <p id="stat-urgent" class="text-xl font-bold text-[#06c755]">0</p>
+                    <p class="text-xl font-bold text-[#06c755]">...</p>
                 </div>
             </div>
 
-            <!-- Hero Slider -->
+            <!-- Hero Slider Skeleton -->
             <div class="swiper hero-swiper max-w-7xl mx-auto px-4 mb-4">
                 <div class="swiper-wrapper" id="hero-slider-wrapper">
                     <div class="swiper-slide">
-                        <img src="https://via.placeholder.com/1200x400/1a1d24/06c755?text=กำลังโหลด..." class="w-full h-full object-cover">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='400' viewBox='0 0 1200 400'%3E%3Crect width='1200' height='400' fill='%231a1d24'/%3E%3C/svg%3E" class="w-full h-full object-cover">
                         <div class="slide-content">
                             <h3 class="font-bold text-base">กำลังโหลดข่าวด่วน...</h3>
                         </div>
@@ -1179,7 +363,7 @@
                 <button class="filter-btn" data-filter="urgent">⚠️ ประกาศด่วน</button>
             </div>
 
-            <!-- Posts List -->
+            <!-- Posts List (แสดง Skeleton) -->
             <div id="posts-list" class="posts-grid">
                 <div class="skeleton-card"></div>
                 <div class="skeleton-card"></div>
@@ -1209,7 +393,11 @@
                     <i class="fas fa-plus mr-1"></i>สร้าง
                 </button>
             </div>
-            <div id="my-posts-list" class="my-posts-grid"></div>
+            <div id="my-posts-list" class="my-posts-grid">
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+            </div>
         </div>
 
         <!-- Tab: Admin -->
@@ -1314,7 +502,7 @@
             </div>
         </div>
 
-        <!-- Post Detail Modal -->
+        <!-- Modals (คงเดิมทั้งหมด) -->
         <div class="modal" id="post-modal">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1348,7 +536,6 @@
             </div>
         </div>
 
-        <!-- Create/Edit Post Modal -->
         <div class="modal" id="create-modal">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1384,7 +571,6 @@
             </div>
         </div>
 
-        <!-- Profile Settings Modal -->
         <div class="modal" id="profile-modal">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1406,7 +592,6 @@
             </div>
         </div>
 
-        <!-- Role Modal -->
         <div class="modal" id="role-modal">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1433,7 +618,6 @@
             </div>
         </div>
 
-        <!-- Edit Comment Modal -->
         <div class="modal" id="edit-comment-modal">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1472,16 +656,140 @@
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    
     <script>
+        // ========== LOADING MANAGER ==========
+        const LoadingManager = {
+            overlay: document.getElementById('loading-overlay'),
+            progressFill: document.getElementById('loading-progress'),
+            percentageEl: document.getElementById('loading-percentage'),
+            statusEl: document.getElementById('loading-status'),
+            appNameEl: document.getElementById('loading-app-name'),
+            
+            steps: {
+                init: { weight: 5, msg: 'กำลังเริ่มต้นระบบ...' },
+                liff: { weight: 15, msg: 'กำลังเชื่อมต่อ LINE...' },
+                profile: { weight: 20, msg: 'กำลังโหลดโปรไฟล์...' },
+                settings: { weight: 10, msg: 'กำลังโหลดการตั้งค่า...' },
+                posts: { weight: 25, msg: 'กำลังโหลดข่าวสาร...' },
+                urgent: { weight: 10, msg: 'กำลังโหลดประกาศด่วน...' },
+                myPosts: { weight: 10, msg: 'กำลังโหลดโพสต์ของคุณ...' },
+                admin: { weight: 5, msg: 'กำลังโหลดข้อมูลจัดการ...' },
+                complete: { weight: 0, msg: 'เสร็จสิ้น!' }
+            },
+            
+            currentProgress: 0,
+            totalWeight: 0,
+            
+            init() {
+                this.totalWeight = Object.values(this.steps).reduce((sum, step) => sum + step.weight, 0);
+                this.updateProgress(0, 'init');
+                
+                // แสดงชื่อแอพ
+                const appName = localStorage.getItem('appName') || 'iTNews';
+                this.appNameEl.textContent = appName;
+            },
+            
+            updateProgress(stepName, customMsg) {
+                const step = this.steps[stepName];
+                if (!step) return;
+                
+                this.currentProgress += step.weight;
+                const percent = Math.min(95, Math.round((this.currentProgress / this.totalWeight) * 100));
+                
+                this.progressFill.style.width = percent + '%';
+                this.percentageEl.textContent = percent + '%';
+                this.statusEl.textContent = customMsg || step.msg;
+            },
+            
+            complete() {
+                this.progressFill.style.width = '100%';
+                this.percentageEl.textContent = '100%';
+                this.statusEl.textContent = 'พร้อมใช้งาน!';
+                
+                setTimeout(() => {
+                    this.overlay.classList.add('hide');
+                }, 300);
+            },
+            
+            error(msg) {
+                this.statusEl.textContent = msg || 'เกิดข้อผิดพลาด';
+                this.statusEl.style.color = '#ef4444';
+            }
+        };
+
         // ========== CONFIG ==========
         const CONFIG = {
             GAS_URL: 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec',
             LIFF_ID: '2008904120-T7I0VPZf',
             PAGE_SIZE: 9,
-            DRIVE_FOLDER_ID: '18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE'
+            DRIVE_FOLDER_ID: '18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE',
+            CACHE_TTL: 5 * 60 * 1000 // 5 นาที
+        };
+
+        // ========== CACHE MANAGER ==========
+        const CacheManager = {
+            get(key) {
+                try {
+                    const item = localStorage.getItem(`cache_${key}`);
+                    if (!item) return null;
+                    
+                    const { data, timestamp } = JSON.parse(item);
+                    if (Date.now() - timestamp > CONFIG.CACHE_TTL) {
+                        localStorage.removeItem(`cache_${key}`);
+                        return null;
+                    }
+                    
+                    return data;
+                } catch {
+                    return null;
+                }
+            },
+            
+            set(key, data) {
+                try {
+                    localStorage.setItem(`cache_${key}`, JSON.stringify({
+                        data,
+                        timestamp: Date.now()
+                    }));
+                } catch (e) {
+                    // ถ้า localStorage เต็ม ให้ลบของเก่า
+                    if (e.name === 'QuotaExceededError') {
+                        this.clearOldest();
+                        try {
+                            localStorage.setItem(`cache_${key}`, JSON.stringify({
+                                data,
+                                timestamp: Date.now()
+                            }));
+                        } catch {}
+                    }
+                }
+            },
+            
+            clearOldest() {
+                const keys = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.startsWith('cache_')) {
+                        try {
+                            const item = JSON.parse(localStorage.getItem(key));
+                            keys.push({ key, timestamp: item.timestamp });
+                        } catch {}
+                    }
+                }
+                
+                keys.sort((a, b) => a.timestamp - b.timestamp);
+                keys.slice(0, Math.floor(keys.length / 2)).forEach(k => {
+                    localStorage.removeItem(k.key);
+                });
+            },
+            
+            clear() {
+                Object.keys(localStorage).forEach(key => {
+                    if (key.startsWith('cache_')) {
+                        localStorage.removeItem(key);
+                    }
+                });
+            }
         };
 
         // ========== STATE ==========
@@ -1513,12 +821,12 @@
             },
             urgentPosts: [],
             initialized: false,
-            cache: { posts: null, myPosts: null, urgentPosts: null }
+            loadingPromises: []
         };
 
         // ========== DOM Cache ==========
         const $ = {
-            initLoading: document.getElementById('initial-loading'),
+            initLoading: document.getElementById('loading-overlay'),
             pageTitle: document.getElementById('page-title'),
             navbarAppName: document.getElementById('navbar-app-name'),
             homeTab: document.getElementById('tab-home'),
@@ -1534,6 +842,7 @@
             profileEmail: document.getElementById('profile-email'),
             profileAvatar: document.getElementById('profile-avatar'),
             profileRole: document.getElementById('profile-role'),
+            profileHeader: document.getElementById('profile-header'),
             statNews: document.getElementById('stat-news'),
             statEvents: document.getElementById('stat-events'),
             statUrgent: document.getElementById('stat-urgent'),
@@ -1584,11 +893,29 @@
                 max-width: 400px;
                 margin: 0 auto;
                 box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+                animation: slideUp 0.2s ease;
             `;
             toast.textContent = msg;
             document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 2000);
+            setTimeout(() => {
+                toast.style.animation = 'slideDown 0.2s ease';
+                setTimeout(() => toast.remove(), 200);
+            }, 2000);
         }
+
+        // เพิ่ม animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideUp {
+                from { transform: translateY(100%); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+            @keyframes slideDown {
+                from { transform: translateY(0); opacity: 1; }
+                to { transform: translateY(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
 
         function formatDate(dateStr) {
             if (!dateStr) return '';
@@ -1617,15 +944,37 @@
             return formatDate(dateStr);
         }
 
+        // Debounce function
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
         // ========== UPDATE APP NAME ==========
         function updateAppName(name) {
             if (!name) name = 'iTNews';
             $.pageTitle.textContent = name + ' · LINE';
             $.navbarAppName.textContent = name;
+            localStorage.setItem('appName', name);
         }
 
         // ========== API CALL ==========
         async function callGAS(path, data = {}) {
+            const cacheKey = `${path}_${JSON.stringify(data)}`;
+            
+            // ถ้าเป็น GET request ให้ลองใช้ cache
+            if (!data.postId && !data.commentId && !data.lineUserId) {
+                const cached = CacheManager.get(cacheKey);
+                if (cached) return cached;
+            }
+
             try {
                 const formData = new FormData();
                 formData.append('path', path);
@@ -1649,7 +998,14 @@
                 clearTimeout(timeoutId);
                 
                 const text = await res.text();
-                return JSON.parse(text);
+                const result = JSON.parse(text);
+                
+                // Cache เฉพาะ result ที่ success
+                if (result.success && !data.postId && !data.commentId) {
+                    CacheManager.set(cacheKey, result);
+                }
+                
+                return result;
             } catch (error) {
                 return { success: false, message: 'connection error' };
             }
@@ -1695,7 +1051,11 @@
         // ========== LIFF INIT ==========
         async function initLIFF() {
             try {
+                LoadingManager.updateProgress('init');
+                
                 await liff.init({ liffId: CONFIG.LIFF_ID });
+                LoadingManager.updateProgress('liff');
+                
                 if (!liff.isLoggedIn()) {
                     liff.login();
                     return;
@@ -1703,6 +1063,7 @@
 
                 const profile = await liff.getProfile();
                 const idToken = liff.getDecodedIDToken();
+                LoadingManager.updateProgress('profile');
 
                 const result = await callGAS('user/profile', {
                     lineUserId: profile.userId,
@@ -1725,6 +1086,8 @@
                         editor: '✏️ ผู้เขียน',
                         user: '👤 ผู้ใช้ทั่วไป'
                     }[state.user.role] || '';
+                    
+                    $.profileHeader.style.display = 'flex';
 
                     // Show/hide admin elements
                     $.adminOnly.forEach(el => {
@@ -1737,27 +1100,36 @@
                         if ($.createPostBtn) $.createPostBtn.classList.remove('hidden');
                     }
 
-                    // Load settings first to get app name
+                    // Load settings first
+                    LoadingManager.updateProgress('settings');
                     await loadSettings();
                     
-                    // Load data
+                    // Load data in parallel
+                    LoadingManager.updateProgress('posts');
+                    LoadingManager.updateProgress('urgent');
+                    LoadingManager.updateProgress('myPosts');
+                    
                     await Promise.all([
-                        loadPosts(),
-                        loadUrgentPosts(),
-                        loadMyPosts()
+                        loadPosts().then(() => LoadingManager.updateProgress('posts')),
+                        loadUrgentPosts().then(() => LoadingManager.updateProgress('urgent')),
+                        loadMyPosts().then(() => LoadingManager.updateProgress('myPosts'))
                     ]);
 
                     if (state.isAdmin) {
-                        loadUsers();
-                        loadAdminStats();
-                        loadPendingPosts();
+                        LoadingManager.updateProgress('admin');
+                        await Promise.all([
+                            loadUsers(),
+                            loadAdminStats(),
+                            loadPendingPosts(),
+                            loadAllComments()
+                        ]);
                     }
 
-                    $.initLoading.classList.add('hide');
+                    LoadingManager.complete();
                     state.initialized = true;
                 }
             } catch (error) {
-                $.initLoading.classList.add('hide');
+                LoadingManager.error('ไม่สามารถเชื่อมต่อ LINE ได้');
                 showToast('ไม่สามารถเชื่อมต่อ LINE ได้', 'error');
             }
         }
@@ -1780,7 +1152,6 @@
                 $.statEvents.textContent = result.data.stats?.events || 0;
                 $.statUrgent.textContent = result.data.stats?.urgent || 0;
 
-                // Update admin posts if admin
                 if (state.isAdmin) {
                     state.adminPosts = result.data.posts || [];
                     renderAdminPosts();
@@ -1788,7 +1159,6 @@
 
                 renderPosts();
 
-                // Pagination
                 if (state.totalPages > 1) {
                     $.paginationContainer.classList.remove('hidden');
                     $.pageInfo.textContent = `หน้า ${state.currentPage} จาก ${state.totalPages}`;
@@ -1835,7 +1205,6 @@
             `).join('');
         }
 
-        // ========== ADMIN POSTS ==========
         function renderAdminPosts() {
             if (!$.adminPostsList) return;
             
@@ -1877,7 +1246,7 @@
             if (!urgent.length) {
                 $.heroSlider.innerHTML = `
                     <div class="swiper-slide">
-                        <img src="https://via.placeholder.com/1200x400/1a1d24/06c755?text=${encodeURIComponent(state.settings.appName)}" class="w-full h-full object-cover">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='400' viewBox='0 0 1200 400'%3E%3Crect width='1200' height='400' fill='%231a1d24'/%3E%3C/svg%3E" class="w-full h-full object-cover">
                         <div class="slide-content">
                             <h3 class="font-bold">ไม่มีประกาศด่วน</h3>
                         </div>
@@ -1888,7 +1257,7 @@
 
             $.heroSlider.innerHTML = urgent.map(p => `
                 <div class="swiper-slide cursor-pointer" onclick="showPostDetail('${p.postId}')">
-                    <img src="${p.imageUrl || 'https://via.placeholder.com/1200x400/2a2e36/ffffff?text=URGENT'}" class="w-full h-full object-cover">
+                    <img src="${p.imageUrl || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'1200\' height=\'400\' viewBox=\'0 0 1200 400\'%3E%3Crect width=\'1200\' height=\'400\' fill=\'%232a2e36\'/%3E%3C/svg%3E'}" class="w-full h-full object-cover" loading="lazy">
                     <span class="slide-badge urgent">⚠️ ประกาศด่วน</span>
                     <div class="slide-content">
                         <h3 class="font-bold line-clamp-2">${p.title}</h3>
@@ -1898,11 +1267,15 @@
             `).join('');
 
             if (window.heroSwiper) window.heroSwiper.destroy();
-            window.heroSwiper = new Swiper('.hero-swiper', {
-                autoplay: { delay: 3000 },
-                pagination: { el: '.swiper-pagination', clickable: true },
-                loop: urgent.length > 1
-            });
+            
+            // รอให้ DOM อัปเดทแล้วค่อยสร้าง Swiper
+            setTimeout(() => {
+                window.heroSwiper = new Swiper('.hero-swiper', {
+                    autoplay: { delay: 3000 },
+                    pagination: { el: '.swiper-pagination', clickable: true },
+                    loop: urgent.length > 1
+                });
+            }, 0);
         }
 
         // ========== PAGINATION ==========
@@ -1910,11 +1283,11 @@
             if (direction === 'prev' && state.currentPage > 1) {
                 state.currentPage--;
                 loadPosts();
-                window.scrollTo({ top: 0 });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             } else if (direction === 'next' && state.currentPage < state.totalPages) {
                 state.currentPage++;
                 loadPosts();
-                window.scrollTo({ top: 0 });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         };
 
@@ -1985,14 +1358,14 @@
                 const canDelete = state.isAdmin || (state.isEditor && p.authorId === state.user?.lineUserId);
 
                 $.modalBody.innerHTML = `
-                    ${p.imageUrl ? `<img src="${p.imageUrl}" class="w-full max-h-80 object-cover rounded-xl mb-4">` : ''}
+                    ${p.imageUrl ? `<img src="${p.imageUrl}" class="w-full max-h-80 object-cover rounded-xl mb-4" loading="lazy">` : ''}
                     <div class="flex gap-2 mb-4">
                         <span class="badge badge-${p.type}">${{news:'📰 ข่าวสาร', event:'🎉 กิจกรรม', urgent:'⚠️ ประกาศด่วน'}[p.type]}</span>
                         ${p.approvalStatus !== 'approved' ? '<span class="badge badge-pending">⏳ รออนุมัติ</span>' : ''}
                     </div>
                     <p class="whitespace-pre-wrap mb-6 leading-relaxed">${p.content}</p>
                     ${p.link ? `
-                        <a href="${p.link}" target="_blank" class="block text-center bg-gradient-to-r from-[#2a2e36] to-[#1a1d24] text-[#06c755] p-4 rounded-xl border-2 border-[#06c755] mb-6 no-underline">
+                        <a href="${p.link}" target="_blank" rel="noopener noreferrer" class="block text-center bg-gradient-to-r from-[#2a2e36] to-[#1a1d24] text-[#06c755] p-4 rounded-xl border-2 border-[#06c755] mb-6 no-underline">
                             🔗 ดูข้อมูลเพิ่มเติม
                         </a>
                     ` : ''}
@@ -2076,22 +1449,19 @@
                         const isAdmin = state.isAdmin;
                         const timeAgo = formatTimeAgo(c.createdAt);
                         
-                        // ตรวจสอบสถานะ
                         const isDeleted = c.status === 'deleted' || c.status === 'deleted_by_admin';
                         const deletedClass = isDeleted ? 'deleted' : '';
                         const statusText = c.status === 'deleted' ? 'ลบแล้ว' : (c.status === 'deleted_by_admin' ? 'ลบโดยแอดมิน' : '');
                         const statusClass = c.status === 'deleted' ? 'modal-comment-status-deleted' : (c.status === 'deleted_by_admin' ? 'modal-comment-status-deleted_by_admin' : '');
                         
-                        // แสดงปุ่มลบเฉพาะเมื่อไม่ถูกลบ และเป็นเจ้าของหรือแอดมิน
                         const showActions = !isDeleted && (isOwner || isAdmin);
-                        // แสดงปุ่มแก้ไขเฉพาะเมื่อไม่ถูกลบ และเป็นเจ้าของ
                         const showEdit = !isDeleted && isOwner;
                         
                         return `
                             <div class="modal-comment-item ${deletedClass}" id="comment-${c.commentId}">
-                                <img src="${c.userPicture || 'https://via.placeholder.com/32'}" 
+                                <img src="${c.userPicture || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\' viewBox=\'0 0 32 32\'%3E%3Crect width=\'32\' height=\'32\' fill=\'%232a2e36\'/%3E%3C/svg%3E'}" 
                                      class="modal-comment-avatar"
-                                     onerror="this.src='https://via.placeholder.com/32'">
+                                     loading="lazy">
                                 <div class="modal-comment-content">
                                     <div class="modal-comment-header">
                                         <span class="modal-comment-author">${c.userName || 'ผู้ใช้'}</span>
@@ -2161,7 +1531,6 @@
             const comment = findCommentById(commentId);
             if (!comment) return;
             
-            // ตรวจสอบว่าความคิดเห็นถูกลบหรือไม่
             if (comment.status === 'deleted' || comment.status === 'deleted_by_admin') {
                 showToast('ไม่สามารถแก้ไขความคิดเห็นที่ถูกลบแล้ว', 'error');
                 return;
@@ -2230,7 +1599,6 @@
             const comment = findCommentById(commentId);
             if (!comment) return;
             
-            // ตรวจสอบว่าความคิดเห็นถูกลบไปแล้วหรือไม่
             if (comment.status === 'deleted' || comment.status === 'deleted_by_admin') {
                 showToast('ความคิดเห็นนี้ถูกลบไปแล้ว', 'error');
                 return;
@@ -2257,11 +1625,9 @@
                     for (let postId in state.comments) {
                         const commentIndex = state.comments[postId].findIndex(c => c.commentId === commentId);
                         if (commentIndex !== -1) {
-                            // อัปเดตสถานะแทนการลบออก
                             state.comments[postId][commentIndex].status = 'deleted';
                             state.comments[postId][commentIndex].content = '';
                             
-                            // ลดจำนวนคอมเมนต์
                             if (state.currentPost && state.currentPost.postId === postId) {
                                 state.currentPost.commentCount = Math.max(0, (state.currentPost.commentCount || 0) - 1);
                             }
@@ -2288,7 +1654,7 @@
             return null;
         }
 
-        // ========== SHARE AS FLEX MESSAGE (ปรับปรุงให้สวยงาม) ==========
+        // ========== SHARE AS FLEX MESSAGE ==========
         window.shareAsFlexMessage = async function() {
             if (!state.currentPost || !liff.isInClient()) {
                 showToast('ไม่สามารถแชร์ได้', 'error');
@@ -2301,14 +1667,12 @@
 
             const p = state.currentPost;
             
-            // กำหนดสีและไอคอนตามประเภท
             const typeConfig = {
                 news: { color: '#06c755', icon: '📰', label: 'ข่าวสาร' },
                 event: { color: '#f59e0b', icon: '🎉', label: 'กิจกรรม' },
                 urgent: { color: '#ef4444', icon: '⚠️', label: 'ประกาศด่วน' }
             }[p.type] || { color: '#06c755', icon: '📰', label: 'ข่าวสาร' };
 
-            // สร้าง Flex Message ที่สวยงาม
             const flex = {
                 type: 'flex',
                 altText: `${typeConfig.icon} ${p.title}`,
@@ -2429,12 +1793,10 @@
                 }
             };
 
-            // ลบ hero ถ้าไม่มีรูป
             if (!p.imageUrl) {
                 delete flex.contents.hero;
             }
 
-            // ลบ footer ถ้าไม่มี link
             if (!p.link) {
                 delete flex.contents.footer;
             }
@@ -2443,7 +1805,6 @@
                 await liff.shareTargetPicker([flex]);
                 showToast('แชร์สำเร็จ');
             } catch (error) {
-                console.error('Share error:', error);
                 showToast('แชร์ไม่สำเร็จ', 'error');
             } finally {
                 shareBtn.disabled = false;
@@ -2508,6 +1869,10 @@
                 if (result.success) {
                     showToast(id ? 'แก้ไขสำเร็จ' : 'สร้างสำเร็จ');
                     closeCreateModal();
+                    
+                    // เคลียร์ cache ที่เกี่ยวข้อง
+                    CacheManager.clear();
+                    
                     await Promise.all([loadPosts(), loadMyPosts(), loadUrgentPosts()]);
                 } else {
                     showToast(result.message || 'เกิดข้อผิดพลาด', 'error');
@@ -2566,6 +1931,10 @@
                 if (apiResult.success) {
                     showToast('ลบสำเร็จ');
                     closeModal();
+                    
+                    // เคลียร์ cache ที่เกี่ยวข้อง
+                    CacheManager.clear();
+                    
                     await Promise.all([loadPosts(), loadMyPosts(), loadUrgentPosts()]);
                 } else {
                     showToast(apiResult.message || 'ลบไม่สำเร็จ', 'error');
@@ -2586,7 +1955,6 @@
                 $.adminPending.textContent = result.data.pending || 0;
             }
 
-            // Also load admin posts
             await loadPosts();
         }
 
@@ -2639,6 +2007,7 @@
             
             if (result.success) {
                 showToast('อนุมัติสำเร็จ');
+                CacheManager.clear();
                 await Promise.all([loadPosts(), loadPendingPosts(), loadUrgentPosts(), loadAdminStats()]);
             } else {
                 showToast(result.message || 'อนุมัติไม่สำเร็จ', 'error');
@@ -2656,6 +2025,7 @@
             
             if (result.success) {
                 showToast('ปฏิเสธสำเร็จ');
+                CacheManager.clear();
                 await Promise.all([loadPosts(), loadPendingPosts(), loadUrgentPosts(), loadAdminStats()]);
             } else {
                 showToast(result.message || 'ปฏิเสธไม่สำเร็จ', 'error');
@@ -2687,7 +2057,7 @@
 
             $.usersList.innerHTML = filtered.map(u => `
                 <div class="user-row">
-                    <img src="${u.pictureUrl || 'https://via.placeholder.com/40'}" class="user-avatar-sm">
+                    <img src="${u.pictureUrl || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'40\' height=\'40\' viewBox=\'0 0 40 40\'%3E%3Crect width=\'40\' height=\'40\' fill=\'%232a2e36\'/%3E%3C/svg%3E'}" class="user-avatar-sm" loading="lazy">
                     <div class="flex-1">
                         <p class="font-semibold text-sm">${u.displayName || ''}</p>
                         <p class="text-xs text-gray-400">${u.email || ''}</p>
@@ -2730,10 +2100,10 @@
             if (result.success) {
                 showToast('อัปเดตสิทธิ์สำเร็จ');
                 closeRoleModal();
-                // โหลดข้อมูลผู้ใช้ใหม่อีกครั้งเพื่ออัปเดตสิทธิ์ทันที
+                CacheManager.clear();
+                
                 await loadUsers();
                 
-                // ถ้าเป็นผู้ใช้คนปัจจุบัน ให้อัปเดต state.user ด้วย
                 if (userId === state.user?.lineUserId) {
                     const userResult = await callGAS('user/profile', {
                         lineUserId: state.user.lineUserId
@@ -2743,14 +2113,12 @@
                         state.isAdmin = state.user.role === 'admin';
                         state.isEditor = state.isAdmin || state.user.role === 'editor';
                         
-                        // อัปเดต UI
                         $.profileRole.textContent = {
                             admin: '👑 ผู้ดูแลระบบ',
                             editor: '✏️ ผู้เขียน',
                             user: '👤 ผู้ใช้ทั่วไป'
                         }[state.user.role] || '';
                         
-                        // อัปเดตการแสดงปุ่ม admin
                         $.adminOnly.forEach(el => {
                             if (state.isAdmin) el.classList.remove('hidden');
                             else el.classList.add('hidden');
@@ -2765,7 +2133,6 @@
             saveBtn.classList.remove('loading');
         };
 
-        // ========== ADMIN COMMENTS ==========
         async function loadAllComments() {
             const result = await callGAS('admin/comments');
             if (result.success) {
@@ -2793,7 +2160,7 @@
                 return `
                 <div class="bg-[#1a1d24] p-3 rounded-lg border border-[#2a2e36]">
                     <div class="flex items-center gap-2 mb-2">
-                        <img src="${c.userPicture || 'https://via.placeholder.com/32'}" class="w-6 h-6 rounded-full">
+                        <img src="${c.userPicture || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\' viewBox=\'0 0 32 32\'%3E%3Crect width=\'32\' height=\'32\' fill=\'%232a2e36\'/%3E%3C/svg%3E'}" class="w-6 h-6 rounded-full" loading="lazy">
                         <span class="font-semibold text-xs text-[#06c755]">${c.userName || 'ผู้ใช้'}${statusText}</span>
                         <span class="text-xs text-gray-500">${formatDateTime(c.createdAt)}</span>
                         ${c.status !== 'active' ? `<span class="badge ${statusClass} text-xs">${c.status === 'deleted' ? 'ลบแล้ว' : 'ลบโดยแอดมิน'}</span>` : ''}
@@ -2832,6 +2199,7 @@
 
                 if (apiResult.success) {
                     showToast('ลบความคิดเห็นสำเร็จ');
+                    CacheManager.clear();
                     await loadAllComments();
                 } else {
                     showToast(apiResult.message || 'ลบไม่สำเร็จ', 'error');
@@ -2851,16 +2219,12 @@
                     requireApproval: 'false'
                 };
                 
-                // Update UI with settings
                 document.getElementById('setting-app-name').value = state.settings.appName || 'iTNews';
                 document.getElementById('setting-drive-folder').value = state.settings.driveFolderId || CONFIG.DRIVE_FOLDER_ID;
                 
-                // แก้ไข: แปลงค่าจาก string เป็น boolean อย่างถูกต้อง
-                // รองรับทั้ง 'true', 'TRUE', true, 1, '1'
                 if ($.settingRequireApproval) {
                     const requireApproval = state.settings.requireApproval;
                     
-                    // แปลงเป็น boolean
                     let isChecked = false;
                     if (typeof requireApproval === 'string') {
                         isChecked = requireApproval.toLowerCase() === 'true' || requireApproval === '1';
@@ -2871,10 +2235,8 @@
                     }
                     
                     $.settingRequireApproval.checked = isChecked;
-                    console.log('Setting requireApproval:', requireApproval, '->', isChecked);
                 }
                 
-                // Update title and navbar
                 updateAppName(state.settings.appName);
             }
         }
@@ -2884,8 +2246,6 @@
             
             const appName = document.getElementById('setting-app-name').value.trim() || 'iTNews';
             const driveFolderId = document.getElementById('setting-drive-folder').value.trim() || CONFIG.DRIVE_FOLDER_ID;
-            
-            // ดึงค่า checkbox อย่างถูกต้อง
             const requireApproval = $.settingRequireApproval ? $.settingRequireApproval.checked : false;
 
             const saveBtn = $.settingsSaveBtn;
@@ -2895,11 +2255,9 @@
             const data = {
                 appName,
                 driveFolderId,
-                requireApproval: requireApproval ? 'true' : 'false', // ส่งเป็น string เสมอ
+                requireApproval: requireApproval ? 'true' : 'false',
                 lineUserId: state.user.lineUserId
             };
-
-            console.log('Saving settings:', data);
 
             const result = await callGAS('admin/settings/update', data);
             
@@ -2907,6 +2265,7 @@
                 showToast('บันทึกสำเร็จ');
                 Object.assign(state.settings, data);
                 updateAppName(appName);
+                CacheManager.clear();
             } else {
                 showToast(result.message || 'บันทึกไม่สำเร็จ', 'error');
             }
@@ -2954,6 +2313,7 @@
 
         window.logout = function() {
             if (liff.isLoggedIn()) liff.logout();
+            CacheManager.clear();
             location.reload();
         };
 
@@ -2989,15 +2349,13 @@
             });
         });
 
-        let searchTimer;
-        $.searchInput.addEventListener('input', () => {
-            clearTimeout(searchTimer);
-            searchTimer = setTimeout(() => {
-                state.searchTerm = $.searchInput.value;
-                state.currentPage = 1;
-                loadPosts();
-            }, 300);
-        });
+        const debouncedSearch = debounce(() => {
+            state.searchTerm = $.searchInput.value;
+            state.currentPage = 1;
+            loadPosts();
+        }, 300);
+
+        $.searchInput.addEventListener('input', debouncedSearch);
 
         $.userSearch?.addEventListener('input', renderUsers);
         
@@ -3007,6 +2365,7 @@
 
         $.refreshAdmin?.addEventListener('click', () => {
             if (state.isAdmin) {
+                CacheManager.clear();
                 loadAdminStats();
                 loadUsers();
                 loadPendingPosts();
@@ -3022,7 +2381,6 @@
                 document.querySelectorAll('.admin-tab').forEach(t => t.classList.add('hidden'));
                 document.getElementById(`admin-${btn.dataset.adminTab}-tab`).classList.remove('hidden');
                 
-                // Load data when tab is clicked
                 if (btn.dataset.adminTab === 'comments') {
                     loadAllComments();
                 }
@@ -3049,6 +2407,8 @@
         });
 
         // ========== INIT ==========
+        LoadingManager.init();
+        
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initLIFF);
         } else {
@@ -3058,6 +2418,16 @@
         // Cleanup
         window.addEventListener('beforeunload', () => {
             if (window.heroSwiper) window.heroSwiper.destroy();
+        });
+
+        // Preload next page
+        window.addEventListener('scroll', () => {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000) {
+                if (state.currentPage < state.totalPages && !state.loadingPromises.length) {
+                    state.currentPage++;
+                    loadPosts();
+                }
+            }
         });
     </script>
 </body>
