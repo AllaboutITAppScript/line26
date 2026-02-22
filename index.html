@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -6,25 +7,38 @@
     <title id="page-title">iTNews · LINE</title>
     <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/653/653021.png">
     
-    <!-- Preload Critical Resources -->
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://static.line-scdn.net">
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Critical CSS inline -->
+    <!-- LINE LIFF -->
+    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    
     <style>
         * {
+            font-family: 'IBM Plex Sans Thai', sans-serif;
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'IBM Plex Sans Thai', sans-serif;
         }
         
         :root {
             --primary: #06c755;
             --primary-dark: #05b34a;
+            --primary-light: rgba(6,199,85,0.1);
             --bg: #0a0a0f;
             --bg-card: #1a1d24;
             --border: #2a2e36;
@@ -82,13 +96,14 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(26, 29, 36, 0.95);
+            background: var(--bg-card);
             border-top: 1px solid var(--border);
             display: flex;
             justify-content: space-around;
             padding: 8px 0;
             z-index: 50;
             backdrop-filter: blur(10px);
+            background: rgba(26, 29, 36, 0.95);
         }
         
         .nav-item {
@@ -135,6 +150,12 @@
                 max-width: 1200px;
                 margin: 0 auto;
                 padding: 0 16px;
+            }
+            
+            .admin-posts-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
             }
             
             .bottom-nav {
@@ -713,33 +734,8 @@
             animation: spin 0.8s linear infinite;
         }
         
-        .skeleton-card {
-            background: linear-gradient(90deg, var(--bg-card) 25%, #252930 50%, var(--bg-card) 75%);
-            background-size: 200% 100%;
-            animation: loading 1s infinite;
-            border-radius: 20px;
-            height: 300px;
-        }
-        
-        .skeleton-circle {
-            background: linear-gradient(90deg, var(--bg-card) 25%, #252930 50%, var(--bg-card) 75%);
-            background-size: 200% 100%;
-            animation: loading 1s infinite;
-        }
-        
-        .skeleton-text {
-            background: linear-gradient(90deg, var(--bg-card) 25%, #252930 50%, var(--bg-card) 75%);
-            background-size: 200% 100%;
-            animation: loading 1s infinite;
-        }
-        
         @keyframes spin {
             to { transform: rotate(360deg); }
-        }
-        
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
         }
         
         .floating-create-btn {
@@ -1089,20 +1085,20 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+
+        .skeleton-card {
+            background: linear-gradient(90deg, var(--bg-card) 25%, #252930 50%, var(--bg-card) 75%);
+            background-size: 200% 100%;
+            animation: loading 1s infinite;
+            border-radius: 20px;
+            height: 300px;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
     </style>
-    
-    <!-- Defer non-critical CSS -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript>
-        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
-    </noscript>
-    
-    <!-- LINE LIFF (load async) -->
-    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js" async></script>
 </head>
 <body>
     <!-- Initial Loading -->
@@ -1130,41 +1126,47 @@
     <div class="min-h-screen">
         <!-- Tab: Home -->
         <div id="tab-home" class="tab-content active">
-            <!-- Profile Header (Skeleton) -->
+            <!-- Profile Header -->
             <div class="profile-header" id="profile-header">
-                <div class="profile-avatar skeleton-circle" style="width:60px;height:60px;border-radius:30px;background:var(--bg-card)"></div>
+                <img id="profile-avatar" src="https://via.placeholder.com/60/2a2e36/06c755?text=..." alt="avatar" class="profile-avatar">
                 <div class="flex-1">
-                    <div class="skeleton-text" style="width:150px;height:24px;background:var(--bg-card);border-radius:8px;margin-bottom:8px"></div>
-                    <div class="skeleton-text" style="width:200px;height:16px;background:var(--bg-card);border-radius:6px;margin-bottom:4px"></div>
-                    <div class="skeleton-text" style="width:80px;height:14px;background:var(--bg-card);border-radius:4px"></div>
+                    <h2 id="profile-name" class="text-lg font-bold">กำลังโหลด...</h2>
+                    <p id="profile-email" class="text-sm text-gray-400"></p>
+                    <p id="profile-role" class="text-xs text-[#06c755] mt-1"></p>
                 </div>
                 <i class="fas fa-chevron-down text-gray-400"></i>
             </div>
 
-            <!-- Stats Skeleton -->
+            <!-- Stats -->
             <div class="grid grid-cols-3 gap-2 max-w-7xl mx-auto px-4 mb-4">
-                <div class="stat-card" style="background:var(--bg-card);padding:16px;border-radius:16px">
-                    <div class="skeleton-text" style="width:50px;height:16px;background:#252930;border-radius:4px;margin:0 auto"></div>
+                <div class="stat-card">
+                    <p class="text-xs text-gray-400">ข่าวสาร</p>
+                    <p id="stat-news" class="text-xl font-bold text-[#06c755]">0</p>
                 </div>
-                <div class="stat-card" style="background:var(--bg-card);padding:16px;border-radius:16px">
-                    <div class="skeleton-text" style="width:50px;height:16px;background:#252930;border-radius:4px;margin:0 auto"></div>
+                <div class="stat-card">
+                    <p class="text-xs text-gray-400">กิจกรรม</p>
+                    <p id="stat-events" class="text-xl font-bold text-[#06c755]">0</p>
                 </div>
-                <div class="stat-card" style="background:var(--bg-card);padding:16px;border-radius:16px">
-                    <div class="skeleton-text" style="width:50px;height:16px;background:#252930;border-radius:4px;margin:0 auto"></div>
+                <div class="stat-card">
+                    <p class="text-xs text-gray-400">ด่วน</p>
+                    <p id="stat-urgent" class="text-xl font-bold text-[#06c755]">0</p>
                 </div>
             </div>
 
-            <!-- Hero Slider Skeleton -->
+            <!-- Hero Slider -->
             <div class="swiper hero-swiper max-w-7xl mx-auto px-4 mb-4">
                 <div class="swiper-wrapper" id="hero-slider-wrapper">
                     <div class="swiper-slide">
-                        <div style="width:100%;height:220px;background:var(--bg-card);border-radius:20px"></div>
+                        <img src="https://via.placeholder.com/1200x400/1a1d24/06c755?text=กำลังโหลด..." class="w-full h-full object-cover">
+                        <div class="slide-content">
+                            <h3 class="font-bold text-base">กำลังโหลดข่าวด่วน...</h3>
+                        </div>
                     </div>
                 </div>
                 <div class="swiper-pagination"></div>
             </div>
 
-            <!-- Search Skeleton -->
+            <!-- Search -->
             <div class="search-box">
                 <i class="fas fa-search"></i>
                 <input type="text" id="search-input" placeholder="ค้นหาข่าวสาร กิจกรรม..." autocomplete="off">
@@ -1208,11 +1210,7 @@
                     <i class="fas fa-plus mr-1"></i>สร้าง
                 </button>
             </div>
-            <div id="my-posts-list" class="my-posts-grid">
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-            </div>
+            <div id="my-posts-list" class="my-posts-grid"></div>
         </div>
 
         <!-- Tab: Admin -->
@@ -1475,9 +1473,8 @@
         </div>
     </div>
 
-    <!-- Deferred Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     
     <script>
         // ========== CONFIG ==========
@@ -1485,8 +1482,7 @@
             GAS_URL: 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec',
             LIFF_ID: '2008904120-T7I0VPZf',
             PAGE_SIZE: 9,
-            DRIVE_FOLDER_ID: '18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE',
-            CACHE_TTL: 300000 // 5 minutes
+            DRIVE_FOLDER_ID: '18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE'
         };
 
         // ========== STATE ==========
@@ -1518,16 +1514,78 @@
             },
             urgentPosts: [],
             initialized: false,
-            cache: {}
+            cache: { posts: null, myPosts: null, urgentPosts: null }
         };
 
         // ========== DOM Cache ==========
-        const $ = {};
+        const $ = {
+            initLoading: document.getElementById('initial-loading'),
+            pageTitle: document.getElementById('page-title'),
+            navbarAppName: document.getElementById('navbar-app-name'),
+            homeTab: document.getElementById('tab-home'),
+            myTab: document.getElementById('tab-my'),
+            adminTab: document.getElementById('tab-admin'),
+            postsList: document.getElementById('posts-list'),
+            myPostsList: document.getElementById('my-posts-list'),
+            adminPostsList: document.getElementById('admin-posts-list'),
+            pendingPostsList: document.getElementById('pending-posts-list'),
+            usersList: document.getElementById('users-list'),
+            adminCommentsList: document.getElementById('admin-comments-list'),
+            profileName: document.getElementById('profile-name'),
+            profileEmail: document.getElementById('profile-email'),
+            profileAvatar: document.getElementById('profile-avatar'),
+            profileRole: document.getElementById('profile-role'),
+            statNews: document.getElementById('stat-news'),
+            statEvents: document.getElementById('stat-events'),
+            statUrgent: document.getElementById('stat-urgent'),
+            searchInput: document.getElementById('search-input'),
+            filterBtns: document.querySelectorAll('.filter-btn'),
+            navItems: document.querySelectorAll('.nav-item'),
+            modal: document.getElementById('post-modal'),
+            modalBody: document.getElementById('modal-body'),
+            modalTitle: document.getElementById('modal-title'),
+            modalShareBtn: document.getElementById('modal-share-btn'),
+            modalEditBtn: document.getElementById('modal-edit-btn'),
+            modalDeleteBtn: document.getElementById('modal-delete-btn'),
+            modalAdminControls: document.getElementById('modal-admin-controls'),
+            floatingBtn: document.getElementById('floating-create-btn'),
+            createPostBtn: document.getElementById('create-post-btn'),
+            adminOnly: document.querySelectorAll('.admin-only'),
+            heroSlider: document.getElementById('hero-slider-wrapper'),
+            paginationContainer: document.getElementById('pagination-container'),
+            pageInfo: document.getElementById('page-info'),
+            prevPage: document.getElementById('prev-page'),
+            nextPage: document.getElementById('next-page'),
+            refreshAdmin: document.getElementById('refresh-admin'),
+            adminUsers: document.getElementById('admin-users'),
+            adminPosts: document.getElementById('admin-posts'),
+            adminToday: document.getElementById('admin-today'),
+            adminPending: document.getElementById('admin-pending'),
+            pendingBadge: document.getElementById('pending-badge'),
+            userSearch: document.getElementById('user-search'),
+            adminCommentSearch: document.getElementById('admin-comment-search'),
+            settingsSaveBtn: document.getElementById('settings-save-btn'),
+            settingRequireApproval: document.getElementById('setting-require-approval')
+        };
 
         // ========== UTILS ==========
         function showToast(msg, type = 'success') {
             const toast = document.createElement('div');
-            toast.style.cssText = 'position:fixed;bottom:80px;left:16px;right:16px;background:#1a1d24;border-left:4px solid ' + (type === 'success' ? '#06c755' : '#ef4444') + ';border-radius:12px;padding:12px 16px;color:white;z-index:2000;max-width:400px;margin:0 auto;box-shadow:0 4px 12px rgba(0,0,0,0.5)';
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 80px;
+                left: 16px;
+                right: 16px;
+                background: #1a1d24;
+                border-left: 4px solid ${type === 'success' ? '#06c755' : '#ef4444'};
+                border-radius: 12px;
+                padding: 12px 16px;
+                color: white;
+                z-index: 2000;
+                max-width: 400px;
+                margin: 0 auto;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            `;
             toast.textContent = msg;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 2000);
@@ -1560,35 +1618,15 @@
             return formatDate(dateStr);
         }
 
-        // ========== CACHE ==========
-        function getCache(key) {
-            const cached = state.cache[key];
-            if (cached && Date.now() - cached.timestamp < CONFIG.CACHE_TTL) {
-                return cached.data;
-            }
-            return null;
-        }
-
-        function setCache(key, data) {
-            state.cache[key] = { data, timestamp: Date.now() };
-        }
-
         // ========== UPDATE APP NAME ==========
         function updateAppName(name) {
             if (!name) name = 'iTNews';
-            if ($.pageTitle) $.pageTitle.textContent = name + ' · LINE';
-            if ($.navbarAppName) $.navbarAppName.textContent = name;
+            $.pageTitle.textContent = name + ' · LINE';
+            $.navbarAppName.textContent = name;
         }
 
-        // ========== API CALL WITH CACHE ==========
-        async function callGAS(path, data = {}, useCache = false) {
-            const cacheKey = path + JSON.stringify(data);
-            
-            if (useCache) {
-                const cached = getCache(cacheKey);
-                if (cached) return cached;
-            }
-
+        // ========== API CALL ==========
+        async function callGAS(path, data = {}) {
             try {
                 const formData = new FormData();
                 formData.append('path', path);
@@ -1601,7 +1639,7 @@
                 });
 
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 8000);
+                const timeoutId = setTimeout(() => controller.abort(), 15000);
 
                 const res = await fetch(CONFIG.GAS_URL, { 
                     method: 'POST', 
@@ -1612,13 +1650,7 @@
                 clearTimeout(timeoutId);
                 
                 const text = await res.text();
-                const result = JSON.parse(text);
-                
-                if (useCache && result.success) {
-                    setCache(cacheKey, result);
-                }
-                
-                return result;
+                return JSON.parse(text);
             } catch (error) {
                 return { success: false, message: 'connection error' };
             }
@@ -1661,90 +1693,17 @@
             }
         };
 
-        // ========== DOM Cache Initialization ==========
-        function initDOMCache() {
-            $.initLoading = document.getElementById('initial-loading');
-            $.pageTitle = document.getElementById('page-title');
-            $.navbarAppName = document.getElementById('navbar-app-name');
-            $.homeTab = document.getElementById('tab-home');
-            $.myTab = document.getElementById('tab-my');
-            $.adminTab = document.getElementById('tab-admin');
-            $.postsList = document.getElementById('posts-list');
-            $.myPostsList = document.getElementById('my-posts-list');
-            $.adminPostsList = document.getElementById('admin-posts-list');
-            $.pendingPostsList = document.getElementById('pending-posts-list');
-            $.usersList = document.getElementById('users-list');
-            $.adminCommentsList = document.getElementById('admin-comments-list');
-            $.profileName = document.getElementById('profile-name');
-            $.profileEmail = document.getElementById('profile-email');
-            $.profileAvatar = document.getElementById('profile-avatar');
-            $.profileRole = document.getElementById('profile-role');
-            $.statNews = document.getElementById('stat-news');
-            $.statEvents = document.getElementById('stat-events');
-            $.statUrgent = document.getElementById('stat-urgent');
-            $.searchInput = document.getElementById('search-input');
-            $.filterBtns = document.querySelectorAll('.filter-btn');
-            $.navItems = document.querySelectorAll('.nav-item');
-            $.modal = document.getElementById('post-modal');
-            $.modalBody = document.getElementById('modal-body');
-            $.modalTitle = document.getElementById('modal-title');
-            $.modalShareBtn = document.getElementById('modal-share-btn');
-            $.modalEditBtn = document.getElementById('modal-edit-btn');
-            $.modalDeleteBtn = document.getElementById('modal-delete-btn');
-            $.modalAdminControls = document.getElementById('modal-admin-controls');
-            $.floatingBtn = document.getElementById('floating-create-btn');
-            $.createPostBtn = document.getElementById('create-post-btn');
-            $.adminOnly = document.querySelectorAll('.admin-only');
-            $.heroSlider = document.getElementById('hero-slider-wrapper');
-            $.paginationContainer = document.getElementById('pagination-container');
-            $.pageInfo = document.getElementById('page-info');
-            $.prevPage = document.getElementById('prev-page');
-            $.nextPage = document.getElementById('next-page');
-            $.refreshAdmin = document.getElementById('refresh-admin');
-            $.adminUsers = document.getElementById('admin-users');
-            $.adminPosts = document.getElementById('admin-posts');
-            $.adminToday = document.getElementById('admin-today');
-            $.adminPending = document.getElementById('admin-pending');
-            $.pendingBadge = document.getElementById('pending-badge');
-            $.userSearch = document.getElementById('user-search');
-            $.adminCommentSearch = document.getElementById('admin-comment-search');
-            $.settingsSaveBtn = document.getElementById('settings-save-btn');
-            $.settingRequireApproval = document.getElementById('setting-require-approval');
-        }
-
-        // ========== LIFF INIT (Optimized) ==========
+        // ========== LIFF INIT ==========
         async function initLIFF() {
             try {
-                // Initialize DOM cache first
-                initDOMCache();
-                
-                // Load settings immediately
-                await loadSettings();
-                
-                // Try to get cached user data
-                const cachedUser = localStorage.getItem('user_cache');
-                if (cachedUser) {
-                    try {
-                        state.user = JSON.parse(cachedUser);
-                        state.isAdmin = state.user.role === 'admin';
-                        state.isEditor = state.isAdmin || state.user.role === 'editor';
-                        updateUIWithUser();
-                    } catch (e) {}
-                }
-
-                // Initialize LIFF
                 await liff.init({ liffId: CONFIG.LIFF_ID });
-                
                 if (!liff.isLoggedIn()) {
                     liff.login();
                     return;
                 }
 
-                // Get profile in parallel
-                const [profile, idToken] = await Promise.all([
-                    liff.getProfile(),
-                    liff.getDecodedIDToken()
-                ]);
+                const profile = await liff.getProfile();
+                const idToken = liff.getDecodedIDToken();
 
                 const result = await callGAS('user/profile', {
                     lineUserId: profile.userId,
@@ -1757,110 +1716,104 @@
                     state.user = result.data;
                     state.isAdmin = state.user.role === 'admin';
                     state.isEditor = state.isAdmin || state.user.role === 'editor';
+
+                    // Update UI
+                    $.profileName.textContent = state.user.displayName || 'ผู้ใช้';
+                    $.profileEmail.textContent = state.user.email || '';
+                    $.profileAvatar.src = state.user.pictureUrl || 'https://via.placeholder.com/60';
+                    $.profileRole.textContent = {
+                        admin: '👑 ผู้ดูแลระบบ',
+                        editor: '✏️ ผู้เขียน',
+                        user: '👤 ผู้ใช้ทั่วไป'
+                    }[state.user.role] || '';
+
+                    // Show/hide admin elements
+                    $.adminOnly.forEach(el => {
+                        if (state.isAdmin) el.classList.remove('hidden');
+                        else el.classList.add('hidden');
+                    });
+
+                    if (state.isEditor) {
+                        $.floatingBtn.classList.remove('hidden');
+                        if ($.createPostBtn) $.createPostBtn.classList.remove('hidden');
+                    }
+
+                    // Load settings first to get app name
+                    await loadSettings();
                     
-                    // Cache user data
-                    localStorage.setItem('user_cache', JSON.stringify(state.user));
-                    
-                    updateUIWithUser();
+                    // Load data
+                    await Promise.all([
+                        loadPosts(),
+                        loadUrgentPosts(),
+                        loadMyPosts()
+                    ]);
 
-                    // Load data in parallel with priority
-                    await loadInitialData();
-                }
-            } catch (error) {
-                console.error('LIFF init error:', error);
-                if ($.initLoading) $.initLoading.classList.add('hide');
-                showToast('ไม่สามารถเชื่อมต่อ LINE ได้', 'error');
-            }
-        }
-
-        function updateUIWithUser() {
-            if (!state.user) return;
-            
-            if ($.profileName) $.profileName.textContent = state.user.displayName || 'ผู้ใช้';
-            if ($.profileEmail) $.profileEmail.textContent = state.user.email || '';
-            if ($.profileAvatar) $.profileAvatar.src = state.user.pictureUrl || 'https://via.placeholder.com/60';
-            if ($.profileRole) {
-                $.profileRole.textContent = {
-                    admin: '👑 ผู้ดูแลระบบ',
-                    editor: '✏️ ผู้เขียน',
-                    user: '👤 ผู้ใช้ทั่วไป'
-                }[state.user.role] || '';
-            }
-
-            $.adminOnly.forEach(el => {
-                if (state.isAdmin) el.classList.remove('hidden');
-                else el.classList.add('hidden');
-            });
-
-            if (state.isEditor) {
-                if ($.floatingBtn) $.floatingBtn.classList.remove('hidden');
-                if ($.createPostBtn) $.createPostBtn.classList.remove('hidden');
-            }
-        }
-
-        async function loadInitialData() {
-            try {
-                // Load critical data first
-                const [postsResult, urgentResult] = await Promise.all([
-                    loadPosts(true),
-                    loadUrgentPosts(true)
-                ]);
-
-                // Load non-critical data in background
-                setTimeout(() => {
-                    loadMyPosts();
                     if (state.isAdmin) {
                         loadUsers();
                         loadAdminStats();
                         loadPendingPosts();
                     }
-                }, 100);
 
-                if ($.initLoading) $.initLoading.classList.add('hide');
-                state.initialized = true;
+                    $.initLoading.classList.add('hide');
+                    state.initialized = true;
+                }
             } catch (error) {
-                if ($.initLoading) $.initLoading.classList.add('hide');
+                $.initLoading.classList.add('hide');
+                showToast('ไม่สามารถเชื่อมต่อ LINE ได้', 'error');
             }
         }
 
-        // ========== POSTS (Optimized) ==========
-        async function loadPosts(useCache = false) {
+        // ========== POSTS ==========
+        async function loadPosts() {
             const result = await callGAS('posts', {
                 page: state.currentPage,
                 filter: state.currentFilter,
                 search: state.searchTerm,
                 pageSize: CONFIG.PAGE_SIZE,
                 includePending: state.isAdmin
-            }, useCache);
+            });
 
             if (result.success) {
                 state.posts = result.data.posts || [];
                 state.totalPages = Math.ceil((result.data.total || 0) / CONFIG.PAGE_SIZE) || 1;
 
-                if ($.statNews) $.statNews.textContent = result.data.stats?.news || 0;
-                if ($.statEvents) $.statEvents.textContent = result.data.stats?.events || 0;
-                if ($.statUrgent) $.statUrgent.textContent = result.data.stats?.urgent || 0;
+                $.statNews.textContent = result.data.stats?.news || 0;
+                $.statEvents.textContent = result.data.stats?.events || 0;
+                $.statUrgent.textContent = result.data.stats?.urgent || 0;
 
+                // Update admin posts if admin
                 if (state.isAdmin) {
                     state.adminPosts = result.data.posts || [];
                     renderAdminPosts();
                 }
 
                 renderPosts();
-                updatePagination();
+
+                // Pagination
+                if (state.totalPages > 1) {
+                    $.paginationContainer.classList.remove('hidden');
+                    $.pageInfo.textContent = `หน้า ${state.currentPage} จาก ${state.totalPages}`;
+                    $.prevPage.disabled = state.currentPage <= 1;
+                    $.nextPage.disabled = state.currentPage >= state.totalPages;
+                } else {
+                    $.paginationContainer.classList.add('hidden');
+                }
             }
         }
 
         function renderPosts() {
-            if (!$.postsList) return;
-            
             let filtered = state.posts;
             if (!state.isAdmin) {
                 filtered = state.posts.filter(p => p.approvalStatus === 'approved');
             }
 
             if (!filtered.length) {
-                $.postsList.innerHTML = '<div class="col-span-full text-center py-10 text-gray-400"><i class="fas fa-newspaper text-3xl mb-3"></i><p>ไม่มีโพสต์</p></div>';
+                $.postsList.innerHTML = `
+                    <div class="col-span-full text-center py-10 text-gray-400">
+                        <i class="fas fa-newspaper text-3xl mb-3"></i>
+                        <p>ไม่มีโพสต์</p>
+                    </div>
+                `;
                 return;
             }
 
@@ -1883,19 +1836,7 @@
             `).join('');
         }
 
-        function updatePagination() {
-            if (!$.paginationContainer || !$.pageInfo || !$.prevPage || !$.nextPage) return;
-            
-            if (state.totalPages > 1) {
-                $.paginationContainer.classList.remove('hidden');
-                $.pageInfo.textContent = `หน้า ${state.currentPage} จาก ${state.totalPages}`;
-                $.prevPage.disabled = state.currentPage <= 1;
-                $.nextPage.disabled = state.currentPage >= state.totalPages;
-            } else {
-                $.paginationContainer.classList.add('hidden');
-            }
-        }
-
+        // ========== ADMIN POSTS ==========
         function renderAdminPosts() {
             if (!$.adminPostsList) return;
             
@@ -1918,12 +1859,12 @@
             `).join('');
         }
 
-        async function loadUrgentPosts(useCache = false) {
+        async function loadUrgentPosts() {
             const result = await callGAS('posts', {
                 filter: 'urgent',
                 pageSize: 10,
                 includePending: false
-            }, useCache);
+            });
 
             if (result.success) {
                 state.urgentPosts = result.data.posts?.filter(p => p.approvalStatus === 'approved') || [];
@@ -1932,18 +1873,23 @@
         }
 
         function renderHeroSlider() {
-            if (!$.heroSlider) return;
-            
             const urgent = state.urgentPosts.slice(0, 5);
             
             if (!urgent.length) {
-                $.heroSlider.innerHTML = '<div class="swiper-slide"><img src="https://via.placeholder.com/1200x400/1a1d24/06c755?text=' + encodeURIComponent(state.settings.appName) + '" class="w-full h-full object-cover"><div class="slide-content"><h3 class="font-bold">ไม่มีประกาศด่วน</h3></div></div>';
+                $.heroSlider.innerHTML = `
+                    <div class="swiper-slide">
+                        <img src="https://via.placeholder.com/1200x400/1a1d24/06c755?text=${encodeURIComponent(state.settings.appName)}" class="w-full h-full object-cover">
+                        <div class="slide-content">
+                            <h3 class="font-bold">ไม่มีประกาศด่วน</h3>
+                        </div>
+                    </div>
+                `;
                 return;
             }
 
             $.heroSlider.innerHTML = urgent.map(p => `
                 <div class="swiper-slide cursor-pointer" onclick="showPostDetail('${p.postId}')">
-                    <img src="${p.imageUrl || 'https://via.placeholder.com/1200x400/2a2e36/ffffff?text=URGENT'}" class="w-full h-full object-cover" loading="lazy">
+                    <img src="${p.imageUrl || 'https://via.placeholder.com/1200x400/2a2e36/ffffff?text=URGENT'}" class="w-full h-full object-cover">
                     <span class="slide-badge urgent">⚠️ ประกาศด่วน</span>
                     <div class="slide-content">
                         <h3 class="font-bold line-clamp-2">${p.title}</h3>
@@ -1953,24 +1899,11 @@
             `).join('');
 
             if (window.heroSwiper) window.heroSwiper.destroy();
-            
-            // Only initialize Swiper if Swiper is loaded
-            if (typeof Swiper !== 'undefined') {
-                window.heroSwiper = new Swiper('.hero-swiper', {
-                    autoplay: { delay: 3000 },
-                    pagination: { el: '.swiper-pagination', clickable: true },
-                    loop: urgent.length > 1
-                });
-            } else {
-                // Wait for Swiper to load
-                document.addEventListener('swiper-loaded', () => {
-                    window.heroSwiper = new Swiper('.hero-swiper', {
-                        autoplay: { delay: 3000 },
-                        pagination: { el: '.swiper-pagination', clickable: true },
-                        loop: urgent.length > 1
-                    });
-                });
-            }
+            window.heroSwiper = new Swiper('.hero-swiper', {
+                autoplay: { delay: 3000 },
+                pagination: { el: '.swiper-pagination', clickable: true },
+                loop: urgent.length > 1
+            });
         }
 
         // ========== PAGINATION ==========
@@ -1978,13 +1911,16 @@
             if (direction === 'prev' && state.currentPage > 1) {
                 state.currentPage--;
                 loadPosts();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                window.scrollTo({ top: 0 });
             } else if (direction === 'next' && state.currentPage < state.totalPages) {
                 state.currentPage++;
                 loadPosts();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                window.scrollTo({ top: 0 });
             }
         };
+
+        $.prevPage?.addEventListener('click', () => changePage('prev'));
+        $.nextPage?.addEventListener('click', () => changePage('next'));
 
         // ========== MY POSTS ==========
         async function loadMyPosts() {
@@ -2001,10 +1937,18 @@
         }
 
         function renderMyPosts() {
-            if (!$.myPostsList) return;
-            
             if (!state.myPosts.length) {
-                $.myPostsList.innerHTML = '<div class="col-span-full text-center py-10 text-gray-400"><i class="fas fa-pen-fancy text-3xl mb-3"></i><p>ยังไม่มีโพสต์</p>' + (state.isEditor ? '<button class="btn-primary text-sm mt-3" onclick="showCreatePostModal()"><i class="fas fa-plus mr-1"></i>สร้างโพสต์แรก</button>' : '') + '</div>';
+                $.myPostsList.innerHTML = `
+                    <div class="col-span-full text-center py-10 text-gray-400">
+                        <i class="fas fa-pen-fancy text-3xl mb-3"></i>
+                        <p>ยังไม่มีโพสต์</p>
+                        ${state.isEditor ? `
+                            <button class="btn-primary text-sm mt-3" onclick="showCreatePostModal()">
+                                <i class="fas fa-plus mr-1"></i>สร้างโพสต์แรก
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
                 return;
             }
 
@@ -2028,8 +1972,6 @@
 
         // ========== POST DETAIL ==========
         window.showPostDetail = async function(postId) {
-            if (!$.modal || !$.modalBody || !$.modalTitle) return;
-            
             $.modal.classList.add('active');
             $.modalBody.innerHTML = '<div class="flex justify-center py-10"><div class="loading-spinner w-10 h-10"></div></div>';
             
@@ -2044,33 +1986,33 @@
                 const canDelete = state.isAdmin || (state.isEditor && p.authorId === state.user?.lineUserId);
 
                 $.modalBody.innerHTML = `
-                    ${p.imageUrl ? `<img src="${p.imageUrl}" class="w-full max-h-80 object-cover rounded-xl mb-4" loading="lazy">` : ''}
+                    ${p.imageUrl ? `<img src="${p.imageUrl}" class="w-full max-h-80 object-cover rounded-xl mb-4">` : ''}
                     <div class="flex gap-2 mb-4">
                         <span class="badge badge-${p.type}">${{news:'📰 ข่าวสาร', event:'🎉 กิจกรรม', urgent:'⚠️ ประกาศด่วน'}[p.type]}</span>
                         ${p.approvalStatus !== 'approved' ? '<span class="badge badge-pending">⏳ รออนุมัติ</span>' : ''}
                     </div>
                     <p class="whitespace-pre-wrap mb-6 leading-relaxed">${p.content}</p>
-                    ${p.link ? `<a href="${p.link}" target="_blank" class="block text-center bg-gradient-to-r from-[#2a2e36] to-[#1a1d24] text-[#06c755] p-4 rounded-xl border-2 border-[#06c755] mb-6 no-underline">🔗 ดูข้อมูลเพิ่มเติม</a>` : ''}
+                    ${p.link ? `
+                        <a href="${p.link}" target="_blank" class="block text-center bg-gradient-to-r from-[#2a2e36] to-[#1a1d24] text-[#06c755] p-4 rounded-xl border-2 border-[#06c755] mb-6 no-underline">
+                            🔗 ดูข้อมูลเพิ่มเติม
+                        </a>
+                    ` : ''}
                     <div class="text-xs text-gray-400 border-t border-[#2a2e36] pt-4">
                         <p>โพสต์โดย: ${p.authorName || 'ผู้ดูแล'}</p>
                         <p class="mt-1">${formatDateTime(p.createdAt)}</p>
                     </div>
                 `;
 
-                if ($.modalShareBtn) $.modalShareBtn.disabled = false;
+                $.modalShareBtn.disabled = false;
 
                 if (canEdit || canDelete) {
-                    if ($.modalAdminControls) $.modalAdminControls.classList.remove('hidden');
-                    if ($.modalEditBtn) {
-                        $.modalEditBtn.style.display = canEdit ? 'flex' : 'none';
-                        $.modalEditBtn.disabled = false;
-                    }
-                    if ($.modalDeleteBtn) {
-                        $.modalDeleteBtn.style.display = canDelete ? 'flex' : 'none';
-                        $.modalDeleteBtn.disabled = false;
-                    }
+                    $.modalAdminControls.classList.remove('hidden');
+                    $.modalEditBtn.style.display = canEdit ? 'flex' : 'none';
+                    $.modalDeleteBtn.style.display = canDelete ? 'flex' : 'none';
+                    $.modalEditBtn.disabled = false;
+                    $.modalDeleteBtn.disabled = false;
                 } else {
-                    if ($.modalAdminControls) $.modalAdminControls.classList.add('hidden');
+                    $.modalAdminControls.classList.add('hidden');
                 }
 
                 loadComments(postId);
@@ -2078,7 +2020,7 @@
         };
 
         window.closeModal = function() {
-            if ($.modal) $.modal.classList.remove('active');
+            $.modal.classList.remove('active');
             state.currentPost = null;
         };
 
@@ -2095,29 +2037,36 @@
             const comments = state.comments[postId] || [];
             
             let commentsSection = document.getElementById(`comments-section-${postId}`);
-            if (!commentsSection && $.modalBody) {
+            if (!commentsSection) {
                 commentsSection = document.createElement('div');
                 commentsSection.id = `comments-section-${postId}`;
                 commentsSection.className = 'modal-comments-section';
                 $.modalBody.appendChild(commentsSection);
             }
 
-            if (!commentsSection) return;
-
             if (!comments.length) {
                 commentsSection.innerHTML = `
-                    <div class="modal-comments-title"><i class="far fa-comment-dots"></i><span>ความคิดเห็น (0)</span></div>
+                    <div class="modal-comments-title">
+                        <i class="far fa-comment-dots"></i>
+                        <span>ความคิดเห็น (0)</span>
+                    </div>
                     <div class="modal-comment-input-area">
                         <textarea id="comment-input-${postId}" class="modal-comment-input" placeholder="แสดงความคิดเห็น..."></textarea>
                         <button class="modal-comment-submit" onclick="addComment('${postId}')">ส่ง</button>
                     </div>
-                    <div class="modal-empty-comments"><p>ยังไม่มีความคิดเห็น</p><p class="text-xs mt-1">เป็นคนแรกที่แสดงความคิดเห็น</p></div>
+                    <div class="modal-empty-comments">
+                        <p>ยังไม่มีความคิดเห็น</p>
+                        <p class="text-xs mt-1">เป็นคนแรกที่แสดงความคิดเห็น</p>
+                    </div>
                 `;
                 return;
             }
 
             commentsSection.innerHTML = `
-                <div class="modal-comments-title"><i class="far fa-comment-dots"></i><span>ความคิดเห็น (${comments.length})</span></div>
+                <div class="modal-comments-title">
+                    <i class="far fa-comment-dots"></i>
+                    <span>ความคิดเห็น (${comments.length})</span>
+                </div>
                 <div class="modal-comment-input-area">
                     <textarea id="comment-input-${postId}" class="modal-comment-input" placeholder="แสดงความคิดเห็น..."></textarea>
                     <button class="modal-comment-submit" onclick="addComment('${postId}')">ส่ง</button>
@@ -2127,28 +2076,45 @@
                         const isOwner = c.userId === state.user?.lineUserId;
                         const isAdmin = state.isAdmin;
                         const timeAgo = formatTimeAgo(c.createdAt);
+                        
+                        // ตรวจสอบสถานะ
                         const isDeleted = c.status === 'deleted' || c.status === 'deleted_by_admin';
                         const deletedClass = isDeleted ? 'deleted' : '';
                         const statusText = c.status === 'deleted' ? 'ลบแล้ว' : (c.status === 'deleted_by_admin' ? 'ลบโดยแอดมิน' : '');
                         const statusClass = c.status === 'deleted' ? 'modal-comment-status-deleted' : (c.status === 'deleted_by_admin' ? 'modal-comment-status-deleted_by_admin' : '');
+                        
+                        // แสดงปุ่มลบเฉพาะเมื่อไม่ถูกลบ และเป็นเจ้าของหรือแอดมิน
                         const showActions = !isDeleted && (isOwner || isAdmin);
+                        // แสดงปุ่มแก้ไขเฉพาะเมื่อไม่ถูกลบ และเป็นเจ้าของ
                         const showEdit = !isDeleted && isOwner;
                         
-                        return `<div class="modal-comment-item ${deletedClass}" id="comment-${c.commentId}">
-                            <img src="${c.userPicture || 'https://via.placeholder.com/32'}" class="modal-comment-avatar" onerror="this.src='https://via.placeholder.com/32'">
-                            <div class="modal-comment-content">
-                                <div class="modal-comment-header">
-                                    <span class="modal-comment-author">${c.userName || 'ผู้ใช้'}</span>
-                                    <span class="modal-comment-time">${timeAgo}</span>
-                                    ${isDeleted ? `<span class="modal-comment-status-badge ${statusClass}">${statusText}</span>` : ''}
+                        return `
+                            <div class="modal-comment-item ${deletedClass}" id="comment-${c.commentId}">
+                                <img src="${c.userPicture || 'https://via.placeholder.com/32'}" 
+                                     class="modal-comment-avatar"
+                                     onerror="this.src='https://via.placeholder.com/32'">
+                                <div class="modal-comment-content">
+                                    <div class="modal-comment-header">
+                                        <span class="modal-comment-author">${c.userName || 'ผู้ใช้'}</span>
+                                        <span class="modal-comment-time">${timeAgo}</span>
+                                        ${isDeleted ? `<span class="modal-comment-status-badge ${statusClass}">${statusText}</span>` : ''}
+                                    </div>
+                                    <div class="modal-comment-text">${isDeleted ? '<em>ความคิดเห็นนี้ถูกลบแล้ว</em>' : c.content}</div>
+                                    ${showActions ? `
+                                        <div class="modal-comment-actions">
+                                            ${showEdit ? `
+                                                <button class="modal-comment-action-btn" onclick="showEditCommentModal('${c.commentId}')">
+                                                    <i class="fas fa-edit"></i> แก้ไข
+                                                </button>
+                                            ` : ''}
+                                            <button class="modal-comment-action-btn delete" onclick="deleteComment('${c.commentId}')">
+                                                <i class="fas fa-trash"></i> ลบ
+                                            </button>
+                                        </div>
+                                    ` : ''}
                                 </div>
-                                <div class="modal-comment-text">${isDeleted ? '<em>ความคิดเห็นนี้ถูกลบแล้ว</em>' : c.content}</div>
-                                ${showActions ? `<div class="modal-comment-actions">
-                                    ${showEdit ? `<button class="modal-comment-action-btn" onclick="showEditCommentModal('${c.commentId}')"><i class="fas fa-edit"></i> แก้ไข</button>` : ''}
-                                    <button class="modal-comment-action-btn delete" onclick="deleteComment('${c.commentId}')"><i class="fas fa-trash"></i> ลบ</button>
-                                </div>` : ''}
                             </div>
-                        </div>`;
+                        `;
                     }).join('')}
                 </div>
             `;
@@ -2163,11 +2129,9 @@
                 return;
             }
 
-            const submitBtn = input?.nextElementSibling;
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.classList.add('loading');
-            }
+            const submitBtn = document.querySelector(`#comment-input-${postId}`).nextElementSibling;
+            submitBtn.disabled = true;
+            submitBtn.classList.add('loading');
 
             const result = await callGAS('post/comment/add', {
                 postId,
@@ -2178,7 +2142,7 @@
             });
 
             if (result.success) {
-                if (input) input.value = '';
+                input.value = '';
                 await loadComments(postId);
                 
                 if (state.currentPost) {
@@ -2190,42 +2154,36 @@
                 showToast(result.message || 'เกิดข้อผิดพลาด', 'error');
             }
 
-            if (submitBtn) {
-                submitBtn.disabled = false;
-                submitBtn.classList.remove('loading');
-            }
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('loading');
         };
 
-        window.showEditCommentModal = function(commentId) {
+        function showEditCommentModal(commentId) {
             const comment = findCommentById(commentId);
             if (!comment) return;
             
+            // ตรวจสอบว่าความคิดเห็นถูกลบหรือไม่
             if (comment.status === 'deleted' || comment.status === 'deleted_by_admin') {
                 showToast('ไม่สามารถแก้ไขความคิดเห็นที่ถูกลบแล้ว', 'error');
                 return;
             }
             
             state.currentEditingComment = comment;
-            const editId = document.getElementById('edit-comment-id');
-            const editContent = document.getElementById('edit-comment-content');
-            const editModal = document.getElementById('edit-comment-modal');
-            
-            if (editId) editId.value = comment.commentId;
-            if (editContent) editContent.value = comment.content;
-            if (editModal) editModal.classList.add('active');
-        };
+            document.getElementById('edit-comment-id').value = comment.commentId;
+            document.getElementById('edit-comment-content').value = comment.content;
+            document.getElementById('edit-comment-modal').classList.add('active');
+        }
 
         window.closeEditCommentModal = function() {
-            const editModal = document.getElementById('edit-comment-modal');
-            if (editModal) editModal.classList.remove('active');
+            document.getElementById('edit-comment-modal').classList.remove('active');
             state.currentEditingComment = null;
         };
 
         window.saveEditedComment = async function(e) {
             e.preventDefault();
             
-            const commentId = document.getElementById('edit-comment-id')?.value;
-            const content = document.getElementById('edit-comment-content')?.value.trim();
+            const commentId = document.getElementById('edit-comment-id').value;
+            const content = document.getElementById('edit-comment-content').value.trim();
             
             if (!content) {
                 showToast('กรุณาใส่ข้อความ', 'error');
@@ -2233,12 +2191,10 @@
             }
             
             const saveBtn = document.getElementById('edit-comment-save-btn');
-            if (saveBtn?.disabled) return;
+            if (saveBtn.disabled) return;
             
-            if (saveBtn) {
-                saveBtn.disabled = true;
-                saveBtn.classList.add('loading');
-            }
+            saveBtn.disabled = true;
+            saveBtn.classList.add('loading');
             
             const result = await callGAS('post/comment/update', {
                 commentId,
@@ -2267,16 +2223,15 @@
                 showToast(result.message || 'แก้ไขไม่สำเร็จ', 'error');
             }
             
-            if (saveBtn) {
-                saveBtn.disabled = false;
-                saveBtn.classList.remove('loading');
-            }
+            saveBtn.disabled = false;
+            saveBtn.classList.remove('loading');
         };
 
         window.deleteComment = async function(commentId) {
             const comment = findCommentById(commentId);
             if (!comment) return;
             
+            // ตรวจสอบว่าความคิดเห็นถูกลบไปแล้วหรือไม่
             if (comment.status === 'deleted' || comment.status === 'deleted_by_admin') {
                 showToast('ความคิดเห็นนี้ถูกลบไปแล้ว', 'error');
                 return;
@@ -2303,9 +2258,11 @@
                     for (let postId in state.comments) {
                         const commentIndex = state.comments[postId].findIndex(c => c.commentId === commentId);
                         if (commentIndex !== -1) {
+                            // อัปเดตสถานะแทนการลบออก
                             state.comments[postId][commentIndex].status = 'deleted';
                             state.comments[postId][commentIndex].content = '';
                             
+                            // ลดจำนวนคอมเมนต์
                             if (state.currentPost && state.currentPost.postId === postId) {
                                 state.currentPost.commentCount = Math.max(0, (state.currentPost.commentCount || 0) - 1);
                             }
@@ -2332,7 +2289,7 @@
             return null;
         }
 
-        // ========== SHARE AS FLEX MESSAGE ==========
+        // ========== SHARE AS FLEX MESSAGE (ปรับปรุงให้สวยงาม) ==========
         window.shareAsFlexMessage = async function() {
             if (!state.currentPost || !liff.isInClient()) {
                 showToast('ไม่สามารถแชร์ได้', 'error');
@@ -2340,19 +2297,19 @@
             }
 
             const shareBtn = $.modalShareBtn;
-            if (shareBtn) {
-                shareBtn.disabled = true;
-                shareBtn.classList.add('loading');
-            }
+            shareBtn.disabled = true;
+            shareBtn.classList.add('loading');
 
             const p = state.currentPost;
             
+            // กำหนดสีและไอคอนตามประเภท
             const typeConfig = {
                 news: { color: '#06c755', icon: '📰', label: 'ข่าวสาร' },
                 event: { color: '#f59e0b', icon: '🎉', label: 'กิจกรรม' },
                 urgent: { color: '#ef4444', icon: '⚠️', label: 'ประกาศด่วน' }
             }[p.type] || { color: '#06c755', icon: '📰', label: 'ข่าวสาร' };
 
+            // สร้าง Flex Message ที่สวยงาม
             const flex = {
                 type: 'flex',
                 altText: `${typeConfig.icon} ${p.title}`,
@@ -2362,14 +2319,28 @@
                     header: {
                         type: 'box',
                         layout: 'vertical',
-                        contents: [{
-                            type: 'box',
-                            layout: 'horizontal',
-                            contents: [
-                                { type: 'text', text: typeConfig.icon, size: 'xl', align: 'start' },
-                                { type: 'text', text: typeConfig.label, color: typeConfig.color, size: 'xs', align: 'end', gravity: 'center' }
-                            ]
-                        }]
+                        contents: [
+                            {
+                                type: 'box',
+                                layout: 'horizontal',
+                                contents: [
+                                    {
+                                        type: 'text',
+                                        text: typeConfig.icon,
+                                        size: 'xl',
+                                        align: 'start'
+                                    },
+                                    {
+                                        type: 'text',
+                                        text: typeConfig.label,
+                                        color: typeConfig.color,
+                                        size: 'xs',
+                                        align: 'end',
+                                        gravity: 'center'
+                                    }
+                                ]
+                            }
+                        ]
                     },
                     hero: p.imageUrl ? {
                         type: 'image',
@@ -2383,45 +2354,101 @@
                         type: 'box',
                         layout: 'vertical',
                         contents: [
-                            { type: 'text', text: p.title, weight: 'bold', size: 'xl', wrap: true, color: '#ffffff' },
-                            { type: 'text', text: p.content.length > 200 ? p.content.substring(0, 200) + '...' : p.content, wrap: true, color: '#9ca3af', size: 'md', margin: 'md' },
-                            { type: 'separator', margin: 'xl', color: '#2a2e36' },
-                            { type: 'box', layout: 'horizontal', margin: 'md', contents: [
-                                { type: 'text', text: 'โพสต์โดย', color: '#9ca3af', size: 'xs' },
-                                { type: 'text', text: p.authorName || 'ผู้ดูแลระบบ', color: '#06c755', size: 'xs', align: 'end', weight: 'bold' }
-                            ]},
-                            { type: 'box', layout: 'horizontal', contents: [
-                                { type: 'text', text: formatDate(p.createdAt), color: '#9ca3af', size: 'xxs' }
-                            ]}
+                            {
+                                type: 'text',
+                                text: p.title,
+                                weight: 'bold',
+                                size: 'xl',
+                                wrap: true,
+                                color: '#ffffff'
+                            },
+                            {
+                                type: 'text',
+                                text: p.content.length > 200 ? p.content.substring(0, 200) + '...' : p.content,
+                                wrap: true,
+                                color: '#9ca3af',
+                                size: 'md',
+                                margin: 'md'
+                            },
+                            {
+                                type: 'separator',
+                                margin: 'xl',
+                                color: '#2a2e36'
+                            },
+                            {
+                                type: 'box',
+                                layout: 'horizontal',
+                                margin: 'md',
+                                contents: [
+                                    {
+                                        type: 'text',
+                                        text: 'โพสต์โดย',
+                                        color: '#9ca3af',
+                                        size: 'xs'
+                                    },
+                                    {
+                                        type: 'text',
+                                        text: p.authorName || 'ผู้ดูแลระบบ',
+                                        color: '#06c755',
+                                        size: 'xs',
+                                        align: 'end',
+                                        weight: 'bold'
+                                    }
+                                ]
+                            },
+                            {
+                                type: 'box',
+                                layout: 'horizontal',
+                                contents: [
+                                    {
+                                        type: 'text',
+                                        text: formatDate(p.createdAt),
+                                        color: '#9ca3af',
+                                        size: 'xxs'
+                                    }
+                                ]
+                            }
                         ]
                     },
                     footer: p.link ? {
                         type: 'box',
                         layout: 'vertical',
-                        contents: [{
-                            type: 'button',
-                            action: { type: 'uri', label: '🔗 อ่านเพิ่มเติม', uri: p.link },
-                            style: 'primary',
-                            color: typeConfig.color,
-                            height: 'sm'
-                        }]
+                        contents: [
+                            {
+                                type: 'button',
+                                action: {
+                                    type: 'uri',
+                                    label: '🔗 อ่านเพิ่มเติม',
+                                    uri: p.link
+                                },
+                                style: 'primary',
+                                color: typeConfig.color,
+                                height: 'sm'
+                            }
+                        ]
                     } : null
                 }
             };
 
-            if (!p.imageUrl) delete flex.contents.hero;
-            if (!p.link) delete flex.contents.footer;
+            // ลบ hero ถ้าไม่มีรูป
+            if (!p.imageUrl) {
+                delete flex.contents.hero;
+            }
+
+            // ลบ footer ถ้าไม่มี link
+            if (!p.link) {
+                delete flex.contents.footer;
+            }
 
             try {
                 await liff.shareTargetPicker([flex]);
                 showToast('แชร์สำเร็จ');
             } catch (error) {
+                console.error('Share error:', error);
                 showToast('แชร์ไม่สำเร็จ', 'error');
             } finally {
-                if (shareBtn) {
-                    shareBtn.disabled = false;
-                    shareBtn.classList.remove('loading');
-                }
+                shareBtn.disabled = false;
+                shareBtn.classList.remove('loading');
             }
         };
 
@@ -2432,47 +2459,34 @@
                 return;
             }
 
-            const createModal = document.getElementById('create-modal');
-            const createTitle = document.getElementById('create-modal-title');
-            const editId = document.getElementById('edit-post-id');
-            const postType = document.getElementById('post-type');
-            const postTitle = document.getElementById('post-title');
-            const postContent = document.getElementById('post-content');
-            const postImage = document.getElementById('post-image');
-            const postLink = document.getElementById('post-link');
-            const imagePreview = document.getElementById('image-preview');
-            
-            if (createTitle) createTitle.textContent = 'สร้างโพสต์ใหม่';
-            if (editId) editId.value = '';
-            if (postType) postType.value = 'news';
-            if (postTitle) postTitle.value = '';
-            if (postContent) postContent.value = '';
-            if (postImage) postImage.value = '';
-            if (postLink) postLink.value = '';
-            if (imagePreview) imagePreview.style.display = 'none';
-            if (createModal) createModal.classList.add('active');
+            document.getElementById('create-modal-title').textContent = 'สร้างโพสต์ใหม่';
+            document.getElementById('edit-post-id').value = '';
+            document.getElementById('post-type').value = 'news';
+            document.getElementById('post-title').value = '';
+            document.getElementById('post-content').value = '';
+            document.getElementById('post-image').value = '';
+            document.getElementById('post-link').value = '';
+            document.getElementById('image-preview').style.display = 'none';
+            document.getElementById('create-modal').classList.add('active');
         };
 
         window.closeCreateModal = function() {
-            const createModal = document.getElementById('create-modal');
-            if (createModal) createModal.classList.remove('active');
+            document.getElementById('create-modal').classList.remove('active');
         };
 
         window.savePost = async function(e) {
             e.preventDefault();
             
             const btn = document.getElementById('save-post-btn');
-            if (btn?.disabled) return;
+            if (btn.disabled) return;
             
-            if (btn) {
-                btn.disabled = true;
-                btn.classList.add('loading');
-            }
+            btn.disabled = true;
+            btn.classList.add('loading');
 
             try {
-                const id = document.getElementById('edit-post-id')?.value;
-                let imageUrl = document.getElementById('post-image')?.value;
-                const file = document.getElementById('post-image-file')?.files[0];
+                const id = document.getElementById('edit-post-id').value;
+                let imageUrl = document.getElementById('post-image').value;
+                const file = document.getElementById('post-image-file').files[0];
 
                 if (file) {
                     const uploaded = await uploadImageToDrive(file);
@@ -2480,11 +2494,11 @@
                 }
 
                 const data = {
-                    type: document.getElementById('post-type')?.value,
-                    title: document.getElementById('post-title')?.value,
-                    content: document.getElementById('post-content')?.value,
+                    type: document.getElementById('post-type').value,
+                    title: document.getElementById('post-title').value,
+                    content: document.getElementById('post-content').value,
                     imageUrl,
-                    link: document.getElementById('post-link')?.value,
+                    link: document.getElementById('post-link').value,
                     lineUserId: state.user.lineUserId
                 };
 
@@ -2502,10 +2516,8 @@
             } catch {
                 showToast('เกิดข้อผิดพลาด', 'error');
             } finally {
-                if (btn) {
-                    btn.disabled = false;
-                    btn.classList.remove('loading');
-                }
+                btn.disabled = false;
+                btn.classList.remove('loading');
             }
         };
 
@@ -2513,31 +2525,21 @@
             if (!state.currentPost) return;
             
             const p = state.currentPost;
-            const createTitle = document.getElementById('create-modal-title');
-            const editId = document.getElementById('edit-post-id');
-            const postType = document.getElementById('post-type');
-            const postTitle = document.getElementById('post-title');
-            const postContent = document.getElementById('post-content');
-            const postImage = document.getElementById('post-image');
-            const postLink = document.getElementById('post-link');
-            const imagePreview = document.getElementById('image-preview');
+            document.getElementById('create-modal-title').textContent = 'แก้ไขโพสต์';
+            document.getElementById('edit-post-id').value = p.postId;
+            document.getElementById('post-type').value = p.type;
+            document.getElementById('post-title').value = p.title;
+            document.getElementById('post-content').value = p.content;
+            document.getElementById('post-image').value = p.imageUrl || '';
+            document.getElementById('post-link').value = p.link || '';
             
-            if (createTitle) createTitle.textContent = 'แก้ไขโพสต์';
-            if (editId) editId.value = p.postId;
-            if (postType) postType.value = p.type;
-            if (postTitle) postTitle.value = p.title;
-            if (postContent) postContent.value = p.content;
-            if (postImage) postImage.value = p.imageUrl || '';
-            if (postLink) postLink.value = p.link || '';
-            
-            if (imagePreview && p.imageUrl) {
-                imagePreview.src = p.imageUrl;
-                imagePreview.style.display = 'block';
+            if (p.imageUrl) {
+                document.getElementById('image-preview').src = p.imageUrl;
+                document.getElementById('image-preview').style.display = 'block';
             }
             
             closeModal();
-            const createModal = document.getElementById('create-modal');
-            if (createModal) createModal.classList.add('active');
+            document.getElementById('create-modal').classList.add('active');
         };
 
         window.deleteCurrentPost = async function() {
@@ -2554,10 +2556,8 @@
 
             if (result.isConfirmed) {
                 const deleteBtn = $.modalDeleteBtn;
-                if (deleteBtn) {
-                    deleteBtn.disabled = true;
-                    deleteBtn.classList.add('loading');
-                }
+                deleteBtn.disabled = true;
+                deleteBtn.classList.add('loading');
 
                 const apiResult = await callGAS('post/delete', { 
                     postId: state.currentPost.postId,
@@ -2572,10 +2572,8 @@
                     showToast(apiResult.message || 'ลบไม่สำเร็จ', 'error');
                 }
 
-                if (deleteBtn) {
-                    deleteBtn.disabled = false;
-                    deleteBtn.classList.remove('loading');
-                }
+                deleteBtn.disabled = false;
+                deleteBtn.classList.remove('loading');
             }
         };
 
@@ -2583,11 +2581,13 @@
         async function loadAdminStats() {
             const result = await callGAS('admin/stats');
             if (result.success) {
-                if ($.adminUsers) $.adminUsers.textContent = result.data.users || 0;
-                if ($.adminPosts) $.adminPosts.textContent = result.data.posts || 0;
-                if ($.adminToday) $.adminToday.textContent = result.data.today || 0;
-                if ($.adminPending) $.adminPending.textContent = result.data.pending || 0;
+                $.adminUsers.textContent = result.data.users || 0;
+                $.adminPosts.textContent = result.data.posts || 0;
+                $.adminToday.textContent = result.data.today || 0;
+                $.adminPending.textContent = result.data.pending || 0;
             }
+
+            // Also load admin posts
             await loadPosts();
         }
 
@@ -2598,20 +2598,16 @@
                 renderPendingPosts();
                 
                 const count = state.pendingPosts.length;
-                if ($.pendingBadge) {
-                    if (count > 0) {
-                        $.pendingBadge.textContent = count > 9 ? '9+' : count;
-                        $.pendingBadge.classList.remove('hidden');
-                    } else {
-                        $.pendingBadge.classList.add('hidden');
-                    }
+                if (count > 0) {
+                    $.pendingBadge.textContent = count > 9 ? '9+' : count;
+                    $.pendingBadge.classList.remove('hidden');
+                } else {
+                    $.pendingBadge.classList.add('hidden');
                 }
             }
         }
 
         function renderPendingPosts() {
-            if (!$.pendingPostsList) return;
-            
             if (!state.pendingPosts.length) {
                 $.pendingPostsList.innerHTML = '<div class="text-center py-10 text-gray-400">ไม่มีโพสต์รออนุมัติ</div>';
                 return;
@@ -2679,8 +2675,6 @@
         }
 
         function renderUsers() {
-            if (!$.usersList) return;
-            
             const search = $.userSearch?.value.toLowerCase() || '';
             const filtered = state.users.filter(u => 
                 u.displayName?.toLowerCase().includes(search) || 
@@ -2694,7 +2688,7 @@
 
             $.usersList.innerHTML = filtered.map(u => `
                 <div class="user-row">
-                    <img src="${u.pictureUrl || 'https://via.placeholder.com/40'}" class="user-avatar-sm" loading="lazy">
+                    <img src="${u.pictureUrl || 'https://via.placeholder.com/40'}" class="user-avatar-sm">
                     <div class="flex-1">
                         <p class="font-semibold text-sm">${u.displayName || ''}</p>
                         <p class="text-xs text-gray-400">${u.email || ''}</p>
@@ -2708,33 +2702,25 @@
         }
 
         window.showRoleModal = function(userId, userName, currentRole) {
-            const roleUserId = document.getElementById('role-user-id');
-            const roleUserName = document.getElementById('role-user-name');
-            const userRole = document.getElementById('user-role');
-            const roleModal = document.getElementById('role-modal');
-            
-            if (roleUserId) roleUserId.value = userId;
-            if (roleUserName) roleUserName.textContent = `จัดการสิทธิ์: ${userName}`;
-            if (userRole) userRole.value = currentRole;
-            if (roleModal) roleModal.classList.add('active');
+            document.getElementById('role-user-id').value = userId;
+            document.getElementById('role-user-name').textContent = `จัดการสิทธิ์: ${userName}`;
+            document.getElementById('user-role').value = currentRole;
+            document.getElementById('role-modal').classList.add('active');
         };
 
         window.closeRoleModal = function() {
-            const roleModal = document.getElementById('role-modal');
-            if (roleModal) roleModal.classList.remove('active');
+            document.getElementById('role-modal').classList.remove('active');
         };
 
         window.saveUserRole = async function(e) {
             e.preventDefault();
             
-            const userId = document.getElementById('role-user-id')?.value;
-            const role = document.getElementById('user-role')?.value;
+            const userId = document.getElementById('role-user-id').value;
+            const role = document.getElementById('user-role').value;
 
             const saveBtn = e.submitter;
-            if (saveBtn) {
-                saveBtn.disabled = true;
-                saveBtn.classList.add('loading');
-            }
+            saveBtn.disabled = true;
+            saveBtn.classList.add('loading');
 
             const result = await callGAS('admin/user/role', {
                 targetUserId: userId,
@@ -2745,8 +2731,10 @@
             if (result.success) {
                 showToast('อัปเดตสิทธิ์สำเร็จ');
                 closeRoleModal();
+                // โหลดข้อมูลผู้ใช้ใหม่อีกครั้งเพื่ออัปเดตสิทธิ์ทันที
                 await loadUsers();
                 
+                // ถ้าเป็นผู้ใช้คนปัจจุบัน ให้อัปเดต state.user ด้วย
                 if (userId === state.user?.lineUserId) {
                     const userResult = await callGAS('user/profile', {
                         lineUserId: state.user.lineUserId
@@ -2756,14 +2744,14 @@
                         state.isAdmin = state.user.role === 'admin';
                         state.isEditor = state.isAdmin || state.user.role === 'editor';
                         
-                        if ($.profileRole) {
-                            $.profileRole.textContent = {
-                                admin: '👑 ผู้ดูแลระบบ',
-                                editor: '✏️ ผู้เขียน',
-                                user: '👤 ผู้ใช้ทั่วไป'
-                            }[state.user.role] || '';
-                        }
+                        // อัปเดต UI
+                        $.profileRole.textContent = {
+                            admin: '👑 ผู้ดูแลระบบ',
+                            editor: '✏️ ผู้เขียน',
+                            user: '👤 ผู้ใช้ทั่วไป'
+                        }[state.user.role] || '';
                         
+                        // อัปเดตการแสดงปุ่ม admin
                         $.adminOnly.forEach(el => {
                             if (state.isAdmin) el.classList.remove('hidden');
                             else el.classList.add('hidden');
@@ -2774,10 +2762,8 @@
                 showToast(result.message || 'อัปเดตไม่สำเร็จ', 'error');
             }
 
-            if (saveBtn) {
-                saveBtn.disabled = false;
-                saveBtn.classList.remove('loading');
-            }
+            saveBtn.disabled = false;
+            saveBtn.classList.remove('loading');
         };
 
         // ========== ADMIN COMMENTS ==========
@@ -2790,8 +2776,6 @@
         }
 
         function renderAdminComments() {
-            if (!$.adminCommentsList) return;
-            
             const search = $.adminCommentSearch?.value.toLowerCase() || '';
             const filtered = state.allComments.filter(c => 
                 c.content?.toLowerCase().includes(search) || 
@@ -2807,9 +2791,10 @@
                 const statusText = c.status === 'deleted' ? ' (ลบแล้ว)' : (c.status === 'deleted_by_admin' ? ' (ลบโดยแอดมิน)' : '');
                 const statusClass = c.status === 'deleted' ? 'badge-deleted' : (c.status === 'deleted_by_admin' ? 'badge-deleted_by_admin' : '');
                 
-                return `<div class="bg-[#1a1d24] p-3 rounded-lg border border-[#2a2e36]">
+                return `
+                <div class="bg-[#1a1d24] p-3 rounded-lg border border-[#2a2e36]">
                     <div class="flex items-center gap-2 mb-2">
-                        <img src="${c.userPicture || 'https://via.placeholder.com/32'}" class="w-6 h-6 rounded-full" loading="lazy">
+                        <img src="${c.userPicture || 'https://via.placeholder.com/32'}" class="w-6 h-6 rounded-full">
                         <span class="font-semibold text-xs text-[#06c755]">${c.userName || 'ผู้ใช้'}${statusText}</span>
                         <span class="text-xs text-gray-500">${formatDateTime(c.createdAt)}</span>
                         ${c.status !== 'active' ? `<span class="badge ${statusClass} text-xs">${c.status === 'deleted' ? 'ลบแล้ว' : 'ลบโดยแอดมิน'}</span>` : ''}
@@ -2817,10 +2802,14 @@
                     <p class="text-sm mb-2">${c.status === 'active' ? c.content : '<em>ความคิดเห็นนี้ถูกลบแล้ว</em>'}</p>
                     <div class="flex justify-between items-center text-xs">
                         <span class="text-gray-400">โพสต์: ${c.postId}</span>
-                        ${c.status === 'active' ? `<button class="btn-danger text-xs py-1 px-2" onclick="adminDeleteComment('${c.commentId}', this)"><i class="fas fa-trash mr-1"></i>ลบ</button>` : ''}
+                        ${c.status === 'active' ? `
+                            <button class="btn-danger text-xs py-1 px-2" onclick="adminDeleteComment('${c.commentId}', this)">
+                                <i class="fas fa-trash mr-1"></i>ลบ
+                            </button>
+                        ` : ''}
                     </div>
-                </div>`;
-            }).join('');
+                </div>
+            `}).join('');
         }
 
         window.adminDeleteComment = async function(commentId, btn) {
@@ -2855,7 +2844,7 @@
         };
 
         async function loadSettings() {
-            const result = await callGAS('settings', {}, true);
+            const result = await callGAS('settings');
             if (result.success) {
                 state.settings = result.data || {
                     appName: 'iTNews',
@@ -2863,14 +2852,16 @@
                     requireApproval: 'false'
                 };
                 
-                const appNameInput = document.getElementById('setting-app-name');
-                const driveFolderInput = document.getElementById('setting-drive-folder');
+                // Update UI with settings
+                document.getElementById('setting-app-name').value = state.settings.appName || 'iTNews';
+                document.getElementById('setting-drive-folder').value = state.settings.driveFolderId || CONFIG.DRIVE_FOLDER_ID;
                 
-                if (appNameInput) appNameInput.value = state.settings.appName || 'iTNews';
-                if (driveFolderInput) driveFolderInput.value = state.settings.driveFolderId || CONFIG.DRIVE_FOLDER_ID;
-                
+                // แก้ไข: แปลงค่าจาก string เป็น boolean อย่างถูกต้อง
+                // รองรับทั้ง 'true', 'TRUE', true, 1, '1'
                 if ($.settingRequireApproval) {
                     const requireApproval = state.settings.requireApproval;
+                    
+                    // แปลงเป็น boolean
                     let isChecked = false;
                     if (typeof requireApproval === 'string') {
                         isChecked = requireApproval.toLowerCase() === 'true' || requireApproval === '1';
@@ -2879,9 +2870,12 @@
                     } else if (typeof requireApproval === 'number') {
                         isChecked = requireApproval === 1;
                     }
+                    
                     $.settingRequireApproval.checked = isChecked;
+                    console.log('Setting requireApproval:', requireApproval, '->', isChecked);
                 }
                 
+                // Update title and navbar
                 updateAppName(state.settings.appName);
             }
         }
@@ -2889,22 +2883,24 @@
         window.saveSettings = async function(e) {
             e.preventDefault();
             
-            const appName = document.getElementById('setting-app-name')?.value.trim() || 'iTNews';
-            const driveFolderId = document.getElementById('setting-drive-folder')?.value.trim() || CONFIG.DRIVE_FOLDER_ID;
+            const appName = document.getElementById('setting-app-name').value.trim() || 'iTNews';
+            const driveFolderId = document.getElementById('setting-drive-folder').value.trim() || CONFIG.DRIVE_FOLDER_ID;
+            
+            // ดึงค่า checkbox อย่างถูกต้อง
             const requireApproval = $.settingRequireApproval ? $.settingRequireApproval.checked : false;
 
             const saveBtn = $.settingsSaveBtn;
-            if (saveBtn) {
-                saveBtn.disabled = true;
-                saveBtn.classList.add('loading');
-            }
+            saveBtn.disabled = true;
+            saveBtn.classList.add('loading');
 
             const data = {
                 appName,
                 driveFolderId,
-                requireApproval: requireApproval ? 'true' : 'false',
+                requireApproval: requireApproval ? 'true' : 'false', // ส่งเป็น string เสมอ
                 lineUserId: state.user.lineUserId
             };
+
+            console.log('Saving settings:', data);
 
             const result = await callGAS('admin/settings/update', data);
             
@@ -2912,47 +2908,35 @@
                 showToast('บันทึกสำเร็จ');
                 Object.assign(state.settings, data);
                 updateAppName(appName);
-                
-                // Clear cache
-                state.cache = {};
             } else {
                 showToast(result.message || 'บันทึกไม่สำเร็จ', 'error');
             }
 
-            if (saveBtn) {
-                saveBtn.disabled = false;
-                saveBtn.classList.remove('loading');
-            }
+            saveBtn.disabled = false;
+            saveBtn.classList.remove('loading');
         };
 
         // ========== PROFILE ==========
         window.showProfileSettings = function() {
-            const profilePhone = document.getElementById('profile-phone');
-            const profileDept = document.getElementById('profile-department');
-            const profileModal = document.getElementById('profile-modal');
-            
-            if (profilePhone) profilePhone.value = state.user?.phone || '';
-            if (profileDept) profileDept.value = state.user?.department || '';
-            if (profileModal) profileModal.classList.add('active');
+            document.getElementById('profile-phone').value = state.user?.phone || '';
+            document.getElementById('profile-department').value = state.user?.department || '';
+            document.getElementById('profile-modal').classList.add('active');
         };
 
         window.closeProfileModal = function() {
-            const profileModal = document.getElementById('profile-modal');
-            if (profileModal) profileModal.classList.remove('active');
+            document.getElementById('profile-modal').classList.remove('active');
         };
 
         window.saveProfile = async function(e) {
             e.preventDefault();
             
             const saveBtn = e.submitter;
-            if (saveBtn) {
-                saveBtn.disabled = true;
-                saveBtn.classList.add('loading');
-            }
+            saveBtn.disabled = true;
+            saveBtn.classList.add('loading');
 
             const data = {
-                phone: document.getElementById('profile-phone')?.value,
-                department: document.getElementById('profile-department')?.value,
+                phone: document.getElementById('profile-phone').value,
+                department: document.getElementById('profile-department').value,
                 lineUserId: state.user.lineUserId
             };
 
@@ -2965,15 +2949,12 @@
                 showToast(result.message || 'บันทึกไม่สำเร็จ', 'error');
             }
 
-            if (saveBtn) {
-                saveBtn.disabled = false;
-                saveBtn.classList.remove('loading');
-            }
+            saveBtn.disabled = false;
+            saveBtn.classList.remove('loading');
         };
 
         window.logout = function() {
             if (liff.isLoggedIn()) liff.logout();
-            localStorage.removeItem('user_cache');
             location.reload();
         };
 
@@ -2983,8 +2964,7 @@
             document.querySelectorAll(`[data-tab="${tab}"]`).forEach(i => i.classList.add('active'));
             
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            const targetTab = document.getElementById(`tab-${tab}`);
-            if (targetTab) targetTab.classList.add('active');
+            document.getElementById(`tab-${tab}`).classList.add('active');
 
             if (tab === 'my') loadMyPosts();
             if (tab === 'admin' && state.isAdmin) {
@@ -3000,96 +2980,79 @@
         };
 
         // ========== EVENT LISTENERS ==========
-        function initEventListeners() {
-            // Filter buttons
-            $.filterBtns?.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    $.filterBtns.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    state.currentFilter = btn.dataset.filter;
-                    state.currentPage = 1;
-                    loadPosts();
-                });
+        $.filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                $.filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                state.currentFilter = btn.dataset.filter;
+                state.currentPage = 1;
+                loadPosts();
             });
+        });
 
-            // Search with debounce
-            let searchTimer;
-            $.searchInput?.addEventListener('input', () => {
-                clearTimeout(searchTimer);
-                searchTimer = setTimeout(() => {
-                    state.searchTerm = $.searchInput.value;
-                    state.currentPage = 1;
-                    loadPosts();
-                }, 300);
-            });
+        let searchTimer;
+        $.searchInput.addEventListener('input', () => {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => {
+                state.searchTerm = $.searchInput.value;
+                state.currentPage = 1;
+                loadPosts();
+            }, 300);
+        });
 
-            // User search
-            $.userSearch?.addEventListener('input', renderUsers);
-            
-            // Admin comment search
-            $.adminCommentSearch?.addEventListener('input', renderAdminComments);
+        $.userSearch?.addEventListener('input', renderUsers);
+        
+        $.adminCommentSearch?.addEventListener('input', () => {
+            renderAdminComments();
+        });
 
-            // Refresh admin
-            $.refreshAdmin?.addEventListener('click', () => {
-                if (state.isAdmin) {
-                    loadAdminStats();
-                    loadUsers();
-                    loadPendingPosts();
+        $.refreshAdmin?.addEventListener('click', () => {
+            if (state.isAdmin) {
+                loadAdminStats();
+                loadUsers();
+                loadPendingPosts();
+                loadAllComments();
+            }
+        });
+
+        document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                document.querySelectorAll('.admin-tab').forEach(t => t.classList.add('hidden'));
+                document.getElementById(`admin-${btn.dataset.adminTab}-tab`).classList.remove('hidden');
+                
+                // Load data when tab is clicked
+                if (btn.dataset.adminTab === 'comments') {
                     loadAllComments();
                 }
             });
+        });
 
-            // Admin tabs
-            document.querySelectorAll('.admin-tab-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    
-                    document.querySelectorAll('.admin-tab').forEach(t => t.classList.add('hidden'));
-                    const targetTab = document.getElementById(`admin-${btn.dataset.adminTab}-tab`);
-                    if (targetTab) targetTab.classList.remove('hidden');
-                    
-                    if (btn.dataset.adminTab === 'comments') {
-                        loadAllComments();
-                    }
-                });
+        $.navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                switchTab(item.dataset.tab);
             });
+        });
 
-            // Navigation
-            $.navItems?.forEach(item => {
-                item.addEventListener('click', () => {
-                    switchTab(item.dataset.tab);
-                });
+        document.getElementById('profile-header').addEventListener('click', () => {
+            Swal.fire({
+                title: state.user?.displayName,
+                text: state.user?.email,
+                showCancelButton: true,
+                confirmButtonText: 'แก้ไขโปรไฟล์',
+                cancelButtonText: 'ออกจากระบบ'
+            }).then(r => {
+                if (r.isConfirmed) showProfileSettings();
+                else if (r.dismiss === Swal.DismissReason.cancel) logout();
             });
-
-            // Profile header
-            const profileHeader = document.getElementById('profile-header');
-            profileHeader?.addEventListener('click', () => {
-                Swal.fire({
-                    title: state.user?.displayName,
-                    text: state.user?.email,
-                    showCancelButton: true,
-                    confirmButtonText: 'แก้ไขโปรไฟล์',
-                    cancelButtonText: 'ออกจากระบบ'
-                }).then(r => {
-                    if (r.isConfirmed) showProfileSettings();
-                    else if (r.dismiss === Swal.DismissReason.cancel) logout();
-                });
-            });
-
-            // Pagination
-            $.prevPage?.addEventListener('click', () => changePage('prev'));
-            $.nextPage?.addEventListener('click', () => changePage('next'));
-        }
+        });
 
         // ========== INIT ==========
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                initEventListeners();
-                initLIFF();
-            });
+            document.addEventListener('DOMContentLoaded', initLIFF);
         } else {
-            initEventListeners();
             initLIFF();
         }
 
