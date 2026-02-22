@@ -2682,7 +2682,7 @@
             }
 
             $.pendingPostsList.innerHTML = state.pendingPosts.map(p => `
-                <div class="bg-[#1a1d24] p-4 rounded-xl border border-yellow-500/30">
+                <div class="bg-[#1a1d24] p-4 rounded-xl border border-yellow-500/30 pending-post-card" data-post-id="${p.postId}">
                     <div class="flex justify-between mb-2">
                         <span class="badge badge-pending">⏳ รออนุมัติ</span>
                         <span class="text-xs text-gray-500">${formatDate(p.createdAt)}</span>
@@ -2692,8 +2692,8 @@
                     <div class="flex justify-between items-center">
                         <span class="text-xs text-gray-500">โดย: ${p.authorName}</span>
                         <div class="flex gap-2">
-                            <button class="btn-success text-xs py-2 px-3" onclick="approvePost('${p.postId}', this)">อนุมัติ</button>
-                            <button class="btn-danger text-xs py-2 px-3" onclick="rejectPost('${p.postId}', this)">ปฏิเสธ</button>
+                            <button class="btn-success text-xs py-2 px-3 approve-btn" data-post-id="${p.postId}" onclick="approvePost('${p.postId}', this)">อนุมัติ</button>
+                            <button class="btn-danger text-xs py-2 px-3 reject-btn" data-post-id="${p.postId}" onclick="rejectPost('${p.postId}', this)">ปฏิเสธ</button>
                         </div>
                     </div>
                 </div>
@@ -2708,13 +2708,20 @@
             
             if (result.success) {
                 showToast('อนุมัติสำเร็จ');
+                // Remove the post card from pending list immediately
+                const postCard = btn.closest('.pending-post-card');
+                if (postCard) {
+                    postCard.style.transition = 'opacity 0.3s ease';
+                    postCard.style.opacity = '0';
+                    setTimeout(() => postCard.remove(), 300);
+                }
+                // Reload data in background
                 await Promise.all([loadPosts(), loadPendingPosts(), loadUrgentPosts(), loadAdminStats()]);
             } else {
                 showToast(result.message || 'อนุมัติไม่สำเร็จ', 'error');
+                btn.disabled = false;
+                btn.classList.remove('loading');
             }
-            
-            btn.disabled = false;
-            btn.classList.remove('loading');
         };
 
         window.rejectPost = async function(postId, btn) {
@@ -2725,13 +2732,20 @@
             
             if (result.success) {
                 showToast('ปฏิเสธสำเร็จ');
+                // Remove the post card from pending list immediately
+                const postCard = btn.closest('.pending-post-card');
+                if (postCard) {
+                    postCard.style.transition = 'opacity 0.3s ease';
+                    postCard.style.opacity = '0';
+                    setTimeout(() => postCard.remove(), 300);
+                }
+                // Reload data in background
                 await Promise.all([loadPosts(), loadPendingPosts(), loadUrgentPosts(), loadAdminStats()]);
             } else {
                 showToast(result.message || 'ปฏิเสธไม่สำเร็จ', 'error');
+                btn.disabled = false;
+                btn.classList.remove('loading');
             }
-            
-            btn.disabled = false;
-            btn.classList.remove('loading');
         };
 
         async function loadUsers() {
@@ -2924,13 +2938,12 @@
                 document.getElementById('setting-app-name').value = state.settings.appName || 'iTNews';
                 document.getElementById('setting-drive-folder').value = state.settings.driveFolderId || CONFIG.DRIVE_FOLDER_ID;
                 
-                // แก้ไข: แปลงค่าจาก string เป็น boolean อย่างถูกต้อง
-                // รองรับทั้ง 'true', 'TRUE', true, 1, '1'
+                // Fix: Convert requireApproval to boolean correctly
+                // Support 'true', 'TRUE', true, 1, '1'
                 if ($.settingRequireApproval) {
                     const requireApproval = state.settings.requireApproval;
-                    
-                    // แปลงเป็น boolean
                     let isChecked = false;
+                    
                     if (typeof requireApproval === 'string') {
                         isChecked = requireApproval.toLowerCase() === 'true' || requireApproval === '1';
                     } else if (typeof requireApproval === 'boolean') {
@@ -2939,8 +2952,9 @@
                         isChecked = requireApproval === 1;
                     }
                     
+                    // Set checkbox state
                     $.settingRequireApproval.checked = isChecked;
-                    console.log('Setting requireApproval:', requireApproval, '->', isChecked);
+                    $.settingRequireApproval.setAttribute('data-checked', isChecked.toString());
                 }
                 
                 // Update title and navbar
@@ -2954,8 +2968,9 @@
             const appName = document.getElementById('setting-app-name').value.trim() || 'iTNews';
             const driveFolderId = document.getElementById('setting-drive-folder').value.trim() || CONFIG.DRIVE_FOLDER_ID;
             
-            // ดึงค่า checkbox อย่างถูกต้อง
-            const requireApproval = $.settingRequireApproval ? $.settingRequireApproval.checked : false;
+            // Get checkbox value correctly - read directly from DOM
+            const checkboxElement = document.getElementById('setting-require-approval');
+            const requireApproval = checkboxElement ? checkboxElement.checked : false;
 
             const saveBtn = $.settingsSaveBtn;
             saveBtn.disabled = true;
@@ -2964,17 +2979,18 @@
             const data = {
                 appName,
                 driveFolderId,
-                requireApproval: requireApproval ? 'true' : 'false', // ส่งเป็น string เสมอ
+                requireApproval: requireApproval ? 'true' : 'false', // Always send as string
                 lineUserId: state.user.lineUserId
             };
-
-            console.log('Saving settings:', data);
 
             const result = await callGAS('admin/settings/update', data);
             
             if (result.success) {
                 showToast('บันทึกสำเร็จ');
-                Object.assign(state.settings, data);
+                state.settings.appName = appName;
+                state.settings.driveFolderId = driveFolderId;
+                state.settings.requireApproval = requireApproval ? 'true' : 'false';
+                Cache.set('settings', state.settings);
                 updateAppName(appName);
             } else {
                 showToast(result.message || 'บันทึกไม่สำเร็จ', 'error');
