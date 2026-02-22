@@ -1,124 +1,1104 @@
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title id="page-title">iTNews · LINE</title>
-    <link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📰</text></svg>">
+    <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/653/653021.png">
     
-    <!-- Preload Critical Resources -->
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://static.line-scdn.net">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Critical CSS - Inline for fastest render -->
+    <!-- LINE LIFF -->
+    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    
     <style>
-        /* Reset & Base */
-        *{margin:0;padding:0;box-sizing:border-box;font-family:'IBM Plex Sans Thai',sans-serif}
-        body{background:#0a0a0f;color:#fff;padding-bottom:70px}
+        * {
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         
-        /* Core Variables */
-        :root{--primary:#06c755;--bg:#0a0a0f;--bg-card:#1a1d24;--border:#2a2e36}
+        :root {
+            --primary: #06c755;
+            --primary-dark: #05b34a;
+            --primary-light: rgba(6,199,85,0.1);
+            --bg: #0a0a0f;
+            --bg-card: #1a1d24;
+            --border: #2a2e36;
+            --text: #ffffff;
+            --text-secondary: #9ca3af;
+            --navbar-bg: rgba(10, 10, 15, 0.95);
+        }
         
-        /* Layout */
-        .navbar{position:sticky;top:0;z-index:40;background:rgba(10,10,15,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:12px 16px}
-        .navbar-content{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
-        .navbar-logo{display:flex;align-items:center;gap:8px;cursor:pointer}
-        .navbar-logo i{color:var(--primary);font-size:24px}
-        .navbar-logo span{font-size:18px;font-weight:600;background:linear-gradient(135deg,#fff,var(--primary));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding-bottom: 70px;
+        }
         
-        .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(26,29,36,.95);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0;z-index:50;backdrop-filter:blur(10px)}
-        .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;color:#9ca3af;font-size:12px;cursor:pointer}
-        .nav-item.active{color:var(--primary)}
-        .nav-item i{font-size:20px}
-        .tab-content{display:none}
-        .tab-content.active{display:block}
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            background: var(--navbar-bg);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 16px;
+        }
         
-        /* Loading States */
-        .initial-loading{position:fixed;inset:0;background:var(--bg);z-index:2000;display:flex;align-items:center;justify-content:center;transition:opacity .15s}
-        .initial-loading.hide{opacity:0;pointer-events:none}
-        .loading-spinner{width:60px;height:60px;border:4px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}
-        .skeleton-card{background:linear-gradient(90deg,#1a1d24 25%,#252930 50%,#1a1d24 75%);background-size:200% 100%;animation:loading 1s infinite;border-radius:20px;height:300px}
-        @keyframes spin{to{transform:rotate(360deg)}}
-        @keyframes loading{0%{background-position:200% 0}100%{background-position:-200% 0}}
+        .navbar-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
         
-        /* Profile */
-        .profile-header{background:var(--bg-card);border-radius:20px;padding:16px;margin:16px;display:flex;align-items:center;gap:16px;border:1px solid var(--border);cursor:pointer;max-width:1200px;margin-left:auto;margin-right:auto}
-        .profile-avatar{width:60px;height:60px;border-radius:30px;border:3px solid var(--primary);object-fit:cover}
+        .navbar-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
         
-        /* Grid */
-        .posts-grid{display:grid;gap:16px;padding:0 16px;max-width:1200px;margin:0 auto}
-        @media (min-width:1024px){.posts-grid{grid-template-columns:repeat(3,1fr)}}
-        @media (max-width:1023px){.posts-grid{grid-template-columns:1fr}}
+        .navbar-logo i {
+            color: var(--primary);
+            font-size: 24px;
+        }
         
-        /* Cards */
-        .news-card{background:var(--bg-card);border:1px solid var(--border);border-radius:20px;overflow:hidden;cursor:pointer}
-        .news-image{width:100%;height:200px;object-fit:cover;background:#2a2e36}
-        .news-content{padding:16px}
+        .navbar-logo span {
+            font-size: 18px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
         
-        /* Badges */
-        .badge{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500;display:inline-block}
-        .badge-news{background:rgba(6,199,85,.15);color:var(--primary);border:1px solid rgba(6,199,85,.3)}
-        .badge-event{background:rgba(245,158,11,.15);color:#f59e0b;border:1px solid rgba(245,158,11,.3)}
-        .badge-urgent{background:rgba(239,68,68,.15);color:#ef4444;border:1px solid rgba(239,68,68,.3)}
-        .badge-pending{background:rgba(255,193,7,.15);color:#ffc107;border:1px solid rgba(255,193,7,.3)}
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+            background: rgba(26, 29, 36, 0.95);
+        }
         
-        /* Buttons */
-        .btn-primary{background:var(--primary);color:white;padding:12px 24px;border-radius:12px;font-weight:600;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px}
-        .btn-primary:disabled{opacity:0.5;cursor:not-allowed}
-        .btn-primary.loading{color:transparent;pointer-events:none;position:relative}
-        .btn-primary.loading::after{content:'';position:absolute;width:20px;height:20px;top:50%;left:50%;margin:-10px 0 0 -10px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin .6s linear infinite}
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+        }
         
-        .btn-outline{background:transparent;border:1px solid var(--border);color:#fff;padding:12px 24px;border-radius:12px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px}
-        .btn-danger{background:#ef4444;color:#fff;padding:12px 24px;border-radius:12px;font-weight:600;border:none;cursor:pointer}
-        .btn-share{background:#00B900;color:#fff;padding:12px 24px;border-radius:12px;font-weight:500;border:none;cursor:pointer}
+        .nav-item.active {
+            color: var(--primary);
+        }
         
-        /* Search & Filters */
-        .search-box{position:relative;max-width:1200px;margin:0 auto 16px;padding:0 16px}
-        .search-box input{width:100%;padding:12px 12px 12px 44px;background:var(--bg-card);border:1px solid var(--border);border-radius:30px;color:#fff}
-        .search-box input:focus{outline:none;border-color:var(--primary)}
-        .search-box i{position:absolute;left:28px;top:50%;transform:translateY(-50%);color:#9ca3af}
+        .nav-item i {
+            font-size: 20px;
+        }
         
-        .filter-container{display:flex;gap:8px;overflow-x:auto;padding:0 16px 8px;max-width:1200px;margin:0 auto 16px}
-        .filter-btn{padding:8px 16px;border-radius:30px;font-size:14px;white-space:nowrap;background:var(--bg-card);border:1px solid var(--border);color:#9ca3af;cursor:pointer}
-        .filter-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+        .tab-content {
+            display: none;
+        }
         
-        /* Modal */
-        .modal{position:fixed;inset:0;background:rgba(0,0,0,.98);z-index:1000;display:none}
-        .modal.active{display:flex}
-        .modal-content{background:var(--bg-card);width:100%;height:100vh;overflow-y:auto;display:flex;flex-direction:column}
-        @media (min-width:768px){.modal-content{width:90%;max-width:800px;height:90vh;margin:20px auto;border-radius:24px}}
-        .modal-header{display:flex;justify-content:space-between;align-items:center;padding:16px;border-bottom:1px solid var(--border)}
-        .modal-close{color:#9ca3af;font-size:24px;cursor:pointer;width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(255,255,255,.05)}
+        .tab-content.active {
+            display: block;
+        }
         
-        /* Utilities */
-        .hidden{display:none!important}
-        .line-clamp-2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-        .floating-create-btn{position:fixed;bottom:90px;right:20px;background:var(--primary);color:#fff;width:60px;height:60px;border-radius:30px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 15px rgba(6,199,85,.3);cursor:pointer;z-index:100}
+        @media (min-width: 1024px) {
+            .posts-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 16px;
+            }
+            
+            .my-posts-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 16px;
+            }
+            
+            .admin-posts-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+            
+            .bottom-nav {
+                max-width: 400px;
+                left: 50%;
+                transform: translateX(-50%);
+                border-radius: 50px;
+                margin-bottom: 10px;
+            }
+        }
         
-        /* Admin */
-        .admin-section{background:linear-gradient(135deg,rgba(6,199,85,.1),transparent);border:1px solid var(--primary);border-radius:16px;padding:16px;margin-bottom:16px}
-        .admin-tab-btn{padding:12px;border-bottom:2px solid transparent;cursor:pointer}
-        .admin-tab-btn.active{border-bottom-color:var(--primary);color:var(--primary);font-weight:600}
-        .user-row{display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;margin-bottom:8px}
+        @media (max-width: 1023px) {
+            .posts-grid, .my-posts-grid {
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+                padding: 0 16px;
+            }
+        }
         
-        /* Comments */
-        .modal-comment-input-area{display:flex;gap:8px;margin-bottom:16px}
-        .modal-comment-input{flex:1;background:#0a0a0f;border:1px solid var(--border);border-radius:20px;padding:10px 14px;color:#fff;resize:none;min-height:60px}
-        .modal-comment-item{display:flex;gap:10px;padding:12px;background:#0a0a0f;border-radius:12px;margin-bottom:8px}
-        .modal-comment-avatar{width:32px;height:32px;border-radius:16px;object-fit:cover}
+        .swiper {
+            width: 100%;
+            height: 220px;
+            margin-bottom: 20px;
+            border-radius: 20px;
+        }
+        
+        .swiper-slide {
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .slide-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            color: white;
+        }
+        
+        .slide-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500;
+            z-index: 10;
+        }
+        
+        .slide-badge.urgent { background: rgba(239,68,68,0.9); color: white; }
+        .slide-badge.event { background: rgba(245,158,11,0.9); color: white; }
+        .slide-badge.news { background: rgba(6,199,85,0.9); color: white; }
+        
+        .swiper-pagination-bullet {
+            background: white;
+            opacity: 0.5;
+        }
+        
+        .swiper-pagination-bullet-active {
+            background: var(--primary) !important;
+            opacity: 1;
+        }
+        
+        .news-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .news-card:active {
+            border-color: var(--primary);
+        }
+        
+        .news-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: #2a2e36;
+        }
+        
+        .news-content {
+            padding: 16px;
+        }
+        
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500;
+            display: inline-block;
+        }
+        
+        .badge-news {
+            background: rgba(6,199,85,0.15);
+            color: var(--primary);
+            border: 1px solid rgba(6,199,85,0.3);
+        }
+        
+        .badge-event {
+            background: rgba(245,158,11,0.15);
+            color: #f59e0b;
+            border: 1px solid rgba(245,158,11,0.3);
+        }
+        
+        .badge-urgent {
+            background: rgba(239,68,68,0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239,68,68,0.3);
+        }
+        
+        .badge-pending {
+            background: rgba(255,193,7,0.15);
+            color: #ffc107;
+            border: 1px solid rgba(255,193,7,0.3);
+        }
+
+        .badge-deleted {
+            background: rgba(239,68,68,0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239,68,68,0.3);
+        }
+
+        .badge-deleted_by_admin {
+            background: rgba(239,68,68,0.25);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+            font-weight: 600;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary:active {
+            opacity: 0.8;
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-primary.loading {
+            color: transparent;
+            pointer-events: none;
+            position: relative;
+        }
+        
+        .btn-primary.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 2px solid white;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-outline:active {
+            background: rgba(255,255,255,0.05);
+        }
+        
+        .btn-outline:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-outline.loading {
+            color: transparent;
+            pointer-events: none;
+            position: relative;
+        }
+        
+        .btn-outline.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 2px solid var(--text);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-danger:active {
+            opacity: 0.8;
+        }
+        
+        .btn-danger:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-danger.loading {
+            color: transparent;
+            pointer-events: none;
+            position: relative;
+        }
+        
+        .btn-danger.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 2px solid white;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-success:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-success.loading {
+            color: transparent;
+            pointer-events: none;
+            position: relative;
+        }
+        
+        .btn-success.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 2px solid white;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        
+        .btn-share {
+            background: #00B900;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-share:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-share.loading {
+            color: transparent;
+            pointer-events: none;
+            position: relative;
+        }
+        
+        .btn-share.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 2px solid white;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        
+        .profile-header {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 16px;
+            margin: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .profile-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
+            border: 3px solid var(--primary);
+            object-fit: cover;
+        }
+        
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+        }
+        
+        .search-box {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto 16px;
+            padding: 0 16px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 12px 12px 12px 44px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            color: var(--text);
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 28px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+        
+        .filter-container {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 0 16px 8px;
+            max-width: 1200px;
+            margin: 0 auto 16px;
+        }
+        
+        .filter-btn {
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 14px;
+            white-space: nowrap;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+        
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.98);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--bg-card);
+            width: 100%;
+            height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        @media (min-width: 768px) {
+            .modal-content {
+                width: 90%;
+                max-width: 800px;
+                height: 90vh;
+                margin: 20px auto;
+                border-radius: 24px;
+            }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            line-clamp: 2;
+            padding-right: 16px;
+        }
+        
+        .modal-close {
+            color: var(--text-secondary);
+            font-size: 24px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+        }
+        
+        .modal-close:active {
+            background: rgba(255,255,255,0.1);
+            color: var(--primary);
+        }
+        
+        .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+        
+        .modal-body::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .modal-body::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 2px;
+        }
+        
+        .modal-footer {
+            display: flex;
+            gap: 8px;
+            padding: 16px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .modal-footer button {
+            flex: 1;
+        }
+        
+        .input-field {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 12px;
+            padding: 12px;
+            width: 100%;
+            margin-bottom: 12px;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .initial-loading {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.15s;
+        }
+        
+        .initial-loading.hide {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .floating-create-btn {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(6,199,85,0.3);
+            cursor: pointer;
+            z-index: 100;
+        }
+        
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin: 24px 0;
+        }
+        
+        .btn-pagination {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .btn-pagination:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .admin-section {
+            background: linear-gradient(135deg, rgba(6,199,85,0.1), transparent);
+            border: 1px solid var(--primary);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .admin-stat {
+            background: var(--bg-card);
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .user-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .user-row:active {
+            background: #252930;
+        }
+        
+        .user-avatar-sm {
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            object-fit: cover;
+        }
+        
+        .role-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        
+        .role-admin {
+            background: rgba(239,68,68,0.2);
+            color: #ef4444;
+        }
+        
+        .role-editor {
+            background: rgba(245,158,11,0.2);
+            color: #f59e0b;
+        }
+        
+        .role-user {
+            background: rgba(107,114,128,0.2);
+            color: #9ca3af;
+        }
+        
+        .admin-tab-btn {
+            padding: 12px;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+        }
+        
+        .admin-tab-btn.active {
+            border-bottom-color: var(--primary);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .upload-area {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--primary);
+        }
+        
+        .image-preview {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-top: 12px;
+            display: none;
+        }
+        
+        .modal-comments-section {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .modal-comments-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .modal-comments-title i {
+            color: var(--primary);
+        }
+        
+        .modal-comment-input-area {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .modal-comment-input {
+            flex: 1;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 10px 14px;
+            color: var(--text);
+            resize: none;
+            min-height: 60px;
+            font-size: 14px;
+        }
+        
+        .modal-comment-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .modal-comment-submit {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 0 16px;
+            font-weight: 600;
+            cursor: pointer;
+            height: 60px;
+            font-size: 14px;
+        }
+        
+        .modal-comment-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .modal-comment-submit.loading {
+            position: relative;
+            color: transparent;
+        }
+        
+        .modal-comment-submit.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 2px solid white;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        
+        .modal-comments-list {
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        
+        .modal-comments-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .modal-comments-list::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 2px;
+        }
+        
+        .modal-comment-item {
+            display: flex;
+            gap: 10px;
+            padding: 12px;
+            background: var(--bg);
+            border-radius: 12px;
+            margin-bottom: 8px;
+            transition: opacity 0.2s;
+        }
+        
+        .modal-comment-item.deleted {
+            opacity: 0.7;
+            background: rgba(239,68,68,0.05);
+            border-left: 3px solid #ef4444;
+        }
+        
+        .modal-comment-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 16px;
+            object-fit: cover;
+        }
+        
+        .modal-comment-content {
+            flex: 1;
+        }
+        
+        .modal-comment-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 2px;
+            flex-wrap: wrap;
+        }
+        
+        .modal-comment-author {
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--primary);
+        }
+        
+        .modal-comment-time {
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+        
+        .modal-comment-text {
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--text);
+            word-break: break-word;
+        }
+        
+        .modal-comment-status-badge {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-left: 8px;
+            display: inline-block;
+        }
+        
+        .modal-comment-status-deleted {
+            background: rgba(239,68,68,0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239,68,68,0.3);
+        }
+        
+        .modal-comment-status-deleted_by_admin {
+            background: rgba(239,68,68,0.25);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+            font-weight: 600;
+        }
+        
+        .modal-comment-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 4px;
+        }
+        
+        .modal-comment-action-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 11px;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 10px;
+            transition: all 0.15s;
+        }
+        
+        .modal-comment-action-btn:hover {
+            background: rgba(6,199,85,0.1);
+            color: var(--primary);
+        }
+        
+        .modal-comment-action-btn.delete:hover {
+            background: rgba(239,68,68,0.1);
+            color: #ef4444;
+        }
+        
+        .modal-comment-action-btn.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        
+        .modal-empty-comments {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-secondary);
+            background: var(--bg);
+            border-radius: 12px;
+            font-size: 13px;
+        }
+
+        #navbar-app-name {
+            background: linear-gradient(135deg, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .skeleton-card {
+            background: linear-gradient(90deg, var(--bg-card) 25%, #252930 50%, var(--bg-card) 75%);
+            background-size: 200% 100%;
+            animation: loading 1s infinite;
+            border-radius: 20px;
+            height: 300px;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
     </style>
-    
-    <!-- Defer non-critical CSS -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript>
-        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    </noscript>
-    
-    <!-- LIFF SDK -->
-    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js" async></script>
 </head>
 <body>
     <!-- Initial Loading -->
@@ -148,7 +1128,7 @@
         <div id="tab-home" class="tab-content active">
             <!-- Profile Header -->
             <div class="profile-header" id="profile-header">
-                <img id="profile-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Ccircle cx='30' cy='30' r='30' fill='%232a2e36'/%3E%3Ctext x='30' y='38' font-size='20' text-anchor='middle' fill='%2306c755' font-family='Arial'%3E👤%3C/text%3E%3C/svg%3E" alt="avatar" class="profile-avatar">
+                <img id="profile-avatar" src="https://via.placeholder.com/60/2a2e36/06c755?text=..." alt="avatar" class="profile-avatar">
                 <div class="flex-1">
                     <h2 id="profile-name" class="text-lg font-bold">กำลังโหลด...</h2>
                     <p id="profile-email" class="text-sm text-gray-400"></p>
@@ -159,25 +1139,28 @@
 
             <!-- Stats -->
             <div class="grid grid-cols-3 gap-2 max-w-7xl mx-auto px-4 mb-4">
-                <div class="stat-card bg-[#1a1d24] p-4 rounded-xl text-center border border-[#2a2e36]">
+                <div class="stat-card">
                     <p class="text-xs text-gray-400">ข่าวสาร</p>
                     <p id="stat-news" class="text-xl font-bold text-[#06c755]">0</p>
                 </div>
-                <div class="stat-card bg-[#1a1d24] p-4 rounded-xl text-center border border-[#2a2e36]">
+                <div class="stat-card">
                     <p class="text-xs text-gray-400">กิจกรรม</p>
                     <p id="stat-events" class="text-xl font-bold text-[#06c755]">0</p>
                 </div>
-                <div class="stat-card bg-[#1a1d24] p-4 rounded-xl text-center border border-[#2a2e36]">
+                <div class="stat-card">
                     <p class="text-xs text-gray-400">ด่วน</p>
                     <p id="stat-urgent" class="text-xl font-bold text-[#06c755]">0</p>
                 </div>
             </div>
 
             <!-- Hero Slider -->
-            <div class="swiper hero-swiper max-w-7xl mx-auto px-4 mb-4" style="height:220px;background:#1a1d24;border-radius:20px;position:relative;overflow:hidden">
+            <div class="swiper hero-swiper max-w-7xl mx-auto px-4 mb-4">
                 <div class="swiper-wrapper" id="hero-slider-wrapper">
                     <div class="swiper-slide">
-                        <div style="width:100%;height:220px;background:#1a1d24;display:flex;align-items:center;justify-content:center;color:#06c755">กำลังโหลด...</div>
+                        <img src="https://via.placeholder.com/1200x400/1a1d24/06c755?text=กำลังโหลด..." class="w-full h-full object-cover">
+                        <div class="slide-content">
+                            <h3 class="font-bold text-base">กำลังโหลดข่าวด่วน...</h3>
+                        </div>
                     </div>
                 </div>
                 <div class="swiper-pagination"></div>
@@ -202,15 +1185,18 @@
                 <div class="skeleton-card"></div>
                 <div class="skeleton-card"></div>
                 <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
             </div>
             
             <!-- Pagination -->
-            <div id="pagination-container" class="flex justify-center items-center gap-2 mt-6 mb-4 hidden">
-                <button class="btn-pagination bg-[#1a1d24] border border-[#2a2e36] text-white px-3 py-2 rounded-lg" id="prev-page" disabled>
+            <div id="pagination-container" class="pagination-container hidden">
+                <button class="btn-pagination" id="prev-page" disabled>
                     <i class="fas fa-chevron-left"></i>
                 </button>
                 <span id="page-info" class="text-gray-400 text-sm">หน้า 1 จาก 1</span>
-                <button class="btn-pagination bg-[#1a1d24] border border-[#2a2e36] text-white px-3 py-2 rounded-lg" id="next-page" disabled>
+                <button class="btn-pagination" id="next-page" disabled>
                     <i class="fas fa-chevron-right"></i>
                 </button>
             </div>
@@ -224,7 +1210,7 @@
                     <i class="fas fa-plus mr-1"></i>สร้าง
                 </button>
             </div>
-            <div id="my-posts-list" class="posts-grid"></div>
+            <div id="my-posts-list" class="my-posts-grid"></div>
         </div>
 
         <!-- Tab: Admin -->
@@ -241,19 +1227,19 @@
                 <div class="admin-section">
                     <h3 class="font-semibold mb-3">สถิติ</h3>
                     <div class="grid grid-cols-2 gap-3">
-                        <div class="bg-[#1a1d24] p-3 rounded-lg text-center">
+                        <div class="admin-stat">
                             <p class="text-xs text-gray-400">ผู้ใช้</p>
                             <p id="admin-users" class="text-xl font-bold text-[#06c755]">0</p>
                         </div>
-                        <div class="bg-[#1a1d24] p-3 rounded-lg text-center">
+                        <div class="admin-stat">
                             <p class="text-xs text-gray-400">โพสต์</p>
                             <p id="admin-posts" class="text-xl font-bold text-[#06c755]">0</p>
                         </div>
-                        <div class="bg-[#1a1d24] p-3 rounded-lg text-center">
+                        <div class="admin-stat">
                             <p class="text-xs text-gray-400">วันนี้</p>
                             <p id="admin-today" class="text-xl font-bold text-[#06c755]">0</p>
                         </div>
-                        <div class="bg-[#1a1d24] p-3 rounded-lg text-center">
+                        <div class="admin-stat">
                             <p class="text-xs text-gray-400">รออนุมัติ</p>
                             <p id="admin-pending" class="text-xl font-bold text-yellow-500">0</p>
                         </div>
@@ -310,14 +1296,14 @@
                         <h3 class="font-semibold mb-3">ตั้งค่าระบบ</h3>
                         <form id="settings-form" onsubmit="saveSettings(event)">
                             <label class="block text-sm text-gray-400 mb-1">ชื่อระบบ</label>
-                            <input type="text" id="setting-app-name" class="w-full bg-[#1a1d24] border border-[#2a2e36] text-white rounded-xl p-3 mb-3" value="iTNews" required>
+                            <input type="text" id="setting-app-name" class="input-field" value="iTNews" required>
                             
                             <label class="block text-sm text-gray-400 mb-1">Google Drive Folder ID</label>
-                            <input type="text" id="setting-drive-folder" class="w-full bg-[#1a1d24] border border-[#2a2e36] text-white rounded-xl p-3 mb-3" value="18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE" required>
+                            <input type="text" id="setting-drive-folder" class="input-field" value="18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE" required>
                             
                             <div class="mb-4">
                                 <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" id="setting-require-approval" class="w-4 h-4 text-[#06c755] rounded border-gray-600">
+                                    <input type="checkbox" id="setting-require-approval" class="w-4 h-4 text-[#06c755] rounded border-gray-600 focus:ring-[#06c755] focus:ring-2">
                                     <span class="text-sm text-gray-400 select-none">ต้องอนุมัติโพสต์ก่อนเผยแพร่</span>
                                 </label>
                             </div>
@@ -333,21 +1319,21 @@
         <div class="modal" id="post-modal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3 class="modal-title text-lg font-semibold pr-4" id="modal-title">กำลังโหลด...</h3>
+                    <h3 class="modal-title" id="modal-title">กำลังโหลด...</h3>
                     <button class="modal-close" onclick="closeModal()">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <div class="modal-body flex-1 overflow-y-auto p-4" id="modal-body">
+                <div class="modal-body" id="modal-body">
                     <div class="flex justify-center items-center py-10">
                         <div class="loading-spinner w-10 h-10"></div>
                     </div>
                 </div>
-                <div class="modal-footer flex gap-2 p-4 border-t border-[#2a2e36]">
-                    <button class="btn-share flex-1" onclick="shareAsFlexMessage()" disabled id="modal-share-btn">
-                        <i class="fab fa-line mr-2"></i> แชร์
+                <div class="modal-footer">
+                    <button class="btn-share" onclick="shareAsFlexMessage()" disabled id="modal-share-btn">
+                        <i class="fab fa-line"></i> แชร์
                     </button>
-                    <button class="btn-outline flex-1" onclick="closeModal()">ปิด</button>
+                    <button class="btn-outline" onclick="closeModal()">ปิด</button>
                 </div>
                 <div id="modal-admin-controls" class="px-4 pb-4 hidden">
                     <p class="text-sm text-gray-400 mb-2">จัดการโพสต์</p>
@@ -367,32 +1353,32 @@
         <div class="modal" id="create-modal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3 class="modal-title text-lg font-semibold" id="create-modal-title">สร้างโพสต์ใหม่</h3>
+                    <h3 class="modal-title" id="create-modal-title">สร้างโพสต์ใหม่</h3>
                     <button class="modal-close" onclick="closeCreateModal()">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <div class="modal-body flex-1 overflow-y-auto p-4">
+                <div class="modal-body">
                     <form id="post-form" onsubmit="savePost(event)">
                         <input type="hidden" id="edit-post-id">
-                        <select id="post-type" class="w-full bg-[#1a1d24] border border-[#2a2e36] text-white rounded-xl p-3 mb-3" required>
+                        <select id="post-type" class="input-field" required>
                             <option value="news">📰 ข่าวสาร</option>
                             <option value="event">🎉 กิจกรรม</option>
                             <option value="urgent">⚠️ ประกาศด่วน</option>
                         </select>
-                        <input type="text" id="post-title" placeholder="หัวข้อ" class="w-full bg-[#1a1d24] border border-[#2a2e36] text-white rounded-xl p-3 mb-3" required maxlength="100">
-                        <textarea id="post-content" placeholder="เนื้อหา" class="w-full bg-[#1a1d24] border border-[#2a2e36] text-white rounded-xl p-3 mb-3" rows="5" required maxlength="5000"></textarea>
-                        <div class="upload-area border-2 border-dashed border-[#2a2e36] rounded-xl p-5 text-center mb-3 cursor-pointer" onclick="document.getElementById('post-image-file').click()">
+                        <input type="text" id="post-title" placeholder="หัวข้อ" class="input-field" required maxlength="100">
+                        <textarea id="post-content" placeholder="เนื้อหา" class="input-field" rows="5" required maxlength="5000"></textarea>
+                        <div class="upload-area" onclick="document.getElementById('post-image-file').click()">
                             <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
                             <p class="text-sm text-gray-400">คลิกเพื่ออัปโหลดรูปภาพ</p>
                         </div>
                         <input type="file" id="post-image-file" accept="image/*" style="display: none" onchange="previewImage(this)">
-                        <img id="image-preview" class="w-full max-h-48 object-cover rounded-xl mt-3 hidden">
+                        <img id="image-preview" class="image-preview">
                         <input type="hidden" id="post-image">
-                        <input type="text" id="post-link" placeholder="ลิงก์เพิ่มเติม (ถ้ามี)" class="w-full bg-[#1a1d24] border border-[#2a2e36] text-white rounded-xl p-3">
+                        <input type="text" id="post-link" placeholder="ลิงก์เพิ่มเติม (ถ้ามี)" class="input-field">
                     </form>
                 </div>
-                <div class="modal-footer flex gap-2 p-4 border-t border-[#2a2e36]">
+                <div class="modal-footer">
                     <button type="submit" form="post-form" class="btn-primary flex-1" id="save-post-btn">บันทึก</button>
                     <button type="button" class="btn-outline flex-1" onclick="closeCreateModal()">ยกเลิก</button>
                 </div>
@@ -403,18 +1389,18 @@
         <div class="modal" id="profile-modal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3 class="modal-title text-lg font-semibold">แก้ไขโปรไฟล์</h3>
+                    <h3 class="modal-title">แก้ไขโปรไฟล์</h3>
                     <button class="modal-close" onclick="closeProfileModal()">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <div class="modal-body flex-1 overflow-y-auto p-4">
+                <div class="modal-body">
                     <form id="profile-form" onsubmit="saveProfile(event)">
-                        <input type="text" id="profile-phone" placeholder="เบอร์โทรศัพท์" class="w-full bg-[#1a1d24] border border-[#2a2e36] text-white rounded-xl p-3 mb-3" maxlength="10">
-                        <input type="text" id="profile-department" placeholder="แผนก/หน่วยงาน" class="w-full bg-[#1a1d24] border border-[#2a2e36] text-white rounded-xl p-3" maxlength="50">
+                        <input type="text" id="profile-phone" placeholder="เบอร์โทรศัพท์" class="input-field" maxlength="10">
+                        <input type="text" id="profile-department" placeholder="แผนก/หน่วยงาน" class="input-field" maxlength="50">
                     </form>
                 </div>
-                <div class="modal-footer flex gap-2 p-4 border-t border-[#2a2e36]">
+                <div class="modal-footer">
                     <button type="submit" form="profile-form" class="btn-primary flex-1">บันทึก</button>
                     <button type="button" class="btn-outline flex-1" onclick="closeProfileModal()">ยกเลิก</button>
                 </div>
@@ -425,23 +1411,23 @@
         <div class="modal" id="role-modal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3 class="modal-title text-lg font-semibold">จัดการสิทธิ์ผู้ใช้</h3>
+                    <h3 class="modal-title">จัดการสิทธิ์ผู้ใช้</h3>
                     <button class="modal-close" onclick="closeRoleModal()">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <div class="modal-body flex-1 overflow-y-auto p-4">
+                <div class="modal-body">
                     <form id="role-form" onsubmit="saveUserRole(event)">
                         <input type="hidden" id="role-user-id">
                         <p id="role-user-name" class="text-white mb-4"></p>
-                        <select id="user-role" class="w-full bg-[#1a1d24] border border-[#2a2e36] text-white rounded-xl p-3">
+                        <select id="user-role" class="input-field">
                             <option value="user">👤 ผู้ใช้ทั่วไป</option>
                             <option value="editor">✏️ ผู้เขียน</option>
                             <option value="admin">👑 ผู้ดูแลระบบ</option>
                         </select>
                     </form>
                 </div>
-                <div class="modal-footer flex gap-2 p-4 border-t border-[#2a2e36]">
+                <div class="modal-footer">
                     <button type="submit" form="role-form" class="btn-primary flex-1">บันทึก</button>
                     <button type="button" class="btn-outline flex-1" onclick="closeRoleModal()">ยกเลิก</button>
                 </div>
@@ -452,20 +1438,20 @@
         <div class="modal" id="edit-comment-modal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3 class="modal-title text-lg font-semibold">แก้ไขความคิดเห็น</h3>
+                    <h3 class="modal-title">แก้ไขความคิดเห็น</h3>
                     <button class="modal-close" onclick="closeEditCommentModal()">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <div class="modal-body flex-1 overflow-y-auto p-4">
+                <div class="modal-body">
                     <form id="edit-comment-form" onsubmit="saveEditedComment(event)">
                         <input type="hidden" id="edit-comment-id">
-                        <textarea id="edit-comment-content" class="w-full bg-[#1a1d24] border border-[#2a2e36] text-white rounded-xl p-3" rows="4" required maxlength="500"></textarea>
+                        <textarea id="edit-comment-content" class="input-field" rows="4" required maxlength="500"></textarea>
+                        <div class="flex gap-2 mt-4">
+                            <button type="submit" class="btn-primary flex-1" id="edit-comment-save-btn">บันทึก</button>
+                            <button type="button" class="btn-outline flex-1" onclick="closeEditCommentModal()">ยกเลิก</button>
+                        </div>
                     </form>
-                </div>
-                <div class="modal-footer flex gap-2 p-4 border-t border-[#2a2e36]">
-                    <button type="submit" form="edit-comment-form" class="btn-primary flex-1" id="edit-comment-save-btn">บันทึก</button>
-                    <button type="button" class="btn-outline flex-1" onclick="closeEditCommentModal()">ยกเลิก</button>
                 </div>
             </div>
         </div>
@@ -487,637 +1473,799 @@
         </div>
     </div>
 
-    <!-- Core Script - Optimized for speed -->
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    
     <script>
-        (function() {
-            // ========== CONFIG ==========
-            const CONFIG = {
-                GAS_URL: 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec',
-                LIFF_ID: '2008904120-T7I0VPZf',
-                PAGE_SIZE: 9,
-                DRIVE_FOLDER_ID: '18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE'
-            };
+        // ========== CONFIG ==========
+        const CONFIG = {
+            GAS_URL: 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec',
+            LIFF_ID: '2008904120-T7I0VPZf',
+            PAGE_SIZE: 9,
+            DRIVE_FOLDER_ID: '18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE'
+        };
 
-            // ========== STATE ==========
-            const state = {
-                user: null,
-                posts: [],
-                myPosts: [],
-                pendingPosts: [],
-                users: [],
-                comments: {},
-                allComments: [],
-                currentFilter: 'all',
-                searchTerm: '',
-                isAdmin: false,
-                isEditor: false,
-                currentPage: 1,
-                totalPages: 1,
-                currentPost: null,
-                settings: { appName: 'iTNews' },
-                urgentPosts: [],
-                initialized: false,
-                loading: false
-            };
+        // ========== STATE ==========
+        const state = {
+            user: null,
+            posts: [],
+            myPosts: [],
+            pendingPosts: [],
+            adminPosts: [],
+            users: [],
+            comments: {},
+            allComments: [],
+            currentFilter: 'all',
+            searchTerm: '',
+            isAdmin: false,
+            isEditor: false,
+            currentPage: 1,
+            myPostsPage: 1,
+            adminPostsPage: 1,
+            totalPages: 1,
+            myPostsTotalPages: 1,
+            adminPostsTotalPages: 1,
+            currentPost: null,
+            currentEditingComment: null,
+            settings: { 
+                appName: 'iTNews',
+                driveFolderId: CONFIG.DRIVE_FOLDER_ID,
+                requireApproval: 'false' 
+            },
+            urgentPosts: [],
+            initialized: false,
+            cache: { posts: null, myPosts: null, urgentPosts: null }
+        };
 
-            // ========== DOM Cache ==========
-            const $ = {};
+        // ========== DOM Cache ==========
+        const $ = {
+            initLoading: document.getElementById('initial-loading'),
+            pageTitle: document.getElementById('page-title'),
+            navbarAppName: document.getElementById('navbar-app-name'),
+            homeTab: document.getElementById('tab-home'),
+            myTab: document.getElementById('tab-my'),
+            adminTab: document.getElementById('tab-admin'),
+            postsList: document.getElementById('posts-list'),
+            myPostsList: document.getElementById('my-posts-list'),
+            adminPostsList: document.getElementById('admin-posts-list'),
+            pendingPostsList: document.getElementById('pending-posts-list'),
+            usersList: document.getElementById('users-list'),
+            adminCommentsList: document.getElementById('admin-comments-list'),
+            profileName: document.getElementById('profile-name'),
+            profileEmail: document.getElementById('profile-email'),
+            profileAvatar: document.getElementById('profile-avatar'),
+            profileRole: document.getElementById('profile-role'),
+            statNews: document.getElementById('stat-news'),
+            statEvents: document.getElementById('stat-events'),
+            statUrgent: document.getElementById('stat-urgent'),
+            searchInput: document.getElementById('search-input'),
+            filterBtns: document.querySelectorAll('.filter-btn'),
+            navItems: document.querySelectorAll('.nav-item'),
+            modal: document.getElementById('post-modal'),
+            modalBody: document.getElementById('modal-body'),
+            modalTitle: document.getElementById('modal-title'),
+            modalShareBtn: document.getElementById('modal-share-btn'),
+            modalEditBtn: document.getElementById('modal-edit-btn'),
+            modalDeleteBtn: document.getElementById('modal-delete-btn'),
+            modalAdminControls: document.getElementById('modal-admin-controls'),
+            floatingBtn: document.getElementById('floating-create-btn'),
+            createPostBtn: document.getElementById('create-post-btn'),
+            adminOnly: document.querySelectorAll('.admin-only'),
+            heroSlider: document.getElementById('hero-slider-wrapper'),
+            paginationContainer: document.getElementById('pagination-container'),
+            pageInfo: document.getElementById('page-info'),
+            prevPage: document.getElementById('prev-page'),
+            nextPage: document.getElementById('next-page'),
+            refreshAdmin: document.getElementById('refresh-admin'),
+            adminUsers: document.getElementById('admin-users'),
+            adminPosts: document.getElementById('admin-posts'),
+            adminToday: document.getElementById('admin-today'),
+            adminPending: document.getElementById('admin-pending'),
+            pendingBadge: document.getElementById('pending-badge'),
+            userSearch: document.getElementById('user-search'),
+            adminCommentSearch: document.getElementById('admin-comment-search'),
+            settingsSaveBtn: document.getElementById('settings-save-btn'),
+            settingRequireApproval: document.getElementById('setting-require-approval')
+        };
 
-            // ========== UTILS ==========
-            function showToast(msg, type = 'success') {
-                const toast = document.createElement('div');
-                toast.style.cssText = `position:fixed;bottom:80px;left:16px;right:16px;background:#1a1d24;border-left:4px solid ${type === 'success' ? '#06c755' : '#ef4444'};border-radius:12px;padding:12px 16px;color:white;z-index:2000;max-width:400px;margin:0 auto;box-shadow:0 4px 12px rgba(0,0,0,0.5);animation:slideUp 0.3s ease`;
-                toast.textContent = msg;
-                document.body.appendChild(toast);
-                setTimeout(() => toast.remove(), 2000);
-            }
+        // ========== UTILS ==========
+        function showToast(msg, type = 'success') {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 80px;
+                left: 16px;
+                right: 16px;
+                background: #1a1d24;
+                border-left: 4px solid ${type === 'success' ? '#06c755' : '#ef4444'};
+                border-radius: 12px;
+                padding: 12px 16px;
+                color: white;
+                z-index: 2000;
+                max-width: 400px;
+                margin: 0 auto;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            `;
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
 
-            function formatDate(dateStr) {
-                if (!dateStr) return '';
-                return new Date(dateStr).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' });
-            }
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            return new Date(dateStr).toLocaleDateString('th-TH', { 
+                day: 'numeric', month: 'short', year: 'numeric'
+            });
+        }
 
-            function formatDateTime(dateStr) {
-                if (!dateStr) return '';
-                return new Date(dateStr).toLocaleString('th-TH');
-            }
+        function formatDateTime(dateStr) {
+            if (!dateStr) return '';
+            return new Date(dateStr).toLocaleString('th-TH');
+        }
 
-            // ========== DOM Cache Init ==========
-            function initDOMCache() {
-                const ids = [
-                    'initial-loading', 'page-title', 'navbar-app-name', 'tab-home', 'tab-my', 'tab-admin',
-                    'posts-list', 'my-posts-list', 'admin-posts-list', 'pending-posts-list', 'users-list',
-                    'admin-comments-list', 'profile-name', 'profile-email', 'profile-avatar', 'profile-role',
-                    'stat-news', 'stat-events', 'stat-urgent', 'search-input', 'post-modal', 'modal-body',
-                    'modal-title', 'modal-share-btn', 'modal-edit-btn', 'modal-delete-btn', 'modal-admin-controls',
-                    'floating-create-btn', 'create-post-btn', 'hero-slider-wrapper', 'pagination-container',
-                    'page-info', 'prev-page', 'next-page', 'refresh-admin', 'admin-users', 'admin-posts',
-                    'admin-today', 'admin-pending', 'pending-badge', 'user-search', 'admin-comment-search',
-                    'settings-save-btn', 'setting-require-approval'
-                ];
+        function formatTimeAgo(dateStr) {
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffMins < 1) return 'เมื่อสักครู่';
+            if (diffMins < 60) return `${diffMins} นาทีที่แล้ว`;
+            if (diffHours < 24) return `${diffHours} ชั่วโมงที่แล้ว`;
+            if (diffDays < 7) return `${diffDays} วันที่แล้ว`;
+            return formatDate(dateStr);
+        }
+
+        // ========== UPDATE APP NAME ==========
+        function updateAppName(name) {
+            if (!name) name = 'iTNews';
+            $.pageTitle.textContent = name + ' · LINE';
+            $.navbarAppName.textContent = name;
+        }
+
+        // ========== API CALL ==========
+        async function callGAS(path, data = {}) {
+            try {
+                const formData = new FormData();
+                formData.append('path', path);
+                if (state.user?.lineUserId) formData.append('lineUserId', state.user.lineUserId);
                 
-                ids.forEach(id => {
-                    $[id] = document.getElementById(id);
+                Object.keys(data).forEach(key => {
+                    if (data[key] !== undefined && data[key] !== null) {
+                        formData.append(key, data[key]);
+                    }
+                });
+
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+                const res = await fetch(CONFIG.GAS_URL, { 
+                    method: 'POST', 
+                    body: formData,
+                    signal: controller.signal
                 });
                 
-                $.filterBtns = document.querySelectorAll('.filter-btn');
-                $.navItems = document.querySelectorAll('.nav-item');
-                $.adminOnly = document.querySelectorAll('.admin-only');
-            }
-
-            // ========== API CALL ==========
-            async function callGAS(path, data = {}) {
-                try {
-                    const formData = new FormData();
-                    formData.append('path', path);
-                    if (state.user?.lineUserId) formData.append('lineUserId', state.user.lineUserId);
-                    
-                    Object.keys(data).forEach(key => {
-                        if (data[key] !== undefined && data[key] !== null) {
-                            formData.append(key, data[key]);
-                        }
-                    });
-
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-                    const res = await fetch(CONFIG.GAS_URL, { 
-                        method: 'POST', 
-                        body: formData,
-                        signal: controller.signal
-                    });
-                    
-                    clearTimeout(timeoutId);
-                    
-                    const text = await res.text();
-                    return JSON.parse(text);
-                } catch (error) {
-                    return { success: false, message: 'connection error' };
-                }
-            }
-
-            // ========== UPDATE APP NAME ==========
-            function updateAppName(name) {
-                if ($['page-title']) $['page-title'].textContent = (name || 'iTNews') + ' · LINE';
-                if ($['navbar-app-name']) $['navbar-app-name'].textContent = name || 'iTNews';
-            }
-
-            // ========== LIFF INIT ==========
-            async function initLIFF() {
-                try {
-                    initDOMCache();
-                    
-                    // Load settings first
-                    await loadSettings();
-                    
-                    // Show cached user if available
-                    const cachedUser = localStorage.getItem('user_cache');
-                    if (cachedUser) {
-                        try {
-                            state.user = JSON.parse(cachedUser);
-                            state.isAdmin = state.user.role === 'admin';
-                            state.isEditor = state.isAdmin || state.user.role === 'editor';
-                            updateUIWithUser();
-                        } catch (e) {}
-                    }
-
-                    // Initialize LIFF
-                    await liff.init({ liffId: CONFIG.LIFF_ID });
-                    
-                    if (!liff.isLoggedIn()) {
-                        liff.login();
-                        return;
-                    }
-
-                    // Get profile
-                    const profile = await liff.getProfile();
-                    const idToken = liff.getDecodedIDToken();
-
-                    const result = await callGAS('user/profile', {
-                        lineUserId: profile.userId,
-                        displayName: profile.displayName,
-                        pictureUrl: profile.pictureUrl || '',
-                        email: idToken?.email || ''
-                    });
-
-                    if (result.success) {
-                        state.user = result.data;
-                        state.isAdmin = state.user.role === 'admin';
-                        state.isEditor = state.isAdmin || state.user.role === 'editor';
-                        
-                        localStorage.setItem('user_cache', JSON.stringify(state.user));
-                        
-                        updateUIWithUser();
-
-                        // Load data
-                        await Promise.all([
-                            loadPosts(),
-                            loadUrgentPosts(),
-                            loadMyPosts()
-                        ]);
-
-                        if (state.isAdmin) {
-                            loadUsers();
-                            loadAdminStats();
-                            loadPendingPosts();
-                            loadAllComments();
-                        }
-                    }
-
-                    if ($['initial-loading']) $['initial-loading'].classList.add('hide');
-                    state.initialized = true;
-
-                } catch (error) {
-                    console.error('LIFF error:', error);
-                    if ($['initial-loading']) $['initial-loading'].classList.add('hide');
-                    showToast('ไม่สามารถเชื่อมต่อ LINE ได้', 'error');
-                }
-            }
-
-            function updateUIWithUser() {
-                if (!state.user) return;
+                clearTimeout(timeoutId);
                 
-                if ($['profile-name']) $['profile-name'].textContent = state.user.displayName || 'ผู้ใช้';
-                if ($['profile-email']) $['profile-email'].textContent = state.user.email || '';
-                if ($['profile-avatar']) $['profile-avatar'].src = state.user.pictureUrl || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'60\' viewBox=\'0 0 60 60\'%3E%3Ccircle cx=\'30\' cy=\'30\' r=\'30\' fill=\'%232a2e36\'/%3E%3Ctext x=\'30\' y=\'38\' font-size=\'20\' text-anchor=\'middle\' fill=\'%2306c755\' font-family=\'Arial\'%3E👤%3C/text%3E%3C/svg%3E';
-                if ($['profile-role']) {
-                    $['profile-role'].textContent = {
+                const text = await res.text();
+                return JSON.parse(text);
+            } catch (error) {
+                return { success: false, message: 'connection error' };
+            }
+        }
+
+        // ========== IMAGE UPLOAD ==========
+        async function uploadImageToDrive(file) {
+            try {
+                const base64 = await new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result.split(',')[1]);
+                    reader.readAsDataURL(file);
+                });
+
+                const result = await callGAS('uploadImage', {
+                    fileName: file.name,
+                    fileType: file.type,
+                    fileData: base64,
+                    folderId: CONFIG.DRIVE_FOLDER_ID
+                });
+
+                if (result.success) {
+                    return `https://lh5.googleusercontent.com/d/${result.data.fileId}=s0`;
+                }
+                return null;
+            } catch {
+                return null;
+            }
+        }
+
+        window.previewImage = function(input) {
+            const preview = document.getElementById('image-preview');
+            if (input.files?.[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        };
+
+        // ========== LIFF INIT ==========
+        async function initLIFF() {
+            try {
+                await liff.init({ liffId: CONFIG.LIFF_ID });
+                if (!liff.isLoggedIn()) {
+                    liff.login();
+                    return;
+                }
+
+                const profile = await liff.getProfile();
+                const idToken = liff.getDecodedIDToken();
+
+                const result = await callGAS('user/profile', {
+                    lineUserId: profile.userId,
+                    displayName: profile.displayName,
+                    pictureUrl: profile.pictureUrl || '',
+                    email: idToken?.email || ''
+                });
+
+                if (result.success) {
+                    state.user = result.data;
+                    state.isAdmin = state.user.role === 'admin';
+                    state.isEditor = state.isAdmin || state.user.role === 'editor';
+
+                    // Update UI
+                    $.profileName.textContent = state.user.displayName || 'ผู้ใช้';
+                    $.profileEmail.textContent = state.user.email || '';
+                    $.profileAvatar.src = state.user.pictureUrl || 'https://via.placeholder.com/60';
+                    $.profileRole.textContent = {
                         admin: '👑 ผู้ดูแลระบบ',
                         editor: '✏️ ผู้เขียน',
                         user: '👤 ผู้ใช้ทั่วไป'
                     }[state.user.role] || '';
-                }
 
-                $.adminOnly.forEach(el => {
-                    if (state.isAdmin) el.classList.remove('hidden');
-                    else el.classList.add('hidden');
-                });
+                    // Show/hide admin elements
+                    $.adminOnly.forEach(el => {
+                        if (state.isAdmin) el.classList.remove('hidden');
+                        else el.classList.add('hidden');
+                    });
 
-                if (state.isEditor) {
-                    if ($['floating-create-btn']) $['floating-create-btn'].classList.remove('hidden');
-                    if ($['create-post-btn']) $['create-post-btn'].classList.remove('hidden');
-                }
-            }
-
-            // ========== POSTS ==========
-            async function loadPosts() {
-                if (state.loading) return;
-                state.loading = true;
-
-                const result = await callGAS('posts', {
-                    page: state.currentPage,
-                    filter: state.currentFilter,
-                    search: state.searchTerm,
-                    pageSize: CONFIG.PAGE_SIZE,
-                    includePending: state.isAdmin
-                });
-
-                if (result.success) {
-                    state.posts = result.data.posts || [];
-                    state.totalPages = Math.ceil((result.data.total || 0) / CONFIG.PAGE_SIZE) || 1;
-
-                    if ($['stat-news']) $['stat-news'].textContent = result.data.stats?.news || 0;
-                    if ($['stat-events']) $['stat-events'].textContent = result.data.stats?.events || 0;
-                    if ($['stat-urgent']) $['stat-urgent'].textContent = result.data.stats?.urgent || 0;
-
-                    renderPosts();
-                    updatePagination();
-                }
-
-                state.loading = false;
-            }
-
-            function renderPosts() {
-                if (!$['posts-list']) return;
-                
-                let filtered = state.posts;
-                if (!state.isAdmin) {
-                    filtered = state.posts.filter(p => p.approvalStatus === 'approved');
-                }
-
-                if (!filtered.length) {
-                    $['posts-list'].innerHTML = '<div class="col-span-full text-center py-10 text-gray-400"><i class="fas fa-newspaper text-3xl mb-3"></i><p>ไม่มีโพสต์</p></div>';
-                    return;
-                }
-
-                $['posts-list'].innerHTML = filtered.map(p => `
-                    <div class="news-card" onclick="showPostDetail('${p.postId}')">
-                        ${p.imageUrl ? `<img src="${p.imageUrl}" class="news-image" loading="lazy" onerror="this.style.display='none'">` : ''}
-                        <div class="news-content">
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="badge badge-${p.type}">${{news:'📰', event:'🎉', urgent:'⚠️'}[p.type]}</span>
-                                <span class="text-xs text-gray-500">${formatDate(p.createdAt)}</span>
-                            </div>
-                            <h3 class="font-semibold text-base mb-2 line-clamp-2">${p.title}</h3>
-                            <p class="text-sm text-gray-400 line-clamp-2">${p.content}</p>
-                            <div class="flex items-center justify-between mt-3 text-xs text-gray-500">
-                                <span><i class="fas fa-user mr-1"></i> ${p.authorName || ''}</span>
-                                <span><i class="far fa-comment mr-1"></i> ${p.commentCount || 0}</span>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-            }
-
-            function updatePagination() {
-                if (!$['pagination-container'] || !$['page-info'] || !$['prev-page'] || !$['next-page']) return;
-                
-                if (state.totalPages > 1) {
-                    $['pagination-container'].classList.remove('hidden');
-                    $['page-info'].textContent = `หน้า ${state.currentPage} จาก ${state.totalPages}`;
-                    $['prev-page'].disabled = state.currentPage <= 1;
-                    $['next-page'].disabled = state.currentPage >= state.totalPages;
-                } else {
-                    $['pagination-container'].classList.add('hidden');
-                }
-            }
-
-            window.changePage = function(direction) {
-                if (direction === 'prev' && state.currentPage > 1) {
-                    state.currentPage--;
-                    loadPosts();
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                } else if (direction === 'next' && state.currentPage < state.totalPages) {
-                    state.currentPage++;
-                    loadPosts();
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                }
-            };
-
-            // ========== URGENT POSTS ==========
-            async function loadUrgentPosts() {
-                const result = await callGAS('posts', {
-                    filter: 'urgent',
-                    pageSize: 5,
-                    includePending: false
-                });
-
-                if (result.success) {
-                    state.urgentPosts = result.data.posts?.filter(p => p.approvalStatus === 'approved') || [];
-                    renderHeroSlider();
-                }
-            }
-
-            function renderHeroSlider() {
-                if (!$['hero-slider-wrapper']) return;
-                
-                const urgent = state.urgentPosts.slice(0, 5);
-                
-                if (!urgent.length) {
-                    $['hero-slider-wrapper'].innerHTML = `
-                        <div class="swiper-slide">
-                            <div style="width:100%;height:220px;background:#1a1d24;display:flex;align-items:center;justify-content:center;color:#06c755">ไม่มีประกาศด่วน</div>
-                        </div>
-                    `;
-                    return;
-                }
-
-                $['hero-slider-wrapper'].innerHTML = urgent.map(p => `
-                    <div class="swiper-slide cursor-pointer" onclick="showPostDetail('${p.postId}')">
-                        <img src="${p.imageUrl || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'220\' viewBox=\'0 0 400 220\'%3E%3Crect width=\'400\' height=\'220\' fill=\'%232a2e36\'/%3E%3Ctext x=\'200\' y=\'110\' font-size=\'20\' text-anchor=\'middle\' fill=\'%23ef4444\' font-family=\'Arial\'%3E⚠️ URGENT%3C/text%3E%3C/svg%3E'}" class="w-full h-full object-cover" loading="lazy">
-                        <span class="absolute top-3 right-3 bg-red-500 text-white px-2 py-1 rounded-full text-xs">⚠️ ประกาศด่วน</span>
-                        <div class="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-black to-transparent">
-                            <h3 class="font-bold text-white line-clamp-2">${p.title}</h3>
-                            <p class="text-xs text-gray-300 mt-1">${formatDate(p.createdAt)}</p>
-                        </div>
-                    </div>
-                `).join('');
-            }
-
-            // ========== MY POSTS ==========
-            async function loadMyPosts() {
-                const result = await callGAS('user/posts', {
-                    lineUserId: state.user?.lineUserId,
-                    pageSize: 20
-                });
-
-                if (result.success) {
-                    state.myPosts = result.data.posts || result.data || [];
-                    renderMyPosts();
-                }
-            }
-
-            function renderMyPosts() {
-                if (!$['my-posts-list']) return;
-                
-                if (!state.myPosts.length) {
-                    $['my-posts-list'].innerHTML = '<div class="col-span-full text-center py-10 text-gray-400"><i class="fas fa-pen-fancy text-3xl mb-3"></i><p>ยังไม่มีโพสต์</p></div>';
-                    return;
-                }
-
-                $['my-posts-list'].innerHTML = state.myPosts.map(p => `
-                    <div class="news-card" onclick="showPostDetail('${p.postId}')">
-                        ${p.imageUrl ? `<img src="${p.imageUrl}" class="news-image" loading="lazy">` : ''}
-                        <div class="news-content">
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="badge badge-${p.type}">${{news:'📰', event:'🎉', urgent:'⚠️'}[p.type]}</span>
-                                <span class="text-xs ${p.approvalStatus === 'approved' ? 'text-green-500' : 'text-yellow-500'}">
-                                    ${p.approvalStatus === 'approved' ? 'เผยแพร่' : 'รออนุมัติ'}
-                                </span>
-                            </div>
-                            <h3 class="font-semibold text-base mb-2 line-clamp-2">${p.title}</h3>
-                            <p class="text-sm text-gray-400 line-clamp-2">${p.content}</p>
-                            <div class="text-xs text-gray-500 mt-2">${formatDate(p.createdAt)}</div>
-                        </div>
-                    </div>
-                `).join('');
-            }
-
-            // ========== POST DETAIL ==========
-            window.showPostDetail = async function(postId) {
-                if (!$['post-modal'] || !$['modal-body'] || !$['modal-title']) return;
-                
-                $['post-modal'].classList.add('active');
-                $['modal-body'].innerHTML = '<div class="flex justify-center py-10"><div class="loading-spinner w-10 h-10"></div></div>';
-                
-                const result = await callGAS('post', { postId });
-                
-                if (result.success) {
-                    const p = result.data;
-                    state.currentPost = p;
-                    $['modal-title'].textContent = p.title;
-
-                    const canEdit = state.isAdmin || (state.isEditor && p.authorId === state.user?.lineUserId);
-                    const canDelete = state.isAdmin || (state.isEditor && p.authorId === state.user?.lineUserId);
-
-                    $['modal-body'].innerHTML = `
-                        ${p.imageUrl ? `<img src="${p.imageUrl}" class="w-full max-h-80 object-cover rounded-xl mb-4" loading="lazy">` : ''}
-                        <div class="flex gap-2 mb-4">
-                            <span class="badge badge-${p.type}">${{news:'📰 ข่าวสาร', event:'🎉 กิจกรรม', urgent:'⚠️ ประกาศด่วน'}[p.type]}</span>
-                            ${p.approvalStatus !== 'approved' ? '<span class="badge badge-pending">⏳ รออนุมัติ</span>' : ''}
-                        </div>
-                        <p class="whitespace-pre-wrap mb-6 leading-relaxed">${p.content}</p>
-                        ${p.link ? `<a href="${p.link}" target="_blank" class="block text-center bg-gradient-to-r from-[#2a2e36] to-[#1a1d24] text-[#06c755] p-4 rounded-xl border-2 border-[#06c755] mb-6 no-underline">🔗 ดูข้อมูลเพิ่มเติม</a>` : ''}
-                        <div class="text-xs text-gray-400 border-t border-[#2a2e36] pt-4">
-                            <p>โพสต์โดย: ${p.authorName || 'ผู้ดูแล'}</p>
-                            <p class="mt-1">${formatDateTime(p.createdAt)}</p>
-                        </div>
-                    `;
-
-                    if ($['modal-share-btn']) $['modal-share-btn'].disabled = false;
-
-                    if (canEdit || canDelete) {
-                        if ($['modal-admin-controls']) $['modal-admin-controls'].classList.remove('hidden');
-                        if ($['modal-edit-btn']) {
-                            $['modal-edit-btn'].style.display = canEdit ? 'flex' : 'none';
-                            $['modal-edit-btn'].disabled = false;
-                        }
-                        if ($['modal-delete-btn']) {
-                            $['modal-delete-btn'].style.display = canDelete ? 'flex' : 'none';
-                            $['modal-delete-btn'].disabled = false;
-                        }
-                    } else {
-                        if ($['modal-admin-controls']) $['modal-admin-controls'].classList.add('hidden');
+                    if (state.isEditor) {
+                        $.floatingBtn.classList.remove('hidden');
+                        if ($.createPostBtn) $.createPostBtn.classList.remove('hidden');
                     }
 
-                    loadComments(postId);
+                    // Load settings first to get app name
+                    await loadSettings();
+                    
+                    // Load data
+                    await Promise.all([
+                        loadPosts(),
+                        loadUrgentPosts(),
+                        loadMyPosts()
+                    ]);
+
+                    if (state.isAdmin) {
+                        loadUsers();
+                        loadAdminStats();
+                        loadPendingPosts();
+                    }
+
+                    $.initLoading.classList.add('hide');
+                    state.initialized = true;
                 }
-            };
+            } catch (error) {
+                $.initLoading.classList.add('hide');
+                showToast('ไม่สามารถเชื่อมต่อ LINE ได้', 'error');
+            }
+        }
 
-            window.closeModal = function() {
-                if ($['post-modal']) $['post-modal'].classList.remove('active');
-                state.currentPost = null;
-            };
+        // ========== POSTS ==========
+        async function loadPosts() {
+            const result = await callGAS('posts', {
+                page: state.currentPage,
+                filter: state.currentFilter,
+                search: state.searchTerm,
+                pageSize: CONFIG.PAGE_SIZE,
+                includePending: state.isAdmin
+            });
 
-            // ========== COMMENTS ==========
-            async function loadComments(postId) {
-                const result = await callGAS('post/comments', { postId });
-                if (result.success) {
-                    state.comments[postId] = result.data || [];
-                    renderComments(postId);
+            if (result.success) {
+                state.posts = result.data.posts || [];
+                state.totalPages = Math.ceil((result.data.total || 0) / CONFIG.PAGE_SIZE) || 1;
+
+                $.statNews.textContent = result.data.stats?.news || 0;
+                $.statEvents.textContent = result.data.stats?.events || 0;
+                $.statUrgent.textContent = result.data.stats?.urgent || 0;
+
+                // Update admin posts if admin
+                if (state.isAdmin) {
+                    state.adminPosts = result.data.posts || [];
+                    renderAdminPosts();
+                }
+
+                renderPosts();
+
+                // Pagination
+                if (state.totalPages > 1) {
+                    $.paginationContainer.classList.remove('hidden');
+                    $.pageInfo.textContent = `หน้า ${state.currentPage} จาก ${state.totalPages}`;
+                    $.prevPage.disabled = state.currentPage <= 1;
+                    $.nextPage.disabled = state.currentPage >= state.totalPages;
+                } else {
+                    $.paginationContainer.classList.add('hidden');
                 }
             }
+        }
 
-            function renderComments(postId) {
-                const comments = state.comments[postId] || [];
-                
-                let commentsSection = document.getElementById(`comments-section-${postId}`);
-                if (!commentsSection && $['modal-body']) {
-                    commentsSection = document.createElement('div');
-                    commentsSection.id = `comments-section-${postId}`;
-                    commentsSection.className = 'mt-5 pt-4 border-t border-[#2a2e36]';
-                    $['modal-body'].appendChild(commentsSection);
-                }
+        function renderPosts() {
+            let filtered = state.posts;
+            if (!state.isAdmin) {
+                filtered = state.posts.filter(p => p.approvalStatus === 'approved');
+            }
 
-                if (!commentsSection) return;
-
-                if (!comments.length) {
-                    commentsSection.innerHTML = `
-                        <div class="flex items-center gap-2 mb-4">
-                            <i class="far fa-comment-dots text-[#06c755]"></i>
-                            <span class="font-semibold">ความคิดเห็น (0)</span>
-                        </div>
-                        <div class="flex gap-2 mb-4">
-                            <textarea id="comment-input-${postId}" class="flex-1 bg-[#0a0a0f] border border-[#2a2e36] rounded-2xl p-3 text-white resize-none min-h-[60px]" placeholder="แสดงความคิดเห็น..."></textarea>
-                            <button class="bg-[#06c755] text-white border-none rounded-2xl px-4 font-semibold cursor-pointer h-[60px]" onclick="addComment('${postId}')">ส่ง</button>
-                        </div>
-                        <div class="text-center py-5 text-gray-400 bg-[#0a0a0f] rounded-xl">
-                            <p>ยังไม่มีความคิดเห็น</p>
-                            <p class="text-xs mt-1">เป็นคนแรกที่แสดงความคิดเห็น</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                commentsSection.innerHTML = `
-                    <div class="flex items-center gap-2 mb-4">
-                        <i class="far fa-comment-dots text-[#06c755]"></i>
-                        <span class="font-semibold">ความคิดเห็น (${comments.length})</span>
+            if (!filtered.length) {
+                $.postsList.innerHTML = `
+                    <div class="col-span-full text-center py-10 text-gray-400">
+                        <i class="fas fa-newspaper text-3xl mb-3"></i>
+                        <p>ไม่มีโพสต์</p>
                     </div>
+                `;
+                return;
+            }
+
+            $.postsList.innerHTML = filtered.map(p => `
+                <div class="news-card" onclick="showPostDetail('${p.postId}')">
+                    ${p.imageUrl ? `<img src="${p.imageUrl}" class="news-image" loading="lazy" onerror="this.style.display='none'">` : ''}
+                    <div class="news-content">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="badge badge-${p.type}">${{news:'📰', event:'🎉', urgent:'⚠️'}[p.type]}</span>
+                            <span class="text-xs text-gray-500">${formatDate(p.createdAt)}</span>
+                        </div>
+                        <h3 class="font-semibold text-base mb-2 line-clamp-2">${p.title}</h3>
+                        <p class="text-sm text-gray-400 line-clamp-2">${p.content}</p>
+                        <div class="flex items-center justify-between mt-3 text-xs text-gray-500">
+                            <span><i class="fas fa-user mr-1"></i> ${p.authorName || ''}</span>
+                            <span><i class="far fa-comment mr-1"></i> ${p.commentCount || 0}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ========== ADMIN POSTS ==========
+        function renderAdminPosts() {
+            if (!$.adminPostsList) return;
+            
+            if (!state.adminPosts || !state.adminPosts.length) {
+                $.adminPostsList.innerHTML = '<p class="text-center text-gray-400 py-6">ไม่มีโพสต์</p>';
+                return;
+            }
+
+            $.adminPostsList.innerHTML = state.adminPosts.map(p => `
+                <div class="flex justify-between items-center p-3 bg-[#111317] rounded-lg cursor-pointer" onclick="showPostDetail('${p.postId}')">
+                    <div class="flex-1">
+                        <p class="font-semibold text-sm">${p.title}</p>
+                        <p class="text-xs text-gray-400">${formatDate(p.createdAt)}</p>
+                    </div>
+                    <span class="badge badge-${p.type} mr-2">${{news:'📰', event:'🎉', urgent:'⚠️'}[p.type]}</span>
+                    <span class="text-xs ${p.approvalStatus === 'approved' ? 'text-green-500' : p.approvalStatus === 'pending' ? 'text-yellow-500' : 'text-red-500'}">
+                        ${p.approvalStatus === 'approved' ? 'เผยแพร่' : p.approvalStatus === 'pending' ? 'รออนุมัติ' : 'ปฏิเสธ'}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        async function loadUrgentPosts() {
+            const result = await callGAS('posts', {
+                filter: 'urgent',
+                pageSize: 10,
+                includePending: false
+            });
+
+            if (result.success) {
+                state.urgentPosts = result.data.posts?.filter(p => p.approvalStatus === 'approved') || [];
+                renderHeroSlider();
+            }
+        }
+
+        function renderHeroSlider() {
+            const urgent = state.urgentPosts.slice(0, 5);
+            
+            if (!urgent.length) {
+                $.heroSlider.innerHTML = `
+                    <div class="swiper-slide">
+                        <img src="https://via.placeholder.com/1200x400/1a1d24/06c755?text=${encodeURIComponent(state.settings.appName)}" class="w-full h-full object-cover">
+                        <div class="slide-content">
+                            <h3 class="font-bold">ไม่มีประกาศด่วน</h3>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            $.heroSlider.innerHTML = urgent.map(p => `
+                <div class="swiper-slide cursor-pointer" onclick="showPostDetail('${p.postId}')">
+                    <img src="${p.imageUrl || 'https://via.placeholder.com/1200x400/2a2e36/ffffff?text=URGENT'}" class="w-full h-full object-cover">
+                    <span class="slide-badge urgent">⚠️ ประกาศด่วน</span>
+                    <div class="slide-content">
+                        <h3 class="font-bold line-clamp-2">${p.title}</h3>
+                        <p class="text-xs text-gray-300 mt-1">${formatDate(p.createdAt)}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            if (window.heroSwiper) window.heroSwiper.destroy();
+            window.heroSwiper = new Swiper('.hero-swiper', {
+                autoplay: { delay: 3000 },
+                pagination: { el: '.swiper-pagination', clickable: true },
+                loop: urgent.length > 1
+            });
+        }
+
+        // ========== PAGINATION ==========
+        window.changePage = function(direction) {
+            if (direction === 'prev' && state.currentPage > 1) {
+                state.currentPage--;
+                loadPosts();
+                window.scrollTo({ top: 0 });
+            } else if (direction === 'next' && state.currentPage < state.totalPages) {
+                state.currentPage++;
+                loadPosts();
+                window.scrollTo({ top: 0 });
+            }
+        };
+
+        $.prevPage?.addEventListener('click', () => changePage('prev'));
+        $.nextPage?.addEventListener('click', () => changePage('next'));
+
+        // ========== MY POSTS ==========
+        async function loadMyPosts() {
+            const result = await callGAS('user/posts', {
+                lineUserId: state.user?.lineUserId,
+                page: state.myPostsPage,
+                pageSize: CONFIG.PAGE_SIZE
+            });
+
+            if (result.success) {
+                state.myPosts = result.data.posts || result.data || [];
+                renderMyPosts();
+            }
+        }
+
+        function renderMyPosts() {
+            if (!state.myPosts.length) {
+                $.myPostsList.innerHTML = `
+                    <div class="col-span-full text-center py-10 text-gray-400">
+                        <i class="fas fa-pen-fancy text-3xl mb-3"></i>
+                        <p>ยังไม่มีโพสต์</p>
+                        ${state.isEditor ? `
+                            <button class="btn-primary text-sm mt-3" onclick="showCreatePostModal()">
+                                <i class="fas fa-plus mr-1"></i>สร้างโพสต์แรก
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+                return;
+            }
+
+            $.myPostsList.innerHTML = state.myPosts.map(p => `
+                <div class="news-card" onclick="showPostDetail('${p.postId}')">
+                    ${p.imageUrl ? `<img src="${p.imageUrl}" class="news-image" loading="lazy">` : ''}
+                    <div class="news-content">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="badge badge-${p.type}">${{news:'📰', event:'🎉', urgent:'⚠️'}[p.type]}</span>
+                            <span class="text-xs ${p.approvalStatus === 'approved' ? 'text-green-500' : 'text-yellow-500'}">
+                                ${p.approvalStatus === 'approved' ? 'เผยแพร่' : 'รออนุมัติ'}
+                            </span>
+                        </div>
+                        <h3 class="font-semibold text-base mb-2 line-clamp-2">${p.title}</h3>
+                        <p class="text-sm text-gray-400 line-clamp-2">${p.content}</p>
+                        <div class="text-xs text-gray-500 mt-2">${formatDate(p.createdAt)}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ========== POST DETAIL ==========
+        window.showPostDetail = async function(postId) {
+            $.modal.classList.add('active');
+            $.modalBody.innerHTML = '<div class="flex justify-center py-10"><div class="loading-spinner w-10 h-10"></div></div>';
+            
+            const result = await callGAS('post', { postId });
+            
+            if (result.success) {
+                const p = result.data;
+                state.currentPost = p;
+                $.modalTitle.textContent = p.title;
+
+                const canEdit = state.isAdmin || (state.isEditor && p.authorId === state.user?.lineUserId);
+                const canDelete = state.isAdmin || (state.isEditor && p.authorId === state.user?.lineUserId);
+
+                $.modalBody.innerHTML = `
+                    ${p.imageUrl ? `<img src="${p.imageUrl}" class="w-full max-h-80 object-cover rounded-xl mb-4">` : ''}
                     <div class="flex gap-2 mb-4">
-                        <textarea id="comment-input-${postId}" class="flex-1 bg-[#0a0a0f] border border-[#2a2e36] rounded-2xl p-3 text-white resize-none min-h-[60px]" placeholder="แสดงความคิดเห็น..."></textarea>
-                        <button class="bg-[#06c755] text-white border-none rounded-2xl px-4 font-semibold cursor-pointer h-[60px]" onclick="addComment('${postId}')">ส่ง</button>
+                        <span class="badge badge-${p.type}">${{news:'📰 ข่าวสาร', event:'🎉 กิจกรรม', urgent:'⚠️ ประกาศด่วน'}[p.type]}</span>
+                        ${p.approvalStatus !== 'approved' ? '<span class="badge badge-pending">⏳ รออนุมัติ</span>' : ''}
                     </div>
-                    <div class="max-h-80 overflow-y-auto pr-1">
-                        ${comments.map(c => {
-                            const isOwner = c.userId === state.user?.lineUserId;
-                            const isAdmin = state.isAdmin;
-                            const timeAgo = formatDate(c.createdAt);
-                            const isDeleted = c.status === 'deleted' || c.status === 'deleted_by_admin';
-                            
-                            return `<div class="flex gap-3 p-3 bg-[#0a0a0f] rounded-xl mb-2 ${isDeleted ? 'opacity-70 border-l-4 border-red-500' : ''}">
-                                <img src="${c.userPicture || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\' viewBox=\'0 0 32 32\'%3E%3Ccircle cx=\'16\' cy=\'16\' r=\'16\' fill=\'%232a2e36\'/%3E%3Ctext x=\'16\' y=\'20\' font-size=\'12\' text-anchor=\'middle\' fill=\'%2306c755\'%3E👤%3C/text%3E%3C/svg%3E'}" class="w-8 h-8 rounded-full object-cover">
-                                <div class="flex-1">
-                                    <div class="flex items-center gap-2 flex-wrap mb-1">
-                                        <span class="font-semibold text-xs text-[#06c755]">${c.userName || 'ผู้ใช้'}</span>
-                                        <span class="text-xs text-gray-500">${timeAgo}</span>
-                                        ${isDeleted ? '<span class="text-xs bg-red-500/20 text-red-500 px-2 py-0.5 rounded-full">ลบแล้ว</span>' : ''}
+                    <p class="whitespace-pre-wrap mb-6 leading-relaxed">${p.content}</p>
+                    ${p.link ? `
+                        <a href="${p.link}" target="_blank" class="block text-center bg-gradient-to-r from-[#2a2e36] to-[#1a1d24] text-[#06c755] p-4 rounded-xl border-2 border-[#06c755] mb-6 no-underline">
+                            🔗 ดูข้อมูลเพิ่มเติม
+                        </a>
+                    ` : ''}
+                    <div class="text-xs text-gray-400 border-t border-[#2a2e36] pt-4">
+                        <p>โพสต์โดย: ${p.authorName || 'ผู้ดูแล'}</p>
+                        <p class="mt-1">${formatDateTime(p.createdAt)}</p>
+                    </div>
+                `;
+
+                $.modalShareBtn.disabled = false;
+
+                if (canEdit || canDelete) {
+                    $.modalAdminControls.classList.remove('hidden');
+                    $.modalEditBtn.style.display = canEdit ? 'flex' : 'none';
+                    $.modalDeleteBtn.style.display = canDelete ? 'flex' : 'none';
+                    $.modalEditBtn.disabled = false;
+                    $.modalDeleteBtn.disabled = false;
+                } else {
+                    $.modalAdminControls.classList.add('hidden');
+                }
+
+                loadComments(postId);
+            }
+        };
+
+        window.closeModal = function() {
+            $.modal.classList.remove('active');
+            state.currentPost = null;
+        };
+
+        // ========== COMMENTS ==========
+        async function loadComments(postId) {
+            const result = await callGAS('post/comments', { postId });
+            if (result.success) {
+                state.comments[postId] = result.data || [];
+                renderComments(postId);
+            }
+        }
+
+        function renderComments(postId) {
+            const comments = state.comments[postId] || [];
+            
+            let commentsSection = document.getElementById(`comments-section-${postId}`);
+            if (!commentsSection) {
+                commentsSection = document.createElement('div');
+                commentsSection.id = `comments-section-${postId}`;
+                commentsSection.className = 'modal-comments-section';
+                $.modalBody.appendChild(commentsSection);
+            }
+
+            if (!comments.length) {
+                commentsSection.innerHTML = `
+                    <div class="modal-comments-title">
+                        <i class="far fa-comment-dots"></i>
+                        <span>ความคิดเห็น (0)</span>
+                    </div>
+                    <div class="modal-comment-input-area">
+                        <textarea id="comment-input-${postId}" class="modal-comment-input" placeholder="แสดงความคิดเห็น..."></textarea>
+                        <button class="modal-comment-submit" onclick="addComment('${postId}')">ส่ง</button>
+                    </div>
+                    <div class="modal-empty-comments">
+                        <p>ยังไม่มีความคิดเห็น</p>
+                        <p class="text-xs mt-1">เป็นคนแรกที่แสดงความคิดเห็น</p>
+                    </div>
+                `;
+                return;
+            }
+
+            commentsSection.innerHTML = `
+                <div class="modal-comments-title">
+                    <i class="far fa-comment-dots"></i>
+                    <span>ความคิดเห็น (${comments.length})</span>
+                </div>
+                <div class="modal-comment-input-area">
+                    <textarea id="comment-input-${postId}" class="modal-comment-input" placeholder="แสดงความคิดเห็น..."></textarea>
+                    <button class="modal-comment-submit" onclick="addComment('${postId}')">ส่ง</button>
+                </div>
+                <div class="modal-comments-list">
+                    ${comments.map(c => {
+                        const isOwner = c.userId === state.user?.lineUserId;
+                        const isAdmin = state.isAdmin;
+                        const timeAgo = formatTimeAgo(c.createdAt);
+                        
+                        // ตรวจสอบสถานะ
+                        const isDeleted = c.status === 'deleted' || c.status === 'deleted_by_admin';
+                        const deletedClass = isDeleted ? 'deleted' : '';
+                        const statusText = c.status === 'deleted' ? 'ลบแล้ว' : (c.status === 'deleted_by_admin' ? 'ลบโดยแอดมิน' : '');
+                        const statusClass = c.status === 'deleted' ? 'modal-comment-status-deleted' : (c.status === 'deleted_by_admin' ? 'modal-comment-status-deleted_by_admin' : '');
+                        
+                        // แสดงปุ่มลบเฉพาะเมื่อไม่ถูกลบ และเป็นเจ้าของหรือแอดมิน
+                        const showActions = !isDeleted && (isOwner || isAdmin);
+                        // แสดงปุ่มแก้ไขเฉพาะเมื่อไม่ถูกลบ และเป็นเจ้าของ
+                        const showEdit = !isDeleted && isOwner;
+                        
+                        return `
+                            <div class="modal-comment-item ${deletedClass}" id="comment-${c.commentId}">
+                                <img src="${c.userPicture || 'https://via.placeholder.com/32'}" 
+                                     class="modal-comment-avatar"
+                                     onerror="this.src='https://via.placeholder.com/32'">
+                                <div class="modal-comment-content">
+                                    <div class="modal-comment-header">
+                                        <span class="modal-comment-author">${c.userName || 'ผู้ใช้'}</span>
+                                        <span class="modal-comment-time">${timeAgo}</span>
+                                        ${isDeleted ? `<span class="modal-comment-status-badge ${statusClass}">${statusText}</span>` : ''}
                                     </div>
-                                    <div class="text-sm">${isDeleted ? '<em class="text-gray-500">ความคิดเห็นนี้ถูกลบแล้ว</em>' : c.content}</div>
-                                    ${!isDeleted && (isOwner || isAdmin) ? `
-                                        <div class="flex gap-2 mt-2">
-                                            ${isOwner ? `<button class="text-xs text-gray-400 hover:text-[#06c755] transition-colors" onclick="showEditCommentModal('${c.commentId}')"><i class="fas fa-edit mr-1"></i>แก้ไข</button>` : ''}
-                                            <button class="text-xs text-gray-400 hover:text-red-500 transition-colors" onclick="deleteComment('${c.commentId}')"><i class="fas fa-trash mr-1"></i>ลบ</button>
+                                    <div class="modal-comment-text">${isDeleted ? '<em>ความคิดเห็นนี้ถูกลบแล้ว</em>' : c.content}</div>
+                                    ${showActions ? `
+                                        <div class="modal-comment-actions">
+                                            ${showEdit ? `
+                                                <button class="modal-comment-action-btn" onclick="showEditCommentModal('${c.commentId}')">
+                                                    <i class="fas fa-edit"></i> แก้ไข
+                                                </button>
+                                            ` : ''}
+                                            <button class="modal-comment-action-btn delete" onclick="deleteComment('${c.commentId}')">
+                                                <i class="fas fa-trash"></i> ลบ
+                                            </button>
                                         </div>
                                     ` : ''}
                                 </div>
-                            </div>`;
-                        }).join('')}
-                    </div>
-                `;
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        window.addComment = async function(postId) {
+            const input = document.getElementById(`comment-input-${postId}`);
+            const content = input?.value.trim();
+            
+            if (!content) {
+                showToast('กรุณาใส่ข้อความ', 'error');
+                return;
             }
 
-            window.addComment = async function(postId) {
-                const input = document.getElementById(`comment-input-${postId}`);
-                const content = input?.value.trim();
+            const submitBtn = document.querySelector(`#comment-input-${postId}`).nextElementSibling;
+            submitBtn.disabled = true;
+            submitBtn.classList.add('loading');
+
+            const result = await callGAS('post/comment/add', {
+                postId,
+                userId: state.user.lineUserId,
+                userName: state.user.displayName,
+                userPicture: state.user.pictureUrl,
+                content
+            });
+
+            if (result.success) {
+                input.value = '';
+                await loadComments(postId);
                 
-                if (!content) {
-                    showToast('กรุณาใส่ข้อความ', 'error');
-                    return;
-                }
-
-                const submitBtn = input?.nextElementSibling;
-                if (submitBtn) {
-                    submitBtn.disabled = true;
-                    submitBtn.classList.add('loading');
-                }
-
-                const result = await callGAS('post/comment/add', {
-                    postId,
-                    userId: state.user.lineUserId,
-                    userName: state.user.displayName,
-                    userPicture: state.user.pictureUrl,
-                    content
-                });
-
-                if (result.success) {
-                    if (input) input.value = '';
-                    await loadComments(postId);
-                    showToast('เพิ่มความคิดเห็นสำเร็จ');
-                } else {
-                    showToast(result.message || 'เกิดข้อผิดพลาด', 'error');
-                }
-
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.classList.remove('loading');
-                }
-            };
-
-            window.showEditCommentModal = function(commentId) {
-                const comment = findCommentById(commentId);
-                if (!comment) return;
-                
-                if (comment.status === 'deleted' || comment.status === 'deleted_by_admin') {
-                    showToast('ไม่สามารถแก้ไขความคิดเห็นที่ถูกลบแล้ว', 'error');
-                    return;
+                if (state.currentPost) {
+                    state.currentPost.commentCount = (state.currentPost.commentCount || 0) + 1;
                 }
                 
-                document.getElementById('edit-comment-id').value = comment.commentId;
-                document.getElementById('edit-comment-content').value = comment.content;
-                document.getElementById('edit-comment-modal').classList.add('active');
-            };
+                showToast('เพิ่มความคิดเห็นสำเร็จ');
+            } else {
+                showToast(result.message || 'เกิดข้อผิดพลาด', 'error');
+            }
 
-            window.closeEditCommentModal = function() {
-                document.getElementById('edit-comment-modal').classList.remove('active');
-            };
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('loading');
+        };
 
-            window.saveEditedComment = async function(e) {
-                e.preventDefault();
+        function showEditCommentModal(commentId) {
+            const comment = findCommentById(commentId);
+            if (!comment) return;
+            
+            // ตรวจสอบว่าความคิดเห็นถูกลบหรือไม่
+            if (comment.status === 'deleted' || comment.status === 'deleted_by_admin') {
+                showToast('ไม่สามารถแก้ไขความคิดเห็นที่ถูกลบแล้ว', 'error');
+                return;
+            }
+            
+            state.currentEditingComment = comment;
+            document.getElementById('edit-comment-id').value = comment.commentId;
+            document.getElementById('edit-comment-content').value = comment.content;
+            document.getElementById('edit-comment-modal').classList.add('active');
+        }
+
+        window.closeEditCommentModal = function() {
+            document.getElementById('edit-comment-modal').classList.remove('active');
+            state.currentEditingComment = null;
+        };
+
+        window.saveEditedComment = async function(e) {
+            e.preventDefault();
+            
+            const commentId = document.getElementById('edit-comment-id').value;
+            const content = document.getElementById('edit-comment-content').value.trim();
+            
+            if (!content) {
+                showToast('กรุณาใส่ข้อความ', 'error');
+                return;
+            }
+            
+            const saveBtn = document.getElementById('edit-comment-save-btn');
+            if (saveBtn.disabled) return;
+            
+            saveBtn.disabled = true;
+            saveBtn.classList.add('loading');
+            
+            const result = await callGAS('post/comment/update', {
+                commentId,
+                content,
+                userId: state.user.lineUserId
+            });
+            
+            if (result.success) {
+                closeEditCommentModal();
                 
-                const commentId = document.getElementById('edit-comment-id').value;
-                const content = document.getElementById('edit-comment-content').value.trim();
-                
-                if (!content) {
-                    showToast('กรุณาใส่ข้อความ', 'error');
-                    return;
+                for (let postId in state.comments) {
+                    const comment = state.comments[postId].find(c => c.commentId === commentId);
+                    if (comment) {
+                        comment.content = content;
+                        comment.updatedAt = new Date().toISOString();
+                        break;
+                    }
                 }
                 
-                const saveBtn = document.getElementById('edit-comment-save-btn');
-                saveBtn.disabled = true;
-                saveBtn.classList.add('loading');
+                if (state.currentPost) {
+                    renderComments(state.currentPost.postId);
+                }
                 
-                const result = await callGAS('post/comment/update', {
+                showToast('แก้ไขความคิดเห็นสำเร็จ');
+            } else {
+                showToast(result.message || 'แก้ไขไม่สำเร็จ', 'error');
+            }
+            
+            saveBtn.disabled = false;
+            saveBtn.classList.remove('loading');
+        };
+
+        window.deleteComment = async function(commentId) {
+            const comment = findCommentById(commentId);
+            if (!comment) return;
+            
+            // ตรวจสอบว่าความคิดเห็นถูกลบไปแล้วหรือไม่
+            if (comment.status === 'deleted' || comment.status === 'deleted_by_admin') {
+                showToast('ความคิดเห็นนี้ถูกลบไปแล้ว', 'error');
+                return;
+            }
+
+            const result = await Swal.fire({
+                title: 'ลบความคิดเห็น',
+                text: 'คุณแน่ใจหรือไม่ว่าต้องการลบความคิดเห็นนี้?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'ใช่, ลบ',
+                cancelButtonText: 'ยกเลิก'
+            });
+            
+            if (result.isConfirmed) {
+                const apiResult = await callGAS('post/comment/delete', {
                     commentId,
-                    content,
                     userId: state.user.lineUserId
                 });
                 
-                if (result.success) {
-                    closeEditCommentModal();
-                    
-                    for (let pid in state.comments) {
-                        const comment = state.comments[pid].find(c => c.commentId === commentId);
-                        if (comment) {
-                            comment.content = content;
-                            break;
-                        }
-                    }
-                    
-                    if (state.currentPost) {
-                        renderComments(state.currentPost.postId);
-                    }
-                    
-                    showToast('แก้ไขความคิดเห็นสำเร็จ');
-                } else {
-                    showToast(result.message || 'แก้ไขไม่สำเร็จ', 'error');
-                }
-                
-                saveBtn.disabled = false;
-                saveBtn.classList.remove('loading');
-            };
-
-            window.deleteComment = async function(commentId) {
-                const comment = findCommentById(commentId);
-                if (!comment) return;
-                
-                if (comment.status === 'deleted' || comment.status === 'deleted_by_admin') {
-                    showToast('ความคิดเห็นนี้ถูกลบไปแล้ว', 'error');
-                    return;
-                }
-
-                if (!confirm('ลบความคิดเห็นนี้?')) return;
-
-                const result = await callGAS('post/comment/delete', {
-                    commentId,
-                    userId: state.user.lineUserId
-                });
-                
-                if (result.success) {
-                    for (let pid in state.comments) {
-                        const idx = state.comments[pid].findIndex(c => c.commentId === commentId);
-                        if (idx !== -1) {
-                            state.comments[pid][idx].status = 'deleted';
+                if (apiResult.success) {
+                    for (let postId in state.comments) {
+                        const commentIndex = state.comments[postId].findIndex(c => c.commentId === commentId);
+                        if (commentIndex !== -1) {
+                            // อัปเดตสถานะแทนการลบออก
+                            state.comments[postId][commentIndex].status = 'deleted';
+                            state.comments[postId][commentIndex].content = '';
+                            
+                            // ลดจำนวนคอมเมนต์
+                            if (state.currentPost && state.currentPost.postId === postId) {
+                                state.currentPost.commentCount = Math.max(0, (state.currentPost.commentCount || 0) - 1);
+                            }
                             break;
                         }
                     }
@@ -1128,637 +2276,790 @@
                     
                     showToast('ลบความคิดเห็นสำเร็จ');
                 } else {
-                    showToast(result.message || 'ลบไม่สำเร็จ', 'error');
-                }
-            };
-
-            function findCommentById(commentId) {
-                for (let pid in state.comments) {
-                    const comment = state.comments[pid].find(c => c.commentId === commentId);
-                    if (comment) return comment;
-                }
-                return null;
-            }
-
-            // ========== SHARE ==========
-            window.shareAsFlexMessage = async function() {
-                if (!state.currentPost || !liff.isInClient()) {
-                    showToast('ไม่สามารถแชร์ได้', 'error');
-                    return;
-                }
-
-                const shareBtn = $['modal-share-btn'];
-                shareBtn.disabled = true;
-                shareBtn.classList.add('loading');
-
-                const p = state.currentPost;
-
-                try {
-                    await liff.shareTargetPicker([{
-                        type: 'text',
-                        text: `${p.title}\n\n${p.content.substring(0, 200)}${p.content.length > 200 ? '...' : ''}\n\nอ่านเพิ่มเติม: ${p.link || 'ในแอป iTNews'}`
-                    }]);
-                    showToast('แชร์สำเร็จ');
-                } catch (error) {
-                    showToast('แชร์ไม่สำเร็จ', 'error');
-                } finally {
-                    shareBtn.disabled = false;
-                    shareBtn.classList.remove('loading');
-                }
-            };
-
-            // ========== CREATE/EDIT POST ==========
-            window.showCreatePostModal = function() {
-                if (!state.isEditor) {
-                    showToast('ไม่มีสิทธิ์สร้างโพสต์', 'error');
-                    return;
-                }
-
-                document.getElementById('create-modal-title').textContent = 'สร้างโพสต์ใหม่';
-                document.getElementById('edit-post-id').value = '';
-                document.getElementById('post-type').value = 'news';
-                document.getElementById('post-title').value = '';
-                document.getElementById('post-content').value = '';
-                document.getElementById('post-image').value = '';
-                document.getElementById('post-link').value = '';
-                document.getElementById('image-preview').style.display = 'none';
-                document.getElementById('create-modal').classList.add('active');
-            };
-
-            window.closeCreateModal = function() {
-                document.getElementById('create-modal').classList.remove('active');
-            };
-
-            window.previewImage = function(input) {
-                const preview = document.getElementById('image-preview');
-                if (input.files?.[0]) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        preview.src = e.target.result;
-                        preview.style.display = 'block';
-                    };
-                    reader.readAsDataURL(input.files[0]);
-                }
-            };
-
-            async function uploadImageToDrive(file) {
-                try {
-                    const base64 = await new Promise((resolve) => {
-                        const reader = new FileReader();
-                        reader.onload = () => resolve(reader.result.split(',')[1]);
-                        reader.readAsDataURL(file);
-                    });
-
-                    const result = await callGAS('uploadImage', {
-                        fileName: file.name,
-                        fileType: file.type,
-                        fileData: base64,
-                        folderId: CONFIG.DRIVE_FOLDER_ID
-                    });
-
-                    if (result.success) {
-                        return `https://lh5.googleusercontent.com/d/${result.data.fileId}=s0`;
-                    }
-                    return null;
-                } catch {
-                    return null;
+                    showToast(apiResult.message || 'ลบไม่สำเร็จ', 'error');
                 }
             }
+        };
 
-            window.savePost = async function(e) {
-                e.preventDefault();
-                
-                const btn = document.getElementById('save-post-btn');
-                btn.disabled = true;
-                btn.classList.add('loading');
+        function findCommentById(commentId) {
+            for (let postId in state.comments) {
+                const comment = state.comments[postId].find(c => c.commentId === commentId);
+                if (comment) return comment;
+            }
+            return null;
+        }
 
-                try {
-                    const id = document.getElementById('edit-post-id').value;
-                    let imageUrl = document.getElementById('post-image').value;
-                    const file = document.getElementById('post-image-file').files[0];
+        // ========== SHARE AS FLEX MESSAGE (ปรับปรุงให้สวยงาม) ==========
+        window.shareAsFlexMessage = async function() {
+            if (!state.currentPost || !liff.isInClient()) {
+                showToast('ไม่สามารถแชร์ได้', 'error');
+                return;
+            }
 
-                    if (file) {
-                        const uploaded = await uploadImageToDrive(file);
-                        if (uploaded) imageUrl = uploaded;
-                    }
+            const shareBtn = $.modalShareBtn;
+            shareBtn.disabled = true;
+            shareBtn.classList.add('loading');
 
-                    const data = {
-                        type: document.getElementById('post-type').value,
-                        title: document.getElementById('post-title').value,
-                        content: document.getElementById('post-content').value,
-                        imageUrl,
-                        link: document.getElementById('post-link').value,
-                        lineUserId: state.user.lineUserId
-                    };
+            const p = state.currentPost;
+            
+            // กำหนดสีและไอคอนตามประเภท
+            const typeConfig = {
+                news: { color: '#06c755', icon: '📰', label: 'ข่าวสาร' },
+                event: { color: '#f59e0b', icon: '🎉', label: 'กิจกรรม' },
+                urgent: { color: '#ef4444', icon: '⚠️', label: 'ประกาศด่วน' }
+            }[p.type] || { color: '#06c755', icon: '📰', label: 'ข่าวสาร' };
 
-                    if (id) data.postId = id;
-
-                    const result = await callGAS(id ? 'post/update' : 'post/create', data);
-
-                    if (result.success) {
-                        showToast(id ? 'แก้ไขสำเร็จ' : 'สร้างสำเร็จ');
-                        closeCreateModal();
-                        await Promise.all([loadPosts(), loadMyPosts(), loadUrgentPosts()]);
-                    } else {
-                        showToast(result.message || 'เกิดข้อผิดพลาด', 'error');
-                    }
-                } catch {
-                    showToast('เกิดข้อผิดพลาด', 'error');
-                } finally {
-                    btn.disabled = false;
-                    btn.classList.remove('loading');
+            // สร้าง Flex Message ที่สวยงาม
+            const flex = {
+                type: 'flex',
+                altText: `${typeConfig.icon} ${p.title}`,
+                contents: {
+                    type: 'bubble',
+                    size: 'mega',
+                    header: {
+                        type: 'box',
+                        layout: 'vertical',
+                        contents: [
+                            {
+                                type: 'box',
+                                layout: 'horizontal',
+                                contents: [
+                                    {
+                                        type: 'text',
+                                        text: typeConfig.icon,
+                                        size: 'xl',
+                                        align: 'start'
+                                    },
+                                    {
+                                        type: 'text',
+                                        text: typeConfig.label,
+                                        color: typeConfig.color,
+                                        size: 'xs',
+                                        align: 'end',
+                                        gravity: 'center'
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    hero: p.imageUrl ? {
+                        type: 'image',
+                        url: p.imageUrl,
+                        size: 'full',
+                        aspectRatio: '20:13',
+                        aspectMode: 'cover',
+                        backgroundColor: '#1a1d24'
+                    } : null,
+                    body: {
+                        type: 'box',
+                        layout: 'vertical',
+                        contents: [
+                            {
+                                type: 'text',
+                                text: p.title,
+                                weight: 'bold',
+                                size: 'xl',
+                                wrap: true,
+                                color: '#ffffff'
+                            },
+                            {
+                                type: 'text',
+                                text: p.content.length > 200 ? p.content.substring(0, 200) + '...' : p.content,
+                                wrap: true,
+                                color: '#9ca3af',
+                                size: 'md',
+                                margin: 'md'
+                            },
+                            {
+                                type: 'separator',
+                                margin: 'xl',
+                                color: '#2a2e36'
+                            },
+                            {
+                                type: 'box',
+                                layout: 'horizontal',
+                                margin: 'md',
+                                contents: [
+                                    {
+                                        type: 'text',
+                                        text: 'โพสต์โดย',
+                                        color: '#9ca3af',
+                                        size: 'xs'
+                                    },
+                                    {
+                                        type: 'text',
+                                        text: p.authorName || 'ผู้ดูแลระบบ',
+                                        color: '#06c755',
+                                        size: 'xs',
+                                        align: 'end',
+                                        weight: 'bold'
+                                    }
+                                ]
+                            },
+                            {
+                                type: 'box',
+                                layout: 'horizontal',
+                                contents: [
+                                    {
+                                        type: 'text',
+                                        text: formatDate(p.createdAt),
+                                        color: '#9ca3af',
+                                        size: 'xxs'
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    footer: p.link ? {
+                        type: 'box',
+                        layout: 'vertical',
+                        contents: [
+                            {
+                                type: 'button',
+                                action: {
+                                    type: 'uri',
+                                    label: '🔗 อ่านเพิ่มเติม',
+                                    uri: p.link
+                                },
+                                style: 'primary',
+                                color: typeConfig.color,
+                                height: 'sm'
+                            }
+                        ]
+                    } : null
                 }
             };
 
-            window.editCurrentPost = function() {
-                if (!state.currentPost) return;
-                
-                const p = state.currentPost;
-                document.getElementById('create-modal-title').textContent = 'แก้ไขโพสต์';
-                document.getElementById('edit-post-id').value = p.postId;
-                document.getElementById('post-type').value = p.type;
-                document.getElementById('post-title').value = p.title;
-                document.getElementById('post-content').value = p.content;
-                document.getElementById('post-image').value = p.imageUrl || '';
-                document.getElementById('post-link').value = p.link || '';
-                
-                const preview = document.getElementById('image-preview');
-                if (p.imageUrl) {
-                    preview.src = p.imageUrl;
-                    preview.style.display = 'block';
+            // ลบ hero ถ้าไม่มีรูป
+            if (!p.imageUrl) {
+                delete flex.contents.hero;
+            }
+
+            // ลบ footer ถ้าไม่มี link
+            if (!p.link) {
+                delete flex.contents.footer;
+            }
+
+            try {
+                await liff.shareTargetPicker([flex]);
+                showToast('แชร์สำเร็จ');
+            } catch (error) {
+                console.error('Share error:', error);
+                showToast('แชร์ไม่สำเร็จ', 'error');
+            } finally {
+                shareBtn.disabled = false;
+                shareBtn.classList.remove('loading');
+            }
+        };
+
+        // ========== CREATE/EDIT POST ==========
+        window.showCreatePostModal = function() {
+            if (!state.isEditor) {
+                showToast('ไม่มีสิทธิ์สร้างโพสต์', 'error');
+                return;
+            }
+
+            document.getElementById('create-modal-title').textContent = 'สร้างโพสต์ใหม่';
+            document.getElementById('edit-post-id').value = '';
+            document.getElementById('post-type').value = 'news';
+            document.getElementById('post-title').value = '';
+            document.getElementById('post-content').value = '';
+            document.getElementById('post-image').value = '';
+            document.getElementById('post-link').value = '';
+            document.getElementById('image-preview').style.display = 'none';
+            document.getElementById('create-modal').classList.add('active');
+        };
+
+        window.closeCreateModal = function() {
+            document.getElementById('create-modal').classList.remove('active');
+        };
+
+        window.savePost = async function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('save-post-btn');
+            if (btn.disabled) return;
+            
+            btn.disabled = true;
+            btn.classList.add('loading');
+
+            try {
+                const id = document.getElementById('edit-post-id').value;
+                let imageUrl = document.getElementById('post-image').value;
+                const file = document.getElementById('post-image-file').files[0];
+
+                if (file) {
+                    const uploaded = await uploadImageToDrive(file);
+                    if (uploaded) imageUrl = uploaded;
                 }
-                
-                closeModal();
-                document.getElementById('create-modal').classList.add('active');
-            };
 
-            window.deleteCurrentPost = async function() {
-                if (!state.currentPost) return;
+                const data = {
+                    type: document.getElementById('post-type').value,
+                    title: document.getElementById('post-title').value,
+                    content: document.getElementById('post-content').value,
+                    imageUrl,
+                    link: document.getElementById('post-link').value,
+                    lineUserId: state.user.lineUserId
+                };
 
-                if (!confirm('ลบโพสต์นี้?')) return;
+                if (id) data.postId = id;
 
-                const deleteBtn = $['modal-delete-btn'];
+                const result = await callGAS(id ? 'post/update' : 'post/create', data);
+
+                if (result.success) {
+                    showToast(id ? 'แก้ไขสำเร็จ' : 'สร้างสำเร็จ');
+                    closeCreateModal();
+                    await Promise.all([loadPosts(), loadMyPosts(), loadUrgentPosts()]);
+                } else {
+                    showToast(result.message || 'เกิดข้อผิดพลาด', 'error');
+                }
+            } catch {
+                showToast('เกิดข้อผิดพลาด', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('loading');
+            }
+        };
+
+        window.editCurrentPost = function() {
+            if (!state.currentPost) return;
+            
+            const p = state.currentPost;
+            document.getElementById('create-modal-title').textContent = 'แก้ไขโพสต์';
+            document.getElementById('edit-post-id').value = p.postId;
+            document.getElementById('post-type').value = p.type;
+            document.getElementById('post-title').value = p.title;
+            document.getElementById('post-content').value = p.content;
+            document.getElementById('post-image').value = p.imageUrl || '';
+            document.getElementById('post-link').value = p.link || '';
+            
+            if (p.imageUrl) {
+                document.getElementById('image-preview').src = p.imageUrl;
+                document.getElementById('image-preview').style.display = 'block';
+            }
+            
+            closeModal();
+            document.getElementById('create-modal').classList.add('active');
+        };
+
+        window.deleteCurrentPost = async function() {
+            if (!state.currentPost) return;
+
+            const result = await Swal.fire({
+                title: 'ลบโพสต์',
+                text: 'คุณแน่ใจหรือไม่?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                confirmButtonText: 'ใช่, ลบ'
+            });
+
+            if (result.isConfirmed) {
+                const deleteBtn = $.modalDeleteBtn;
                 deleteBtn.disabled = true;
                 deleteBtn.classList.add('loading');
 
-                const result = await callGAS('post/delete', { 
+                const apiResult = await callGAS('post/delete', { 
                     postId: state.currentPost.postId,
                     lineUserId: state.user.lineUserId
                 });
 
-                if (result.success) {
+                if (apiResult.success) {
                     showToast('ลบสำเร็จ');
                     closeModal();
                     await Promise.all([loadPosts(), loadMyPosts(), loadUrgentPosts()]);
                 } else {
-                    showToast(result.message || 'ลบไม่สำเร็จ', 'error');
+                    showToast(apiResult.message || 'ลบไม่สำเร็จ', 'error');
                 }
 
                 deleteBtn.disabled = false;
                 deleteBtn.classList.remove('loading');
-            };
+            }
+        };
 
-            // ========== ADMIN FUNCTIONS ==========
-            async function loadAdminStats() {
-                const result = await callGAS('admin/stats');
-                if (result.success) {
-                    if ($['admin-users']) $['admin-users'].textContent = result.data.users || 0;
-                    if ($['admin-posts']) $['admin-posts'].textContent = result.data.posts || 0;
-                    if ($['admin-today']) $['admin-today'].textContent = result.data.today || 0;
-                    if ($['admin-pending']) $['admin-pending'].textContent = result.data.pending || 0;
-                }
+        // ========== ADMIN FUNCTIONS ==========
+        async function loadAdminStats() {
+            const result = await callGAS('admin/stats');
+            if (result.success) {
+                $.adminUsers.textContent = result.data.users || 0;
+                $.adminPosts.textContent = result.data.posts || 0;
+                $.adminToday.textContent = result.data.today || 0;
+                $.adminPending.textContent = result.data.pending || 0;
             }
 
-            async function loadPendingPosts() {
-                const result = await callGAS('admin/posts/pending');
-                if (result.success) {
-                    state.pendingPosts = result.data || [];
-                    renderPendingPosts();
-                    
-                    const count = state.pendingPosts.length;
-                    if ($['pending-badge']) {
-                        if (count > 0) {
-                            $['pending-badge'].textContent = count > 9 ? '9+' : count;
-                            $['pending-badge'].classList.remove('hidden');
-                        } else {
-                            $['pending-badge'].classList.add('hidden');
-                        }
-                    }
-                }
-            }
+            // Also load admin posts
+            await loadPosts();
+        }
 
-            function renderPendingPosts() {
-                if (!$['pending-posts-list']) return;
+        async function loadPendingPosts() {
+            const result = await callGAS('admin/posts/pending');
+            if (result.success) {
+                state.pendingPosts = result.data || [];
+                renderPendingPosts();
                 
-                if (!state.pendingPosts.length) {
-                    $['pending-posts-list'].innerHTML = '<div class="text-center py-10 text-gray-400">ไม่มีโพสต์รออนุมัติ</div>';
-                    return;
+                const count = state.pendingPosts.length;
+                if (count > 0) {
+                    $.pendingBadge.textContent = count > 9 ? '9+' : count;
+                    $.pendingBadge.classList.remove('hidden');
+                } else {
+                    $.pendingBadge.classList.add('hidden');
                 }
+            }
+        }
 
-                $['pending-posts-list'].innerHTML = state.pendingPosts.map(p => `
-                    <div class="bg-[#1a1d24] p-4 rounded-xl border border-yellow-500/30">
-                        <div class="flex justify-between mb-2">
-                            <span class="badge badge-pending">⏳ รออนุมัติ</span>
-                            <span class="text-xs text-gray-500">${formatDate(p.createdAt)}</span>
-                        </div>
-                        <h3 class="font-semibold mb-2">${p.title}</h3>
-                        <p class="text-sm text-gray-400 mb-3 line-clamp-2">${p.content}</p>
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs text-gray-500">โดย: ${p.authorName}</span>
-                            <div class="flex gap-2">
-                                <button class="bg-green-600 text-white text-xs py-2 px-3 rounded-xl border-none cursor-pointer" onclick="approvePost('${p.postId}', this)">อนุมัติ</button>
-                                <button class="bg-red-500 text-white text-xs py-2 px-3 rounded-xl border-none cursor-pointer" onclick="rejectPost('${p.postId}', this)">ปฏิเสธ</button>
-                            </div>
+        function renderPendingPosts() {
+            if (!state.pendingPosts.length) {
+                $.pendingPostsList.innerHTML = '<div class="text-center py-10 text-gray-400">ไม่มีโพสต์รออนุมัติ</div>';
+                return;
+            }
+
+            $.pendingPostsList.innerHTML = state.pendingPosts.map(p => `
+                <div class="bg-[#1a1d24] p-4 rounded-xl border border-yellow-500/30">
+                    <div class="flex justify-between mb-2">
+                        <span class="badge badge-pending">⏳ รออนุมัติ</span>
+                        <span class="text-xs text-gray-500">${formatDate(p.createdAt)}</span>
+                    </div>
+                    <h3 class="font-semibold mb-2">${p.title}</h3>
+                    <p class="text-sm text-gray-400 mb-3 line-clamp-2">${p.content}</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-gray-500">โดย: ${p.authorName}</span>
+                        <div class="flex gap-2">
+                            <button class="btn-success text-xs py-2 px-3" onclick="approvePost('${p.postId}', this)">อนุมัติ</button>
+                            <button class="btn-danger text-xs py-2 px-3" onclick="rejectPost('${p.postId}', this)">ปฏิเสธ</button>
                         </div>
                     </div>
-                `).join('');
+                </div>
+            `).join('');
+        }
+
+        window.approvePost = async function(postId, btn) {
+            btn.disabled = true;
+            btn.classList.add('loading');
+            
+            const result = await callGAS('admin/post/approve', { postId });
+            
+            if (result.success) {
+                showToast('อนุมัติสำเร็จ');
+                await Promise.all([loadPosts(), loadPendingPosts(), loadUrgentPosts(), loadAdminStats()]);
+            } else {
+                showToast(result.message || 'อนุมัติไม่สำเร็จ', 'error');
+            }
+            
+            btn.disabled = false;
+            btn.classList.remove('loading');
+        };
+
+        window.rejectPost = async function(postId, btn) {
+            btn.disabled = true;
+            btn.classList.add('loading');
+            
+            const result = await callGAS('admin/post/reject', { postId });
+            
+            if (result.success) {
+                showToast('ปฏิเสธสำเร็จ');
+                await Promise.all([loadPosts(), loadPendingPosts(), loadUrgentPosts(), loadAdminStats()]);
+            } else {
+                showToast(result.message || 'ปฏิเสธไม่สำเร็จ', 'error');
+            }
+            
+            btn.disabled = false;
+            btn.classList.remove('loading');
+        };
+
+        async function loadUsers() {
+            const result = await callGAS('admin/users');
+            if (result.success) {
+                state.users = result.data || [];
+                renderUsers();
+            }
+        }
+
+        function renderUsers() {
+            const search = $.userSearch?.value.toLowerCase() || '';
+            const filtered = state.users.filter(u => 
+                u.displayName?.toLowerCase().includes(search) || 
+                u.email?.toLowerCase().includes(search)
+            );
+
+            if (!filtered.length) {
+                $.usersList.innerHTML = '<p class="text-center text-gray-400 py-6">ไม่พบผู้ใช้</p>';
+                return;
             }
 
-            window.approvePost = async function(postId, btn) {
-                btn.disabled = true;
-                btn.classList.add('loading');
-                
-                const result = await callGAS('admin/post/approve', { postId });
-                
-                if (result.success) {
-                    showToast('อนุมัติสำเร็จ');
-                    await Promise.all([loadPosts(), loadPendingPosts(), loadUrgentPosts(), loadAdminStats()]);
-                } else {
-                    showToast(result.message || 'อนุมัติไม่สำเร็จ', 'error');
-                }
-                
-                btn.disabled = false;
-                btn.classList.remove('loading');
-            };
-
-            window.rejectPost = async function(postId, btn) {
-                btn.disabled = true;
-                btn.classList.add('loading');
-                
-                const result = await callGAS('admin/post/reject', { postId });
-                
-                if (result.success) {
-                    showToast('ปฏิเสธสำเร็จ');
-                    await Promise.all([loadPosts(), loadPendingPosts(), loadUrgentPosts(), loadAdminStats()]);
-                } else {
-                    showToast(result.message || 'ปฏิเสธไม่สำเร็จ', 'error');
-                }
-                
-                btn.disabled = false;
-                btn.classList.remove('loading');
-            };
-
-            async function loadUsers() {
-                const result = await callGAS('admin/users');
-                if (result.success) {
-                    state.users = result.data || [];
-                    renderUsers();
-                }
-            }
-
-            function renderUsers() {
-                if (!$['users-list']) return;
-                
-                const search = $['user-search']?.value.toLowerCase() || '';
-                const filtered = state.users.filter(u => 
-                    u.displayName?.toLowerCase().includes(search) || 
-                    u.email?.toLowerCase().includes(search)
-                );
-
-                if (!filtered.length) {
-                    $['users-list'].innerHTML = '<p class="text-center text-gray-400 py-6">ไม่พบผู้ใช้</p>';
-                    return;
-                }
-
-                $['users-list'].innerHTML = filtered.map(u => `
-                    <div class="user-row">
-                        <img src="${u.pictureUrl || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'40\' height=\'40\' viewBox=\'0 0 40 40\'%3E%3Ccircle cx=\'20\' cy=\'20\' r=\'20\' fill=\'%232a2e36\'/%3E%3Ctext x=\'20\' y=\'25\' font-size=\'16\' text-anchor=\'middle\' fill=\'%2306c755\'%3E👤%3C/text%3E%3C/svg%3E'}" class="w-10 h-10 rounded-full object-cover">
-                        <div class="flex-1">
-                            <p class="font-semibold text-sm">${u.displayName || ''}</p>
-                            <p class="text-xs text-gray-400">${u.email || ''}</p>
-                        </div>
-                        <span class="px-2 py-1 rounded-full text-xs font-semibold ${u.role === 'admin' ? 'bg-red-500/20 text-red-500' : u.role === 'editor' ? 'bg-yellow-500/20 text-yellow-500' : 'bg-gray-500/20 text-gray-400'}">
-                            ${u.role === 'admin' ? '👑 ผู้ดูแล' : u.role === 'editor' ? '✏️ ผู้เขียน' : '👤 ผู้ใช้'}
-                        </span>
-                        <button class="text-[#06c755] text-xs" onclick="showRoleModal('${u.lineUserId}', '${u.displayName}', '${u.role}')">
-                            <i class="fas fa-cog"></i>
-                        </button>
+            $.usersList.innerHTML = filtered.map(u => `
+                <div class="user-row">
+                    <img src="${u.pictureUrl || 'https://via.placeholder.com/40'}" class="user-avatar-sm">
+                    <div class="flex-1">
+                        <p class="font-semibold text-sm">${u.displayName || ''}</p>
+                        <p class="text-xs text-gray-400">${u.email || ''}</p>
                     </div>
-                `).join('');
-            }
+                    <span class="role-badge role-${u.role}">${{admin:'ผู้ดูแล', editor:'ผู้เขียน', user:'ผู้ใช้'}[u.role]}</span>
+                    <button class="text-[#06c755] text-xs" onclick="showRoleModal('${u.lineUserId}', '${u.displayName}', '${u.role}')">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
 
-            window.showRoleModal = function(userId, userName, currentRole) {
-                document.getElementById('role-user-id').value = userId;
-                document.getElementById('role-user-name').textContent = `จัดการสิทธิ์: ${userName}`;
-                document.getElementById('user-role').value = currentRole;
-                document.getElementById('role-modal').classList.add('active');
-            };
+        window.showRoleModal = function(userId, userName, currentRole) {
+            document.getElementById('role-user-id').value = userId;
+            document.getElementById('role-user-name').textContent = `จัดการสิทธิ์: ${userName}`;
+            document.getElementById('user-role').value = currentRole;
+            document.getElementById('role-modal').classList.add('active');
+        };
 
-            window.closeRoleModal = function() {
-                document.getElementById('role-modal').classList.remove('active');
-            };
+        window.closeRoleModal = function() {
+            document.getElementById('role-modal').classList.remove('active');
+        };
 
-            window.saveUserRole = async function(e) {
-                e.preventDefault();
+        window.saveUserRole = async function(e) {
+            e.preventDefault();
+            
+            const userId = document.getElementById('role-user-id').value;
+            const role = document.getElementById('user-role').value;
+
+            const saveBtn = e.submitter;
+            saveBtn.disabled = true;
+            saveBtn.classList.add('loading');
+
+            const result = await callGAS('admin/user/role', {
+                targetUserId: userId,
+                role,
+                lineUserId: state.user.lineUserId
+            });
+
+            if (result.success) {
+                showToast('อัปเดตสิทธิ์สำเร็จ');
+                closeRoleModal();
+                // โหลดข้อมูลผู้ใช้ใหม่อีกครั้งเพื่ออัปเดตสิทธิ์ทันที
+                await loadUsers();
                 
-                const userId = document.getElementById('role-user-id').value;
-                const role = document.getElementById('user-role').value;
-
-                const saveBtn = e.submitter;
-                saveBtn.disabled = true;
-                saveBtn.classList.add('loading');
-
-                const result = await callGAS('admin/user/role', {
-                    targetUserId: userId,
-                    role,
-                    lineUserId: state.user.lineUserId
-                });
-
-                if (result.success) {
-                    showToast('อัปเดตสิทธิ์สำเร็จ');
-                    closeRoleModal();
-                    await loadUsers();
-                    
-                    if (userId === state.user?.lineUserId) {
-                        const userResult = await callGAS('user/profile', {
-                            lineUserId: state.user.lineUserId
+                // ถ้าเป็นผู้ใช้คนปัจจุบัน ให้อัปเดต state.user ด้วย
+                if (userId === state.user?.lineUserId) {
+                    const userResult = await callGAS('user/profile', {
+                        lineUserId: state.user.lineUserId
+                    });
+                    if (userResult.success) {
+                        state.user = userResult.data;
+                        state.isAdmin = state.user.role === 'admin';
+                        state.isEditor = state.isAdmin || state.user.role === 'editor';
+                        
+                        // อัปเดต UI
+                        $.profileRole.textContent = {
+                            admin: '👑 ผู้ดูแลระบบ',
+                            editor: '✏️ ผู้เขียน',
+                            user: '👤 ผู้ใช้ทั่วไป'
+                        }[state.user.role] || '';
+                        
+                        // อัปเดตการแสดงปุ่ม admin
+                        $.adminOnly.forEach(el => {
+                            if (state.isAdmin) el.classList.remove('hidden');
+                            else el.classList.add('hidden');
                         });
-                        if (userResult.success) {
-                            state.user = userResult.data;
-                            state.isAdmin = state.user.role === 'admin';
-                            state.isEditor = state.isAdmin || state.user.role === 'editor';
-                            
-                            if ($['profile-role']) {
-                                $['profile-role'].textContent = {
-                                    admin: '👑 ผู้ดูแลระบบ',
-                                    editor: '✏️ ผู้เขียน',
-                                    user: '👤 ผู้ใช้ทั่วไป'
-                                }[state.user.role] || '';
-                            }
-                            
-                            $.adminOnly.forEach(el => {
-                                if (state.isAdmin) el.classList.remove('hidden');
-                                else el.classList.add('hidden');
-                            });
-                        }
                     }
-                } else {
-                    showToast(result.message || 'อัปเดตไม่สำเร็จ', 'error');
                 }
-
-                saveBtn.disabled = false;
-                saveBtn.classList.remove('loading');
-            };
-
-            async function loadAllComments() {
-                const result = await callGAS('admin/comments');
-                if (result.success) {
-                    state.allComments = result.data || [];
-                    renderAdminComments();
-                }
+            } else {
+                showToast(result.message || 'อัปเดตไม่สำเร็จ', 'error');
             }
 
-            function renderAdminComments() {
-                if (!$['admin-comments-list']) return;
+            saveBtn.disabled = false;
+            saveBtn.classList.remove('loading');
+        };
+
+        // ========== ADMIN COMMENTS ==========
+        async function loadAllComments() {
+            const result = await callGAS('admin/comments');
+            if (result.success) {
+                state.allComments = result.data || [];
+                renderAdminComments();
+            }
+        }
+
+        function renderAdminComments() {
+            const search = $.adminCommentSearch?.value.toLowerCase() || '';
+            const filtered = state.allComments.filter(c => 
+                c.content?.toLowerCase().includes(search) || 
+                c.userName?.toLowerCase().includes(search)
+            );
+
+            if (!filtered.length) {
+                $.adminCommentsList.innerHTML = '<p class="text-center text-gray-400 py-6">ไม่พบความคิดเห็น</p>';
+                return;
+            }
+
+            $.adminCommentsList.innerHTML = filtered.map(c => {
+                const statusText = c.status === 'deleted' ? ' (ลบแล้ว)' : (c.status === 'deleted_by_admin' ? ' (ลบโดยแอดมิน)' : '');
+                const statusClass = c.status === 'deleted' ? 'badge-deleted' : (c.status === 'deleted_by_admin' ? 'badge-deleted_by_admin' : '');
                 
-                const search = $['admin-comment-search']?.value.toLowerCase() || '';
-                const filtered = state.allComments.filter(c => 
-                    c.content?.toLowerCase().includes(search) || 
-                    c.userName?.toLowerCase().includes(search)
-                );
+                return `
+                <div class="bg-[#1a1d24] p-3 rounded-lg border border-[#2a2e36]">
+                    <div class="flex items-center gap-2 mb-2">
+                        <img src="${c.userPicture || 'https://via.placeholder.com/32'}" class="w-6 h-6 rounded-full">
+                        <span class="font-semibold text-xs text-[#06c755]">${c.userName || 'ผู้ใช้'}${statusText}</span>
+                        <span class="text-xs text-gray-500">${formatDateTime(c.createdAt)}</span>
+                        ${c.status !== 'active' ? `<span class="badge ${statusClass} text-xs">${c.status === 'deleted' ? 'ลบแล้ว' : 'ลบโดยแอดมิน'}</span>` : ''}
+                    </div>
+                    <p class="text-sm mb-2">${c.status === 'active' ? c.content : '<em>ความคิดเห็นนี้ถูกลบแล้ว</em>'}</p>
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-gray-400">โพสต์: ${c.postId}</span>
+                        ${c.status === 'active' ? `
+                            <button class="btn-danger text-xs py-1 px-2" onclick="adminDeleteComment('${c.commentId}', this)">
+                                <i class="fas fa-trash mr-1"></i>ลบ
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `}).join('');
+        }
 
-                if (!filtered.length) {
-                    $['admin-comments-list'].innerHTML = '<p class="text-center text-gray-400 py-6">ไม่พบความคิดเห็น</p>';
-                    return;
-                }
+        window.adminDeleteComment = async function(commentId, btn) {
+            const result = await Swal.fire({
+                title: 'ลบความคิดเห็น',
+                text: 'คุณแน่ใจหรือไม่?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                confirmButtonText: 'ใช่, ลบ'
+            });
 
-                $['admin-comments-list'].innerHTML = filtered.map(c => {
-                    const statusText = c.status === 'deleted' ? ' (ลบแล้ว)' : (c.status === 'deleted_by_admin' ? ' (ลบโดยแอดมิน)' : '');
-                    
-                    return `<div class="bg-[#1a1d24] p-3 rounded-lg border border-[#2a2e36]">
-                        <div class="flex items-center gap-2 mb-2">
-                            <img src="${c.userPicture || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\'%3E%3Ccircle cx=\'12\' cy=\'12\' r=\'12\' fill=\'%232a2e36\'/%3E%3Ctext x=\'12\' y=\'15\' font-size=\'8\' text-anchor=\'middle\' fill=\'%2306c755\'%3E👤%3C/text%3E%3C/svg%3E'}" class="w-6 h-6 rounded-full">
-                            <span class="font-semibold text-xs text-[#06c755]">${c.userName || 'ผู้ใช้'}${statusText}</span>
-                            <span class="text-xs text-gray-500">${formatDateTime(c.createdAt)}</span>
-                            ${c.status !== 'active' ? `<span class="text-xs bg-red-500/20 text-red-500 px-2 py-0.5 rounded-full">${c.status === 'deleted' ? 'ลบแล้ว' : 'ลบโดยแอดมิน'}</span>` : ''}
-                        </div>
-                        <p class="text-sm mb-2">${c.status === 'active' ? c.content : '<em class="text-gray-500">ความคิดเห็นนี้ถูกลบแล้ว</em>'}</p>
-                        <div class="flex justify-between items-center text-xs">
-                            <span class="text-gray-400">โพสต์: ${c.postId}</span>
-                            ${c.status === 'active' ? `<button class="bg-red-500 text-white text-xs py-1 px-2 rounded-lg border-none cursor-pointer" onclick="adminDeleteComment('${c.commentId}', this)"><i class="fas fa-trash mr-1"></i>ลบ</button>` : ''}
-                        </div>
-                    </div>`;
-                }).join('');
-            }
-
-            window.adminDeleteComment = async function(commentId, btn) {
-                if (!confirm('ลบความคิดเห็นนี้?')) return;
-
+            if (result.isConfirmed) {
                 btn.disabled = true;
                 btn.classList.add('loading');
 
-                const result = await callGAS('admin/comment/delete', { 
+                const apiResult = await callGAS('admin/comment/delete', { 
                     commentId,
                     lineUserId: state.user.lineUserId
                 });
 
-                if (result.success) {
+                if (apiResult.success) {
                     showToast('ลบความคิดเห็นสำเร็จ');
                     await loadAllComments();
                 } else {
-                    showToast(result.message || 'ลบไม่สำเร็จ', 'error');
+                    showToast(apiResult.message || 'ลบไม่สำเร็จ', 'error');
                 }
 
                 btn.disabled = false;
                 btn.classList.remove('loading');
-            };
+            }
+        };
 
-            async function loadSettings() {
-                const result = await callGAS('settings');
-                if (result.success) {
-                    state.settings = result.data || { appName: 'iTNews', driveFolderId: CONFIG.DRIVE_FOLDER_ID, requireApproval: 'false' };
+        async function loadSettings() {
+            const result = await callGAS('settings');
+            if (result.success) {
+                state.settings = result.data || {
+                    appName: 'iTNews',
+                    driveFolderId: CONFIG.DRIVE_FOLDER_ID,
+                    requireApproval: 'false'
+                };
+                
+                // Update UI with settings
+                document.getElementById('setting-app-name').value = state.settings.appName || 'iTNews';
+                document.getElementById('setting-drive-folder').value = state.settings.driveFolderId || CONFIG.DRIVE_FOLDER_ID;
+                
+                // แก้ไข: แปลงค่าจาก string เป็น boolean อย่างถูกต้อง
+                // รองรับทั้ง 'true', 'TRUE', true, 1, '1'
+                if ($.settingRequireApproval) {
+                    const requireApproval = state.settings.requireApproval;
                     
-                    document.getElementById('setting-app-name').value = state.settings.appName || 'iTNews';
-                    document.getElementById('setting-drive-folder').value = state.settings.driveFolderId || CONFIG.DRIVE_FOLDER_ID;
-                    
-                    if ($['setting-require-approval']) {
-                        const val = state.settings.requireApproval;
-                        $['setting-require-approval'].checked = val === true || val === 'true' || val === '1';
+                    // แปลงเป็น boolean
+                    let isChecked = false;
+                    if (typeof requireApproval === 'string') {
+                        isChecked = requireApproval.toLowerCase() === 'true' || requireApproval === '1';
+                    } else if (typeof requireApproval === 'boolean') {
+                        isChecked = requireApproval;
+                    } else if (typeof requireApproval === 'number') {
+                        isChecked = requireApproval === 1;
                     }
                     
-                    updateAppName(state.settings.appName);
+                    $.settingRequireApproval.checked = isChecked;
+                    console.log('Setting requireApproval:', requireApproval, '->', isChecked);
                 }
+                
+                // Update title and navbar
+                updateAppName(state.settings.appName);
+            }
+        }
+
+        window.saveSettings = async function(e) {
+            e.preventDefault();
+            
+            const appName = document.getElementById('setting-app-name').value.trim() || 'iTNews';
+            const driveFolderId = document.getElementById('setting-drive-folder').value.trim() || CONFIG.DRIVE_FOLDER_ID;
+            
+            // ดึงค่า checkbox อย่างถูกต้อง
+            const requireApproval = $.settingRequireApproval ? $.settingRequireApproval.checked : false;
+
+            const saveBtn = $.settingsSaveBtn;
+            saveBtn.disabled = true;
+            saveBtn.classList.add('loading');
+
+            const data = {
+                appName,
+                driveFolderId,
+                requireApproval: requireApproval ? 'true' : 'false', // ส่งเป็น string เสมอ
+                lineUserId: state.user.lineUserId
+            };
+
+            console.log('Saving settings:', data);
+
+            const result = await callGAS('admin/settings/update', data);
+            
+            if (result.success) {
+                showToast('บันทึกสำเร็จ');
+                Object.assign(state.settings, data);
+                updateAppName(appName);
+            } else {
+                showToast(result.message || 'บันทึกไม่สำเร็จ', 'error');
             }
 
-            window.saveSettings = async function(e) {
-                e.preventDefault();
+            saveBtn.disabled = false;
+            saveBtn.classList.remove('loading');
+        };
+
+        // ========== PROFILE ==========
+        window.showProfileSettings = function() {
+            document.getElementById('profile-phone').value = state.user?.phone || '';
+            document.getElementById('profile-department').value = state.user?.department || '';
+            document.getElementById('profile-modal').classList.add('active');
+        };
+
+        window.closeProfileModal = function() {
+            document.getElementById('profile-modal').classList.remove('active');
+        };
+
+        window.saveProfile = async function(e) {
+            e.preventDefault();
+            
+            const saveBtn = e.submitter;
+            saveBtn.disabled = true;
+            saveBtn.classList.add('loading');
+
+            const data = {
+                phone: document.getElementById('profile-phone').value,
+                department: document.getElementById('profile-department').value,
+                lineUserId: state.user.lineUserId
+            };
+
+            const result = await callGAS('user/update', data);
+            if (result.success) {
+                showToast('บันทึกสำเร็จ');
+                Object.assign(state.user, data);
+                closeProfileModal();
+            } else {
+                showToast(result.message || 'บันทึกไม่สำเร็จ', 'error');
+            }
+
+            saveBtn.disabled = false;
+            saveBtn.classList.remove('loading');
+        };
+
+        window.logout = function() {
+            if (liff.isLoggedIn()) liff.logout();
+            location.reload();
+        };
+
+        // ========== TAB SWITCHING ==========
+        window.switchTab = function(tab) {
+            $.navItems.forEach(i => i.classList.remove('active'));
+            document.querySelectorAll(`[data-tab="${tab}"]`).forEach(i => i.classList.add('active'));
+            
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(`tab-${tab}`).classList.add('active');
+
+            if (tab === 'my') loadMyPosts();
+            if (tab === 'admin' && state.isAdmin) {
+                loadAdminStats();
+                loadUsers();
+                loadPendingPosts();
+                loadAllComments();
+            }
+        };
+
+        window.goHome = function() {
+            switchTab('home');
+        };
+
+        // ========== EVENT LISTENERS ==========
+        $.filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                $.filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                state.currentFilter = btn.dataset.filter;
+                state.currentPage = 1;
+                loadPosts();
+            });
+        });
+
+        let searchTimer;
+        $.searchInput.addEventListener('input', () => {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => {
+                state.searchTerm = $.searchInput.value;
+                state.currentPage = 1;
+                loadPosts();
+            }, 300);
+        });
+
+        $.userSearch?.addEventListener('input', renderUsers);
+        
+        $.adminCommentSearch?.addEventListener('input', () => {
+            renderAdminComments();
+        });
+
+        $.refreshAdmin?.addEventListener('click', () => {
+            if (state.isAdmin) {
+                loadAdminStats();
+                loadUsers();
+                loadPendingPosts();
+                loadAllComments();
+            }
+        });
+
+        document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
                 
-                const appName = document.getElementById('setting-app-name').value.trim() || 'iTNews';
-                const driveFolderId = document.getElementById('setting-drive-folder').value.trim() || CONFIG.DRIVE_FOLDER_ID;
-                const requireApproval = $['setting-require-approval']?.checked || false;
-
-                const saveBtn = $['settings-save-btn'];
-                saveBtn.disabled = true;
-                saveBtn.classList.add('loading');
-
-                const result = await callGAS('admin/settings/update', {
-                    appName,
-                    driveFolderId,
-                    requireApproval: requireApproval ? 'true' : 'false',
-                    lineUserId: state.user.lineUserId
-                });
+                document.querySelectorAll('.admin-tab').forEach(t => t.classList.add('hidden'));
+                document.getElementById(`admin-${btn.dataset.adminTab}-tab`).classList.remove('hidden');
                 
-                if (result.success) {
-                    showToast('บันทึกสำเร็จ');
-                    Object.assign(state.settings, { appName, driveFolderId, requireApproval });
-                    updateAppName(appName);
-                } else {
-                    showToast(result.message || 'บันทึกไม่สำเร็จ', 'error');
-                }
-
-                saveBtn.disabled = false;
-                saveBtn.classList.remove('loading');
-            };
-
-            // ========== PROFILE ==========
-            window.showProfileSettings = function() {
-                document.getElementById('profile-phone').value = state.user?.phone || '';
-                document.getElementById('profile-department').value = state.user?.department || '';
-                document.getElementById('profile-modal').classList.add('active');
-            };
-
-            window.closeProfileModal = function() {
-                document.getElementById('profile-modal').classList.remove('active');
-            };
-
-            window.saveProfile = async function(e) {
-                e.preventDefault();
-                
-                const saveBtn = e.submitter;
-                saveBtn.disabled = true;
-                saveBtn.classList.add('loading');
-
-                const data = {
-                    phone: document.getElementById('profile-phone').value,
-                    department: document.getElementById('profile-department').value,
-                    lineUserId: state.user.lineUserId
-                };
-
-                const result = await callGAS('user/update', data);
-                if (result.success) {
-                    showToast('บันทึกสำเร็จ');
-                    Object.assign(state.user, data);
-                    closeProfileModal();
-                } else {
-                    showToast(result.message || 'บันทึกไม่สำเร็จ', 'error');
-                }
-
-                saveBtn.disabled = false;
-                saveBtn.classList.remove('loading');
-            };
-
-            window.logout = function() {
-                if (liff.isLoggedIn()) liff.logout();
-                localStorage.removeItem('user_cache');
-                location.reload();
-            };
-
-            // ========== TAB SWITCHING ==========
-            window.switchTab = function(tab) {
-                $.navItems.forEach(i => i.classList.remove('active'));
-                document.querySelectorAll(`[data-tab="${tab}"]`).forEach(i => i.classList.add('active'));
-                
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                document.getElementById(`tab-${tab}`).classList.add('active');
-
-                if (tab === 'my') loadMyPosts();
-                if (tab === 'admin' && state.isAdmin) {
-                    loadAdminStats();
-                    loadUsers();
-                    loadPendingPosts();
+                // Load data when tab is clicked
+                if (btn.dataset.adminTab === 'comments') {
                     loadAllComments();
                 }
-            };
+            });
+        });
 
-            window.goHome = function() {
-                switchTab('home');
-            };
+        $.navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                switchTab(item.dataset.tab);
+            });
+        });
 
-            // ========== EVENT LISTENERS ==========
-            function initEventListeners() {
-                // Filter buttons
-                $.filterBtns?.forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        $.filterBtns.forEach(b => b.classList.remove('active'));
-                        btn.classList.add('active');
-                        state.currentFilter = btn.dataset.filter;
-                        state.currentPage = 1;
-                        loadPosts();
-                    });
-                });
+        document.getElementById('profile-header').addEventListener('click', () => {
+            Swal.fire({
+                title: state.user?.displayName,
+                text: state.user?.email,
+                showCancelButton: true,
+                confirmButtonText: 'แก้ไขโปรไฟล์',
+                cancelButtonText: 'ออกจากระบบ'
+            }).then(r => {
+                if (r.isConfirmed) showProfileSettings();
+                else if (r.dismiss === Swal.DismissReason.cancel) logout();
+            });
+        });
 
-                // Search debounce
-                let searchTimer;
-                $['search-input']?.addEventListener('input', () => {
-                    clearTimeout(searchTimer);
-                    searchTimer = setTimeout(() => {
-                        state.searchTerm = $['search-input'].value;
-                        state.currentPage = 1;
-                        loadPosts();
-                    }, 300);
-                });
-
-                // User search
-                $['user-search']?.addEventListener('input', renderUsers);
-                
-                // Admin comment search
-                $['admin-comment-search']?.addEventListener('input', renderAdminComments);
-
-                // Refresh admin
-                $['refresh-admin']?.addEventListener('click', () => {
-                    if (state.isAdmin) {
-                        loadAdminStats();
-                        loadUsers();
-                        loadPendingPosts();
-                        loadAllComments();
-                    }
-                });
-
-                // Admin tabs
-                document.querySelectorAll('.admin-tab-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
-                        btn.classList.add('active');
-                        
-                        document.querySelectorAll('.admin-tab').forEach(t => t.classList.add('hidden'));
-                        const targetTab = document.getElementById(`admin-${btn.dataset.adminTab}-tab`);
-                        if (targetTab) targetTab.classList.remove('hidden');
-                        
-                        if (btn.dataset.adminTab === 'comments') loadAllComments();
-                    });
-                });
-
-                // Navigation
-                $.navItems?.forEach(item => {
-                    item.addEventListener('click', () => switchTab(item.dataset.tab));
-                });
-
-                // Profile header
-                document.getElementById('profile-header')?.addEventListener('click', () => {
-                    if (!state.user) return;
-                    if (confirm('แก้ไขโปรไฟล์?')) showProfileSettings();
-                    else if (confirm('ออกจากระบบ?')) logout();
-                });
-
-                // Pagination
-                $['prev-page']?.addEventListener('click', () => changePage('prev'));
-                $['next-page']?.addEventListener('click', () => changePage('next'));
-            }
-
-            // Start
-            initEventListeners();
+        // ========== INIT ==========
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initLIFF);
+        } else {
             initLIFF();
-        })();
+        }
+
+        // Cleanup
+        window.addEventListener('beforeunload', () => {
+            if (window.heroSwiper) window.heroSwiper.destroy();
+        });
     </script>
 </body>
 </html>
