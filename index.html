@@ -10,22 +10,27 @@
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Fonts -->
+    <!-- Preconnect for speed -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://static.line-scdn.net">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- LINE LIFF -->
     <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
     
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     
     <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
     
     <!-- Swiper CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" media="print" onload="this.media='all'" />
     
     <style>
         * {
@@ -1693,78 +1698,136 @@
             }
         };
 
+        // ========== CACHE UTILS ==========
+        const Cache = {
+            get: (key) => {
+                try {
+                    const data = localStorage.getItem(`itnews_cache_${key}`);
+                    return data ? JSON.parse(data) : null;
+                } catch { return null; }
+            },
+            set: (key, val) => {
+                try {
+                    localStorage.setItem(`itnews_cache_${key}`, JSON.stringify(val));
+                } catch {}
+            }
+        };
+
         // ========== LIFF INIT ==========
         async function initLIFF() {
+            // 1. Load from Cache immediately for < 1s visual response
+            const cachedUser = Cache.get('user');
+            const cachedSettings = Cache.get('settings');
+            const cachedPosts = Cache.get('posts');
+            const cachedUrgent = Cache.get('urgent');
+
+            if (cachedUser) {
+                state.user = cachedUser;
+                state.isAdmin = state.user.role === 'admin';
+                state.isEditor = state.isAdmin || state.user.role === 'editor';
+                updateProfileUI(state.user);
+            }
+            if (cachedSettings) {
+                state.settings = cachedSettings;
+                updateAppName(state.settings.appName);
+            }
+            if (cachedPosts) {
+                state.posts = cachedPosts.posts || [];
+                state.totalPages = cachedPosts.totalPages || 1;
+                renderPosts();
+            }
+            if (cachedUrgent) {
+                state.urgentPosts = cachedUrgent;
+                renderHeroSlider();
+            }
+
+            // Hide loading screen early if we have enough cached data
+            if (cachedUser && cachedPosts) {
+                $.initLoading.classList.add('hide');
+            }
+
             try {
+                // 2. Parallel Init
                 await liff.init({ liffId: CONFIG.LIFF_ID });
                 if (!liff.isLoggedIn()) {
                     liff.login();
                     return;
                 }
 
-                const profile = await liff.getProfile();
-                const idToken = liff.getDecodedIDToken();
+                const [profile, idToken] = await Promise.all([
+                    liff.getProfile(),
+                    liff.getDecodedIDToken()
+                ]);
 
-                const result = await callGAS('user/profile', {
-                    lineUserId: profile.userId,
-                    displayName: profile.displayName,
-                    pictureUrl: profile.pictureUrl || '',
-                    email: idToken?.email || ''
-                });
+                // 3. Parallel Data Fetching (User + Settings)
+                const [userResult, settingsResult] = await Promise.all([
+                    callGAS('user/profile', {
+                        lineUserId: profile.userId,
+                        displayName: profile.displayName,
+                        pictureUrl: profile.pictureUrl || '',
+                        email: idToken?.email || ''
+                    }),
+                    callGAS('settings')
+                ]);
 
-                if (result.success) {
-                    state.user = result.data;
+                if (userResult.success) {
+                    state.user = userResult.data;
                     state.isAdmin = state.user.role === 'admin';
                     state.isEditor = state.isAdmin || state.user.role === 'editor';
-
-                    // Update UI
-                    $.profileName.textContent = state.user.displayName || 'ผู้ใช้';
-                    $.profileEmail.textContent = state.user.email || '';
-                    $.profileAvatar.src = state.user.pictureUrl || 'https://via.placeholder.com/60';
-                    $.profileRole.textContent = {
-                        admin: '👑 ผู้ดูแลระบบ',
-                        editor: '✏️ ผู้เขียน',
-                        user: '👤 ผู้ใช้ทั่วไป'
-                    }[state.user.role] || '';
-
-                    // Show/hide admin elements
-                    $.adminOnly.forEach(el => {
-                        if (state.isAdmin) el.classList.remove('hidden');
-                        else el.classList.add('hidden');
-                    });
-
-                    if (state.isEditor) {
-                        $.floatingBtn.classList.remove('hidden');
-                        if ($.createPostBtn) $.createPostBtn.classList.remove('hidden');
-                    }
-
-                    // Load settings first to get app name
-                    await loadSettings();
-                    
-                    // Load data
-                    await Promise.all([
-                        loadPosts(),
-                        loadUrgentPosts(),
-                        loadMyPosts()
-                    ]);
-
-                    if (state.isAdmin) {
-                        loadUsers();
-                        loadAdminStats();
-                        loadPendingPosts();
-                    }
-
-                    $.initLoading.classList.add('hide');
-                    state.initialized = true;
+                    Cache.set('user', state.user);
+                    updateProfileUI(state.user);
                 }
+
+                if (settingsResult.success) {
+                    state.settings = settingsResult.data;
+                    Cache.set('settings', state.settings);
+                    updateAppName(state.settings.appName);
+                }
+
+                // 4. Load Content in Parallel
+                const contentPromises = [
+                    loadPosts(true), // true = save to cache
+                    loadUrgentPosts(true),
+                    loadMyPosts()
+                ];
+
+                if (state.isAdmin) {
+                    contentPromises.push(loadUsers(), loadAdminStats(), loadPendingPosts());
+                }
+
+                await Promise.all(contentPromises);
+                state.initialized = true;
             } catch (error) {
-                $.initLoading.classList.add('hide');
+                console.error('LIFF Init Error:', error);
                 showToast('ไม่สามารถเชื่อมต่อ LINE ได้', 'error');
+            } finally {
+                $.initLoading.classList.add('hide');
+            }
+        }
+
+        function updateProfileUI(user) {
+            $.profileName.textContent = user.displayName || 'ผู้ใช้';
+            $.profileEmail.textContent = user.email || '';
+            $.profileAvatar.src = user.pictureUrl || 'https://via.placeholder.com/60';
+            $.profileRole.textContent = {
+                admin: '👑 ผู้ดูแลระบบ',
+                editor: '✏️ ผู้เขียน',
+                user: '👤 ผู้ใช้ทั่วไป'
+            }[user.role] || '';
+
+            $.adminOnly.forEach(el => {
+                if (state.isAdmin) el.classList.remove('hidden');
+                else el.classList.add('hidden');
+            });
+
+            if (state.isEditor) {
+                $.floatingBtn.classList.remove('hidden');
+                if ($.createPostBtn) $.createPostBtn.classList.remove('hidden');
             }
         }
 
         // ========== POSTS ==========
-        async function loadPosts() {
+        async function loadPosts(saveToCache = false) {
             const result = await callGAS('posts', {
                 page: state.currentPage,
                 filter: state.currentFilter,
@@ -1776,6 +1839,10 @@
             if (result.success) {
                 state.posts = result.data.posts || [];
                 state.totalPages = Math.ceil((result.data.total || 0) / CONFIG.PAGE_SIZE) || 1;
+
+                if (saveToCache && state.currentPage === 1 && !state.searchTerm && state.currentFilter === 'all') {
+                    Cache.set('posts', { posts: state.posts, totalPages: state.totalPages });
+                }
 
                 $.statNews.textContent = result.data.stats?.news || 0;
                 $.statEvents.textContent = result.data.stats?.events || 0;
@@ -1859,7 +1926,7 @@
             `).join('');
         }
 
-        async function loadUrgentPosts() {
+        async function loadUrgentPosts(saveToCache = false) {
             const result = await callGAS('posts', {
                 filter: 'urgent',
                 pageSize: 10,
@@ -1868,6 +1935,7 @@
 
             if (result.success) {
                 state.urgentPosts = result.data.posts?.filter(p => p.approvalStatus === 'approved') || [];
+                if (saveToCache) Cache.set('urgent', state.urgentPosts);
                 renderHeroSlider();
             }
         }
