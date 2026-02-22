@@ -3,793 +3,298 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title id="page-title">iTNews · LINE</title>
+    <title>iTNews · LINE</title>
     <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/653/653021.png">
     
-    <!-- Tailwind (โหลดแบบ async) -->
-    <link rel="preload" href="https://cdn.tailwindcss.com" as="script">
-    <script src="https://cdn.tailwindcss.com" defer></script>
-    
-    <!-- Fonts (preconnect และ preload) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" as="style">
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- LINE LIFF (โหลดแบบ defer) -->
-    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js" defer></script>
-    
-    <!-- Font Awesome (โหลดแบบ async) -->
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
-    
-    <!-- SweetAlert2 (โหลดแบบ defer) -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
-    
-    <!-- Swiper CSS (โหลดแบบ async) -->
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" as="style">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" media="print" onload="this.media='all'">
-    
+    <!-- Inline Critical CSS - โหลดทันที -->
     <style>
-        /* Critical CSS - โหลดก่อนทันที */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        /* Core styles - minimal */
+        *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;}
+        :root{--primary:#06c755;--bg:#0a0a0f;--bg-card:#1a1d24;--border:#2a2e36;--text:#fff;--text-secondary:#9ca3af;}
+        body{background:var(--bg);color:var(--text);padding-bottom:70px;}
         
-        :root {
-            --primary: #06c755;
-            --primary-dark: #05b34a;
-            --primary-light: rgba(6,199,85,0.1);
-            --bg: #0a0a0f;
-            --bg-card: #1a1d24;
-            --border: #2a2e36;
-            --text: #ffffff;
-            --text-secondary: #9ca3af;
-            --navbar-bg: rgba(10, 10, 15, 0.95);
-        }
+        /* Loading screen */
+        .loading-screen{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;transition:opacity .2s;}
+        .loading-screen.hide{opacity:0;pointer-events:none;}
+        .spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .6s linear infinite;}
+        @keyframes spin{to{transform:rotate(360deg);}}
         
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            padding-bottom: 70px;
-            font-family: 'IBM Plex Sans Thai', sans-serif;
-        }
+        /* Layout */
+        .navbar{position:sticky;top:0;background:rgba(10,10,15,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:12px 16px;z-index:100;}
+        .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(26,29,36,.95);backdrop-filter:blur(10px);border-top:1px solid var(--border);display:flex;padding:8px 0;z-index:100;}
+        .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--text-secondary);font-size:12px;cursor:pointer;}
+        .nav-item.active{color:var(--primary);}
+        .tab-content{display:none;}
+        .tab-content.active{display:block;}
         
-        /* Loading Overlay แบบใหม่ */
-        .loading-overlay {
-            position: fixed;
-            inset: 0;
-            background: var(--bg);
-            z-index: 2000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
+        /* Profile */
+        .profile-header{background:var(--bg-card);border-radius:16px;padding:16px;margin:16px;display:flex;align-items:center;gap:12px;border:1px solid var(--border);cursor:pointer;}
+        .profile-avatar{width:48px;height:48px;border-radius:50%;border:2px solid var(--primary);object-fit:cover;background:var(--border);}
         
-        .loading-overlay.hide {
-            opacity: 0;
-            pointer-events: none;
-        }
+        /* Search & Filter */
+        .search-box{position:relative;max-width:1200px;margin:0 auto 16px;padding:0 16px;}
+        .search-box input{width:100%;padding:12px 40px;background:var(--bg-card);border:1px solid var(--border);border-radius:30px;color:var(--text);font-size:14px;}
+        .filter-container{display:flex;gap:8px;overflow-x:auto;padding:0 16px 16px;max-width:1200px;margin:0 auto;}
+        .filter-btn{padding:8px 16px;border-radius:30px;font-size:14px;white-space:nowrap;background:var(--bg-card);border:1px solid var(--border);color:var(--text-secondary);cursor:pointer;}
+        .filter-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);}
         
-        .loading-container {
-            text-align: center;
-            max-width: 280px;
-            width: 90%;
-        }
+        /* Posts grid */
+        .posts-grid{display:grid;gap:16px;padding:0 16px;max-width:1200px;margin:0 auto;}
+        @media (min-width:768px){.posts-grid{grid-template-columns:repeat(2,1fr);}}
+        @media (min-width:1024px){.posts-grid{grid-template-columns:repeat(3,1fr);}}
         
-        .loading-logo {
-            font-size: 48px;
-            color: var(--primary);
-            margin-bottom: 20px;
-            animation: pulse 1.5s ease-in-out infinite;
-        }
+        /* Cards */
+        .news-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;overflow:hidden;cursor:pointer;}
+        .news-image{width:100%;height:180px;object-fit:cover;background:var(--border);}
+        .news-content{padding:12px;}
+        .badge{padding:4px 8px;border-radius:20px;font-size:11px;display:inline-block;}
+        .badge-news{background:rgba(6,199,85,.15);color:var(--primary);}
+        .badge-event{background:rgba(245,158,11,.15);color:#f59e0b;}
+        .badge-urgent{background:rgba(239,68,68,.15);color:#ef4444;}
         
-        .loading-logo i {
-            filter: drop-shadow(0 0 10px rgba(6,199,85,0.5));
-        }
+        /* Modal */
+        .modal{position:fixed;inset:0;background:rgba(0,0,0,.98);z-index:1000;display:none;overflow-y:auto;}
+        .modal.active{display:block;}
+        .modal-content{background:var(--bg-card);min-height:100vh;padding:16px;}
+        @media (min-width:768px){.modal-content{max-width:800px;margin:20px auto;min-height:auto;border-radius:24px;}}
         
-        .loading-title {
-            font-size: 28px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #fff, var(--primary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
-            letter-spacing: 1px;
-        }
+        /* Buttons */
+        .btn-primary{background:var(--primary);color:#fff;padding:12px 20px;border-radius:12px;border:none;font-weight:600;cursor:pointer;width:100%;}
+        .btn-primary:disabled{opacity:.5;cursor:not-allowed;}
+        .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text);padding:12px 20px;border-radius:12px;cursor:pointer;width:100%;}
+        .btn-danger{background:#ef4444;color:#fff;padding:12px 20px;border-radius:12px;border:none;font-weight:600;cursor:pointer;width:100%;}
         
-        .loading-progress-bar {
-            width: 100%;
-            height: 8px;
-            background: var(--border);
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 12px;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
-        }
+        /* Utilities */
+        .hidden{display:none!important;}
+        .flex{display:flex;}
+        .items-center{align-items:center;}
+        .justify-between{justify-content:space-between;}
+        .gap-2{gap:8px;}
+        .gap-4{gap:16px;}
+        .w-full{width:100%;}
+        .text-center{text-align:center;}
+        .text-sm{font-size:14px;}
+        .text-xs{font-size:12px;}
+        .font-bold{font-weight:700;}
+        .text-gray-400{color:var(--text-secondary);}
+        .text-[#06c755]{color:var(--primary);}
+        .mt-2{margin-top:8px;}
+        .mt-4{margin-top:16px;}
+        .mb-2{margin-bottom:8px;}
+        .mb-4{margin-bottom:16px;}
+        .p-4{padding:16px;}
+        .line-clamp-2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
         
-        .loading-progress-fill {
-            width: 0%;
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), #4ade80);
-            border-radius: 10px;
-            transition: width 0.2s ease;
-            box-shadow: 0 0 10px var(--primary);
-        }
-        
-        .loading-percentage {
-            font-size: 32px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 8px;
-            text-shadow: 0 0 10px rgba(6,199,85,0.5);
-        }
-        
-        .loading-text {
-            font-size: 14px;
-            color: var(--text-secondary);
-            letter-spacing: 1px;
-        }
-        
-        .loading-dots {
-            display: inline-flex;
-            gap: 4px;
-            margin-top: 4px;
-        }
-        
-        .loading-dots span {
-            width: 8px;
-            height: 8px;
-            background: var(--primary);
-            border-radius: 50%;
-            animation: bounce 1.4s infinite ease-in-out;
-        }
-        
-        .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
-        .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.8; }
-        }
-        
-        @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1); }
-        }
-        
-        /* Critical UI elements */
-        .navbar {
-            position: sticky;
-            top: 0;
-            z-index: 40;
-            background: var(--navbar-bg);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border);
-            padding: 12px 16px;
-        }
-        
-        .navbar-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .navbar-logo {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-        }
-        
-        .navbar-logo i {
-            color: var(--primary);
-            font-size: 24px;
-        }
-        
-        .navbar-logo span {
-            font-size: 18px;
-            font-weight: 600;
-            background: linear-gradient(135deg, #fff, var(--primary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(26, 29, 36, 0.95);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 0;
-            z-index: 50;
-        }
-        
-        @media (min-width: 1024px) {
-            .bottom-nav {
-                max-width: 400px;
-                left: 50%;
-                transform: translateX(-50%);
-                border-radius: 50px;
-                margin-bottom: 10px;
-            }
-        }
-        
-        .nav-item {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            color: var(--text-secondary);
-            font-size: 12px;
-            cursor: pointer;
-        }
-        
-        .nav-item.active {
-            color: var(--primary);
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        /* Skeleton Loading */
-        .skeleton-card {
-            background: linear-gradient(90deg, var(--bg-card) 25%, #252930 50%, var(--bg-card) 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-            border-radius: 20px;
-            height: 300px;
-        }
-        
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
+        /* Skeleton */
+        .skeleton{background:linear-gradient(90deg,var(--bg-card) 25%,#252930 50%,var(--bg-card) 75%);background-size:200% 100%;animation:skeleton 1.5s infinite;border-radius:16px;height:280px;}
+        @keyframes skeleton{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
     </style>
     
-    <!-- Non-critical CSS จะโหลดทีหลัง -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" media="print" onload="this.media='all'">
-    <noscript>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
-    </noscript>
+    <!-- Preload important resources -->
+    <link rel="preconnect" href="https://static.line-scdn.net">
+    <link rel="preconnect" href="https://script.google.com">
+    
+    <!-- Load LIFF asap -->
+    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
 </head>
 <body>
-    <!-- Loading Overlay แบบใหม่ -->
-    <div class="loading-overlay" id="loading-overlay">
-        <div class="loading-container">
-            <div class="loading-logo">
-                <i class="fas fa-newspaper"></i>
-            </div>
-            <div class="loading-title" id="loading-app-name">iTNews</div>
-            <div class="loading-progress-bar">
-                <div class="loading-progress-fill" id="loading-progress" style="width: 0%"></div>
-            </div>
-            <div class="loading-percentage" id="loading-percentage">0%</div>
-            <div class="loading-text" id="loading-status">กำลังเริ่มต้นระบบ...</div>
-            <div class="loading-dots">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Floating Create Button (ซ่อนไว้ก่อน) -->
-    <div id="floating-create-btn" class="floating-create-btn hidden" onclick="showCreatePostModal()">
-        <i class="fas fa-plus text-2xl"></i>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loading-screen">
+        <div class="spinner"></div>
     </div>
 
     <!-- Navbar -->
     <nav class="navbar">
-        <div class="navbar-content">
-            <div class="navbar-logo" onclick="goHome()">
-                <i class="fas fa-newspaper"></i>
-                <span id="navbar-app-name">iTNews</span>
+        <div class="flex items-center justify-between" style="max-width:1200px;margin:0 auto;">
+            <div class="flex items-center gap-2" onclick="switchTab('home')" style="cursor:pointer;">
+                <span style="color:var(--primary);font-size:24px;">📰</span>
+                <span id="navbar-app-name" style="font-weight:600;background:linear-gradient(135deg,#fff,var(--primary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">iTNews</span>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <div class="min-h-screen">
-        <!-- Tab: Home -->
+    <div>
+        <!-- Home Tab -->
         <div id="tab-home" class="tab-content active">
-            <!-- Profile Header (Skeleton จนกว่าจะโหลดเสร็จ) -->
-            <div class="profile-header" id="profile-header" style="display: none;">
-                <img id="profile-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Crect width='60' height='60' fill='%232a2e36'/%3E%3C/svg%3E" alt="avatar" class="profile-avatar">
-                <div class="flex-1">
-                    <h2 id="profile-name" class="text-lg font-bold">กำลังโหลด...</h2>
-                    <p id="profile-email" class="text-sm text-gray-400"></p>
-                    <p id="profile-role" class="text-xs text-[#06c755] mt-1"></p>
+            <!-- Profile Header -->
+            <div class="profile-header hidden" id="profile-header">
+                <img id="profile-avatar" class="profile-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' fill='%232a2e36'/%3E%3C/svg%3E">
+                <div style="flex:1;">
+                    <div id="profile-name" class="font-bold">กำลังโหลด...</div>
+                    <div id="profile-email" class="text-sm text-gray-400"></div>
                 </div>
-                <i class="fas fa-chevron-down text-gray-400"></i>
+                <span style="color:var(--text-secondary);">▼</span>
             </div>
 
-            <!-- Stats Skeleton -->
-            <div class="grid grid-cols-3 gap-2 max-w-7xl mx-auto px-4 mb-4" id="stats-container">
-                <div class="stat-card">
-                    <p class="text-xs text-gray-400">ข่าวสาร</p>
-                    <p class="text-xl font-bold text-[#06c755]">...</p>
+            <!-- Stats -->
+            <div class="grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:1200px;margin:0 auto 16px;padding:0 16px;">
+                <div class="stat-card" style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center;">
+                    <div class="text-xs text-gray-400">ข่าวสาร</div>
+                    <div id="stat-news" class="text-xl font-bold" style="color:var(--primary);">0</div>
                 </div>
-                <div class="stat-card">
-                    <p class="text-xs text-gray-400">กิจกรรม</p>
-                    <p class="text-xl font-bold text-[#06c755]">...</p>
+                <div class="stat-card" style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center;">
+                    <div class="text-xs text-gray-400">กิจกรรม</div>
+                    <div id="stat-events" class="text-xl font-bold" style="color:var(--primary);">0</div>
                 </div>
-                <div class="stat-card">
-                    <p class="text-xs text-gray-400">ด่วน</p>
-                    <p class="text-xl font-bold text-[#06c755]">...</p>
+                <div class="stat-card" style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center;">
+                    <div class="text-xs text-gray-400">ด่วน</div>
+                    <div id="stat-urgent" class="text-xl font-bold" style="color:var(--primary);">0</div>
                 </div>
             </div>
 
-            <!-- Hero Slider Skeleton -->
-            <div class="swiper hero-swiper max-w-7xl mx-auto px-4 mb-4">
-                <div class="swiper-wrapper" id="hero-slider-wrapper">
-                    <div class="swiper-slide">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='400' viewBox='0 0 1200 400'%3E%3Crect width='1200' height='400' fill='%231a1d24'/%3E%3C/svg%3E" class="w-full h-full object-cover">
-                        <div class="slide-content">
-                            <h3 class="font-bold text-base">กำลังโหลดข่าวด่วน...</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="swiper-pagination"></div>
+            <!-- Hero Slider -->
+            <div style="max-width:1200px;margin:0 auto 16px;padding:0 16px;">
+                <div id="hero-slider" style="width:100%;height:200px;background:var(--bg-card);border-radius:16px;position:relative;overflow:hidden;"></div>
             </div>
 
             <!-- Search -->
             <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" id="search-input" placeholder="ค้นหาข่าวสาร กิจกรรม..." autocomplete="off">
+                <span style="position:absolute;left:28px;top:50%;transform:translateY(-50%);color:var(--text-secondary);">🔍</span>
+                <input type="text" id="search-input" placeholder="ค้นหาข่าวสาร กิจกรรม...">
             </div>
 
             <!-- Filter -->
-            <div class="filter-container">
+            <div class="filter-container" id="filter-container">
                 <button class="filter-btn active" data-filter="all">ทั้งหมด</button>
                 <button class="filter-btn" data-filter="news">📰 ข่าวสาร</button>
                 <button class="filter-btn" data-filter="event">🎉 กิจกรรม</button>
                 <button class="filter-btn" data-filter="urgent">⚠️ ประกาศด่วน</button>
             </div>
 
-            <!-- Posts List (แสดง Skeleton) -->
+            <!-- Posts List with skeleton -->
             <div id="posts-list" class="posts-grid">
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-            </div>
-            
-            <!-- Pagination -->
-            <div id="pagination-container" class="pagination-container hidden">
-                <button class="btn-pagination" id="prev-page" disabled>
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <span id="page-info" class="text-gray-400 text-sm">หน้า 1 จาก 1</span>
-                <button class="btn-pagination" id="next-page" disabled>
-                    <i class="fas fa-chevron-right"></i>
-                </button>
+                <div class="skeleton"></div>
+                <div class="skeleton"></div>
+                <div class="skeleton"></div>
             </div>
         </div>
 
-        <!-- Tab: My Posts -->
-        <div id="tab-my" class="tab-content">
-            <div class="flex justify-between items-center max-w-7xl mx-auto px-4 mb-4">
-                <h2 class="text-xl font-bold text-[#06c755]">โพสต์ของฉัน</h2>
-                <button id="create-post-btn" class="bg-[#06c755] text-white px-4 py-2 rounded-xl text-sm hidden" onclick="showCreatePostModal()">
-                    <i class="fas fa-plus mr-1"></i>สร้าง
-                </button>
-            </div>
-            <div id="my-posts-list" class="my-posts-grid">
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-            </div>
-        </div>
-
-        <!-- Tab: Admin -->
-        <div id="tab-admin" class="tab-content">
-            <div class="max-w-7xl mx-auto px-4">
+        <!-- My Posts Tab -->
+        <div id="tab-my" class="tab-content hidden">
+            <div class="p-4">
                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold text-[#06c755]">จัดการระบบ</h2>
-                    <button id="refresh-admin" class="text-[#06c755] text-sm">
-                        <i class="fas fa-sync-alt mr-1"></i>รีเฟรช
-                    </button>
+                    <h2 class="font-bold" style="color:var(--primary);font-size:18px;">โพสต์ของฉัน</h2>
+                    <button id="create-post-btn" class="hidden" onclick="showCreateModal()" style="background:var(--primary);color:#fff;border:none;padding:8px 16px;border-radius:12px;font-size:14px;cursor:pointer;">+ สร้าง</button>
                 </div>
+                <div id="my-posts-list" class="posts-grid">
+                    <div class="skeleton"></div>
+                    <div class="skeleton"></div>
+                </div>
+            </div>
+        </div>
 
+        <!-- Admin Tab -->
+        <div id="tab-admin" class="tab-content hidden">
+            <div class="p-4">
+                <h2 class="font-bold mb-4" style="color:var(--primary);font-size:18px;">จัดการระบบ</h2>
+                
                 <!-- Admin Stats -->
-                <div class="admin-section">
-                    <h3 class="font-semibold mb-3">สถิติ</h3>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="admin-stat">
-                            <p class="text-xs text-gray-400">ผู้ใช้</p>
-                            <p id="admin-users" class="text-xl font-bold text-[#06c755]">0</p>
+                <div style="background:linear-gradient(135deg,rgba(6,199,85,0.1),transparent);border:1px solid var(--primary);border-radius:16px;padding:16px;margin-bottom:16px;">
+                    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+                        <div style="background:var(--bg-card);padding:12px;border-radius:12px;text-align:center;">
+                            <div class="text-xs text-gray-400">ผู้ใช้</div>
+                            <div id="admin-users" class="text-xl font-bold" style="color:var(--primary);">0</div>
                         </div>
-                        <div class="admin-stat">
-                            <p class="text-xs text-gray-400">โพสต์</p>
-                            <p id="admin-posts" class="text-xl font-bold text-[#06c755]">0</p>
+                        <div style="background:var(--bg-card);padding:12px;border-radius:12px;text-align:center;">
+                            <div class="text-xs text-gray-400">โพสต์</div>
+                            <div id="admin-posts" class="text-xl font-bold" style="color:var(--primary);">0</div>
                         </div>
-                        <div class="admin-stat">
-                            <p class="text-xs text-gray-400">วันนี้</p>
-                            <p id="admin-today" class="text-xl font-bold text-[#06c755]">0</p>
+                        <div style="background:var(--bg-card);padding:12px;border-radius:12px;text-align:center;">
+                            <div class="text-xs text-gray-400">วันนี้</div>
+                            <div id="admin-today" class="text-xl font-bold" style="color:var(--primary);">0</div>
                         </div>
-                        <div class="admin-stat">
-                            <p class="text-xs text-gray-400">รออนุมัติ</p>
-                            <p id="admin-pending" class="text-xl font-bold text-yellow-500">0</p>
+                        <div style="background:var(--bg-card);padding:12px;border-radius:12px;text-align:center;">
+                            <div class="text-xs text-gray-400">รออนุมัติ</div>
+                            <div id="admin-pending" class="text-xl font-bold" style="color:#f59e0b;">0</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Admin Tabs -->
-                <div class="flex border-b border-[#2a2e36] mb-4 overflow-x-auto">
-                    <button class="admin-tab-btn flex-1 py-2 text-center active" data-admin-tab="posts">จัดการโพสต์</button>
-                    <button class="admin-tab-btn flex-1 py-2 text-center" data-admin-tab="pending">
-                        รออนุมัติ <span id="pending-badge" class="ml-1 bg-yellow-500 text-white text-xs rounded-full px-1.5 py-0.5 hidden">0</span>
-                    </button>
-                    <button class="admin-tab-btn flex-1 py-2 text-center" data-admin-tab="users">จัดการผู้ใช้</button>
-                    <button class="admin-tab-btn flex-1 py-2 text-center" data-admin-tab="comments">ความคิดเห็น</button>
-                    <button class="admin-tab-btn flex-1 py-2 text-center" data-admin-tab="settings">ตั้งค่า</button>
+                <div style="display:flex;border-bottom:1px solid var(--border);margin-bottom:16px;">
+                    <button class="admin-tab active" data-admin="posts" style="flex:1;padding:12px;background:none;border:none;color:var(--text);cursor:pointer;">โพสต์</button>
+                    <button class="admin-tab" data-admin="pending" style="flex:1;padding:12px;background:none;border:none;color:var(--text);cursor:pointer;">รออนุมัติ <span id="pending-count" style="background:#f59e0b;color:#fff;padding:2px 6px;border-radius:10px;font-size:10px;margin-left:4px;display:none;">0</span></button>
+                    <button class="admin-tab" data-admin="users" style="flex:1;padding:12px;background:none;border:none;color:var(--text);cursor:pointer;">ผู้ใช้</button>
                 </div>
 
-                <!-- Admin: Posts -->
-                <div id="admin-posts-tab" class="admin-tab">
-                    <button class="btn-primary mb-4" onclick="showCreatePostModal()">
-                        <i class="fas fa-plus mr-2"></i>สร้างโพสต์ใหม่
-                    </button>
-                    <div id="admin-posts-list" class="space-y-2"></div>
-                </div>
-
-                <!-- Admin: Pending -->
-                <div id="admin-pending-tab" class="admin-tab hidden">
-                    <h3 class="font-semibold mb-3">โพสต์ที่รออนุมัติ</h3>
-                    <div id="pending-posts-list" class="space-y-3"></div>
-                </div>
-
-                <!-- Admin: Users -->
-                <div id="admin-users-tab" class="admin-tab hidden">
-                    <div class="search-box px-0 mb-4">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="user-search" placeholder="ค้นหาผู้ใช้..." autocomplete="off">
-                    </div>
-                    <div id="users-list" class="space-y-2"></div>
-                </div>
-
-                <!-- Admin: Comments -->
-                <div id="admin-comments-tab" class="admin-tab hidden">
-                    <h3 class="font-semibold mb-3">จัดการความคิดเห็น</h3>
-                    <div class="search-box px-0 mb-4">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="admin-comment-search" placeholder="ค้นหาความคิดเห็น...">
-                    </div>
-                    <div id="admin-comments-list" class="space-y-2"></div>
-                </div>
-
-                <!-- Admin: Settings -->
-                <div id="admin-settings-tab" class="admin-tab hidden">
-                    <div class="admin-section">
-                        <h3 class="font-semibold mb-3">ตั้งค่าระบบ</h3>
-                        <form id="settings-form" onsubmit="saveSettings(event)">
-                            <label class="block text-sm text-gray-400 mb-1">ชื่อระบบ</label>
-                            <input type="text" id="setting-app-name" class="input-field" value="iTNews" required>
-                            
-                            <label class="block text-sm text-gray-400 mb-1">Google Drive Folder ID</label>
-                            <input type="text" id="setting-drive-folder" class="input-field" value="18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE" required>
-                            
-                            <div class="mb-4">
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" id="setting-require-approval" class="w-4 h-4 text-[#06c755] rounded border-gray-600 focus:ring-[#06c755] focus:ring-2">
-                                    <span class="text-sm text-gray-400 select-none">ต้องอนุมัติโพสต์ก่อนเผยแพร่</span>
-                                </label>
-                            </div>
-                            
-                            <button type="submit" class="btn-primary" id="settings-save-btn">บันทึก</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modals (คงเดิมทั้งหมด) -->
-        <div class="modal" id="post-modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title" id="modal-title">กำลังโหลด...</h3>
-                    <button class="modal-close" onclick="closeModal()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body" id="modal-body">
-                    <div class="flex justify-center items-center py-10">
-                        <div class="loading-spinner w-10 h-10"></div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn-share" onclick="shareAsFlexMessage()" disabled id="modal-share-btn">
-                        <i class="fab fa-line"></i> แชร์
-                    </button>
-                    <button class="btn-outline" onclick="closeModal()">ปิด</button>
-                </div>
-                <div id="modal-admin-controls" class="px-4 pb-4 hidden">
-                    <p class="text-sm text-gray-400 mb-2">จัดการโพสต์</p>
-                    <div class="flex gap-2">
-                        <button id="modal-edit-btn" class="btn-outline flex-1 text-sm" onclick="editCurrentPost()" disabled>
-                            <i class="fas fa-edit mr-2"></i>แก้ไข
-                        </button>
-                        <button id="modal-delete-btn" class="btn-danger flex-1 text-sm" onclick="deleteCurrentPost()" disabled>
-                            <i class="fas fa-trash mr-2"></i>ลบ
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal" id="create-modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title" id="create-modal-title">สร้างโพสต์ใหม่</h3>
-                    <button class="modal-close" onclick="closeCreateModal()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form id="post-form" onsubmit="savePost(event)">
-                        <input type="hidden" id="edit-post-id">
-                        <select id="post-type" class="input-field" required>
-                            <option value="news">📰 ข่าวสาร</option>
-                            <option value="event">🎉 กิจกรรม</option>
-                            <option value="urgent">⚠️ ประกาศด่วน</option>
-                        </select>
-                        <input type="text" id="post-title" placeholder="หัวข้อ" class="input-field" required maxlength="100">
-                        <textarea id="post-content" placeholder="เนื้อหา" class="input-field" rows="5" required maxlength="5000"></textarea>
-                        <div class="upload-area" onclick="document.getElementById('post-image-file').click()">
-                            <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
-                            <p class="text-sm text-gray-400">คลิกเพื่ออัปโหลดรูปภาพ</p>
-                        </div>
-                        <input type="file" id="post-image-file" accept="image/*" style="display: none" onchange="previewImage(this)">
-                        <img id="image-preview" class="image-preview">
-                        <input type="hidden" id="post-image">
-                        <input type="text" id="post-link" placeholder="ลิงก์เพิ่มเติม (ถ้ามี)" class="input-field">
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" form="post-form" class="btn-primary flex-1" id="save-post-btn">บันทึก</button>
-                    <button type="button" class="btn-outline flex-1" onclick="closeCreateModal()">ยกเลิก</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal" id="profile-modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">แก้ไขโปรไฟล์</h3>
-                    <button class="modal-close" onclick="closeProfileModal()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form id="profile-form" onsubmit="saveProfile(event)">
-                        <input type="text" id="profile-phone" placeholder="เบอร์โทรศัพท์" class="input-field" maxlength="10">
-                        <input type="text" id="profile-department" placeholder="แผนก/หน่วยงาน" class="input-field" maxlength="50">
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" form="profile-form" class="btn-primary flex-1">บันทึก</button>
-                    <button type="button" class="btn-outline flex-1" onclick="closeProfileModal()">ยกเลิก</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal" id="role-modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">จัดการสิทธิ์ผู้ใช้</h3>
-                    <button class="modal-close" onclick="closeRoleModal()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form id="role-form" onsubmit="saveUserRole(event)">
-                        <input type="hidden" id="role-user-id">
-                        <p id="role-user-name" class="text-white mb-4"></p>
-                        <select id="user-role" class="input-field">
-                            <option value="user">👤 ผู้ใช้ทั่วไป</option>
-                            <option value="editor">✏️ ผู้เขียน</option>
-                            <option value="admin">👑 ผู้ดูแลระบบ</option>
-                        </select>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" form="role-form" class="btn-primary flex-1">บันทึก</button>
-                    <button type="button" class="btn-outline flex-1" onclick="closeRoleModal()">ยกเลิก</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal" id="edit-comment-modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">แก้ไขความคิดเห็น</h3>
-                    <button class="modal-close" onclick="closeEditCommentModal()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form id="edit-comment-form" onsubmit="saveEditedComment(event)">
-                        <input type="hidden" id="edit-comment-id">
-                        <textarea id="edit-comment-content" class="input-field" rows="4" required maxlength="500"></textarea>
-                        <div class="flex gap-2 mt-4">
-                            <button type="submit" class="btn-primary flex-1" id="edit-comment-save-btn">บันทึก</button>
-                            <button type="button" class="btn-outline flex-1" onclick="closeEditCommentModal()">ยกเลิก</button>
-                        </div>
-                    </form>
-                </div>
+                <!-- Admin Content -->
+                <div id="admin-content"></div>
             </div>
         </div>
     </div>
 
     <!-- Bottom Navigation -->
     <div class="bottom-nav">
-        <div class="nav-item active" data-tab="home">
-            <i class="fas fa-home"></i>
-            <span>หน้าแรก</span>
+        <div class="nav-item active" data-tab="home"><span>🏠</span><span>หน้าแรก</span></div>
+        <div class="nav-item" data-tab="my"><span>✏️</span><span>โพสต์ของฉัน</span></div>
+        <div class="nav-item hidden" data-tab="admin" id="admin-nav"><span>⚙️</span><span>จัดการ</span></div>
+    </div>
+
+    <!-- Post Detail Modal -->
+    <div class="modal" id="post-modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="modal-title" class="font-bold" style="font-size:18px;"></h3>
+                <button onclick="closeModal()" style="font-size:24px;background:none;border:none;color:var(--text);cursor:pointer;">✕</button>
+            </div>
+            <div id="modal-body"></div>
+            <div class="flex gap-2 mt-4">
+                <button class="btn-primary" onclick="sharePost()" id="share-btn" disabled>แชร์</button>
+                <button class="btn-outline" onclick="closeModal()">ปิด</button>
+            </div>
+            <div id="modal-admin-controls" class="flex gap-2 mt-2 hidden">
+                <button class="btn-outline" onclick="editPost()" id="edit-post-btn">แก้ไข</button>
+                <button class="btn-danger" onclick="deletePost()" id="delete-post-btn">ลบ</button>
+            </div>
         </div>
-        <div class="nav-item" data-tab="my">
-            <i class="fas fa-pen-fancy"></i>
-            <span>โพสต์ของฉัน</span>
+    </div>
+
+    <!-- Create Post Modal -->
+    <div class="modal" id="create-modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="create-modal-title" class="font-bold" style="font-size:18px;">สร้างโพสต์</h3>
+                <button onclick="closeCreateModal()" style="font-size:24px;background:none;border:none;color:var(--text);cursor:pointer;">✕</button>
+            </div>
+            <form id="post-form" onsubmit="savePost(event)">
+                <select id="post-type" style="width:100%;padding:12px;margin-bottom:12px;background:var(--bg);border:1px solid var(--border);border-radius:12px;color:var(--text);" required>
+                    <option value="news">📰 ข่าวสาร</option>
+                    <option value="event">🎉 กิจกรรม</option>
+                    <option value="urgent">⚠️ ประกาศด่วน</option>
+                </select>
+                <input type="text" id="post-title" placeholder="หัวข้อ" style="width:100%;padding:12px;margin-bottom:12px;background:var(--bg);border:1px solid var(--border);border-radius:12px;color:var(--text);" required>
+                <textarea id="post-content" placeholder="เนื้อหา" rows="5" style="width:100%;padding:12px;margin-bottom:12px;background:var(--bg);border:1px solid var(--border);border-radius:12px;color:var(--text);" required></textarea>
+                <input type="file" id="post-image" accept="image/*" style="width:100%;padding:12px;margin-bottom:12px;background:var(--bg);border:1px solid var(--border);border-radius:12px;color:var(--text);">
+                <input type="text" id="post-link" placeholder="ลิงก์เพิ่มเติม" style="width:100%;padding:12px;margin-bottom:12px;background:var(--bg);border:1px solid var(--border);border-radius:12px;color:var(--text);">
+                <img id="image-preview" style="width:100%;max-height:200px;object-fit:cover;border-radius:12px;margin-bottom:12px;display:none;">
+                <button type="submit" class="btn-primary" id="save-post-btn">บันทึก</button>
+            </form>
         </div>
-        <div class="nav-item hidden admin-only" data-tab="admin">
-            <i class="fas fa-cog"></i>
-            <span>จัดการ</span>
+    </div>
+
+    <!-- Role Modal -->
+    <div class="modal" id="role-modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold" style="font-size:18px;">จัดการสิทธิ์</h3>
+                <button onclick="closeRoleModal()" style="font-size:24px;background:none;border:none;color:var(--text);cursor:pointer;">✕</button>
+            </div>
+            <div id="role-user-name" class="mb-4"></div>
+            <select id="user-role" style="width:100%;padding:12px;margin-bottom:12px;background:var(--bg);border:1px solid var(--border);border-radius:12px;color:var(--text);">
+                <option value="user">👤 ผู้ใช้ทั่วไป</option>
+                <option value="editor">✏️ ผู้เขียน</option>
+                <option value="admin">👑 ผู้ดูแล</option>
+            </select>
+            <button class="btn-primary" onclick="saveUserRole()">บันทึก</button>
         </div>
     </div>
 
     <script>
-        // ========== LOADING MANAGER ==========
-        const LoadingManager = {
-            overlay: document.getElementById('loading-overlay'),
-            progressFill: document.getElementById('loading-progress'),
-            percentageEl: document.getElementById('loading-percentage'),
-            statusEl: document.getElementById('loading-status'),
-            appNameEl: document.getElementById('loading-app-name'),
-            
-            steps: {
-                init: { weight: 5, msg: 'กำลังเริ่มต้นระบบ...' },
-                liff: { weight: 15, msg: 'กำลังเชื่อมต่อ LINE...' },
-                profile: { weight: 20, msg: 'กำลังโหลดโปรไฟล์...' },
-                settings: { weight: 10, msg: 'กำลังโหลดการตั้งค่า...' },
-                posts: { weight: 25, msg: 'กำลังโหลดข่าวสาร...' },
-                urgent: { weight: 10, msg: 'กำลังโหลดประกาศด่วน...' },
-                myPosts: { weight: 10, msg: 'กำลังโหลดโพสต์ของคุณ...' },
-                admin: { weight: 5, msg: 'กำลังโหลดข้อมูลจัดการ...' },
-                complete: { weight: 0, msg: 'เสร็จสิ้น!' }
-            },
-            
-            currentProgress: 0,
-            totalWeight: 0,
-            
-            init() {
-                this.totalWeight = Object.values(this.steps).reduce((sum, step) => sum + step.weight, 0);
-                this.updateProgress(0, 'init');
-                
-                // แสดงชื่อแอพ
-                const appName = localStorage.getItem('appName') || 'iTNews';
-                this.appNameEl.textContent = appName;
-            },
-            
-            updateProgress(stepName, customMsg) {
-                const step = this.steps[stepName];
-                if (!step) return;
-                
-                this.currentProgress += step.weight;
-                const percent = Math.min(95, Math.round((this.currentProgress / this.totalWeight) * 100));
-                
-                this.progressFill.style.width = percent + '%';
-                this.percentageEl.textContent = percent + '%';
-                this.statusEl.textContent = customMsg || step.msg;
-            },
-            
-            complete() {
-                this.progressFill.style.width = '100%';
-                this.percentageEl.textContent = '100%';
-                this.statusEl.textContent = 'พร้อมใช้งาน!';
-                
-                setTimeout(() => {
-                    this.overlay.classList.add('hide');
-                }, 300);
-            },
-            
-            error(msg) {
-                this.statusEl.textContent = msg || 'เกิดข้อผิดพลาด';
-                this.statusEl.style.color = '#ef4444';
-            }
-        };
-
         // ========== CONFIG ==========
         const CONFIG = {
             GAS_URL: 'https://script.google.com/macros/s/AKfycbwSz6Y_fpvB0qN52eS6QD2RFJD-bJA369B6b86W1ZGVCOrbPXGGbpBIS3hDO8h6awKzkw/exec',
-            LIFF_ID: '2008904120-T7I0VPZf',
-            PAGE_SIZE: 9,
-            DRIVE_FOLDER_ID: '18V_3SzGvCIfwbRqIpIEwRSVdA88T8mcE',
-            CACHE_TTL: 5 * 60 * 1000 // 5 นาที
-        };
-
-        // ========== CACHE MANAGER ==========
-        const CacheManager = {
-            get(key) {
-                try {
-                    const item = localStorage.getItem(`cache_${key}`);
-                    if (!item) return null;
-                    
-                    const { data, timestamp } = JSON.parse(item);
-                    if (Date.now() - timestamp > CONFIG.CACHE_TTL) {
-                        localStorage.removeItem(`cache_${key}`);
-                        return null;
-                    }
-                    
-                    return data;
-                } catch {
-                    return null;
-                }
-            },
-            
-            set(key, data) {
-                try {
-                    localStorage.setItem(`cache_${key}`, JSON.stringify({
-                        data,
-                        timestamp: Date.now()
-                    }));
-                } catch (e) {
-                    // ถ้า localStorage เต็ม ให้ลบของเก่า
-                    if (e.name === 'QuotaExceededError') {
-                        this.clearOldest();
-                        try {
-                            localStorage.setItem(`cache_${key}`, JSON.stringify({
-                                data,
-                                timestamp: Date.now()
-                            }));
-                        } catch {}
-                    }
-                }
-            },
-            
-            clearOldest() {
-                const keys = [];
-                for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
-                    if (key.startsWith('cache_')) {
-                        try {
-                            const item = JSON.parse(localStorage.getItem(key));
-                            keys.push({ key, timestamp: item.timestamp });
-                        } catch {}
-                    }
-                }
-                
-                keys.sort((a, b) => a.timestamp - b.timestamp);
-                keys.slice(0, Math.floor(keys.length / 2)).forEach(k => {
-                    localStorage.removeItem(k.key);
-                });
-            },
-            
-            clear() {
-                Object.keys(localStorage).forEach(key => {
-                    if (key.startsWith('cache_')) {
-                        localStorage.removeItem(key);
-                    }
-                });
-            }
+            LIFF_ID: '2008904120-T7I0VPZf'
         };
 
         // ========== STATE ==========
@@ -798,263 +303,95 @@
             posts: [],
             myPosts: [],
             pendingPosts: [],
-            adminPosts: [],
             users: [],
             comments: {},
-            allComments: [],
-            currentFilter: 'all',
-            searchTerm: '',
+            filter: 'all',
+            search: '',
             isAdmin: false,
             isEditor: false,
             currentPage: 1,
-            myPostsPage: 1,
-            adminPostsPage: 1,
-            totalPages: 1,
-            myPostsTotalPages: 1,
-            adminPostsTotalPages: 1,
             currentPost: null,
-            currentEditingComment: null,
-            settings: { 
-                appName: 'iTNews',
-                driveFolderId: CONFIG.DRIVE_FOLDER_ID,
-                requireApproval: 'false' 
-            },
-            urgentPosts: [],
-            initialized: false,
-            loadingPromises: []
+            settings: { appName: 'iTNews' }
         };
 
-        // ========== DOM Cache ==========
-        const $ = {
-            initLoading: document.getElementById('loading-overlay'),
-            pageTitle: document.getElementById('page-title'),
-            navbarAppName: document.getElementById('navbar-app-name'),
-            homeTab: document.getElementById('tab-home'),
-            myTab: document.getElementById('tab-my'),
-            adminTab: document.getElementById('tab-admin'),
+        // ========== DOM Elements ==========
+        const dom = {
+            loading: document.getElementById('loading-screen'),
+            home: document.getElementById('tab-home'),
+            my: document.getElementById('tab-my'),
+            admin: document.getElementById('tab-admin'),
             postsList: document.getElementById('posts-list'),
             myPostsList: document.getElementById('my-posts-list'),
-            adminPostsList: document.getElementById('admin-posts-list'),
-            pendingPostsList: document.getElementById('pending-posts-list'),
-            usersList: document.getElementById('users-list'),
-            adminCommentsList: document.getElementById('admin-comments-list'),
+            adminContent: document.getElementById('admin-content'),
+            profileHeader: document.getElementById('profile-header'),
             profileName: document.getElementById('profile-name'),
             profileEmail: document.getElementById('profile-email'),
             profileAvatar: document.getElementById('profile-avatar'),
-            profileRole: document.getElementById('profile-role'),
-            profileHeader: document.getElementById('profile-header'),
             statNews: document.getElementById('stat-news'),
             statEvents: document.getElementById('stat-events'),
             statUrgent: document.getElementById('stat-urgent'),
-            searchInput: document.getElementById('search-input'),
+            heroSlider: document.getElementById('hero-slider'),
+            search: document.getElementById('search-input'),
             filterBtns: document.querySelectorAll('.filter-btn'),
             navItems: document.querySelectorAll('.nav-item'),
+            adminNav: document.getElementById('admin-nav'),
+            createBtn: document.getElementById('create-post-btn'),
             modal: document.getElementById('post-modal'),
-            modalBody: document.getElementById('modal-body'),
             modalTitle: document.getElementById('modal-title'),
-            modalShareBtn: document.getElementById('modal-share-btn'),
-            modalEditBtn: document.getElementById('modal-edit-btn'),
-            modalDeleteBtn: document.getElementById('modal-delete-btn'),
+            modalBody: document.getElementById('modal-body'),
+            shareBtn: document.getElementById('share-btn'),
             modalAdminControls: document.getElementById('modal-admin-controls'),
-            floatingBtn: document.getElementById('floating-create-btn'),
-            createPostBtn: document.getElementById('create-post-btn'),
-            adminOnly: document.querySelectorAll('.admin-only'),
-            heroSlider: document.getElementById('hero-slider-wrapper'),
-            paginationContainer: document.getElementById('pagination-container'),
-            pageInfo: document.getElementById('page-info'),
-            prevPage: document.getElementById('prev-page'),
-            nextPage: document.getElementById('next-page'),
-            refreshAdmin: document.getElementById('refresh-admin'),
+            editPostBtn: document.getElementById('edit-post-btn'),
+            deletePostBtn: document.getElementById('delete-post-btn'),
+            navbarName: document.getElementById('navbar-app-name'),
             adminUsers: document.getElementById('admin-users'),
             adminPosts: document.getElementById('admin-posts'),
             adminToday: document.getElementById('admin-today'),
             adminPending: document.getElementById('admin-pending'),
-            pendingBadge: document.getElementById('pending-badge'),
-            userSearch: document.getElementById('user-search'),
-            adminCommentSearch: document.getElementById('admin-comment-search'),
-            settingsSaveBtn: document.getElementById('settings-save-btn'),
-            settingRequireApproval: document.getElementById('setting-require-approval')
+            pendingCount: document.getElementById('pending-count')
         };
 
         // ========== UTILS ==========
-        function showToast(msg, type = 'success') {
+        const formatDate = (d) => d ? new Date(d).toLocaleDateString('th-TH') : '';
+        const formatDateTime = (d) => d ? new Date(d).toLocaleString('th-TH') : '';
+
+        function showToast(msg, isError = false) {
             const toast = document.createElement('div');
-            toast.style.cssText = `
-                position: fixed;
-                bottom: 80px;
-                left: 16px;
-                right: 16px;
-                background: #1a1d24;
-                border-left: 4px solid ${type === 'success' ? '#06c755' : '#ef4444'};
-                border-radius: 12px;
-                padding: 12px 16px;
-                color: white;
-                z-index: 2000;
-                max-width: 400px;
-                margin: 0 auto;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-                animation: slideUp 0.2s ease;
-            `;
+            toast.style.cssText = `position:fixed;bottom:80px;left:16px;right:16px;background:${isError?'#ef4444':'#06c755'};color:#fff;padding:12px;border-radius:12px;text-align:center;z-index:9999;`;
             toast.textContent = msg;
             document.body.appendChild(toast);
-            setTimeout(() => {
-                toast.style.animation = 'slideDown 0.2s ease';
-                setTimeout(() => toast.remove(), 200);
-            }, 2000);
-        }
-
-        // เพิ่ม animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideUp {
-                from { transform: translateY(100%); opacity: 0; }
-                to { transform: translateY(0); opacity: 1; }
-            }
-            @keyframes slideDown {
-                from { transform: translateY(0); opacity: 1; }
-                to { transform: translateY(100%); opacity: 0; }
-            }
-        `;
-        document.head.appendChild(style);
-
-        function formatDate(dateStr) {
-            if (!dateStr) return '';
-            return new Date(dateStr).toLocaleDateString('th-TH', { 
-                day: 'numeric', month: 'short', year: 'numeric'
-            });
-        }
-
-        function formatDateTime(dateStr) {
-            if (!dateStr) return '';
-            return new Date(dateStr).toLocaleString('th-TH');
-        }
-
-        function formatTimeAgo(dateStr) {
-            const date = new Date(dateStr);
-            const now = new Date();
-            const diffMs = now - date;
-            const diffMins = Math.floor(diffMs / 60000);
-            const diffHours = Math.floor(diffMs / 3600000);
-            const diffDays = Math.floor(diffMs / 86400000);
-
-            if (diffMins < 1) return 'เมื่อสักครู่';
-            if (diffMins < 60) return `${diffMins} นาทีที่แล้ว`;
-            if (diffHours < 24) return `${diffHours} ชั่วโมงที่แล้ว`;
-            if (diffDays < 7) return `${diffDays} วันที่แล้ว`;
-            return formatDate(dateStr);
-        }
-
-        // Debounce function
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
-        }
-
-        // ========== UPDATE APP NAME ==========
-        function updateAppName(name) {
-            if (!name) name = 'iTNews';
-            $.pageTitle.textContent = name + ' · LINE';
-            $.navbarAppName.textContent = name;
-            localStorage.setItem('appName', name);
+            setTimeout(() => toast.remove(), 2000);
         }
 
         // ========== API CALL ==========
-        async function callGAS(path, data = {}) {
-            const cacheKey = `${path}_${JSON.stringify(data)}`;
-            
-            // ถ้าเป็น GET request ให้ลองใช้ cache
-            if (!data.postId && !data.commentId && !data.lineUserId) {
-                const cached = CacheManager.get(cacheKey);
-                if (cached) return cached;
-            }
-
+        async function callAPI(path, data = {}) {
             try {
                 const formData = new FormData();
                 formData.append('path', path);
                 if (state.user?.lineUserId) formData.append('lineUserId', state.user.lineUserId);
-                
-                Object.keys(data).forEach(key => {
-                    if (data[key] !== undefined && data[key] !== null) {
-                        formData.append(key, data[key]);
-                    }
-                });
+                Object.keys(data).forEach(k => data[k] !== undefined && formData.append(k, data[k]));
 
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 15000);
-
-                const res = await fetch(CONFIG.GAS_URL, { 
-                    method: 'POST', 
-                    body: formData,
-                    signal: controller.signal
-                });
-                
-                clearTimeout(timeoutId);
-                
+                const res = await fetch(CONFIG.GAS_URL, { method: 'POST', body: formData });
                 const text = await res.text();
-                const result = JSON.parse(text);
-                
-                // Cache เฉพาะ result ที่ success
-                if (result.success && !data.postId && !data.commentId) {
-                    CacheManager.set(cacheKey, result);
-                }
-                
-                return result;
-            } catch (error) {
+                return JSON.parse(text);
+            } catch {
                 return { success: false, message: 'connection error' };
             }
         }
 
         // ========== IMAGE UPLOAD ==========
-        async function uploadImageToDrive(file) {
-            try {
-                const base64 = await new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.onload = () => resolve(reader.result.split(',')[1]);
-                    reader.readAsDataURL(file);
-                });
-
-                const result = await callGAS('uploadImage', {
-                    fileName: file.name,
-                    fileType: file.type,
-                    fileData: base64,
-                    folderId: CONFIG.DRIVE_FOLDER_ID
-                });
-
-                if (result.success) {
-                    return `https://lh5.googleusercontent.com/d/${result.data.fileId}=s0`;
-                }
-                return null;
-            } catch {
-                return null;
-            }
+        async function uploadImage(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.readAsDataURL(file);
+            });
         }
 
-        window.previewImage = function(input) {
-            const preview = document.getElementById('image-preview');
-            if (input.files?.[0]) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        };
-
-        // ========== LIFF INIT ==========
-        async function initLIFF() {
+        // ========== INIT ==========
+        async function init() {
             try {
-                LoadingManager.updateProgress('init');
-                
                 await liff.init({ liffId: CONFIG.LIFF_ID });
-                LoadingManager.updateProgress('liff');
                 
                 if (!liff.isLoggedIn()) {
                     liff.login();
@@ -1062,14 +399,13 @@
                 }
 
                 const profile = await liff.getProfile();
-                const idToken = liff.getDecodedIDToken();
-                LoadingManager.updateProgress('profile');
+                const token = liff.getDecodedIDToken();
 
-                const result = await callGAS('user/profile', {
+                const result = await callAPI('user/profile', {
                     lineUserId: profile.userId,
                     displayName: profile.displayName,
                     pictureUrl: profile.pictureUrl || '',
-                    email: idToken?.email || ''
+                    email: token?.email || ''
                 });
 
                 if (result.success) {
@@ -1078,230 +414,113 @@
                     state.isEditor = state.isAdmin || state.user.role === 'editor';
 
                     // Update UI
-                    $.profileName.textContent = state.user.displayName || 'ผู้ใช้';
-                    $.profileEmail.textContent = state.user.email || '';
-                    $.profileAvatar.src = state.user.pictureUrl || 'https://via.placeholder.com/60';
-                    $.profileRole.textContent = {
-                        admin: '👑 ผู้ดูแลระบบ',
-                        editor: '✏️ ผู้เขียน',
-                        user: '👤 ผู้ใช้ทั่วไป'
-                    }[state.user.role] || '';
-                    
-                    $.profileHeader.style.display = 'flex';
+                    dom.profileName.textContent = state.user.displayName;
+                    dom.profileEmail.textContent = state.user.email || '';
+                    dom.profileAvatar.src = state.user.pictureUrl || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'48\' height=\'48\' viewBox=\'0 0 48 48\'%3E%3Crect width=\'48\' height=\'48\' fill=\'%232a2e36\'/%3E%3C/svg%3E';
+                    dom.profileHeader.classList.remove('hidden');
 
-                    // Show/hide admin elements
-                    $.adminOnly.forEach(el => {
-                        if (state.isAdmin) el.classList.remove('hidden');
-                        else el.classList.add('hidden');
-                    });
+                    if (state.isAdmin) dom.adminNav.classList.remove('hidden');
+                    if (state.isEditor) dom.createBtn.classList.remove('hidden');
 
-                    if (state.isEditor) {
-                        $.floatingBtn.classList.remove('hidden');
-                        if ($.createPostBtn) $.createPostBtn.classList.remove('hidden');
-                    }
-
-                    // Load settings first
-                    LoadingManager.updateProgress('settings');
+                    // Load settings
                     await loadSettings();
                     
                     // Load data in parallel
-                    LoadingManager.updateProgress('posts');
-                    LoadingManager.updateProgress('urgent');
-                    LoadingManager.updateProgress('myPosts');
-                    
                     await Promise.all([
-                        loadPosts().then(() => LoadingManager.updateProgress('posts')),
-                        loadUrgentPosts().then(() => LoadingManager.updateProgress('urgent')),
-                        loadMyPosts().then(() => LoadingManager.updateProgress('myPosts'))
+                        loadPosts(),
+                        loadUrgentPosts(),
+                        loadMyPosts()
                     ]);
 
                     if (state.isAdmin) {
-                        LoadingManager.updateProgress('admin');
-                        await Promise.all([
-                            loadUsers(),
-                            loadAdminStats(),
-                            loadPendingPosts(),
-                            loadAllComments()
-                        ]);
+                        loadAdminStats();
+                        loadUsers();
+                        loadPendingPosts();
                     }
 
-                    LoadingManager.complete();
-                    state.initialized = true;
+                    // Hide loading
+                    setTimeout(() => dom.loading.classList.add('hide'), 200);
                 }
             } catch (error) {
-                LoadingManager.error('ไม่สามารถเชื่อมต่อ LINE ได้');
-                showToast('ไม่สามารถเชื่อมต่อ LINE ได้', 'error');
+                dom.loading.classList.add('hide');
+                showToast('เชื่อมต่อไม่ได้', true);
             }
         }
 
         // ========== POSTS ==========
         async function loadPosts() {
-            const result = await callGAS('posts', {
+            const result = await callAPI('posts', {
                 page: state.currentPage,
-                filter: state.currentFilter,
-                search: state.searchTerm,
-                pageSize: CONFIG.PAGE_SIZE,
-                includePending: state.isAdmin
+                filter: state.filter,
+                search: state.search
             });
 
             if (result.success) {
                 state.posts = result.data.posts || [];
-                state.totalPages = Math.ceil((result.data.total || 0) / CONFIG.PAGE_SIZE) || 1;
-
-                $.statNews.textContent = result.data.stats?.news || 0;
-                $.statEvents.textContent = result.data.stats?.events || 0;
-                $.statUrgent.textContent = result.data.stats?.urgent || 0;
-
-                if (state.isAdmin) {
-                    state.adminPosts = result.data.posts || [];
-                    renderAdminPosts();
-                }
-
+                dom.statNews.textContent = result.data.stats?.news || 0;
+                dom.statEvents.textContent = result.data.stats?.events || 0;
+                dom.statUrgent.textContent = result.data.stats?.urgent || 0;
                 renderPosts();
-
-                if (state.totalPages > 1) {
-                    $.paginationContainer.classList.remove('hidden');
-                    $.pageInfo.textContent = `หน้า ${state.currentPage} จาก ${state.totalPages}`;
-                    $.prevPage.disabled = state.currentPage <= 1;
-                    $.nextPage.disabled = state.currentPage >= state.totalPages;
-                } else {
-                    $.paginationContainer.classList.add('hidden');
-                }
             }
         }
 
         function renderPosts() {
-            let filtered = state.posts;
-            if (!state.isAdmin) {
-                filtered = state.posts.filter(p => p.approvalStatus === 'approved');
-            }
-
-            if (!filtered.length) {
-                $.postsList.innerHTML = `
-                    <div class="col-span-full text-center py-10 text-gray-400">
-                        <i class="fas fa-newspaper text-3xl mb-3"></i>
-                        <p>ไม่มีโพสต์</p>
-                    </div>
-                `;
+            if (!state.posts.length) {
+                dom.postsList.innerHTML = '<div class="text-center p-8 text-gray-400">ไม่มีโพสต์</div>';
                 return;
             }
 
-            $.postsList.innerHTML = filtered.map(p => `
-                <div class="news-card" onclick="showPostDetail('${p.postId}')">
-                    ${p.imageUrl ? `<img src="${p.imageUrl}" class="news-image" loading="lazy" onerror="this.style.display='none'">` : ''}
+            dom.postsList.innerHTML = state.posts.map(p => `
+                <div class="news-card" onclick="showPost('${p.postId}')">
+                    ${p.imageUrl ? `<img src="${p.imageUrl}" class="news-image" loading="lazy">` : ''}
                     <div class="news-content">
                         <div class="flex justify-between items-start mb-2">
-                            <span class="badge badge-${p.type}">${{news:'📰', event:'🎉', urgent:'⚠️'}[p.type]}</span>
-                            <span class="text-xs text-gray-500">${formatDate(p.createdAt)}</span>
+                            <span class="badge badge-${p.type}">${{news:'📰',event:'🎉',urgent:'⚠️'}[p.type]}</span>
+                            <span class="text-xs text-gray-400">${formatDate(p.createdAt)}</span>
                         </div>
-                        <h3 class="font-semibold text-base mb-2 line-clamp-2">${p.title}</h3>
+                        <h3 class="font-bold mb-2 line-clamp-2">${p.title}</h3>
                         <p class="text-sm text-gray-400 line-clamp-2">${p.content}</p>
-                        <div class="flex items-center justify-between mt-3 text-xs text-gray-500">
-                            <span><i class="fas fa-user mr-1"></i> ${p.authorName || ''}</span>
-                            <span><i class="far fa-comment mr-1"></i> ${p.commentCount || 0}</span>
-                        </div>
                     </div>
                 </div>
             `).join('');
         }
 
-        function renderAdminPosts() {
-            if (!$.adminPostsList) return;
-            
-            if (!state.adminPosts || !state.adminPosts.length) {
-                $.adminPostsList.innerHTML = '<p class="text-center text-gray-400 py-6">ไม่มีโพสต์</p>';
+        // ========== URGENT POSTS ==========
+        async function loadUrgentPosts() {
+            const result = await callAPI('posts', { filter: 'urgent', pageSize: 5 });
+            if (result.success) {
+                const urgent = result.data.posts?.filter(p => p.approvalStatus === 'approved') || [];
+                renderHeroSlider(urgent);
+            }
+        }
+
+        function renderHeroSlider(posts) {
+            if (!posts.length) {
+                dom.heroSlider.innerHTML = '<div style="padding:20px;text-align:center;">ไม่มีประกาศด่วน</div>';
                 return;
             }
 
-            $.adminPostsList.innerHTML = state.adminPosts.map(p => `
-                <div class="flex justify-between items-center p-3 bg-[#111317] rounded-lg cursor-pointer" onclick="showPostDetail('${p.postId}')">
-                    <div class="flex-1">
-                        <p class="font-semibold text-sm">${p.title}</p>
-                        <p class="text-xs text-gray-400">${formatDate(p.createdAt)}</p>
-                    </div>
-                    <span class="badge badge-${p.type} mr-2">${{news:'📰', event:'🎉', urgent:'⚠️'}[p.type]}</span>
-                    <span class="text-xs ${p.approvalStatus === 'approved' ? 'text-green-500' : p.approvalStatus === 'pending' ? 'text-yellow-500' : 'text-red-500'}">
-                        ${p.approvalStatus === 'approved' ? 'เผยแพร่' : p.approvalStatus === 'pending' ? 'รออนุมัติ' : 'ปฏิเสธ'}
-                    </span>
-                </div>
-            `).join('');
-        }
-
-        async function loadUrgentPosts() {
-            const result = await callGAS('posts', {
-                filter: 'urgent',
-                pageSize: 10,
-                includePending: false
-            });
-
-            if (result.success) {
-                state.urgentPosts = result.data.posts?.filter(p => p.approvalStatus === 'approved') || [];
-                renderHeroSlider();
-            }
-        }
-
-        function renderHeroSlider() {
-            const urgent = state.urgentPosts.slice(0, 5);
-            
-            if (!urgent.length) {
-                $.heroSlider.innerHTML = `
-                    <div class="swiper-slide">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='400' viewBox='0 0 1200 400'%3E%3Crect width='1200' height='400' fill='%231a1d24'/%3E%3C/svg%3E" class="w-full h-full object-cover">
-                        <div class="slide-content">
-                            <h3 class="font-bold">ไม่มีประกาศด่วน</h3>
+            let current = 0;
+            const slide = () => {
+                const p = posts[current];
+                dom.heroSlider.innerHTML = `
+                    <div onclick="showPost('${p.postId}')" style="cursor:pointer;">
+                        <img src="${p.imageUrl || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'1200\' height=\'200\' viewBox=\'0 0 1200 200\'%3E%3Crect width=\'1200\' height=\'200\' fill=\'%232a2e36\'/%3E%3C/svg%3E'}" style="width:100%;height:200px;object-fit:cover;">
+                        <div style="position:absolute;bottom:0;left:0;right:0;padding:20px;background:linear-gradient(to top, rgba(0,0,0,0.9), transparent);">
+                            <h3 style="font-weight:bold;">${p.title}</h3>
                         </div>
                     </div>
                 `;
-                return;
-            }
-
-            $.heroSlider.innerHTML = urgent.map(p => `
-                <div class="swiper-slide cursor-pointer" onclick="showPostDetail('${p.postId}')">
-                    <img src="${p.imageUrl || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'1200\' height=\'400\' viewBox=\'0 0 1200 400\'%3E%3Crect width=\'1200\' height=\'400\' fill=\'%232a2e36\'/%3E%3C/svg%3E'}" class="w-full h-full object-cover" loading="lazy">
-                    <span class="slide-badge urgent">⚠️ ประกาศด่วน</span>
-                    <div class="slide-content">
-                        <h3 class="font-bold line-clamp-2">${p.title}</h3>
-                        <p class="text-xs text-gray-300 mt-1">${formatDate(p.createdAt)}</p>
-                    </div>
-                </div>
-            `).join('');
-
-            if (window.heroSwiper) window.heroSwiper.destroy();
+                current = (current + 1) % posts.length;
+            };
             
-            // รอให้ DOM อัปเดทแล้วค่อยสร้าง Swiper
-            setTimeout(() => {
-                window.heroSwiper = new Swiper('.hero-swiper', {
-                    autoplay: { delay: 3000 },
-                    pagination: { el: '.swiper-pagination', clickable: true },
-                    loop: urgent.length > 1
-                });
-            }, 0);
+            slide();
+            setInterval(slide, 3000);
         }
-
-        // ========== PAGINATION ==========
-        window.changePage = function(direction) {
-            if (direction === 'prev' && state.currentPage > 1) {
-                state.currentPage--;
-                loadPosts();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            } else if (direction === 'next' && state.currentPage < state.totalPages) {
-                state.currentPage++;
-                loadPosts();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        };
-
-        $.prevPage?.addEventListener('click', () => changePage('prev'));
-        $.nextPage?.addEventListener('click', () => changePage('next'));
 
         // ========== MY POSTS ==========
         async function loadMyPosts() {
-            const result = await callGAS('user/posts', {
-                lineUserId: state.user?.lineUserId,
-                page: state.myPostsPage,
-                pageSize: CONFIG.PAGE_SIZE
-            });
-
+            const result = await callAPI('user/posts', { lineUserId: state.user?.lineUserId });
             if (result.success) {
                 state.myPosts = result.data.posts || result.data || [];
                 renderMyPosts();
@@ -1310,95 +529,68 @@
 
         function renderMyPosts() {
             if (!state.myPosts.length) {
-                $.myPostsList.innerHTML = `
-                    <div class="col-span-full text-center py-10 text-gray-400">
-                        <i class="fas fa-pen-fancy text-3xl mb-3"></i>
-                        <p>ยังไม่มีโพสต์</p>
-                        ${state.isEditor ? `
-                            <button class="btn-primary text-sm mt-3" onclick="showCreatePostModal()">
-                                <i class="fas fa-plus mr-1"></i>สร้างโพสต์แรก
-                            </button>
-                        ` : ''}
-                    </div>
-                `;
+                dom.myPostsList.innerHTML = '<div class="text-center p-8 text-gray-400">ยังไม่มีโพสต์</div>';
                 return;
             }
 
-            $.myPostsList.innerHTML = state.myPosts.map(p => `
-                <div class="news-card" onclick="showPostDetail('${p.postId}')">
+            dom.myPostsList.innerHTML = state.myPosts.map(p => `
+                <div class="news-card" onclick="showPost('${p.postId}')">
                     ${p.imageUrl ? `<img src="${p.imageUrl}" class="news-image" loading="lazy">` : ''}
                     <div class="news-content">
                         <div class="flex justify-between items-start mb-2">
-                            <span class="badge badge-${p.type}">${{news:'📰', event:'🎉', urgent:'⚠️'}[p.type]}</span>
-                            <span class="text-xs ${p.approvalStatus === 'approved' ? 'text-green-500' : 'text-yellow-500'}">
-                                ${p.approvalStatus === 'approved' ? 'เผยแพร่' : 'รออนุมัติ'}
+                            <span class="badge badge-${p.type}">${{news:'📰',event:'🎉',urgent:'⚠️'}[p.type]}</span>
+                            <span class="text-xs ${p.approvalStatus==='approved'?'text-green-500':'text-yellow-500'}">
+                                ${p.approvalStatus==='approved'?'เผยแพร่':'รออนุมัติ'}
                             </span>
                         </div>
-                        <h3 class="font-semibold text-base mb-2 line-clamp-2">${p.title}</h3>
+                        <h3 class="font-bold mb-2 line-clamp-2">${p.title}</h3>
                         <p class="text-sm text-gray-400 line-clamp-2">${p.content}</p>
-                        <div class="text-xs text-gray-500 mt-2">${formatDate(p.createdAt)}</div>
                     </div>
                 </div>
             `).join('');
         }
 
         // ========== POST DETAIL ==========
-        window.showPostDetail = async function(postId) {
-            $.modal.classList.add('active');
-            $.modalBody.innerHTML = '<div class="flex justify-center py-10"><div class="loading-spinner w-10 h-10"></div></div>';
+        window.showPost = async function(postId) {
+            dom.modal.classList.add('active');
+            dom.modalBody.innerHTML = '<div class="text-center p-8">กำลังโหลด...</div>';
             
-            const result = await callGAS('post', { postId });
+            const result = await callAPI('post', { postId });
             
             if (result.success) {
                 const p = result.data;
                 state.currentPost = p;
-                $.modalTitle.textContent = p.title;
+                dom.modalTitle.textContent = p.title;
 
                 const canEdit = state.isAdmin || (state.isEditor && p.authorId === state.user?.lineUserId);
                 const canDelete = state.isAdmin || (state.isEditor && p.authorId === state.user?.lineUserId);
 
-                $.modalBody.innerHTML = `
-                    ${p.imageUrl ? `<img src="${p.imageUrl}" class="w-full max-h-80 object-cover rounded-xl mb-4" loading="lazy">` : ''}
-                    <div class="flex gap-2 mb-4">
-                        <span class="badge badge-${p.type}">${{news:'📰 ข่าวสาร', event:'🎉 กิจกรรม', urgent:'⚠️ ประกาศด่วน'}[p.type]}</span>
-                        ${p.approvalStatus !== 'approved' ? '<span class="badge badge-pending">⏳ รออนุมัติ</span>' : ''}
-                    </div>
-                    <p class="whitespace-pre-wrap mb-6 leading-relaxed">${p.content}</p>
-                    ${p.link ? `
-                        <a href="${p.link}" target="_blank" rel="noopener noreferrer" class="block text-center bg-gradient-to-r from-[#2a2e36] to-[#1a1d24] text-[#06c755] p-4 rounded-xl border-2 border-[#06c755] mb-6 no-underline">
-                            🔗 ดูข้อมูลเพิ่มเติม
-                        </a>
-                    ` : ''}
-                    <div class="text-xs text-gray-400 border-t border-[#2a2e36] pt-4">
-                        <p>โพสต์โดย: ${p.authorName || 'ผู้ดูแล'}</p>
-                        <p class="mt-1">${formatDateTime(p.createdAt)}</p>
-                    </div>
+                dom.modalBody.innerHTML = `
+                    ${p.imageUrl ? `<img src="${p.imageUrl}" style="width:100%;max-height:300px;object-fit:cover;border-radius:12px;margin-bottom:16px;">` : ''}
+                    <div style="margin-bottom:16px;">${p.content}</div>
+                    ${p.link ? `<a href="${p.link}" target="_blank" style="display:block;text-align:center;padding:12px;background:var(--primary);color:#fff;border-radius:12px;margin-bottom:16px;text-decoration:none;">🔗 ดูเพิ่มเติม</a>` : ''}
+                    <div style="font-size:12px;color:var(--text-secondary);">โพสต์: ${formatDateTime(p.createdAt)}</div>
                 `;
 
-                $.modalShareBtn.disabled = false;
+                dom.shareBtn.disabled = false;
 
                 if (canEdit || canDelete) {
-                    $.modalAdminControls.classList.remove('hidden');
-                    $.modalEditBtn.style.display = canEdit ? 'flex' : 'none';
-                    $.modalDeleteBtn.style.display = canDelete ? 'flex' : 'none';
-                    $.modalEditBtn.disabled = false;
-                    $.modalDeleteBtn.disabled = false;
+                    dom.modalAdminControls.classList.remove('hidden');
+                    dom.editPostBtn.style.display = canEdit ? 'block' : 'none';
+                    dom.deletePostBtn.style.display = canDelete ? 'block' : 'none';
                 } else {
-                    $.modalAdminControls.classList.add('hidden');
+                    dom.modalAdminControls.classList.add('hidden');
                 }
 
                 loadComments(postId);
             }
         };
 
-        window.closeModal = function() {
-            $.modal.classList.remove('active');
-            state.currentPost = null;
-        };
+        window.closeModal = () => dom.modal.classList.remove('active');
 
         // ========== COMMENTS ==========
         async function loadComments(postId) {
-            const result = await callGAS('post/comments', { postId });
+            const result = await callAPI('post/comments', { postId });
             if (result.success) {
                 state.comments[postId] = result.data || [];
                 renderComments(postId);
@@ -1407,102 +599,42 @@
 
         function renderComments(postId) {
             const comments = state.comments[postId] || [];
-            
-            let commentsSection = document.getElementById(`comments-section-${postId}`);
-            if (!commentsSection) {
-                commentsSection = document.createElement('div');
-                commentsSection.id = `comments-section-${postId}`;
-                commentsSection.className = 'modal-comments-section';
-                $.modalBody.appendChild(commentsSection);
-            }
-
-            if (!comments.length) {
-                commentsSection.innerHTML = `
-                    <div class="modal-comments-title">
-                        <i class="far fa-comment-dots"></i>
-                        <span>ความคิดเห็น (0)</span>
+            const section = document.createElement('div');
+            section.innerHTML = `
+                <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
+                    <h4 style="margin-bottom:12px;">ความคิดเห็น (${comments.length})</h4>
+                    <div style="margin-bottom:12px;">
+                        <textarea id="comment-${postId}" placeholder="แสดงความคิดเห็น..." style="width:100%;padding:12px;background:var(--bg);border:1px solid var(--border);border-radius:12px;color:var(--text);" rows="2"></textarea>
+                        <button onclick="addComment('${postId}')" style="margin-top:8px;padding:8px 16px;background:var(--primary);color:#fff;border:none;border-radius:12px;">ส่ง</button>
                     </div>
-                    <div class="modal-comment-input-area">
-                        <textarea id="comment-input-${postId}" class="modal-comment-input" placeholder="แสดงความคิดเห็น..."></textarea>
-                        <button class="modal-comment-submit" onclick="addComment('${postId}')">ส่ง</button>
-                    </div>
-                    <div class="modal-empty-comments">
-                        <p>ยังไม่มีความคิดเห็น</p>
-                        <p class="text-xs mt-1">เป็นคนแรกที่แสดงความคิดเห็น</p>
-                    </div>
-                `;
-                return;
-            }
-
-            commentsSection.innerHTML = `
-                <div class="modal-comments-title">
-                    <i class="far fa-comment-dots"></i>
-                    <span>ความคิดเห็น (${comments.length})</span>
-                </div>
-                <div class="modal-comment-input-area">
-                    <textarea id="comment-input-${postId}" class="modal-comment-input" placeholder="แสดงความคิดเห็น..."></textarea>
-                    <button class="modal-comment-submit" onclick="addComment('${postId}')">ส่ง</button>
-                </div>
-                <div class="modal-comments-list">
-                    ${comments.map(c => {
-                        const isOwner = c.userId === state.user?.lineUserId;
-                        const isAdmin = state.isAdmin;
-                        const timeAgo = formatTimeAgo(c.createdAt);
-                        
-                        const isDeleted = c.status === 'deleted' || c.status === 'deleted_by_admin';
-                        const deletedClass = isDeleted ? 'deleted' : '';
-                        const statusText = c.status === 'deleted' ? 'ลบแล้ว' : (c.status === 'deleted_by_admin' ? 'ลบโดยแอดมิน' : '');
-                        const statusClass = c.status === 'deleted' ? 'modal-comment-status-deleted' : (c.status === 'deleted_by_admin' ? 'modal-comment-status-deleted_by_admin' : '');
-                        
-                        const showActions = !isDeleted && (isOwner || isAdmin);
-                        const showEdit = !isDeleted && isOwner;
-                        
-                        return `
-                            <div class="modal-comment-item ${deletedClass}" id="comment-${c.commentId}">
-                                <img src="${c.userPicture || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\' viewBox=\'0 0 32 32\'%3E%3Crect width=\'32\' height=\'32\' fill=\'%232a2e36\'/%3E%3C/svg%3E'}" 
-                                     class="modal-comment-avatar"
-                                     loading="lazy">
-                                <div class="modal-comment-content">
-                                    <div class="modal-comment-header">
-                                        <span class="modal-comment-author">${c.userName || 'ผู้ใช้'}</span>
-                                        <span class="modal-comment-time">${timeAgo}</span>
-                                        ${isDeleted ? `<span class="modal-comment-status-badge ${statusClass}">${statusText}</span>` : ''}
-                                    </div>
-                                    <div class="modal-comment-text">${isDeleted ? '<em>ความคิดเห็นนี้ถูกลบแล้ว</em>' : c.content}</div>
-                                    ${showActions ? `
-                                        <div class="modal-comment-actions">
-                                            ${showEdit ? `
-                                                <button class="modal-comment-action-btn" onclick="showEditCommentModal('${c.commentId}')">
-                                                    <i class="fas fa-edit"></i> แก้ไข
-                                                </button>
-                                            ` : ''}
-                                            <button class="modal-comment-action-btn delete" onclick="deleteComment('${c.commentId}')">
-                                                <i class="fas fa-trash"></i> ลบ
-                                            </button>
-                                        </div>
-                                    ` : ''}
+                    <div id="comments-${postId}">
+                        ${comments.map(c => `
+                            <div style="margin-bottom:12px;padding:12px;background:var(--bg);border-radius:12px;">
+                                <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                                    <span style="font-weight:600;color:var(--primary);">${c.userName}</span>
+                                    <span style="font-size:10px;color:var(--text-secondary);">${formatDate(c.createdAt)}</span>
                                 </div>
+                                <div>${c.content}</div>
                             </div>
-                        `;
-                    }).join('')}
+                        `).join('')}
+                    </div>
                 </div>
             `;
+            
+            const existing = document.getElementById('comments-section');
+            if (existing) existing.remove();
+            
+            section.id = 'comments-section';
+            dom.modalBody.appendChild(section);
         }
 
         window.addComment = async function(postId) {
-            const input = document.getElementById(`comment-input-${postId}`);
+            const input = document.getElementById(`comment-${postId}`);
             const content = input?.value.trim();
             
-            if (!content) {
-                showToast('กรุณาใส่ข้อความ', 'error');
-                return;
-            }
+            if (!content) return;
 
-            const submitBtn = document.querySelector(`#comment-input-${postId}`).nextElementSibling;
-            submitBtn.disabled = true;
-            submitBtn.classList.add('loading');
-
-            const result = await callGAS('post/comment/add', {
+            const result = await callAPI('post/comment/add', {
                 postId,
                 userId: state.user.lineUserId,
                 userName: state.user.displayName,
@@ -1512,531 +644,169 @@
 
             if (result.success) {
                 input.value = '';
-                await loadComments(postId);
-                
-                if (state.currentPost) {
-                    state.currentPost.commentCount = (state.currentPost.commentCount || 0) + 1;
-                }
-                
-                showToast('เพิ่มความคิดเห็นสำเร็จ');
-            } else {
-                showToast(result.message || 'เกิดข้อผิดพลาด', 'error');
-            }
-
-            submitBtn.disabled = false;
-            submitBtn.classList.remove('loading');
-        };
-
-        function showEditCommentModal(commentId) {
-            const comment = findCommentById(commentId);
-            if (!comment) return;
-            
-            if (comment.status === 'deleted' || comment.status === 'deleted_by_admin') {
-                showToast('ไม่สามารถแก้ไขความคิดเห็นที่ถูกลบแล้ว', 'error');
-                return;
-            }
-            
-            state.currentEditingComment = comment;
-            document.getElementById('edit-comment-id').value = comment.commentId;
-            document.getElementById('edit-comment-content').value = comment.content;
-            document.getElementById('edit-comment-modal').classList.add('active');
-        }
-
-        window.closeEditCommentModal = function() {
-            document.getElementById('edit-comment-modal').classList.remove('active');
-            state.currentEditingComment = null;
-        };
-
-        window.saveEditedComment = async function(e) {
-            e.preventDefault();
-            
-            const commentId = document.getElementById('edit-comment-id').value;
-            const content = document.getElementById('edit-comment-content').value.trim();
-            
-            if (!content) {
-                showToast('กรุณาใส่ข้อความ', 'error');
-                return;
-            }
-            
-            const saveBtn = document.getElementById('edit-comment-save-btn');
-            if (saveBtn.disabled) return;
-            
-            saveBtn.disabled = true;
-            saveBtn.classList.add('loading');
-            
-            const result = await callGAS('post/comment/update', {
-                commentId,
-                content,
-                userId: state.user.lineUserId
-            });
-            
-            if (result.success) {
-                closeEditCommentModal();
-                
-                for (let postId in state.comments) {
-                    const comment = state.comments[postId].find(c => c.commentId === commentId);
-                    if (comment) {
-                        comment.content = content;
-                        comment.updatedAt = new Date().toISOString();
-                        break;
-                    }
-                }
-                
-                if (state.currentPost) {
-                    renderComments(state.currentPost.postId);
-                }
-                
-                showToast('แก้ไขความคิดเห็นสำเร็จ');
-            } else {
-                showToast(result.message || 'แก้ไขไม่สำเร็จ', 'error');
-            }
-            
-            saveBtn.disabled = false;
-            saveBtn.classList.remove('loading');
-        };
-
-        window.deleteComment = async function(commentId) {
-            const comment = findCommentById(commentId);
-            if (!comment) return;
-            
-            if (comment.status === 'deleted' || comment.status === 'deleted_by_admin') {
-                showToast('ความคิดเห็นนี้ถูกลบไปแล้ว', 'error');
-                return;
-            }
-
-            const result = await Swal.fire({
-                title: 'ลบความคิดเห็น',
-                text: 'คุณแน่ใจหรือไม่ว่าต้องการลบความคิดเห็นนี้?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'ใช่, ลบ',
-                cancelButtonText: 'ยกเลิก'
-            });
-            
-            if (result.isConfirmed) {
-                const apiResult = await callGAS('post/comment/delete', {
-                    commentId,
-                    userId: state.user.lineUserId
-                });
-                
-                if (apiResult.success) {
-                    for (let postId in state.comments) {
-                        const commentIndex = state.comments[postId].findIndex(c => c.commentId === commentId);
-                        if (commentIndex !== -1) {
-                            state.comments[postId][commentIndex].status = 'deleted';
-                            state.comments[postId][commentIndex].content = '';
-                            
-                            if (state.currentPost && state.currentPost.postId === postId) {
-                                state.currentPost.commentCount = Math.max(0, (state.currentPost.commentCount || 0) - 1);
-                            }
-                            break;
-                        }
-                    }
-                    
-                    if (state.currentPost) {
-                        renderComments(state.currentPost.postId);
-                    }
-                    
-                    showToast('ลบความคิดเห็นสำเร็จ');
-                } else {
-                    showToast(apiResult.message || 'ลบไม่สำเร็จ', 'error');
-                }
+                loadComments(postId);
             }
         };
 
-        function findCommentById(commentId) {
-            for (let postId in state.comments) {
-                const comment = state.comments[postId].find(c => c.commentId === commentId);
-                if (comment) return comment;
-            }
-            return null;
-        }
-
-        // ========== SHARE AS FLEX MESSAGE ==========
-        window.shareAsFlexMessage = async function() {
-            if (!state.currentPost || !liff.isInClient()) {
-                showToast('ไม่สามารถแชร์ได้', 'error');
-                return;
-            }
-
-            const shareBtn = $.modalShareBtn;
-            shareBtn.disabled = true;
-            shareBtn.classList.add('loading');
-
+        // ========== SHARE ==========
+        window.sharePost = async function() {
+            if (!state.currentPost || !liff.isInClient()) return;
+            
             const p = state.currentPost;
+            await liff.shareTargetPicker([{
+                type: 'text',
+                text: `${p.title}\n\n${p.content.substring(0,200)}...\n\nอ่านต่อใน iTNews`
+            }]);
             
-            const typeConfig = {
-                news: { color: '#06c755', icon: '📰', label: 'ข่าวสาร' },
-                event: { color: '#f59e0b', icon: '🎉', label: 'กิจกรรม' },
-                urgent: { color: '#ef4444', icon: '⚠️', label: 'ประกาศด่วน' }
-            }[p.type] || { color: '#06c755', icon: '📰', label: 'ข่าวสาร' };
-
-            const flex = {
-                type: 'flex',
-                altText: `${typeConfig.icon} ${p.title}`,
-                contents: {
-                    type: 'bubble',
-                    size: 'mega',
-                    header: {
-                        type: 'box',
-                        layout: 'vertical',
-                        contents: [
-                            {
-                                type: 'box',
-                                layout: 'horizontal',
-                                contents: [
-                                    {
-                                        type: 'text',
-                                        text: typeConfig.icon,
-                                        size: 'xl',
-                                        align: 'start'
-                                    },
-                                    {
-                                        type: 'text',
-                                        text: typeConfig.label,
-                                        color: typeConfig.color,
-                                        size: 'xs',
-                                        align: 'end',
-                                        gravity: 'center'
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    hero: p.imageUrl ? {
-                        type: 'image',
-                        url: p.imageUrl,
-                        size: 'full',
-                        aspectRatio: '20:13',
-                        aspectMode: 'cover',
-                        backgroundColor: '#1a1d24'
-                    } : null,
-                    body: {
-                        type: 'box',
-                        layout: 'vertical',
-                        contents: [
-                            {
-                                type: 'text',
-                                text: p.title,
-                                weight: 'bold',
-                                size: 'xl',
-                                wrap: true,
-                                color: '#ffffff'
-                            },
-                            {
-                                type: 'text',
-                                text: p.content.length > 200 ? p.content.substring(0, 200) + '...' : p.content,
-                                wrap: true,
-                                color: '#9ca3af',
-                                size: 'md',
-                                margin: 'md'
-                            },
-                            {
-                                type: 'separator',
-                                margin: 'xl',
-                                color: '#2a2e36'
-                            },
-                            {
-                                type: 'box',
-                                layout: 'horizontal',
-                                margin: 'md',
-                                contents: [
-                                    {
-                                        type: 'text',
-                                        text: 'โพสต์โดย',
-                                        color: '#9ca3af',
-                                        size: 'xs'
-                                    },
-                                    {
-                                        type: 'text',
-                                        text: p.authorName || 'ผู้ดูแลระบบ',
-                                        color: '#06c755',
-                                        size: 'xs',
-                                        align: 'end',
-                                        weight: 'bold'
-                                    }
-                                ]
-                            },
-                            {
-                                type: 'box',
-                                layout: 'horizontal',
-                                contents: [
-                                    {
-                                        type: 'text',
-                                        text: formatDate(p.createdAt),
-                                        color: '#9ca3af',
-                                        size: 'xxs'
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    footer: p.link ? {
-                        type: 'box',
-                        layout: 'vertical',
-                        contents: [
-                            {
-                                type: 'button',
-                                action: {
-                                    type: 'uri',
-                                    label: '🔗 อ่านเพิ่มเติม',
-                                    uri: p.link
-                                },
-                                style: 'primary',
-                                color: typeConfig.color,
-                                height: 'sm'
-                            }
-                        ]
-                    } : null
-                }
-            };
-
-            if (!p.imageUrl) {
-                delete flex.contents.hero;
-            }
-
-            if (!p.link) {
-                delete flex.contents.footer;
-            }
-
-            try {
-                await liff.shareTargetPicker([flex]);
-                showToast('แชร์สำเร็จ');
-            } catch (error) {
-                showToast('แชร์ไม่สำเร็จ', 'error');
-            } finally {
-                shareBtn.disabled = false;
-                shareBtn.classList.remove('loading');
-            }
+            showToast('แชร์สำเร็จ');
         };
 
         // ========== CREATE/EDIT POST ==========
-        window.showCreatePostModal = function() {
-            if (!state.isEditor) {
-                showToast('ไม่มีสิทธิ์สร้างโพสต์', 'error');
-                return;
-            }
-
-            document.getElementById('create-modal-title').textContent = 'สร้างโพสต์ใหม่';
-            document.getElementById('edit-post-id').value = '';
+        window.showCreateModal = function() {
+            document.getElementById('create-modal-title').textContent = 'สร้างโพสต์';
+            document.getElementById('edit-post-id')?.remove();
             document.getElementById('post-type').value = 'news';
             document.getElementById('post-title').value = '';
             document.getElementById('post-content').value = '';
-            document.getElementById('post-image').value = '';
             document.getElementById('post-link').value = '';
             document.getElementById('image-preview').style.display = 'none';
             document.getElementById('create-modal').classList.add('active');
         };
 
-        window.closeCreateModal = function() {
-            document.getElementById('create-modal').classList.remove('active');
-        };
+        window.closeCreateModal = () => document.getElementById('create-modal').classList.remove('active');
 
         window.savePost = async function(e) {
             e.preventDefault();
             
-            const btn = document.getElementById('save-post-btn');
-            if (btn.disabled) return;
+            const file = document.getElementById('post-image').files[0];
+            let imageUrl = '';
             
-            btn.disabled = true;
-            btn.classList.add('loading');
+            if (file) {
+                imageUrl = await uploadImage(file);
+            }
 
-            try {
-                const id = document.getElementById('edit-post-id').value;
-                let imageUrl = document.getElementById('post-image').value;
-                const file = document.getElementById('post-image-file').files[0];
+            const data = {
+                type: document.getElementById('post-type').value,
+                title: document.getElementById('post-title').value,
+                content: document.getElementById('post-content').value,
+                imageUrl,
+                link: document.getElementById('post-link').value,
+                lineUserId: state.user.lineUserId
+            };
 
-                if (file) {
-                    const uploaded = await uploadImageToDrive(file);
-                    if (uploaded) imageUrl = uploaded;
-                }
-
-                const data = {
-                    type: document.getElementById('post-type').value,
-                    title: document.getElementById('post-title').value,
-                    content: document.getElementById('post-content').value,
-                    imageUrl,
-                    link: document.getElementById('post-link').value,
-                    lineUserId: state.user.lineUserId
-                };
-
-                if (id) data.postId = id;
-
-                const result = await callGAS(id ? 'post/update' : 'post/create', data);
-
-                if (result.success) {
-                    showToast(id ? 'แก้ไขสำเร็จ' : 'สร้างสำเร็จ');
-                    closeCreateModal();
-                    
-                    // เคลียร์ cache ที่เกี่ยวข้อง
-                    CacheManager.clear();
-                    
-                    await Promise.all([loadPosts(), loadMyPosts(), loadUrgentPosts()]);
-                } else {
-                    showToast(result.message || 'เกิดข้อผิดพลาด', 'error');
-                }
-            } catch {
-                showToast('เกิดข้อผิดพลาด', 'error');
-            } finally {
-                btn.disabled = false;
-                btn.classList.remove('loading');
+            const result = await callAPI('post/create', data);
+            
+            if (result.success) {
+                showToast('สร้างสำเร็จ');
+                closeCreateModal();
+                loadPosts();
+                loadMyPosts();
             }
         };
 
-        window.editCurrentPost = function() {
-            if (!state.currentPost) return;
-            
+        window.editPost = function() {
             const p = state.currentPost;
+            if (!p) return;
+            
             document.getElementById('create-modal-title').textContent = 'แก้ไขโพสต์';
-            document.getElementById('edit-post-id').value = p.postId;
+            
+            let input = document.getElementById('edit-post-id');
+            if (!input) {
+                input = document.createElement('input');
+                input.type = 'hidden';
+                input.id = 'edit-post-id';
+                document.getElementById('post-form').appendChild(input);
+            }
+            input.value = p.postId;
+            
             document.getElementById('post-type').value = p.type;
             document.getElementById('post-title').value = p.title;
             document.getElementById('post-content').value = p.content;
-            document.getElementById('post-image').value = p.imageUrl || '';
             document.getElementById('post-link').value = p.link || '';
             
             if (p.imageUrl) {
-                document.getElementById('image-preview').src = p.imageUrl;
-                document.getElementById('image-preview').style.display = 'block';
+                const preview = document.getElementById('image-preview');
+                preview.src = p.imageUrl;
+                preview.style.display = 'block';
             }
             
             closeModal();
             document.getElementById('create-modal').classList.add('active');
         };
 
-        window.deleteCurrentPost = async function() {
+        window.deletePost = async function() {
             if (!state.currentPost) return;
-
-            const result = await Swal.fire({
-                title: 'ลบโพสต์',
-                text: 'คุณแน่ใจหรือไม่?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#ef4444',
-                confirmButtonText: 'ใช่, ลบ'
-            });
-
-            if (result.isConfirmed) {
-                const deleteBtn = $.modalDeleteBtn;
-                deleteBtn.disabled = true;
-                deleteBtn.classList.add('loading');
-
-                const apiResult = await callGAS('post/delete', { 
-                    postId: state.currentPost.postId,
-                    lineUserId: state.user.lineUserId
-                });
-
-                if (apiResult.success) {
-                    showToast('ลบสำเร็จ');
-                    closeModal();
-                    
-                    // เคลียร์ cache ที่เกี่ยวข้อง
-                    CacheManager.clear();
-                    
-                    await Promise.all([loadPosts(), loadMyPosts(), loadUrgentPosts()]);
-                } else {
-                    showToast(apiResult.message || 'ลบไม่สำเร็จ', 'error');
-                }
-
-                deleteBtn.disabled = false;
-                deleteBtn.classList.remove('loading');
+            
+            if (!confirm('ลบโพสต์นี้?')) return;
+            
+            const result = await callAPI('post/delete', { postId: state.currentPost.postId });
+            
+            if (result.success) {
+                showToast('ลบสำเร็จ');
+                closeModal();
+                loadPosts();
+                loadMyPosts();
             }
         };
 
-        // ========== ADMIN FUNCTIONS ==========
+        // ========== ADMIN ==========
         async function loadAdminStats() {
-            const result = await callGAS('admin/stats');
+            const result = await callAPI('admin/stats');
             if (result.success) {
-                $.adminUsers.textContent = result.data.users || 0;
-                $.adminPosts.textContent = result.data.posts || 0;
-                $.adminToday.textContent = result.data.today || 0;
-                $.adminPending.textContent = result.data.pending || 0;
+                dom.adminUsers.textContent = result.data.users || 0;
+                dom.adminPosts.textContent = result.data.posts || 0;
+                dom.adminToday.textContent = result.data.today || 0;
+                dom.adminPending.textContent = result.data.pending || 0;
             }
-
-            await loadPosts();
         }
 
         async function loadPendingPosts() {
-            const result = await callGAS('admin/posts/pending');
+            const result = await callAPI('admin/posts/pending');
             if (result.success) {
                 state.pendingPosts = result.data || [];
-                renderPendingPosts();
-                
                 const count = state.pendingPosts.length;
                 if (count > 0) {
-                    $.pendingBadge.textContent = count > 9 ? '9+' : count;
-                    $.pendingBadge.classList.remove('hidden');
+                    dom.pendingCount.textContent = count;
+                    dom.pendingCount.style.display = 'inline';
                 } else {
-                    $.pendingBadge.classList.add('hidden');
+                    dom.pendingCount.style.display = 'none';
                 }
+                renderAdminPosts();
             }
         }
 
-        function renderPendingPosts() {
-            if (!state.pendingPosts.length) {
-                $.pendingPostsList.innerHTML = '<div class="text-center py-10 text-gray-400">ไม่มีโพสต์รออนุมัติ</div>';
-                return;
-            }
-
-            $.pendingPostsList.innerHTML = state.pendingPosts.map(p => `
-                <div class="bg-[#1a1d24] p-4 rounded-xl border border-yellow-500/30">
-                    <div class="flex justify-between mb-2">
-                        <span class="badge badge-pending">⏳ รออนุมัติ</span>
-                        <span class="text-xs text-gray-500">${formatDate(p.createdAt)}</span>
-                    </div>
-                    <h3 class="font-semibold mb-2">${p.title}</h3>
-                    <p class="text-sm text-gray-400 mb-3 line-clamp-2">${p.content}</p>
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs text-gray-500">โดย: ${p.authorName}</span>
-                        <div class="flex gap-2">
-                            <button class="btn-success text-xs py-2 px-3" onclick="approvePost('${p.postId}', this)">อนุมัติ</button>
-                            <button class="btn-danger text-xs py-2 px-3" onclick="rejectPost('${p.postId}', this)">ปฏิเสธ</button>
-                        </div>
+        function renderAdminPosts() {
+            dom.adminContent.innerHTML = state.pendingPosts.map(p => `
+                <div style="background:var(--bg-card);padding:16px;border-radius:12px;border:1px solid #f59e0b;margin-bottom:12px;">
+                    <h4 style="font-weight:bold;margin-bottom:8px;">${p.title}</h4>
+                    <p style="color:var(--text-secondary);margin-bottom:12px;">${p.content.substring(0,100)}...</p>
+                    <div style="display:flex;gap:8px;">
+                        <button onclick="approvePost('${p.postId}')" style="flex:1;padding:8px;background:#28a745;color:#fff;border:none;border-radius:8px;">อนุมัติ</button>
+                        <button onclick="rejectPost('${p.postId}')" style="flex:1;padding:8px;background:#ef4444;color:#fff;border:none;border-radius:8px;">ปฏิเสธ</button>
                     </div>
                 </div>
             `).join('');
         }
 
-        window.approvePost = async function(postId, btn) {
-            btn.disabled = true;
-            btn.classList.add('loading');
-            
-            const result = await callGAS('admin/post/approve', { postId });
-            
+        window.approvePost = async function(postId) {
+            const result = await callAPI('admin/post/approve', { postId });
             if (result.success) {
                 showToast('อนุมัติสำเร็จ');
-                CacheManager.clear();
-                await Promise.all([loadPosts(), loadPendingPosts(), loadUrgentPosts(), loadAdminStats()]);
-            } else {
-                showToast(result.message || 'อนุมัติไม่สำเร็จ', 'error');
+                loadPendingPosts();
+                loadPosts();
             }
-            
-            btn.disabled = false;
-            btn.classList.remove('loading');
         };
 
-        window.rejectPost = async function(postId, btn) {
-            btn.disabled = true;
-            btn.classList.add('loading');
-            
-            const result = await callGAS('admin/post/reject', { postId });
-            
+        window.rejectPost = async function(postId) {
+            const result = await callAPI('admin/post/reject', { postId });
             if (result.success) {
                 showToast('ปฏิเสธสำเร็จ');
-                CacheManager.clear();
-                await Promise.all([loadPosts(), loadPendingPosts(), loadUrgentPosts(), loadAdminStats()]);
-            } else {
-                showToast(result.message || 'ปฏิเสธไม่สำเร็จ', 'error');
+                loadPendingPosts();
             }
-            
-            btn.disabled = false;
-            btn.classList.remove('loading');
         };
 
         async function loadUsers() {
-            const result = await callGAS('admin/users');
+            const result = await callAPI('admin/users');
             if (result.success) {
                 state.users = result.data || [];
                 renderUsers();
@@ -2044,54 +814,32 @@
         }
 
         function renderUsers() {
-            const search = $.userSearch?.value.toLowerCase() || '';
-            const filtered = state.users.filter(u => 
-                u.displayName?.toLowerCase().includes(search) || 
-                u.email?.toLowerCase().includes(search)
-            );
-
-            if (!filtered.length) {
-                $.usersList.innerHTML = '<p class="text-center text-gray-400 py-6">ไม่พบผู้ใช้</p>';
-                return;
-            }
-
-            $.usersList.innerHTML = filtered.map(u => `
-                <div class="user-row">
-                    <img src="${u.pictureUrl || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'40\' height=\'40\' viewBox=\'0 0 40 40\'%3E%3Crect width=\'40\' height=\'40\' fill=\'%232a2e36\'/%3E%3C/svg%3E'}" class="user-avatar-sm" loading="lazy">
-                    <div class="flex-1">
-                        <p class="font-semibold text-sm">${u.displayName || ''}</p>
-                        <p class="text-xs text-gray-400">${u.email || ''}</p>
+            dom.adminContent.innerHTML = state.users.map(u => `
+                <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg-card);border-radius:12px;margin-bottom:8px;">
+                    <img src="${u.pictureUrl||'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'40\' height=\'40\' viewBox=\'0 0 40 40\'%3E%3Crect width=\'40\' height=\'40\' fill=\'%232a2e36\'/%3E%3C/svg%3E'}" style="width:40px;height:40px;border-radius:50%;">
+                    <div style="flex:1;">
+                        <div style="font-weight:600;">${u.displayName}</div>
+                        <div style="font-size:12px;color:var(--text-secondary);">${u.email||''}</div>
                     </div>
-                    <span class="role-badge role-${u.role}">${{admin:'ผู้ดูแล', editor:'ผู้เขียน', user:'ผู้ใช้'}[u.role]}</span>
-                    <button class="text-[#06c755] text-xs" onclick="showRoleModal('${u.lineUserId}', '${u.displayName}', '${u.role}')">
-                        <i class="fas fa-cog"></i>
-                    </button>
+                    <button onclick="showRoleModal('${u.lineUserId}','${u.displayName}','${u.role}')" style="padding:6px 12px;background:var(--primary);color:#fff;border:none;border-radius:8px;">สิทธิ์</button>
                 </div>
             `).join('');
         }
 
-        window.showRoleModal = function(userId, userName, currentRole) {
-            document.getElementById('role-user-id').value = userId;
-            document.getElementById('role-user-name').textContent = `จัดการสิทธิ์: ${userName}`;
-            document.getElementById('user-role').value = currentRole;
+        window.showRoleModal = function(userId, userName, role) {
+            document.getElementById('role-user-name').innerHTML = `จัดการสิทธิ์: <strong>${userName}</strong>`;
+            document.getElementById('user-role').value = role;
+            document.getElementById('role-modal').dataset.userId = userId;
             document.getElementById('role-modal').classList.add('active');
         };
 
-        window.closeRoleModal = function() {
-            document.getElementById('role-modal').classList.remove('active');
-        };
+        window.closeRoleModal = () => document.getElementById('role-modal').classList.remove('active');
 
-        window.saveUserRole = async function(e) {
-            e.preventDefault();
-            
-            const userId = document.getElementById('role-user-id').value;
+        window.saveUserRole = async function() {
+            const userId = document.getElementById('role-modal').dataset.userId;
             const role = document.getElementById('user-role').value;
 
-            const saveBtn = e.submitter;
-            saveBtn.disabled = true;
-            saveBtn.classList.add('loading');
-
-            const result = await callGAS('admin/user/role', {
+            const result = await callAPI('admin/user/role', {
                 targetUserId: userId,
                 role,
                 lineUserId: state.user.lineUserId
@@ -2100,335 +848,76 @@
             if (result.success) {
                 showToast('อัปเดตสิทธิ์สำเร็จ');
                 closeRoleModal();
-                CacheManager.clear();
-                
-                await loadUsers();
-                
-                if (userId === state.user?.lineUserId) {
-                    const userResult = await callGAS('user/profile', {
-                        lineUserId: state.user.lineUserId
-                    });
-                    if (userResult.success) {
-                        state.user = userResult.data;
-                        state.isAdmin = state.user.role === 'admin';
-                        state.isEditor = state.isAdmin || state.user.role === 'editor';
-                        
-                        $.profileRole.textContent = {
-                            admin: '👑 ผู้ดูแลระบบ',
-                            editor: '✏️ ผู้เขียน',
-                            user: '👤 ผู้ใช้ทั่วไป'
-                        }[state.user.role] || '';
-                        
-                        $.adminOnly.forEach(el => {
-                            if (state.isAdmin) el.classList.remove('hidden');
-                            else el.classList.add('hidden');
-                        });
-                    }
-                }
-            } else {
-                showToast(result.message || 'อัปเดตไม่สำเร็จ', 'error');
-            }
-
-            saveBtn.disabled = false;
-            saveBtn.classList.remove('loading');
-        };
-
-        async function loadAllComments() {
-            const result = await callGAS('admin/comments');
-            if (result.success) {
-                state.allComments = result.data || [];
-                renderAdminComments();
-            }
-        }
-
-        function renderAdminComments() {
-            const search = $.adminCommentSearch?.value.toLowerCase() || '';
-            const filtered = state.allComments.filter(c => 
-                c.content?.toLowerCase().includes(search) || 
-                c.userName?.toLowerCase().includes(search)
-            );
-
-            if (!filtered.length) {
-                $.adminCommentsList.innerHTML = '<p class="text-center text-gray-400 py-6">ไม่พบความคิดเห็น</p>';
-                return;
-            }
-
-            $.adminCommentsList.innerHTML = filtered.map(c => {
-                const statusText = c.status === 'deleted' ? ' (ลบแล้ว)' : (c.status === 'deleted_by_admin' ? ' (ลบโดยแอดมิน)' : '');
-                const statusClass = c.status === 'deleted' ? 'badge-deleted' : (c.status === 'deleted_by_admin' ? 'badge-deleted_by_admin' : '');
-                
-                return `
-                <div class="bg-[#1a1d24] p-3 rounded-lg border border-[#2a2e36]">
-                    <div class="flex items-center gap-2 mb-2">
-                        <img src="${c.userPicture || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\' viewBox=\'0 0 32 32\'%3E%3Crect width=\'32\' height=\'32\' fill=\'%232a2e36\'/%3E%3C/svg%3E'}" class="w-6 h-6 rounded-full" loading="lazy">
-                        <span class="font-semibold text-xs text-[#06c755]">${c.userName || 'ผู้ใช้'}${statusText}</span>
-                        <span class="text-xs text-gray-500">${formatDateTime(c.createdAt)}</span>
-                        ${c.status !== 'active' ? `<span class="badge ${statusClass} text-xs">${c.status === 'deleted' ? 'ลบแล้ว' : 'ลบโดยแอดมิน'}</span>` : ''}
-                    </div>
-                    <p class="text-sm mb-2">${c.status === 'active' ? c.content : '<em>ความคิดเห็นนี้ถูกลบแล้ว</em>'}</p>
-                    <div class="flex justify-between items-center text-xs">
-                        <span class="text-gray-400">โพสต์: ${c.postId}</span>
-                        ${c.status === 'active' ? `
-                            <button class="btn-danger text-xs py-1 px-2" onclick="adminDeleteComment('${c.commentId}', this)">
-                                <i class="fas fa-trash mr-1"></i>ลบ
-                            </button>
-                        ` : ''}
-                    </div>
-                </div>
-            `}).join('');
-        }
-
-        window.adminDeleteComment = async function(commentId, btn) {
-            const result = await Swal.fire({
-                title: 'ลบความคิดเห็น',
-                text: 'คุณแน่ใจหรือไม่?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#ef4444',
-                confirmButtonText: 'ใช่, ลบ'
-            });
-
-            if (result.isConfirmed) {
-                btn.disabled = true;
-                btn.classList.add('loading');
-
-                const apiResult = await callGAS('admin/comment/delete', { 
-                    commentId,
-                    lineUserId: state.user.lineUserId
-                });
-
-                if (apiResult.success) {
-                    showToast('ลบความคิดเห็นสำเร็จ');
-                    CacheManager.clear();
-                    await loadAllComments();
-                } else {
-                    showToast(apiResult.message || 'ลบไม่สำเร็จ', 'error');
-                }
-
-                btn.disabled = false;
-                btn.classList.remove('loading');
+                loadUsers();
             }
         };
 
         async function loadSettings() {
-            const result = await callGAS('settings');
+            const result = await callAPI('settings');
             if (result.success) {
-                state.settings = result.data || {
-                    appName: 'iTNews',
-                    driveFolderId: CONFIG.DRIVE_FOLDER_ID,
-                    requireApproval: 'false'
-                };
-                
-                document.getElementById('setting-app-name').value = state.settings.appName || 'iTNews';
-                document.getElementById('setting-drive-folder').value = state.settings.driveFolderId || CONFIG.DRIVE_FOLDER_ID;
-                
-                if ($.settingRequireApproval) {
-                    const requireApproval = state.settings.requireApproval;
-                    
-                    let isChecked = false;
-                    if (typeof requireApproval === 'string') {
-                        isChecked = requireApproval.toLowerCase() === 'true' || requireApproval === '1';
-                    } else if (typeof requireApproval === 'boolean') {
-                        isChecked = requireApproval;
-                    } else if (typeof requireApproval === 'number') {
-                        isChecked = requireApproval === 1;
-                    }
-                    
-                    $.settingRequireApproval.checked = isChecked;
-                }
-                
-                updateAppName(state.settings.appName);
+                state.settings = result.data || { appName: 'iTNews' };
+                dom.navbarName.textContent = state.settings.appName;
+                document.title = state.settings.appName + ' · LINE';
             }
         }
 
-        window.saveSettings = async function(e) {
-            e.preventDefault();
-            
-            const appName = document.getElementById('setting-app-name').value.trim() || 'iTNews';
-            const driveFolderId = document.getElementById('setting-drive-folder').value.trim() || CONFIG.DRIVE_FOLDER_ID;
-            const requireApproval = $.settingRequireApproval ? $.settingRequireApproval.checked : false;
-
-            const saveBtn = $.settingsSaveBtn;
-            saveBtn.disabled = true;
-            saveBtn.classList.add('loading');
-
-            const data = {
-                appName,
-                driveFolderId,
-                requireApproval: requireApproval ? 'true' : 'false',
-                lineUserId: state.user.lineUserId
-            };
-
-            const result = await callGAS('admin/settings/update', data);
-            
-            if (result.success) {
-                showToast('บันทึกสำเร็จ');
-                Object.assign(state.settings, data);
-                updateAppName(appName);
-                CacheManager.clear();
-            } else {
-                showToast(result.message || 'บันทึกไม่สำเร็จ', 'error');
-            }
-
-            saveBtn.disabled = false;
-            saveBtn.classList.remove('loading');
-        };
-
-        // ========== PROFILE ==========
-        window.showProfileSettings = function() {
-            document.getElementById('profile-phone').value = state.user?.phone || '';
-            document.getElementById('profile-department').value = state.user?.department || '';
-            document.getElementById('profile-modal').classList.add('active');
-        };
-
-        window.closeProfileModal = function() {
-            document.getElementById('profile-modal').classList.remove('active');
-        };
-
-        window.saveProfile = async function(e) {
-            e.preventDefault();
-            
-            const saveBtn = e.submitter;
-            saveBtn.disabled = true;
-            saveBtn.classList.add('loading');
-
-            const data = {
-                phone: document.getElementById('profile-phone').value,
-                department: document.getElementById('profile-department').value,
-                lineUserId: state.user.lineUserId
-            };
-
-            const result = await callGAS('user/update', data);
-            if (result.success) {
-                showToast('บันทึกสำเร็จ');
-                Object.assign(state.user, data);
-                closeProfileModal();
-            } else {
-                showToast(result.message || 'บันทึกไม่สำเร็จ', 'error');
-            }
-
-            saveBtn.disabled = false;
-            saveBtn.classList.remove('loading');
-        };
-
-        window.logout = function() {
-            if (liff.isLoggedIn()) liff.logout();
-            CacheManager.clear();
-            location.reload();
-        };
-
         // ========== TAB SWITCHING ==========
         window.switchTab = function(tab) {
-            $.navItems.forEach(i => i.classList.remove('active'));
-            document.querySelectorAll(`[data-tab="${tab}"]`).forEach(i => i.classList.add('active'));
-            
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.getElementById(`tab-${tab}`).classList.add('active');
+            dom.navItems.forEach(i => i.classList.toggle('active', i.dataset.tab === tab));
+            dom.home.classList.toggle('hidden', tab !== 'home');
+            dom.my.classList.toggle('hidden', tab !== 'my');
+            dom.admin.classList.toggle('hidden', tab !== 'admin');
 
-            if (tab === 'my') loadMyPosts();
             if (tab === 'admin' && state.isAdmin) {
+                dom.adminContent.innerHTML = '<div class="text-center p-8">กำลังโหลด...</div>';
                 loadAdminStats();
-                loadUsers();
                 loadPendingPosts();
-                loadAllComments();
             }
-        };
-
-        window.goHome = function() {
-            switchTab('home');
         };
 
         // ========== EVENT LISTENERS ==========
-        $.filterBtns.forEach(btn => {
+        dom.filterBtns.forEach(btn => {
             btn.addEventListener('click', () => {
-                $.filterBtns.forEach(b => b.classList.remove('active'));
+                dom.filterBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                state.currentFilter = btn.dataset.filter;
-                state.currentPage = 1;
+                state.filter = btn.dataset.filter;
                 loadPosts();
             });
         });
 
-        const debouncedSearch = debounce(() => {
-            state.searchTerm = $.searchInput.value;
-            state.currentPage = 1;
-            loadPosts();
-        }, 300);
-
-        $.searchInput.addEventListener('input', debouncedSearch);
-
-        $.userSearch?.addEventListener('input', renderUsers);
-        
-        $.adminCommentSearch?.addEventListener('input', () => {
-            renderAdminComments();
+        let searchTimer;
+        dom.search.addEventListener('input', (e) => {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => {
+                state.search = e.target.value;
+                loadPosts();
+            }, 300);
         });
 
-        $.refreshAdmin?.addEventListener('click', () => {
-            if (state.isAdmin) {
-                CacheManager.clear();
-                loadAdminStats();
-                loadUsers();
-                loadPendingPosts();
-                loadAllComments();
+        dom.navItems.forEach(item => {
+            item.addEventListener('click', () => switchTab(item.dataset.tab));
+        });
+
+        dom.profileHeader.addEventListener('click', () => {
+            if (confirm('ออกจากระบบ?')) {
+                liff.logout();
+                location.reload();
             }
         });
 
-        document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+        document.querySelectorAll('.admin-tab').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 
-                document.querySelectorAll('.admin-tab').forEach(t => t.classList.add('hidden'));
-                document.getElementById(`admin-${btn.dataset.adminTab}-tab`).classList.remove('hidden');
-                
-                if (btn.dataset.adminTab === 'comments') {
-                    loadAllComments();
-                }
+                if (btn.dataset.admin === 'posts') loadAdminStats();
+                if (btn.dataset.admin === 'pending') loadPendingPosts();
+                if (btn.dataset.admin === 'users') loadUsers();
             });
         });
 
-        $.navItems.forEach(item => {
-            item.addEventListener('click', () => {
-                switchTab(item.dataset.tab);
-            });
-        });
-
-        document.getElementById('profile-header').addEventListener('click', () => {
-            Swal.fire({
-                title: state.user?.displayName,
-                text: state.user?.email,
-                showCancelButton: true,
-                confirmButtonText: 'แก้ไขโปรไฟล์',
-                cancelButtonText: 'ออกจากระบบ'
-            }).then(r => {
-                if (r.isConfirmed) showProfileSettings();
-                else if (r.dismiss === Swal.DismissReason.cancel) logout();
-            });
-        });
-
-        // ========== INIT ==========
-        LoadingManager.init();
-        
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initLIFF);
-        } else {
-            initLIFF();
-        }
-
-        // Cleanup
-        window.addEventListener('beforeunload', () => {
-            if (window.heroSwiper) window.heroSwiper.destroy();
-        });
-
-        // Preload next page
-        window.addEventListener('scroll', () => {
-            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000) {
-                if (state.currentPage < state.totalPages && !state.loadingPromises.length) {
-                    state.currentPage++;
-                    loadPosts();
-                }
-            }
-        });
+        // ========== START ==========
+        init();
     </script>
 </body>
 </html>
