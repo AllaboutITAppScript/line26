@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -2368,7 +2367,7 @@
             return null;
         }
 
-        // ========== SHARE AS FLEX MESSAGE (ปรับปรุงให้สวยงาม) ==========
+        // ========== SHARE AS FLEX MESSAGE (ปรับปรุงใหม่ให้สวยงามและเป็นมืออาชีพ) ==========
         window.shareAsFlexMessage = async function() {
             if (!state.currentPost || !liff.isInClient()) {
                 showToast('ไม่สามารถแชร์ได้', 'error');
@@ -2383,18 +2382,43 @@
             
             // กำหนดสีและไอคอนตามประเภท
             const typeConfig = {
-                news: { color: '#06c755', icon: '📰', label: 'ข่าวสาร' },
-                event: { color: '#f59e0b', icon: '🎉', label: 'กิจกรรม' },
-                urgent: { color: '#ef4444', icon: '⚠️', label: 'ประกาศด่วน' }
-            }[p.type] || { color: '#06c755', icon: '📰', label: 'ข่าวสาร' };
+                news: { 
+                    color: '#06c755', 
+                    icon: '📰', 
+                    label: 'ข่าวสาร',
+                    gradient: ['#06c755', '#00a341']
+                },
+                event: { 
+                    color: '#f59e0b', 
+                    icon: '🎉', 
+                    label: 'กิจกรรม',
+                    gradient: ['#f59e0b', '#d97706']
+                },
+                urgent: { 
+                    color: '#ef4444', 
+                    icon: '⚠️', 
+                    label: 'ประกาศด่วน',
+                    gradient: ['#ef4444', '#dc2626']
+                }
+            }[p.type] || { 
+                color: '#06c755', 
+                icon: '📰', 
+                label: 'ข่าวสาร',
+                gradient: ['#06c755', '#00a341']
+            };
 
-            // สร้าง Flex Message ที่สวยงาม
+            // สร้าง Flex Message ที่สวยงามและเป็นมืออาชีพ
             const flex = {
                 type: 'flex',
                 altText: `${typeConfig.icon} ${p.title}`,
                 contents: {
                     type: 'bubble',
-                    size: 'mega',
+                    size: 'giga',
+                    styles: {
+                        header: {
+                            backgroundColor: typeConfig.color,
+                        }
+                    },
                     header: {
                         type: 'box',
                         layout: 'vertical',
@@ -2406,18 +2430,30 @@
                                     {
                                         type: 'text',
                                         text: typeConfig.icon,
-                                        size: 'xl',
-                                        align: 'start'
+                                        size: '3xl',
+                                        align: 'start',
+                                        gravity: 'center'
                                     },
                                     {
                                         type: 'text',
                                         text: typeConfig.label,
-                                        color: typeConfig.color,
+                                        color: '#ffffff',
                                         size: 'xs',
                                         align: 'end',
-                                        gravity: 'center'
+                                        gravity: 'center',
+                                        weight: 'bold'
                                     }
                                 ]
+                            },
+                            {
+                                type: 'text',
+                                text: p.title,
+                                color: '#ffffff',
+                                size: 'xl',
+                                weight: 'bold',
+                                wrap: true,
+                                margin: 'md',
+                                maxLines: 3
                             }
                         ]
                     },
@@ -2425,9 +2461,10 @@
                         type: 'image',
                         url: p.imageUrl,
                         size: 'full',
-                        aspectRatio: '20:13',
+                        aspectRatio: '1500:1000', // ปรับ aspect ratio ให้สวยงาม
                         aspectMode: 'cover',
-                        backgroundColor: '#1a1d24'
+                        backgroundColor: '#1a1d24',
+                        animated: false
                     } : null,
                     body: {
                         type: 'box',
@@ -2435,19 +2472,11 @@
                         contents: [
                             {
                                 type: 'text',
-                                text: p.title,
-                                weight: 'bold',
-                                size: 'xl',
-                                wrap: true,
-                                color: '#ffffff'
-                            },
-                            {
-                                type: 'text',
-                                text: p.content.length > 200 ? p.content.substring(0, 200) + '...' : p.content,
+                                text: p.content.length > 250 ? p.content.substring(0, 250) + '...' : p.content,
                                 wrap: true,
                                 color: '#9ca3af',
                                 size: 'md',
-                                margin: 'md'
+                                maxLines: 8
                             },
                             {
                                 type: 'separator',
@@ -2456,34 +2485,59 @@
                             },
                             {
                                 type: 'box',
-                                layout: 'horizontal',
+                                layout: 'vertical',
                                 margin: 'md',
                                 contents: [
                                     {
-                                        type: 'text',
-                                        text: 'โพสต์โดย',
-                                        color: '#9ca3af',
-                                        size: 'xs'
+                                        type: 'box',
+                                        layout: 'horizontal',
+                                        contents: [
+                                            {
+                                                type: 'text',
+                                                text: 'โพสต์โดย',
+                                                color: '#9ca3af',
+                                                size: 'xs'
+                                            },
+                                            {
+                                                type: 'text',
+                                                text: p.authorName || 'ผู้ดูแลระบบ',
+                                                color: typeConfig.color,
+                                                size: 'xs',
+                                                align: 'end',
+                                                weight: 'bold'
+                                            }
+                                        ]
                                     },
                                     {
-                                        type: 'text',
-                                        text: p.authorName || 'ผู้ดูแลระบบ',
-                                        color: '#06c755',
-                                        size: 'xs',
-                                        align: 'end',
-                                        weight: 'bold'
+                                        type: 'box',
+                                        layout: 'horizontal',
+                                        contents: [
+                                            {
+                                                type: 'text',
+                                                text: formatDateTime(p.createdAt),
+                                                color: '#9ca3af',
+                                                size: 'xxs'
+                                            }
+                                        ]
                                     }
                                 ]
                             },
                             {
                                 type: 'box',
                                 layout: 'horizontal',
+                                margin: 'lg',
                                 contents: [
                                     {
-                                        type: 'text',
-                                        text: formatDate(p.createdAt),
-                                        color: '#9ca3af',
+                                        type: 'icon',
+                                        url: 'https://cdn-icons-png.flaticon.com/512/653/653021.png',
                                         size: 'xxs'
+                                    },
+                                    {
+                                        type: 'text',
+                                        text: ' แชร์จาก ' + (state.settings.appName || 'iTNews'),
+                                        color: '#06c755',
+                                        size: 'xxs',
+                                        weight: 'bold'
                                     }
                                 ]
                             }
@@ -2508,6 +2562,40 @@
                     } : null
                 }
             };
+
+            // เพิ่ม overlay gradient ถ้ามีรูปภาพ
+            if (p.imageUrl && flex.contents.hero) {
+                flex.contents.hero = {
+                    type: 'box',
+                    layout: 'vertical',
+                    contents: [
+                        {
+                            type: 'image',
+                            url: p.imageUrl,
+                            size: 'full',
+                            aspectRatio: '1500:1000',
+                            aspectMode: 'cover',
+                            backgroundColor: '#1a1d24'
+                        },
+                        {
+                            type: 'box',
+                            layout: 'vertical',
+                            contents: [],
+                            position: 'absolute',
+                            width: '100%',
+                            height: '30%',
+                            bottom: '0px',
+                            background: {
+                                type: 'linearGradient',
+                                angle: '0deg',
+                                startColor: '#00000000',
+                                endColor: '#00000099'
+                            }
+                        }
+                    ],
+                    paddingAll: '0px'
+                };
+            }
 
             // ลบ hero ถ้าไม่มีรูป
             if (!p.imageUrl) {
