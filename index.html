@@ -2367,7 +2367,7 @@
             return null;
         }
 
-        // ========== SHARE AS FLEX MESSAGE (ปรับปรุงใหม่ให้สวยงามและเป็นมืออาชีพ) ==========
+        // ========== SHARE AS FLEX MESSAGE (แก้ไขให้ใช้งานได้จริง) ==========
         window.shareAsFlexMessage = async function() {
             if (!state.currentPost || !liff.isInClient()) {
                 showToast('ไม่สามารถแชร์ได้', 'error');
@@ -2382,237 +2382,131 @@
             
             // กำหนดสีและไอคอนตามประเภท
             const typeConfig = {
-                news: { 
-                    color: '#06c755', 
-                    icon: '📰', 
-                    label: 'ข่าวสาร',
-                    gradient: ['#06c755', '#00a341']
-                },
-                event: { 
-                    color: '#f59e0b', 
-                    icon: '🎉', 
-                    label: 'กิจกรรม',
-                    gradient: ['#f59e0b', '#d97706']
-                },
-                urgent: { 
-                    color: '#ef4444', 
-                    icon: '⚠️', 
-                    label: 'ประกาศด่วน',
-                    gradient: ['#ef4444', '#dc2626']
-                }
-            }[p.type] || { 
-                color: '#06c755', 
-                icon: '📰', 
-                label: 'ข่าวสาร',
-                gradient: ['#06c755', '#00a341']
-            };
+                news: { color: '#06c755', icon: '📰', label: 'ข่าวสาร' },
+                event: { color: '#f59e0b', icon: '🎉', label: 'กิจกรรม' },
+                urgent: { color: '#ef4444', icon: '⚠️', label: 'ประกาศด่วน' }
+            }[p.type] || { color: '#06c755', icon: '📰', label: 'ข่าวสาร' };
 
-            // สร้าง Flex Message ที่สวยงามและเป็นมืออาชีพ
-            const flex = {
-                type: 'flex',
+            // สร้าง Flex Message ที่เรียบง่ายและใช้งานได้จริง
+            const flexMessage = {
+                type: "flex",
                 altText: `${typeConfig.icon} ${p.title}`,
                 contents: {
-                    type: 'bubble',
-                    size: 'giga',
-                    styles: {
-                        header: {
-                            backgroundColor: typeConfig.color,
-                        }
-                    },
+                    type: "bubble",
+                    size: "mega",
                     header: {
-                        type: 'box',
-                        layout: 'vertical',
+                        type: "box",
+                        layout: "horizontal",
                         contents: [
                             {
-                                type: 'box',
-                                layout: 'horizontal',
-                                contents: [
-                                    {
-                                        type: 'text',
-                                        text: typeConfig.icon,
-                                        size: '3xl',
-                                        align: 'start',
-                                        gravity: 'center'
-                                    },
-                                    {
-                                        type: 'text',
-                                        text: typeConfig.label,
-                                        color: '#ffffff',
-                                        size: 'xs',
-                                        align: 'end',
-                                        gravity: 'center',
-                                        weight: 'bold'
-                                    }
-                                ]
+                                type: "text",
+                                text: typeConfig.icon,
+                                size: "xl"
                             },
                             {
-                                type: 'text',
-                                text: p.title,
-                                color: '#ffffff',
-                                size: 'xl',
-                                weight: 'bold',
-                                wrap: true,
-                                margin: 'md',
-                                maxLines: 3
+                                type: "text",
+                                text: typeConfig.label,
+                                color: typeConfig.color,
+                                size: "xs",
+                                align: "end",
+                                gravity: "center"
                             }
                         ]
                     },
                     hero: p.imageUrl ? {
-                        type: 'image',
+                        type: "image",
                         url: p.imageUrl,
-                        size: 'full',
-                        aspectRatio: '1500:1000', // ปรับ aspect ratio ให้สวยงาม
-                        aspectMode: 'cover',
-                        backgroundColor: '#1a1d24',
-                        animated: false
+                        size: "full",
+                        aspectRatio: "16:9",
+                        aspectMode: "cover"
                     } : null,
                     body: {
-                        type: 'box',
-                        layout: 'vertical',
+                        type: "box",
+                        layout: "vertical",
                         contents: [
                             {
-                                type: 'text',
-                                text: p.content.length > 250 ? p.content.substring(0, 250) + '...' : p.content,
+                                type: "text",
+                                text: p.title,
+                                weight: "bold",
+                                size: "lg",
+                                wrap: true
+                            },
+                            {
+                                type: "text",
+                                text: p.content.length > 200 ? p.content.substring(0, 200) + "..." : p.content,
                                 wrap: true,
-                                color: '#9ca3af',
-                                size: 'md',
-                                maxLines: 8
+                                color: "#9ca3af",
+                                size: "sm",
+                                margin: "md"
                             },
                             {
-                                type: 'separator',
-                                margin: 'xl',
-                                color: '#2a2e36'
+                                type: "separator",
+                                margin: "lg"
                             },
                             {
-                                type: 'box',
-                                layout: 'vertical',
-                                margin: 'md',
+                                type: "box",
+                                layout: "horizontal",
+                                margin: "md",
                                 contents: [
                                     {
-                                        type: 'box',
-                                        layout: 'horizontal',
-                                        contents: [
-                                            {
-                                                type: 'text',
-                                                text: 'โพสต์โดย',
-                                                color: '#9ca3af',
-                                                size: 'xs'
-                                            },
-                                            {
-                                                type: 'text',
-                                                text: p.authorName || 'ผู้ดูแลระบบ',
-                                                color: typeConfig.color,
-                                                size: 'xs',
-                                                align: 'end',
-                                                weight: 'bold'
-                                            }
-                                        ]
+                                        type: "text",
+                                        text: "โพสต์โดย",
+                                        color: "#9ca3af",
+                                        size: "xs"
                                     },
                                     {
-                                        type: 'box',
-                                        layout: 'horizontal',
-                                        contents: [
-                                            {
-                                                type: 'text',
-                                                text: formatDateTime(p.createdAt),
-                                                color: '#9ca3af',
-                                                size: 'xxs'
-                                            }
-                                        ]
+                                        type: "text",
+                                        text: p.authorName || "ผู้ดูแลระบบ",
+                                        color: "#06c755",
+                                        size: "xs",
+                                        align: "end"
                                     }
                                 ]
                             },
                             {
-                                type: 'box',
-                                layout: 'horizontal',
-                                margin: 'lg',
-                                contents: [
-                                    {
-                                        type: 'icon',
-                                        url: 'https://cdn-icons-png.flaticon.com/512/653/653021.png',
-                                        size: 'xxs'
-                                    },
-                                    {
-                                        type: 'text',
-                                        text: ' แชร์จาก ' + (state.settings.appName || 'iTNews'),
-                                        color: '#06c755',
-                                        size: 'xxs',
-                                        weight: 'bold'
-                                    }
-                                ]
+                                type: "text",
+                                text: formatDate(p.createdAt),
+                                color: "#9ca3af",
+                                size: "xxs",
+                                align: "end"
                             }
                         ]
                     },
                     footer: p.link ? {
-                        type: 'box',
-                        layout: 'vertical',
+                        type: "box",
+                        layout: "vertical",
                         contents: [
                             {
-                                type: 'button',
+                                type: "button",
                                 action: {
-                                    type: 'uri',
-                                    label: '🔗 อ่านเพิ่มเติม',
+                                    type: "uri",
+                                    label: "🔗 อ่านเพิ่มเติม",
                                     uri: p.link
                                 },
-                                style: 'primary',
-                                color: typeConfig.color,
-                                height: 'sm'
+                                style: "primary",
+                                color: typeConfig.color
                             }
                         ]
                     } : null
                 }
             };
 
-            // เพิ่ม overlay gradient ถ้ามีรูปภาพ
-            if (p.imageUrl && flex.contents.hero) {
-                flex.contents.hero = {
-                    type: 'box',
-                    layout: 'vertical',
-                    contents: [
-                        {
-                            type: 'image',
-                            url: p.imageUrl,
-                            size: 'full',
-                            aspectRatio: '1500:1000',
-                            aspectMode: 'cover',
-                            backgroundColor: '#1a1d24'
-                        },
-                        {
-                            type: 'box',
-                            layout: 'vertical',
-                            contents: [],
-                            position: 'absolute',
-                            width: '100%',
-                            height: '30%',
-                            bottom: '0px',
-                            background: {
-                                type: 'linearGradient',
-                                angle: '0deg',
-                                startColor: '#00000000',
-                                endColor: '#00000099'
-                            }
-                        }
-                    ],
-                    paddingAll: '0px'
-                };
-            }
-
             // ลบ hero ถ้าไม่มีรูป
             if (!p.imageUrl) {
-                delete flex.contents.hero;
+                delete flexMessage.contents.hero;
             }
 
             // ลบ footer ถ้าไม่มี link
             if (!p.link) {
-                delete flex.contents.footer;
+                delete flexMessage.contents.footer;
             }
 
             try {
-                await liff.shareTargetPicker([flex]);
+                await liff.shareTargetPicker([flexMessage]);
                 showToast('แชร์สำเร็จ');
             } catch (error) {
                 console.error('Share error:', error);
-                showToast('แชร์ไม่สำเร็จ', 'error');
+                showToast('แชร์ไม่สำเร็จ กรุณาลองอีกครั้ง', 'error');
             } finally {
                 shareBtn.disabled = false;
                 shareBtn.classList.remove('loading');
