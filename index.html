@@ -2367,7 +2367,7 @@
             return null;
         }
 
-        // ========== SHARE AS FLEX MESSAGE (แก้ไขให้ใช้งานได้จริง) ==========
+        // ========== SHARE AS FLEX MESSAGE (ปรับปรุงใหม่ให้สวยงาม ทันสมัย) ==========
         window.shareAsFlexMessage = async function() {
             if (!state.currentPost || !liff.isInClient()) {
                 showToast('ไม่สามารถแชร์ได้', 'error');
@@ -2380,36 +2380,78 @@
 
             const p = state.currentPost;
             
-            // กำหนดสีและไอคอนตามประเภท
+            // กำหนดสีและสไตล์ตามประเภทโพสต์
             const typeConfig = {
-                news: { color: '#06c755', icon: '📰', label: 'ข่าวสาร' },
-                event: { color: '#f59e0b', icon: '🎉', label: 'กิจกรรม' },
-                urgent: { color: '#ef4444', icon: '⚠️', label: 'ประกาศด่วน' }
-            }[p.type] || { color: '#06c755', icon: '📰', label: 'ข่าวสาร' };
+                news: { 
+                    color: '#06c755', 
+                    bgColor: '#06c755',
+                    gradient: ['#06c755', '#00a341'],
+                    icon: '📰', 
+                    label: 'ข่าวสาร',
+                    shadow: '0 8px 16px rgba(6,199,85,0.2)'
+                },
+                event: { 
+                    color: '#f59e0b', 
+                    bgColor: '#f59e0b',
+                    gradient: ['#f59e0b', '#d97706'],
+                    icon: '🎉', 
+                    label: 'กิจกรรม',
+                    shadow: '0 8px 16px rgba(245,158,11,0.2)'
+                },
+                urgent: { 
+                    color: '#ef4444', 
+                    bgColor: '#ef4444',
+                    gradient: ['#ef4444', '#dc2626'],
+                    icon: '⚠️', 
+                    label: 'ประกาศด่วน',
+                    shadow: '0 8px 16px rgba(239,68,68,0.2)'
+                }
+            }[p.type] || { 
+                color: '#06c755', 
+                bgColor: '#06c755',
+                gradient: ['#06c755', '#00a341'],
+                icon: '📰', 
+                label: 'ข่าวสาร',
+                shadow: '0 8px 16px rgba(6,199,85,0.2)'
+            };
 
-            // สร้าง Flex Message ที่เรียบง่ายและใช้งานได้จริง
+            // สร้าง Flex Message สไตล์ Modern Card
             const flexMessage = {
                 type: "flex",
                 altText: `${typeConfig.icon} ${p.title}`,
                 contents: {
                     type: "bubble",
-                    size: "mega",
+                    size: "giga",
+                    styles: {
+                        header: {
+                            backgroundColor: typeConfig.bgColor
+                        }
+                    },
                     header: {
                         type: "box",
-                        layout: "horizontal",
+                        layout: "vertical",
                         contents: [
                             {
-                                type: "text",
-                                text: typeConfig.icon,
-                                size: "xl"
-                            },
-                            {
-                                type: "text",
-                                text: typeConfig.label,
-                                color: typeConfig.color,
-                                size: "xs",
-                                align: "end",
-                                gravity: "center"
+                                type: "box",
+                                layout: "horizontal",
+                                contents: [
+                                    {
+                                        type: "text",
+                                        text: typeConfig.icon,
+                                        size: "3xl",
+                                        align: "start",
+                                        gravity: "center"
+                                    },
+                                    {
+                                        type: "text",
+                                        text: typeConfig.label,
+                                        color: "#ffffff",
+                                        size: "xs",
+                                        align: "end",
+                                        gravity: "center",
+                                        weight: "bold"
+                                    }
+                                ]
                             }
                         ]
                     },
@@ -2417,8 +2459,9 @@
                         type: "image",
                         url: p.imageUrl,
                         size: "full",
-                        aspectRatio: "16:9",
-                        aspectMode: "cover"
+                        aspectRatio: "1500:1000",
+                        aspectMode: "cover",
+                        backgroundColor: "#1a1d24"
                     } : null,
                     body: {
                         type: "box",
@@ -2428,47 +2471,90 @@
                                 type: "text",
                                 text: p.title,
                                 weight: "bold",
-                                size: "lg",
-                                wrap: true
+                                size: "xl",
+                                wrap: true,
+                                color: "#ffffff"
                             },
                             {
                                 type: "text",
                                 text: p.content.length > 200 ? p.content.substring(0, 200) + "..." : p.content,
                                 wrap: true,
                                 color: "#9ca3af",
-                                size: "sm",
-                                margin: "md"
+                                size: "md",
+                                margin: "md",
+                                maxLines: 6
                             },
                             {
                                 type: "separator",
-                                margin: "lg"
+                                margin: "xl",
+                                color: "#2a2e36"
                             },
                             {
                                 type: "box",
-                                layout: "horizontal",
+                                layout: "vertical",
                                 margin: "md",
                                 contents: [
                                     {
-                                        type: "text",
-                                        text: "โพสต์โดย",
-                                        color: "#9ca3af",
-                                        size: "xs"
+                                        type: "box",
+                                        layout: "horizontal",
+                                        contents: [
+                                            {
+                                                type: "text",
+                                                text: "📝 โดย",
+                                                color: "#9ca3af",
+                                                size: "xs"
+                                            },
+                                            {
+                                                type: "text",
+                                                text: p.authorName || "ผู้ดูแลระบบ",
+                                                color: typeConfig.color,
+                                                size: "xs",
+                                                align: "end",
+                                                weight: "bold"
+                                            }
+                                        ]
                                     },
                                     {
-                                        type: "text",
-                                        text: p.authorName || "ผู้ดูแลระบบ",
-                                        color: "#06c755",
-                                        size: "xs",
-                                        align: "end"
+                                        type: "box",
+                                        layout: "horizontal",
+                                        margin: "sm",
+                                        contents: [
+                                            {
+                                                type: "text",
+                                                text: "⏰",
+                                                color: "#9ca3af",
+                                                size: "xs"
+                                            },
+                                            {
+                                                type: "text",
+                                                text: formatDateTime(p.createdAt),
+                                                color: "#9ca3af",
+                                                size: "xs",
+                                                align: "end"
+                                            }
+                                        ]
                                     }
                                 ]
                             },
                             {
-                                type: "text",
-                                text: formatDate(p.createdAt),
-                                color: "#9ca3af",
-                                size: "xxs",
-                                align: "end"
+                                type: "box",
+                                layout: "horizontal",
+                                margin: "lg",
+                                contents: [
+                                    {
+                                        type: "text",
+                                        text: "✨ แชร์จาก",
+                                        color: "#4b5563",
+                                        size: "xxs"
+                                    },
+                                    {
+                                        type: "text",
+                                        text: ` ${state.settings.appName || 'iTNews'}`,
+                                        color: typeConfig.color,
+                                        size: "xxs",
+                                        weight: "bold"
+                                    }
+                                ]
                             }
                         ]
                     },
@@ -2484,7 +2570,8 @@
                                     uri: p.link
                                 },
                                 style: "primary",
-                                color: typeConfig.color
+                                color: typeConfig.color,
+                                height: "sm"
                             }
                         ]
                     } : null
